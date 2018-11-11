@@ -1,0 +1,132 @@
+@using Erp.BackOffice.App_GlobalResources
+@using Erp.BackOffice.Helpers
+@using Erp.BackOffice.Sale.Models
+@using Erp.BackOffice.Staff.Models
+@model CommissionCusViewModel
+
+@{
+    ViewBag.Title = Wording.PageIndex_CommisionDetail;
+
+    Layout = "~/Views/Shared/" + (Request["IsPopup"] == null ? "ACE_AdminLayout.cshtml" : "_PopupLayout.cshtml");
+
+    Erp.BackOffice.Models.PageSetting pageSetting = new Erp.BackOffice.Models.PageSetting
+    {
+        ModuleName = "CommissionCus",
+        ActionName = "Detail",
+        PageTitle = ViewBag.Title,
+        DisplaySearchPanel = false,
+        IsPopup = false,
+        DisplayBackButton = true
+    };
+    //IEnumerable<SelectListItem> CategoryList = Erp.BackOffice.Helpers.Common.GetSelectList_Category("product", null, "value");
+    IEnumerable<SelectListItem> typeList = Erp.BackOffice.Helpers.SelectListHelper.GetSelectList_Category("TypeCommission", null, null);
+    IEnumerable<SelectListItem> BranchList = Erp.BackOffice.Helpers.SelectListHelper.GetSelectList_BranchAllNew(null, Wording.Empty);
+    List<BranchViewModel> departmentList = (List<BranchViewModel>)ViewBag.departmentList;
+    int orderNo = 0;
+    Model.Type = Model.Type == "FixedDiscount" ? "Chiết khấu cố định" : "Chiết khấu đột xuất";
+}
+
+@section HeadOfPage {
+    @Html.ScriptTop_ChosenStyle()
+}
+<style>
+    .box {
+        padding-top: 0px !important;
+        padding-bottom: 0px !important;
+        margin-top: 0px !important;
+    }
+</style>
+@using (Html.BeginPageHeaderContainer(pageSetting))
+{
+
+}
+
+@using (Html.BeginForm_AceStyle((string)ViewBag.Title, pageSetting.ActionName, pageSetting.ModuleName, null, FormMethod.Post, new { id = "CommissionCus", @class = "form-horizontal" }))
+{
+    @Html.ValidationSummary(true)
+    <div class="row">
+        <div class="col-sm-7 ">
+            <table class="table table-bordered" style="margin-bottom:80px">
+                <thead>
+                    <tr>
+                        <th width="30">STT</th>
+                        <th>Tên mặt hàng</th>
+                        <th width="120">Giá bán (VNĐ)</th>
+                        <th width="100">Giá trị</th>
+                    </tr>
+                </thead>
+                <tbody class="detailList">
+                    @foreach (var item in Model.ProductList)
+                    {
+                        orderNo++;
+                        var commission = Model.DetailList.Where(x => x.ProductId == item.Id).ToList();
+                        decimal CommissionValue = 0;
+                        bool? IsMoney = false;
+                        if (commission.Count() > 0)
+                        {
+                            var comss = commission.FirstOrDefault();
+                            CommissionValue = comss.CommissionValue;
+                            IsMoney = comss.IsMoney;
+                        }
+                        <tr>
+                            <td>@orderNo</td>
+                            <td>@item.Name</td>
+                            <td class="text-right">@Common.PhanCachHangNgan(item.PriceOutbound)</td>
+                            <td class="text-right">
+                                @CommissionValue @(IsMoney != null && IsMoney == true ? "VNĐ" : "%")
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+        <div class="col-sm-5">
+            <div class="widget-box">
+                <div class="widget-header">
+                    <h5 class="widget-title">Thông tin chiết khấu</h5>
+                </div>
+                <div class="widget-body">
+                    <div class="widget-main">
+                        <div class="detail-view">
+                            <div class="row control-group">
+                                @Html.DetailViewItemFor2(model => model.Name, true, null, "col-xs-4", "col-xs-8")
+                            </div>
+                            <div class="row control-group">
+                            @Html.DetailViewItemFor2(model => model.Type, true, null, "col-xs-4", "col-xs-8")
+                            </div>
+                            @if (Model.Type != "FixedDiscount")
+                            { 
+                            <div class="row control-group">
+                            @Html.DetailViewItemFor2(model => model.StartDate, true, null, "col-xs-4", "col-xs-8")
+                            </div>
+                            <div class="row control-group">
+                                @Html.DetailViewItemFor2(model => model.EndDate, true, null,"col-xs-4", "col-xs-8")
+                            </div>
+                            }
+                            <div class="row control-group">
+                                @Html.DetailViewItemFor2(model => model.Note, true, null, "col-xs-4", "col-xs-8")
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <p></p>
+            <div class="widget-box">
+                <div class="widget-header">
+                    <h5 class="widget-title">Danh sách nhà thuốc áp dụng</h5>
+                </div>
+                <div class="widget-body">
+                    <div class="widget-main clearfix">
+                        <div class="col-sm-12">
+                            @foreach (var item in Erp.BackOffice.Helpers.SelectListHelper.GetSelectList_DepartmentByList(Model.ApplyFor, null, null))
+                            {
+                                <a class="label label-info">@item.Text</a>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+          
+        </div>
+    </div>
+}

@@ -1,0 +1,142 @@
+@using Erp.BackOffice.App_GlobalResources
+@using Erp.BackOffice.Helpers
+@using Erp.BackOffice.Crm.Models
+
+@model TaskViewModel
+
+@{
+    ViewBag.Title = Wording.PageDetail_Task;
+
+    Layout = "~/Views/Shared/" + (Request["IsPopup"] == null ? "ACE_AdminLayout.cshtml" : "_PopupLayout.cshtml");
+    Erp.BackOffice.Models.PageSetting pageSetting = new Erp.BackOffice.Models.PageSetting
+    {
+        ModuleName = "Task",
+        ActionName = "Detail",
+        PageTitle = ViewBag.Title,
+        DisplaySearchPanel = false,
+        IsPopup = false,
+        DisplayBackButton = true
+    };
+    var path = Erp.BackOffice.Helpers.Common.GetSetting("uploads_image_path_user");
+}
+@helper GridColumnStatusName(string status)
+{
+    switch (status)
+    {
+        case "pending":
+            <span class="label label-info">@Wording.pending</span>
+            break;
+        case "inprogress":
+        <span class="label label-warning">@Wording.inprogress</span>
+            break;
+        case "completed":
+        <span class="label label-success">@Wording.completed</span>
+            break;
+        case "cancel":
+        <span class="label label-danger">@Wording.Cancel</span>
+            break;
+    }
+}
+@helper GridColumnPriorityName(string Priority)
+{
+    switch (Priority)
+    {
+        case "High":
+            <span style="color:green">@Wording.High</span>
+            break;
+        case "Low":
+        <span style="color:#ff0000">@Wording.Low</span>
+            break;
+        case "Medium":
+        <span style="color:#ff6a00">@Wording.Medium</span>
+            break;
+    }
+}
+@*<p>@Html.Button(Wording.Edit, ButtonType.aTag, ButtonColor.Info, ButtonSize.Mini, true, IconType.Edit, IconSize.Default, false, new { @href = Url.Action("Edit", "Task", new { Id = Model.Id }) })</p>*@
+<div class="col-sm-7">
+    <div class="row control-group" style="margin-right:5px;">
+        <div class="widget-box">
+            <div class="widget-header">
+                <h5 class="widget-title">@Wording.PageDetail_Task</h5>
+            </div>
+            <div class="widget-body">
+                <div class="widget-main">
+                    <p><span style="font-weight:bold">Trạng thái:</span>@GridColumnStatusName(Model.Status)</p>
+                    <p><span style="font-weight:bold">Ngày bắt đầu:</span> @(Model.StartDate.HasValue ? Model.StartDate.Value.ToString("dd/MM/yyyy HH:mm") : "chưa có")</p>
+                    <p><span style="font-weight:bold">Thời hạn:</span> @(Model.DueDate.HasValue ? Model.DueDate.Value.ToString("dd/MM/yyyy HH:mm") : "chưa có")</p>
+                    <p><span style="font-weight:bold">Diện ưu tiên:</span> @GridColumnPriorityName(Model.Priority)</p>
+                    <p><span style="font-weight:bold">Tiêu đề:</span> @Model.Subject</p>
+                    <p><span style="font-weight:bold">Mô tả:</span> @Model.Description</p>
+                    @*<p><span style="font-weight:bold">Ghi chú:</span> @Model.Note</p>*@
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="col-sm-5">
+    <div class="row control-group">
+        <div class="widget-box">
+            <div class="widget-header">
+                <h5 class="widget-title">Người giao việc</h5>
+            </div>
+            <div class="widget-body">
+                <div class="widget-main clearfix">
+                    <div class="col-sm-4">
+                        @if (string.IsNullOrEmpty(Model.ProfileImage))
+                        {
+                            <img style="height:90px" src="~/assets/img/no-avatar.png">
+                        }
+                        else
+                        {
+                            <img style="height:90px" src="~@path@Model.ProfileImage">
+                        }
+                    </div>
+                    <div class="col-sm-8">
+                        <div class="row control-group">
+                            <p><h4 style="color:green;">@Model.FullName</h4></p>
+                            <p><span style="font-weight:bold">Tài khoản:</span> @Model.UserName</p>
+                            <p><span style="font-weight:bold">Ngày giao việc:</span> @(Model.CreatedDate.HasValue ? Model.CreatedDate.Value.ToString("dd/MM/yyyy HH:mm") : "chưa có")</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row control-group top-10">
+        <div class="widget-box">
+            <div class="widget-header">
+                <h5 class="widget-title">Người nhận việc</h5>
+            </div>
+            <div class="widget-body">
+                <div class="widget-main clearfix">
+                    <div class="col-sm-4">
+                        @if (string.IsNullOrEmpty(Model.ReceiverImage))
+                        {
+                            <img style="height:90px" src="~/assets/img/no-avatar.png">
+                        }
+                        else
+                        {
+                            <img style="height:90px" src="~@path@Model.ReceiverImage">
+                        }
+                    </div>
+                    <div class="col-sm-8">
+                        <div class="row control-group">
+                            <p><h4 style="color:green">@Model.ReceiverName</h4> </p>
+                            <p><span style="font-weight:bold">Tài khoản:</span> @Model.ReceiverUser</p>
+                            <p><span style="font-weight:bold">Ngày thực hiện:</span> @(Model.ModifiedDate != Model.CreatedDate ? Model.ModifiedDate.Value.ToString("dd/MM/yyyy HH:mm") : "chưa có")</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+    </div>
+</div>
+@*@{Html.RenderAction("SubList", "");}*@
+
+@section Scripts {
+    <script type="text/javascript">
+
+    </script>
+}

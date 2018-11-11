@@ -1,0 +1,84 @@
+﻿@using Erp.BackOffice.App_GlobalResources
+@using Erp.BackOffice.Helpers
+@using Erp.BackOffice.Staff.Models
+
+@model SalarySettingViewModel
+
+@{
+    ViewBag.Title = Wording.CreateDublicate + " từ mẫu [" + Model.Name.ToUpper() + "]";
+    Layout = "~/Views/Shared/" + (Request["IsPopup"] == null ? "ACE_AdminLayout.cshtml" : "_PopupLayout.cshtml");
+
+    Erp.BackOffice.Models.PageSetting pageSetting = new Erp.BackOffice.Models.PageSetting
+    {
+        ModuleName = "SalarySetting",
+        ActionName = "EditValue",
+        PageTitle = ViewBag.Title,
+        DisplaySearchPanel = false,
+        IsPopup = false,
+        DisplayBackButton = true
+
+    };
+}
+
+
+@section HeadOfPage {
+
+    @Html.ScriptTop_ChosenStyle()
+}
+
+@using (Html.BeginPageHeaderContainer(pageSetting))
+{
+
+}
+@using (Html.BeginForm_AceStyle((string)ViewBag.Title, "", "Duplicate", "SalarySetting", null, FormMethod.Post, new { @class = "form-horizontal clearfix" }))
+{
+    @Html.ValidationSummary(true)
+    <input type="hidden" value="@Request["IsPopup"]" name="IsPopup" />
+    <input type="hidden" name="UrlReferrer" value="@Request.UrlReferrer" />
+    @Html.HiddenFor(model => model.Id)
+    <div class="row">
+
+        @Html.CustomTextboxFor(model => model.Name, null, null, WidthType.span12, true)
+        @Html.CustomTextboxFor(model => model.Note, null, null, WidthType.span12, true)
+        @* @Html.CustomSwitchesFor(model => model.IsTemplate, SwitchesStyle.CheckboxStyle, true)*@
+    </div>
+
+    using (Html.BeginButtonContainer(pageSetting))
+    {
+        <button class="btn btn-mini btn-primary" type="submit" name="Submit" value="Save">
+            <i class="ace-icon fa fa-save"></i>
+            @Wording.Save
+        </button>
+    }
+}
+
+@section Scripts {
+
+    <script>
+        //truyền từ action create của controller qua khi thực hiện submit và return về lại view create, để nhận biết là được gọi theo dạng popup
+        var closePopup = '@ViewBag.closePopup';
+        var urlRefer = '@ViewBag.urlRefer';
+        $(document).ready(function () {
+            $('#Name').val('');
+            $('#Note').val('');
+            //nếu là được gọi theo dạng popup từ form khác thì chạy đoạn code bên dưới
+            @*if (closePopup != '') {
+                var option = '<option value="@Model.Id" >@Model.Name</option>';
+                //tên funtion có thể khác theo từng công việc riêng (đây chỉ là mẫu khi thêm mới sẽ gọi lại)
+                window.parent.ClosePopupAndAppendSelect(option);
+            }*@
+
+            //nếu có url thì gọi hàm này để trang ngoài iframe nhảy trang
+            if (urlRefer != '') {
+                window.parent.ClosePopupAndRedirectToURL(urlRefer);
+            }
+
+        });
+
+
+    </script>
+
+    @Html.ScriptBottom_ValidationMvc()
+    @Html.ScriptBottom_DatePicker("dd/mm/yyyy")
+    @Html.ScriptBottom_ChosenStyle()
+}

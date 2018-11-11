@@ -1,0 +1,232 @@
+@model List<HistoryCommissionStaffViewModel>
+
+@using Erp.BackOffice.App_GlobalResources
+@using Erp.BackOffice.Staff.Models
+@using Erp.BackOffice.Helpers
+@using GridMvc.Html
+
+@{
+    ViewBag.Title = Wording.PageIndex_HistoryCommissionStaff;
+    bool isPopup = Request["IsPopup"] != null && Request["IsPopup"].ToString().ToLower() == "true" ? true : false;
+    if (isPopup)
+    {
+        Layout = "~/Views/Shared/_PopupLayout.cshtml";
+    }
+    else
+    {
+        Layout = "~/Views/Shared/ACE_AdminLayout.cshtml";
+    }
+    
+    Erp.BackOffice.Models.PageSetting pageSetting = new Erp.BackOffice.Models.PageSetting
+    {        
+        ModuleName = "HistoryCommissionStaff",
+        ActionName = "Index",
+        PageTitle = ViewBag.Title,
+        DisplaySearchPanel = true,
+        IsPopup = false,
+        DisplayBackButton = false
+    };
+    string BranchId = Request["BranchId"];
+    string StaffId = Request["StaffId"];
+    string month = Request["month"] != null ? Request["month"] : DateTime.Now.Month.ToString();
+    string year = Request["year"] != null ? Request["year"] : DateTime.Now.Year.ToString();
+    int index = 1;
+    IEnumerable<SelectListItem> BranchList = Erp.BackOffice.Helpers.SelectListHelper.GetSelectList_BranchAllNew(null, Wording.Empty);
+    //List<BranchViewModel> departmentList = (List<BranchViewModel>)ViewBag.departmentList;
+}
+
+<style type="text/css">
+    .mini-popup {
+        position: relative;
+        display: inline;
+    }
+
+    #popup_archive {
+        position: absolute;
+        bottom: 45px;
+        left: 0px;
+        /*width: 410px;*/
+        height: 175px;
+      min-width: 160px;
+        top: inherit;
+    }
+
+    .popover {
+        max-width: 650px !important;
+    }
+</style>
+
+@using (Html.BeginPageHeaderContainer(pageSetting))
+{
+    <p>
+        <select id="Status" name="Status">
+            <option @(Request["Status"] == "" ? "Selected" : "") value="">Trạng thái</option>
+            <option @(Request["Status"] == "success" ? "Selected" : "") value="success">Đạt yêu cầu</option>
+            <option @(Request["Status"] == "unsuccess" ? "Selected" : "") value="unsuccess">Không đạt yêu cầu</option>
+        </select>
+        <select id="month" name="month">
+            @for (int i = 1; i <= 12; i++)
+            {
+                <option @(month == i.ToString() ? "Selected" : "") value="@i">Tháng @i</option>
+            }
+        </select>
+
+        <select id="year" name="year">
+            @for (int i = 2016; i <= DateTime.Now.Year; i++)
+            {
+                <option @(year == i.ToString() ? "Selected" : "") value="@i">Năm @i</option>
+            }
+        </select>
+    </p>
+
+}
+<div class="table-responsive" id="BCCommisionStaff">
+    <table id="CTable" class="table table-bordered">
+        <thead>
+            @*<tr class="" style="display:none;">
+                    <th class="" colspan="15" style="text-align:center"><h4>BÁO CÁO HOA HỒNG CỦA NHÂN VIÊN THÁNG @month NĂM @year</h4></th>
+                </tr>*@
+            <tr>
+                <th class="text-center" style="width:40px;">STT</th>
+                <th class="text-center" style="min-width:300px;">Nhân viên</th>
+                <th class="text-center" style="width:200px;">@Wording.PositionName</th>
+                <th class="text-center" style="width:150px;">@Wording.CommissionPercent</th>
+                <th class="text-center" style="width:150px;">@Wording.MinimumRevenue</th>
+                <th class="text-center" style="width:150px;">@Wording.RevenueDS</th>
+                <th class="text-center" style="width:150px;">@Wording.AmountCommission</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var nt in Model)
+            {
+                <tr class="@(index%2==0?"alert-warning":"")">
+                    <td>
+                        <span>@(index++)</span>
+                    </td>
+                    <td>@nt.StaffName</td>
+                    <td>@nt.PositionName</td>
+                    <td class="text-right">@CommonSatic.ToCurrencyStr(nt.CommissionPercent,null)</td>
+                    <td class="text-right">@CommonSatic.ToCurrencyStr(nt.MinimumRevenue, null)</td>
+                    <td class="text-right">@CommonSatic.ToCurrencyStr(nt.RevenueDS, null)</td>
+                    <td class="text-right">@CommonSatic.ToCurrencyStr(nt.AmountCommission, null)</td>
+
+                </tr>
+            }
+           
+        </tbody>
+        <thead>
+            <tr>
+                <td colspan="6" style="text-align:right"><b>Tổng</b></td>
+
+                <td style="width:100px;text-align:right"><b>@(CommonSatic.ToCurrencyStr(Model.Sum(x => x.AmountCommission), null))</b></td>
+            </tr>
+        </thead>
+    </table>
+
+</div>
+@using (Html.BeginButtonContainer(pageSetting))
+{
+    <button onclick="tableToExcel('CTable', 'BCCommisionStaff')" class=" btn btn-primary btn-sm btn-white btn-success">
+        <i class="ace-icon fa fa-download"></i>
+        Xuất Excel
+    </button>
+    <button class="btn btn-white btn-success btn-sm" type="button" value="Export" onclick="GetPrint(false)">
+        <i class="ace-icon fa fa-print"></i>
+        In báo cáo
+    </button>
+    if (Erp.BackOffice.Filters.SecurityFilter.AccessRight("Sync", "HistoryCommissionStaff", "Staff"))
+    {
+        <div class="mini-popup">
+
+            <a class="btn btn-mini btn-success" data-toggle="collapse" data-target="#popup_archive">
+                <i class="ace-icon fa fa-money"></i>
+                Tính hoa hồng
+            </a>
+
+            <div id="popup_archive" class="popover fade top">
+                <div class="arrow" style="left: 50%;"></div>
+                <h3 class="popover-title"><i class="ace-icon fa fa-refresh"></i>Tính hoa hồng</h3>
+                <div class="popover-content">
+                        <select id="months" name="months">
+                            @for (int i = 1; i <= 12; i++)
+                            {
+                                <option @(month == i.ToString() ? "Selected" : "") value="@i">Tháng @i</option>
+                            }
+                        </select>
+                        <p class="top-10">
+                        </p>
+                        <select id="years" name="years">
+                            @for (int i = 2016; i <= DateTime.Now.Year; i++)
+                            {
+                                <option @(year == i.ToString() ? "Selected" : "") value="@i">Năm @i</option>
+                            }
+                        </select>
+                        <p class="top-10">
+                            <button class="btn btn-mini btn-primary" id="btnSync">
+                                Đồng ý
+                            </button>
+                            <a class="btn btn-white btn-sm no-border" data-toggle="collapse" data-target="#popup_archive">Đóng</a>
+                        </p>
+                </div>
+            </div>
+        </div>
+    }
+}
+
+@section Scripts {
+    <script type="text/javascript">
+        function GetPrint(type) {
+            var month = $("#month option:selected").val();
+            var Status = $("#Status option:selected").val();
+            var year = $("#year option:selected").val();
+           
+            OpenPopup('/HistoryCommissionStaff/Print/?month=' + month + '&year=' + year + '&Status=' + Status + '&ExportExcel=' + type + '&IsPopup=true', '', 0, 0);
+            HideLoading();
+        };
+        $('.popover-dismiss').popover({
+            trigger: 'focus'
+        })
+        $("#btnSync").click(function (e) {
+            e.preventDefault();
+            ShowLoading();
+            var month = $("#months option:selected").val();
+            var year = $("#years option:selected").val();
+            if (month == '' || year == '') {
+                alertPopup("Lỗi", "Bạn chưa chọn tháng/năm cần tính hoa hồng!!", "danger");
+                return false;
+            }
+            $.ajax({
+                type: "POST",
+                datatype: 'json',
+                url: '@Url.Action("Sync", "HistoryCommissionStaff")',
+                data: { month: month, year: year },
+                success: function (data) {
+                    HideLoading();
+                    if (data.Result == 'success') {
+                        alertPopup("Thông báo", data.Message, "success");
+                        window.location.reload();
+                    }
+                    else {
+                        alertPopup("Lỗi", data.Message, "danger");
+                    }
+                    //$('.NextPaymentDate-container').hide();
+                }
+            });
+            return true;
+        });
+        var tableToExcel = (function () {
+            var uri = 'data:application/vnd.ms-excel;base64,'
+              , template = '<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40"><head><!--[if gte mso 9]><xml><x:ExcelWorkbook><x:ExcelWorksheets><x:ExcelWorksheet><x:Name>{worksheet}</x:Name><x:WorksheetOptions><x:DisplayGridlines/></x:WorksheetOptions></x:ExcelWorksheet></x:ExcelWorksheets></x:ExcelWorkbook></xml><![endif]--></head><body><table>{table}</table></body></html>'
+              , base64 = function (s) { return window.btoa(unescape(encodeURIComponent(s))) }
+              , format = function (s, c) { return s.replace(/{(\w+)}/g, function (m, p) { return c[p]; }) }
+            return function (table, name) {
+                if (!table.nodeType) table = document.getElementById(table)
+                var ctx = { worksheet: name || 'Worksheet', table: table.innerHTML }
+                window.location.href = uri + base64(format(template, ctx))
+            }
+        })()
+    
+    </script>
+    @Html.ScriptBottom_ValidationMvc()
+    @Html.ScriptBottom_DatePicker("dd/MM/yyyy")
+}

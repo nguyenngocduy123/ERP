@@ -1,0 +1,124 @@
+@using Erp.BackOffice.App_GlobalResources
+@using Erp.BackOffice.Helpers
+@using Erp.BackOffice.Staff.Models
+@using GridMvc.Html
+@model DotGQCDBHXHViewModel
+
+@{
+    ViewBag.Title = Wording.PageDetail_DotQGCDBHXH;
+    bool isPopup = Request["IsPopup"] != null && Request["IsPopup"].ToString().ToLower() == "true" ? true : false;
+    if (isPopup)
+    {
+        Layout = "~/Views/Shared/_PopupLayout.cshtml";
+    }
+    else
+    {
+        Layout = "~/Views/Shared/ACE_AdminLayout.cshtml";
+    }
+
+    Erp.BackOffice.Models.PageSetting pageSetting = new Erp.BackOffice.Models.PageSetting
+    {
+        ModuleName = "DotGQCDBHXH",
+        ActionName = "Edit",
+        PageTitle = ViewBag.Title,
+        DisplaySearchPanel = false,
+        IsPopup = false,
+        DisplayBackButton = true
+    };
+}
+<link href="@Url.Content("~/assets/css/Gridmvc.css")" rel="stylesheet" type="text/css" />
+<script src="@Url.Content("~/Scripts/gridmvc.min.js")" type="text/javascript"></script>
+@using (Html.BeginPageHeaderContainer(pageSetting))
+{
+
+}
+@helper GridColumnName(string name, int id, bool isPopup)
+{
+    name = string.IsNullOrEmpty(name) ? "No Title" : name;
+    <a onclick="OpenPopup('@Url.Action("Detail", "DotGQCDBHXHDetail", new { Id= id,IsPopup = true })', '', 500, 500)">@name</a>
+}
+<div class="detail-view">
+    <div class="row control-group">
+        @Html.DetailViewItemFor2(model => model.Name)
+    </div>
+    <div class="row control-group">
+        @Html.DetailViewItemFor2(model => model.BatchNumber)
+    </div>
+    <div class="row control-group">
+        @Html.DetailViewItemFor2(model => model.Month)
+    </div>
+    <div class="row control-group">
+        @Html.DetailViewItemFor2(model => model.Year)
+    </div>
+</div>
+<div class="table-responsive top-5">
+
+    @Html.Grid(Model.ListDotGQCDBHXHDetail).Columns(columns =>
+        {
+            var index = 0;
+            columns.Add().Titled(Wording.OrderNo).SetWidth(30).RenderValueAs(n => (++index).ToString());
+            columns.Add().Titled(Wording.StaffName).Sortable(false).Sanitized(false).Encoded(false).RenderValueAs(u => u.StaffName);
+            columns.Add().Titled(Wording.SocietyCode).SetWidth(100).Sortable(true).RenderValueAs(u => u.SocietyCode);
+            columns.Add().Titled(Wording.DKTH_TinhTrang).SetWidth(100).Sortable(true).RenderValueAs(u => u.DKTH_TinhTrang);
+            columns.Add(u => u.DKTH_ThoiDiem).Titled(Wording.DKTH_ThoiDiem).SetWidth(120).Sortable(false).Sanitized(false).Format("{0:dd/MM/yyyy}").Encoded(false);
+            columns.Add(u => u.DayStart).Titled(Wording.DayStart).SetWidth(120).Sortable(false).Sanitized(false).Format("{0:dd/MM/yyyy}").Encoded(false);
+            columns.Add(u => u.DayEnd).Titled(Wording.DayEnd).SetWidth(120).Sortable(false).Sanitized(false).Format("{0:dd/MM/yyyy}").Encoded(false);
+            columns.Add().Titled("Tổng số").SetWidth(100).Sortable(true).RenderValueAs(u => u.Quantity.ToString());
+            columns.Add().Titled(Wording.PaymentMethod).SetWidth(100).Sortable(true).RenderValueAs(u => u.PaymentMethod);
+            columns.Add().Titled(Wording.Note).SetWidth(100).Sortable(true).RenderValueAs(u => u.Note);
+            //columns.Add(u => u.Year).Titled(Wording.Year).SetWidth(100);
+            ////columns.Add(u => u.Id).Titled(Wording.Action).Sanitized(false).Encoded(false).RenderValueAs(u => GridColumnCommand(u.Id)).SetWidth(85);
+        }).WithPaging(10)
+
+</div>
+
+@using (Html.BeginButtonContainer(pageSetting))
+{
+    if (Erp.BackOffice.Filters.SecurityFilter.AccessRight("Edit", "DotGQCDBHXH", "Staff"))
+    {
+        <a class="btn btn-mini btn-primary" href="@Url.Action("Edit", pageSetting.ModuleName, new { Id = Model.Id })">
+            <i class="ace-icon fa fa-edit"></i>
+            @Wording.Edit
+        </a>
+    }
+    if (Erp.BackOffice.Filters.SecurityFilter.AccessRight("ReportList", "DotGQCDBHXHDetail", "Staff"))
+    {
+        <a class="btn btn-mini btn-success" onclick="OpenPopup('@Url.Action("ReportList", "DotGQCDBHXHDetail", new { BatchNumber = Model.BatchNumber, Month = Model.Month, Year = Model.Year, IsPopup = true })', '', 0, 0)">
+            <i class="ace-icon fa fa-print"></i>
+            Báo cáo
+        </a>
+    }
+}
+
+@section Scripts {
+    <script type="text/javascript">
+        function CheckIsval() {
+            if ($('[name="DeleteAll-checkbox"]').is(':checked') == false) {
+                alert("Phải chọn ít nhất 1 item.");
+                return false;
+            }
+            else {
+                if (confirm('Bạn có chắc muốn xóa các item đã chọn ?')) {
+                    return true;
+                }
+                else {
+                    return false;
+                }
+            }
+        }
+
+        $('[name="Delete"]').click(function () {
+            if (confirm('Bạn có chắc muốn xóa item ?')) {
+                $(this).closest('tr').children('td').each(function (i, e) {
+                    $(this).find("input.class-delete-all").prop("checked", true);
+                    return true;
+                })
+            }
+            else {
+                return false;
+            }
+
+        })
+
+    </script>
+}

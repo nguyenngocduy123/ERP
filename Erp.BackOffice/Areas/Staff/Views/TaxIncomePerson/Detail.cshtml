@@ -1,0 +1,150 @@
+@using Erp.BackOffice.App_GlobalResources
+@using Erp.BackOffice.Helpers
+@using Erp.BackOffice.Staff.Models
+
+@model TaxIncomePersonViewModel
+
+@{
+    ViewBag.Title = Wording.PageDetail_TaxIncomePerson;
+
+    Layout = "~/Views/Shared/" + (Request["IsPopup"] == null ? "ACE_AdminLayout.cshtml" : "_PopupLayout.cshtml");
+
+    Erp.BackOffice.Models.PageSetting pageSetting = new Erp.BackOffice.Models.PageSetting
+    {
+        ModuleName = "TaxIncomePerson",
+        ActionName = "Detail",
+        PageTitle = ViewBag.Title,
+        DisplaySearchPanel = false,
+        IsPopup = false,
+        DisplayBackButton = false
+    };
+}
+
+@section HeadOfPage {
+
+    <style type="text/css">
+        table thead td {
+            text-align: center;
+            vertical-align: middle !important;
+        }
+    </style>
+}
+
+@using (Html.BeginPageHeaderContainer(pageSetting))
+{
+
+}
+<div class="widget-box">
+    <div class="widget-header">
+        <h5 class="widget-title"><i class="ace-icon fa fa-info-circle"></i> Thông tin chi tiết</h5>
+    </div>
+    <div class="widget-body">
+        <div class="widget-main">
+            <div class="detail-view">
+                <div class="row control-group">
+                    @Html.DetailViewItemFor2(model => model.Code, null, null, "col-xs-4", "col-xs-8")
+                </div>
+                <div class="row control-group">
+                    @Html.DetailViewItemFor2(model => model.Name, null, null, "col-xs-4", "col-xs-8")
+                </div>
+                <div class="row control-group">
+                    @Html.DetailViewItemFor2(model => model.GeneralTaxationId, null, null, "col-xs-4", "col-xs-8")
+                </div>
+                <div class="row control-group">
+                    @Html.DetailViewItemFor2(model => model.GeneralManageId, null, null, "col-xs-4", "col-xs-8")
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="widget-box top-5">
+    <div class="widget-header">
+        <h5 class="widget-title"><i class="ace-icon fa fa-user-circle-o"></i> @Wording.PageIndex_Staff</h5>
+    </div>
+    <div class="widget-body">
+        <div class="widget-main">
+            <div class="table-responsive">
+                <table class="table table-striped table-bordered table-hover">
+                    <thead>
+                        <tr>
+                            <td>Mã nhân viên</td>
+                            <td>Họ và tên</td>
+                            <td>Email</td>
+                            <td>Giới tính</td>
+                            <td>Quốc tịch</td>
+                            <td>Số CMND</td>
+                            <td>Phòng ban</td>
+                            <td>Địa chỉ</td>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model.ListStaffsTax != null && Model.ListStaffsTax.Count() > 0)
+                        {
+                            foreach (var item in Model.ListStaffsTax)
+                            {
+                                <tr>
+                                    <td hidden><input name="StaffIds" value="@item.Id" /></td>
+                                    <td>@item.Code</td>
+                                    <td>@item.Name</td>
+                                    <td>@item.Email</td>
+                                    <td>@(item.Gender != false ? "Nữ" : "Nam")</td>
+                                    <td>@item.ContryName</td>
+                                    <td>@item.IdCardNumber</td>
+                                    <td>@item.BranchName </td>
+
+                                    <td>@item.ProvinceName </td>
+                                </tr>
+                            }
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+@using (Html.BeginButtonContainer(pageSetting))
+{
+    if (Request["IsPopup"] == null)
+    {
+        if (Erp.BackOffice.Filters.SecurityFilter.AccessRight("Edit", "TaxIncomePerson", "Staff"))
+        {
+            <a class="btn btn-mini btn-primary" href="@Url.Action("Edit", pageSetting.ModuleName, new { Id = Model.Id })">
+                <i class="ace-icon fa fa-edit"></i>
+                @Wording.Edit
+            </a>
+        }
+    }
+}
+
+@section Scripts {
+    <script type="text/javascript">
+        function CheckIsval() {
+            if ($('[name="DeleteAll-checkbox"]').is(':checked') == false) {
+                alert("Phải chọn ít nhất 1 item.");
+                return false;
+            }
+            else {
+                if (confirm('Bạn có chắc muốn xóa các item đã chọn ?')) {
+                    return true;
+                }
+                else {
+                    return false;
+                }
+            }
+        }
+
+        $('[name="Delete"]').click(function () {
+            if (confirm('Bạn có chắc muốn xóa item ?')) {
+                $(this).closest('tr').children('td').each(function (i, e) {
+                    $(this).find("input.class-delete-all").prop("checked", true);
+                    return true;
+                })
+            }
+            else {
+                return false;
+            }
+
+        })
+
+    </script>
+}

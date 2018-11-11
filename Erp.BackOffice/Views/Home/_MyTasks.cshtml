@@ -1,0 +1,23 @@
+﻿@using Erp.BackOffice.App_GlobalResources
+@using Erp.BackOffice.Helpers
+
+<div class="widget-box transparent">
+    <div class="widget-header widget-header-flat">
+        <h4 class="widget-title lighter">
+            <i class="ace-icon fa fa-tasks orange"></i>
+            @Wording.MyTasks
+        </h4>
+
+        <div class="widget-toolbar">
+            <a href="#" data-action="collapse">
+                <i class="ace-icon fa fa-chevron-up"></i>
+            </a>
+        </div>
+    </div>
+
+    <div class="widget-body">
+        <div class="widget-main no-padding">
+            @{Html.RenderAction("MyTasks", "Task", new { area = "Crm" });}
+        </div><!-- /.widget-main -->
+    </div><!-- /.widget-body -->
+</div><!-- /.widget-box -->

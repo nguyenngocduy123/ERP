@@ -1,0 +1,19 @@
+﻿@{
+    int pageId = Convert.ToInt32(ViewData["pageId"]);
+    string AreaName = Convert.ToString(ViewData["AreaName"]);
+}
+
+<div class="hidden-phone visible-desktop action-buttons">
+
+    @using (Html.BeginForm("Delete", "Page", FormMethod.Post))
+    {
+        <input type="hidden" value="@pageId" name="pageId" />
+        <input type="hidden" value="@AreaName" name="AreaName" />
+        <button type="submit" class="btn btn-minier btn-danger" onclick="return confirm('Bạn có muốn xóa dữ liệu không ?');">
+            <i class="ace-icon fa fa-trash"></i>
+            Xóa
+        </button>
+    }
+
+</div>
+

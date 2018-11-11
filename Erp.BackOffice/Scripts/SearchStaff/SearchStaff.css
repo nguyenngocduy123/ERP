@@ -1,0 +1,16 @@
+﻿  .form-group {
+            border: none !important;
+            background: none;
+        }
+
+            .form-group .control-value {
+                padding: 0 !important;
+            }
+
+        .chosen-container.chosen-container-single {
+            width: 100% !important;
+        }
+
+        .profile-picture {
+            padding: 0px !important;
+        }

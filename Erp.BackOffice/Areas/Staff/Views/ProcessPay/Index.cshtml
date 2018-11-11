@@ -1,0 +1,90 @@
+﻿@model IQueryable<ProcessPayViewModel>
+
+@using Erp.BackOffice.App_GlobalResources
+@using Erp.BackOffice.Staff.Models
+@using Erp.BackOffice.Helpers
+@using GridMvc.Html
+
+@{
+    ViewBag.Title = Wording.PageIndex_ProcessPay;
+    bool isPopup = Request["IsPopup"] != null && Request["IsPopup"].ToString().ToLower() == "true" ? true : false;
+    if (isPopup)
+    {
+        Layout = "~/Views/Shared/_PopupLayout.cshtml";
+    }
+    else
+    {
+        Layout = "~/Views/Shared/ACE_AdminLayout.cshtml";
+    }
+    Erp.BackOffice.Models.PageSetting pageSetting = new Erp.BackOffice.Models.PageSetting
+    {
+        ModuleName = "ProcessPay",
+        ActionName = "Index",
+        PageTitle = ViewBag.Title,
+        DisplaySearchPanel = false,
+        IsPopup = false,
+        DisplayBackButton = false
+    };
+}
+
+
+<link href="@Url.Content("~/assets/css/Gridmvc.css")" rel="stylesheet" type="text/css" />
+<script src="@Url.Content("~/Scripts/gridmvc.min.js")" type="text/javascript"> </script>
+
+@helper GridColumnCommand(int id)
+{
+    <button name="Delete" value="Delete" type="submit" id="btn_delete_processpay_@id" class="btn btn-mini btn-danger" onclick="return ProcessPayDelete(@id)">
+        <i class="ace-icon fa fa-trash bigger-120"></i>
+    </button>
+}
+
+@helper GridColumnName(string name, int id)
+{
+    if (string.IsNullOrEmpty(name))
+    {
+        <span>NoTile</span>
+    }
+    else
+    {
+        <a onclick="OpenPopup('@Url.Action("Edit", "ProcessPay", new { area = "Staff", Id = id, IsPopup = "true" })', '@Wording.PageEdit_ProcessPay', 500, 500)">@name</a>
+    }
+}
+@helper GridColumnCategoryValue(object value)
+{
+    var attr = Erp.BackOffice.Helpers.Common.GetCategoryByValueOrId("value", value);
+    <span>@(attr != null ? attr.Name : "")</span>
+}
+
+<div class="table-responsive">
+
+    @Html.Grid(Model).Columns(columns =>
+   {
+       int index = 0;
+       columns.Add().Titled(Wording.OrderNo).SetWidth(30).RenderValueAs(n => (++index).ToString());
+       columns.Add().Titled(Wording.CodeDecisions).Sortable(false).Sanitized(false).Encoded(false).RenderValueAs(u => GridColumnName(u.CodePay, u.Id));
+       columns.Add(u => u.DayDecision).Format("{0:dd/MM/yyyy}").Titled(Wording.DayDecision).SetWidth(100);
+       columns.Add(u => u.DayEffective).Format("{0:dd/MM/yyyy}").Titled(Wording.DayEffective).SetWidth(100);
+       //columns.Add(u => u.LevelPay).Titled(Wording.LevelPay).SetWidth(100);
+       columns.Add(u => u.BasicPay).Titled(Wording.BasicPay).Sanitized(false).Encoded(false).RenderValueAs(u => Erp.BackOffice.Helpers.Common.PhanCachHangNgan(u.BasicPay));
+       //columns.Add(u => u.CreatedDate).Titled(Wording.CreatedDate).SetWidth(100);
+       //columns.Add(u => u.ModifiedDate).Titled(Wording.ModifiedDate).SetWidth(100).Sortable(true);
+       columns.Add(u => u.Id).Titled(Wording.Action).Sanitized(false).Encoded(false).RenderValueAs(u => GridColumnCommand(u.Id)).SetWidth(20);
+   }).WithPaging(10)
+</div>
+@using (Html.BeginButtonContainer(pageSetting))
+{
+    if (Erp.BackOffice.Filters.SecurityFilter.AccessRight("Create", "ProcessPay", "Staff"))
+    {
+        @Html.Button(Wording.CreateNew, ButtonType.aTag, ButtonColor.Primary, ButtonSize.Mini, true, IconType.Plus, IconSize.Default, false, new { @class = "btn-ProcessPayCreate", @onclick = "OpenPopup('" + Url.Action("Create", "ProcessPay", new { area = "Staff", StaffId = ViewBag.StaffId, IsPopup = "true" }) + "', '" + Wording.PageCreate_ProcessPay + "', 0, 500)" })
+    }
+}
+
+@section Scripts {
+    <script type="text/javascript">
+        function ClosePopupAndReloadPageStaffDetail() {
+            ClosePopup(true);
+            ShowLoading();
+        };
+
+    </script>
+}

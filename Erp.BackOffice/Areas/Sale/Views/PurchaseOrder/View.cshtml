@@ -1,0 +1,174 @@
+﻿@using Erp.BackOffice.App_GlobalResources
+@using Erp.BackOffice.Helpers
+@using Erp.BackOffice.Sale.Models
+
+@model PurchaseOrderViewModel
+
+@{
+    ViewBag.Title = Wording.PageNext_PurchaseOrder;
+
+    Layout = "~/Views/Shared/" + (Request["IsPopup"] == null ? "ACE_AdminLayout.cshtml" : "_PopupLayout.cshtml");
+    Erp.BackOffice.Models.PageSetting pageSetting = new Erp.BackOffice.Models.PageSetting
+    {
+        ModuleName = "PurchaseOrder",
+        ActionName = "Create",
+        PageTitle = ViewBag.Title,
+        DisplaySearchPanel = false,
+        IsPopup = false,
+        DisplayBackButton = true
+    };
+    IEnumerable<SelectListItem> warehouseList = (IEnumerable<SelectListItem>)ViewBag.warehouseList;
+
+    List<string> status = new List<string>() { };
+    List<SelectListItem> statusList = new List<SelectListItem>()
+    {
+        new SelectListItem { Text = Wording.OrderStatusDisplay_pending, Value = "pending" },
+        new SelectListItem { Text = Wording.OrderStatusDisplay_outbound_pending, Value = "outbound pending" },
+        new SelectListItem { Text = Wording.OrderStatusDisplay_outbound_done, Value = "outbound done" },
+        new SelectListItem { Text = Wording.OrderStatusDisplay_shipping, Value = "shipping" },
+        new SelectListItem { Text = Wording.OrderStatusDisplay_complete, Value = "complete" },
+        new SelectListItem { Text = Wording.OrderStatusDisplay_cancel, Value = "cancel" }
+    };
+
+    IEnumerable<SelectListItem> typePurchaseList = Erp.BackOffice.Helpers.Common.GetSelectList_Category("typePurchaseList", null, "value");
+
+}
+
+@section HeadOfPage {
+    @Html.ScriptTop_ChosenStyle()
+}
+@using (Html.BeginPageHeaderContainer(pageSetting))
+{
+
+}
+@using (Html.BeginForm_AceStyle((string)ViewBag.Title, "", "Create", "PurchaseOrder", null, FormMethod.Post, new { @class = "form-horizontal clearfix" }))
+{
+    @Html.ValidationSummary(true)
+
+    <div class="col-sm-6">
+        @Html.CustomTextboxFor(model => model.Code, null, null, WidthType.span12, true, new Dictionary<string, object> { { "class", "col-sm-12 input-edit-inline" }, { "disabled", "disabled" } })
+
+        @Html.CustomTextboxFor(model => model.CreatedUserName, null, null, WidthType.span12, true, new Dictionary<string, object> { { "class", "col-sm-12" }, { "disabled", "disabled" } })
+
+        @Html.CustomTextboxFor(model => model.CreatedDate, null, null, WidthType.span12, true, new Dictionary<string, object> { { "class", "col-sm-12" }, { "disabled", "disabled" } })
+
+        @Html.CustomDropDownListFor(model => model.Type, typePurchaseList, new Dictionary<string, object> { { "class", "col-sm-12 input-edit-inline" }, { "disabled", "disabled" } }, true)
+    </div>
+
+    <div class="col-sm-6">
+        @if (string.IsNullOrEmpty(Model.SupplierName) == false)
+        {
+            @Html.CustomTextboxFor(model => model.SupplierName, null, null, WidthType.span12, true, new Dictionary<string, object> { { "class", "col-sm-12" }, { "disabled", "disabled" } })
+        }
+        else
+        {
+            @Html.CustomDropDownListFor(model => model.WarehouseSourceId, warehouseList, new Dictionary<string, object> { { "class", "col-sm-12 input-edit-inline" }, { "disabled", "disabled" } }, true, "- chọn -")
+        }
+
+        @{ string flagEdit = (Model.Status != Wording.OrderStatus_complete ? "input-edit-inline" : ""); }
+
+        @Html.CustomDropDownListFor(model => model.WarehouseDestinationId, warehouseList, new Dictionary<string, object> { { "class", "col-sm-12 " + flagEdit }, { "disabled", "disabled" } }, true, "- chọn -")
+
+
+        @Html.CustomDropDownListFor(model => model.Status, statusList, new Dictionary<string, object> { { "class", "col-sm-12 " + flagEdit }, { "disabled", "disabled" } }, true, null)
+
+    </div>
+
+    <div class="col-sm-12 box">
+        <p>Các sản phẩm trong đơn hàng</p>
+        <div class="box-body">
+            <div class="table-responsive">
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th>STT</th>
+                            <th>Tên sản phẩm</th>
+                            <th>Số lượng</th>
+                            <th>Đơn giá</th>
+                            <th>Thành tiền</th>
+                            @if (ViewBag.flagEdit == true)
+                            {
+                                <th>SL trong kho</th>
+                            }
+                        </tr>
+                    </thead>
+                    <tbody id="detailList">
+                        @for (int i = 0; i < Model.DetailList.Count; i++)
+                        {
+                            <tr>
+                                <td>@(i + 1)</td>
+                                <td>@Model.DetailList[i].ProductName</td>
+                                <td>@Model.DetailList[i].Quantity</td>
+                                <td class="detail_item_price">@Common.PhanCachHangNgan(Model.DetailList[i].Price)</td>
+                                <td class="detail_item_total">@Common.PhanCachHangNgan(Model.DetailList[i].Price * Model.DetailList[i].Quantity)</td>
+
+                                @if (ViewBag.flagEdit == true)
+                                {
+                                    <td>@(Model.DetailList[i].QuantityInInventory > Model.DetailList[i].Quantity ? "Đáp ứng" : "Không đáp ứng")</td>
+                                }
+
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-sm-6 col-sm-offset-6" style="margin-top:20px;">
+        @Html.CustomTextboxFor(model => model.Discount, null, null, WidthType.span12, true, new Dictionary<string, object> { { "class", "col-sm-12 text-right" }, { "disabled", "disabled" } })
+        @* @Html.CustomTextboxFor(model => model.DiscountCode, null, null, WidthType.span12)*@
+        @Html.CustomTextboxFor(model => model.TaxFee, null, null, WidthType.span12, true, new Dictionary<string, object> { { "class", "col-sm-12 text-right" }, { "disabled", "disabled" } })
+        @Html.CustomTextboxFor(model => model.TotalAmount, null, null, WidthType.span12, true, new Dictionary<string, object> { { "class", "col-sm-12" }, { "disabled", "disabled" } })
+    </div>
+    using (Html.BeginButtonContainer(pageSetting))
+    {
+        if (Model.Status == Wording.OrderStatus_pending)
+        {
+            if (Erp.BackOffice.Filters.SecurityFilter.AccessRight("Edit", "PurchaseOrder", "Sale"))
+            {
+                <a style="margin-top:10px" href="@Url.Action("Edit", new { Id = Model.Id })" class="btn btn-info">
+                    <i class="fa fa-edit"></i>
+                    @Wording.ReUpdate
+                </a>
+            }
+        }
+
+        if (ViewBag.flagNotEnoughInInventory == true)
+        {
+            if (Erp.BackOffice.Filters.SecurityFilter.AccessRight("CreateFromPurchaseOrder", "SaleOrder", "Sale"))
+            {
+                <a style="margin-top:10px" href="@Url.Action("CreateFromPurchaseOrder", "SaleOrder", new { POId = Model.Id })" class="btn btn-success">
+                    <i class="icon-ok bigger-110"></i>
+                    @Wording.ConvertToSaleOdrer
+                </a>
+            }
+        }
+
+        if (Model.SupplierId != null && Model.Status == Wording.OrderStatus_pending)
+        {
+            if (Erp.BackOffice.Filters.SecurityFilter.AccessRight("Create", "ProductInbound", "Sale"))
+            {
+                <a style="margin-top:10px; margin-left:10px;" href="@Url.Action("Create", "ProductInbound", new { POId = Model.Id })" class="btn btn-success">
+                    @Wording.PageCreate_ProductInBound
+                    <i class="fa fa-arrow-right"></i>
+                </a>
+            }
+        }
+    }
+
+}
+
+@section Scripts {
+
+    @Html.ScriptBottom_ValidationMvc()
+    @Html.ScriptBottom_ChosenStyle()
+
+    <script>
+        $(document).ready(function () {
+            $('#TotalAmount').numberFormat();
+
+            $('.input-edit-inline').editInlineInput({id:@Model.Id, url:'/PurchaseOrder/EditInline', disabled: true});
+        });
+    </script>
+}

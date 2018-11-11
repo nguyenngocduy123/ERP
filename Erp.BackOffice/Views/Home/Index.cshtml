@@ -1,0 +1,52 @@
+﻿@using Erp.BackOffice.App_GlobalResources
+@using Erp.BackOffice.Helpers
+@{
+    ViewBag.Title = "DashBoard";
+    Layout = "~/Views/Shared/ACE_AdminLayout.cshtml";
+}
+
+<style type="text/css">
+    .widget-main.no-padding .table-bordered td:first-child, .widget-main.no-padding .table-bordered th:first-child {
+        border-left-width: 0px;
+    }
+
+    .widget-main.no-padding .table-bordered > thead > tr > th:last-child {
+        border-right-width: 0px !important;
+    }
+
+    .widget-main.no-padding .table-bordered > tbody > tr:last-child > td {
+        border-bottom-width: 0px !important;
+    }
+</style>
+
+<div class="row">
+    <div class="col-sm-5">
+        @Html.Partial("_SaleSummary")
+    </div>
+    <div class="col-sm-7" style="max-width:600px">
+        @{Html.RenderAction("ChartInvoiceDayInMonth", "SaleReport", new { area = "Sale", noLayout = "true" });}
+    </div>
+</div><!-- /.row -->
+
+@section Scripts {
+    <script src="/assets/js/jquery.easypiechart.min.js"></script>
+    <script type="text/javascript">
+        $(function () {
+            $('.easy-pie-chart.percentage').each(function () {
+                var $box = $(this).closest('.infobox');
+                var barColor = $(this).data('color') || (!$box.hasClass('infobox-dark') ? $box.css('color') : 'rgba(255,255,255,0.95)');
+                var trackColor = barColor == 'rgba(255,255,255,0.95)' ? 'rgba(255,255,255,0.25)' : '#E2E2E2';
+                var size = parseInt($(this).data('size')) || 50;
+                $(this).easyPieChart({
+                    barColor: barColor,
+                    trackColor: trackColor,
+                    scaleColor: false,
+                    lineCap: 'butt',
+                    lineWidth: parseInt(size / 10),
+                    animate: /msie\s*(8|7|6)/.test(navigator.userAgent.toLowerCase()) ? false : 1000,
+                    size: size
+                });
+            })
+        });
+    </script>
+}

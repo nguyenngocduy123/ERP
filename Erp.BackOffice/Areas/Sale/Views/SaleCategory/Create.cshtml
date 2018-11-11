@@ -1,0 +1,65 @@
+﻿@using Erp.BackOffice.App_GlobalResources
+@using Erp.BackOffice.Helpers
+@using Erp.BackOffice.Areas.Cms.Models
+
+@model CategoryViewModel
+
+@{
+    ViewBag.Title = Wording.FormCreateCategory;
+    Layout = "~/Views/Shared/" + (Request["IsPopup"] == null ? "ACE_AdminLayout.cshtml" : "_PopupLayout.cshtml");
+
+    Erp.BackOffice.Models.PageSetting pageSetting = new Erp.BackOffice.Models.PageSetting
+    {
+        ModuleName = "SaleCategory",
+        ActionName = "Create",
+        PageTitle = ViewBag.Title,
+        DisplaySearchPanel = false,
+        IsPopup = false,
+        DisplayBackButton = true
+    };
+}
+
+@section HeadOfPage {
+    @Html.ScriptTop_ChosenStyle()
+}
+
+@using (Html.BeginPageHeaderContainer(pageSetting))
+{
+
+}
+
+@using (Html.BeginForm_AceStyle((string)ViewBag.Title, "Create", "SaleCategory", null, FormMethod.Post, new { @class = "form-horizontal" }))
+{
+    @Html.ValidationSummary(true)
+    @Html.HiddenFor(model => model.ParentId)
+    @Html.HiddenFor(model => model.Code)
+    
+    @Html.CustomTextboxFor(model => model.Name, null, null, WidthType.span4, true)
+    @Html.CustomTextboxFor(model => model.Value, null, null, WidthType.span4, true)
+    @Html.CustomTextAreaFor(model => model.Description, null, WidthType.span12, true)
+    @Html.SpinnerFor(model => model.OrderNo, 100, 0, 1, SpinnerStyle.SpinnerStyle1, true)
+    
+    @Html.Hidden("ActionName", (string)ViewBag.ActionName)
+    <input type="hidden" name="IsPopup" value="@Request["IsPopup"]" />
+    
+    using (Html.BeginButtonContainer(pageSetting))
+    {
+        <button class="btn btn-mini btn-primary" type="submit" name="Submit" value="Save">
+            <i class="ace-icon fa fa-save"></i>
+            @Wording.Save
+        </button>
+    }
+}
+
+@section Scripts {
+    @Html.ScriptBottom_ValidationMvc()
+    @Html.ScriptBottom_ChosenStyle()
+    <script>
+        $(document).ready(function () {
+            @if (Model.ParentId != null)
+            {
+                <text>$('#Code').attr('readonly', 'readonly');</text>
+            }
+        });
+    </script>
+}

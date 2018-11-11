@@ -1,0 +1,104 @@
+﻿@model IEnumerable<ContactViewModel>
+
+@using Erp.BackOffice.App_GlobalResources
+@using Erp.BackOffice.Account.Models
+@using Erp.BackOffice.Helpers
+@using GridMvc.Html
+
+@{
+    ViewBag.Title = Wording.PageIndex_Contact;
+    Layout = null;
+}
+
+<link href="@Url.Content("~/assets/css/Gridmvc.css")" rel="stylesheet" type="text/css" />
+<script src="@Url.Content("~/Scripts/gridmvc.min.js")" type="text/javascript"> </script>
+
+@helper GridColumnCommand(int id)
+{
+    <div class="hidden-phone visible-desktop action-buttons" style="display: inline-block; float: left;">
+        <p>
+            <button name="DeleteContact" value="@id" type="submit" class="btn btn-minier btn-danger">
+                <i class="ace-icon fa fa-trash"></i>
+            </button>
+        </p>
+    </div>
+}
+
+@helper GridColumnName(string name, int id)
+{
+    name = string.IsNullOrEmpty(name) == false ? name : "No Title";
+    <a href="javascript:;" onclick="OpenPopup('/Contact/ContactEdit?IsPopup=true&Id=@id', 'Cập nhật liên hệ', 1000, 500)">@name</a>
+}
+
+@helper CheckDeleteColumns(int Id)
+{
+    <label>
+        <input class="ace class-delete-all" type="checkbox" name="DeleteId-checkbox" value="@Id">
+        <span class="lbl"></span>
+    </label>
+}
+
+@helper BuildCheckAll()
+{
+    <label>
+        <input class="ace" type="checkbox" name="checkAll" id="checkAll" />
+        <span class="lbl"></span>
+    </label>
+}
+
+@using (Html.BeginForm("ContactDelete", "Contact", FormMethod.Post))
+{
+    <p>
+        @if (Erp.BackOffice.Filters.SecurityFilter.AccessRight("ContactCreate", "Contact", "Account"))
+        {
+            @Html.Button(Wording.CreateNew, ButtonType.aTag, ButtonColor.Info, ButtonSize.Mini, true, IconType.Plus, IconSize.Default, false, new { @href = "#", onclick = "OpenPopup('/Contact/ContactCreate?IsPopup=true&CustomerId=" + ViewBag.CustomerId + "&SupplierId=" + ViewBag.SupplierId + "', 'Tạo mới liên hệ', 1000, 500)" })
+        }
+        @*<button name="DeleteAll" value="DeleteAll" type="submit" class="btn btn-mini btn-danger" onclick="return CheckIsval();">
+                <i class="ace-icon fa fa-trash bigger-120"></i>
+                @Wording.Delete
+            </button>*@
+    </p>
+
+    <div class="table-responsive">
+
+        @Html.Grid(Model).Columns(columns =>
+        {
+            //columns.Add().Titled(BuildCheckAll().ToHtmlString()).SetWidth(20).Sanitized(false).Encoded(false).RenderValueAs(n => CheckDeleteColumns(n.Id));
+            columns.Add().Titled(Wording.FullName).Sortable(false).Sanitized(false).Encoded(false).RenderValueAs(u => GridColumnName(u.LastName + " " + u.FirstName, u.Id));
+            columns.Add(u => u.Position).Titled(Wording.Position).SetWidth(100);
+            //columns.Add(u => u.Birthday).Titled(Wording.Birthday).Format("{0:dd/MM/yyyy}").SetWidth(90);
+            //columns.Add().Titled(Wording.Gender).SetWidth(70).RenderValueAs(u => (u.Gender == true ? "Nữ" : "Nam"));
+            columns.Add(u => u.Phone).Titled(Wording.Phone).SetWidth(95);
+            columns.Add(u => u.Mobile).Titled(Wording.Mobile).SetWidth(95);
+            columns.Add(u => u.Email).Titled(Wording.Email).SetWidth(100);
+            //columns.Add(u => u.Address).Titled(Wording.Address).SetWidth(160);
+            //columns.Add(u => u.CreatedDate).Titled(Wording.CreatedDate).SetWidth(100);
+            //columns.Add(u => u.Id).Titled(Wording.Action).Sanitized(false).Encoded(false).RenderValueAs(u => GridColumnCommand(u.Id)).SetWidth(20);
+        }).WithPaging(20)
+
+    </div>
+}
+
+
+<script type="text/javascript">
+
+    $('button[name="DeleteContact"]').click(function () {
+        var id = $(this).val();
+        if (confirm('Bạn có chắc muốn xóa item ?')) {
+            $.post('/Contact/ContactDelete', { id: id, IsAjax: 'ajax' }, function (res) {
+                if (res == 'success') {
+                    ShowLoading();
+                    location.reload();
+                }
+                else
+                    alert('error');
+            });
+            return false;
+        }
+        else {
+            return false;
+        }
+
+    })
+
+</script>

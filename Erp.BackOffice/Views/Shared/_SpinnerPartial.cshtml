@@ -1,0 +1,43 @@
+﻿@model Erp.BackOffice.Helpers.SpinnerModel
+
+@using Erp.BackOffice.Helpers
+
+@{
+    var inputName = MvcHtmlString.Create("[name='" + Model.name + "']");
+    var htmlAttributes = ViewData["htmlAttributes"];
+}
+
+@*@Html.TextBox(Model.name, Model.value, htmlAttributes)*@
+@Model.HtmlInputControl
+
+@switch (Model.style)
+{
+    case SpinnerStyle.SpinnerStyle1:
+    <script type="text/javascript">
+        $(function () {
+            $("@inputName").ace_spinner({ value: ('@Model.value' * 1), min: '@Model.min', max: '@Model.max', step: '@Model.step', btn_up_class: 'btn-info', btn_down_class: 'btn-info' });
+        });
+    </script>
+        break;
+    case SpinnerStyle.SpinnerStyle2:
+    <script type="text/javascript">
+        $(function () {
+            $("@inputName").ace_spinner({ value: ('@Model.value' * 1), min: '@Model.min', max: '@Model.max', step: '@Model.step', icon_up: 'icon-caret-up', icon_down: 'icon-caret-down' });
+        });
+    </script>
+        break;
+    case SpinnerStyle.SpinnerStyle3:
+    <script type="text/javascript">
+        $(function () {
+            $("@inputName").ace_spinner({ value: ('@Model.value' * 1), min: '@Model.min', max: '@Model.max', step: '@Model.step', icon_up: 'icon-plus', icon_down: 'icon-minus', btn_up_class: 'btn-success', btn_down_class: 'btn-danger' });
+        });
+    </script>
+        break;
+    default:
+    <script type="text/javascript">
+        $(function () {
+            $("@inputName").ace_spinner({ value: ('@Model.value' * 1), min: '@Model.min', max: '@Model.max', step: '@Model.step', btn_up_class: 'btn-info', btn_down_class: 'btn-info' });
+        });
+    </script>
+        break;
+}

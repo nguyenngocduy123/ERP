@@ -1,0 +1,169 @@
+﻿@using Erp.BackOffice.App_GlobalResources
+@using Erp.BackOffice.Helpers
+@using Erp.BackOffice.Staff.Models
+
+@model List<DotBCBHXHReport>
+
+@{
+    ViewBag.Title = "DANH SÁCH LAO ĐỘNG THAM GIA BHXH, BHYT, BHTN";
+    bool isPopup = Request["IsPopup"] != null && Request["IsPopup"].ToString().ToLower() == "true" ? true : false;
+    if (isPopup)
+    {
+        Layout = "~/Views/Shared/_PopupLayout.cshtml";
+    }
+    else
+    {
+        Layout = "~/Views/Shared/ACE_AdminLayout.cshtml";
+    }
+
+    Erp.BackOffice.Models.PageSetting pageSetting = new Erp.BackOffice.Models.PageSetting
+    {
+        ModuleName = "DotBCBHXHDetail",
+        ActionName = "ReportList",
+        PageTitle = ViewBag.Title,
+        DisplaySearchPanel = isPopup?false: true,
+        IsPopup = isPopup,
+        DisplayBackButton = false
+    };
+    int index1 = 1;
+    int index2 = 1;
+    string month = Request["Month"] != null ? Request["Month"] : DateTime.Now.Month.ToString();
+    string year = Request["Year"] != null ? Request["Year"] : DateTime.Now.Year.ToString();
+}
+
+@using (Html.BeginPageHeaderContainer(pageSetting))
+{
+
+    @Html.TextBox("BatchNumber", Request["BatchNumber"], new { @class = "form-control", autocomplete = "off", placeholder = "Nhập đợt ..." })
+    <select name="Month">
+        <option value="">- Chọn tháng -</option>
+        @for (int i = 1; i <= 12; i++)
+        {
+            <option @(month == i.ToString() ? "Selected" : "") value="@i">Tháng @i</option>
+        }
+    </select>
+
+    <select name="Year">
+        <option value="">- Chọn năm -</option>
+        @for (int i = 2016; i <= DateTime.Now.Year; i++)
+        {
+            <option @(year == i.ToString() ? "Selected" : "") value="@i">Năm @i</option>
+        }
+    </select>
+}
+
+@if (Model.Count() > 0 && Model.FirstOrDefault().Type != null)
+{
+    <div class="table-responsive" id="BCBHXH" style="margin-bottom:50px;">
+        <div class=" grid-mvc" data-lang="en" data-gridname="" data-selectable="true" data-multiplefilters="false">
+            <div class="grid-wrap">
+                <table id="CTable" class="table table-bordered">
+                    <thead>
+                        <tr class="">
+                            <th class="" colspan="11" style="text-align:center">
+                                <h4>@ViewBag.Title </h4>
+                                <p>Số: @Model.FirstOrDefault().BatchNumber Tháng @Model.FirstOrDefault().Month năm @Model.FirstOrDefault().Year</p>
+                            </th>
+                        </tr>
+                        <tr>
+                            <th rowspan="3" style="width:40px;text-align:center">STT</th>
+                            <th rowspan="3" style="width:300px;text-align:center">@Wording.StaffName</th>
+                            <th rowspan="3" style="width:100px;text-align:center">@Wording.CodeStaff</th>
+                            <th rowspan="3" style="width:170px;text-align:center">@Wording.Position</th>
+                            <th colspan="5" style="width:100px;text-align:center">Mức đóng </th>
+                            <th rowspan="3" style="width:100px;text-align:center">Từ tháng, năm</th>
+                            <th rowspan="3" style="width:100px;text-align:center">@Wording.Note</th>
+                        </tr>
+                        <tr>
+                            <th rowspan="2" style="width:100px;text-align:center">Tiền lương</th>
+                            <th colspan="4" style="width:100px;text-align:center">Phụ cấp</th>
+                        </tr>
+                        <tr>
+                            <th style="width:100px;text-align:center">CV</th>
+                            <th style="width:100px;text-align:center">TNVK (%)</th>
+                            <th style="width:100px;text-align:center">TN Nghề (%)</th>
+                            <th style="width:100px;text-align:center">PC Khác</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><th colspan="11">Tăng</th></tr>
+                        @foreach (var item in Model.Where(u => u.Type.Contains("Increase")))
+                        {
+                        <tr>
+                            <td>
+                                <span>@(index1++)</span>
+                            </td>
+                            <td style="width:300px;">@(item.StaffName)</td>
+                            <td style="width:100px;text-align:right">@item.Code</td>
+                            <td style="width:150px;text-align:right">@item.PositionName</td>
+                            <td style="width:100px;text-align:right">@item.TienLuong</td>
+                            <td style="width:100px;text-align:right">@item.PC_CV</td>
+                            <td style="width:100px;text-align:right">@item.PC_TNVK</td>
+                            <td style="width:100px;text-align:right">@item.PC_TNN</td>
+                            <td style="width:100px;text-align:right">@item.PC_Khac</td>
+                            <td style="width:100px;text-align:right">@(item.SocietyStartDate == null ? "" : item.SocietyStartDate.Value.ToString("dd/MM/yyyy"))</td>
+                            <td style="width:100px;text-align:right">@item.Note</td>
+                        </tr>
+                        }
+                        <tr><th colspan="11">Giảm</th></tr>
+                        @foreach (var item in Model.Where(u => u.Type.Contains("Reduced")))
+                        {
+                        <tr>
+                            <td>
+                                <span>@(index2++)</span>
+                            </td>
+                            <td style="width:300px;">@(item.StaffName)</td>
+                            <td style="width:100px;text-align:right">@item.Code</td>
+                            <td style="width:150px;text-align:right">@item.PositionName</td>
+                            <td style="width:100px;text-align:right">@item.TienLuong</td>
+                            <td style="width:100px;text-align:right">@item.PC_CV</td>
+                            <td style="width:100px;text-align:right">@item.PC_TNVK</td>
+                            <td style="width:100px;text-align:right">@item.PC_TNN</td>
+                            <td style="width:100px;text-align:right">@item.PC_Khac</td>
+                            <td style="width:100px;text-align:right">@(item.SocietyStartDate == null ? "" : item.SocietyStartDate.Value.ToString("dd/MM/yyyy"))</td>
+                            <td style="width:100px;text-align:right">@item.Note</td>
+                        </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        @using (Html.BeginButtonContainer(pageSetting))
+        {
+            <button onclick="tableToExcel('CTable', 'BCBHXH')" class=" btn btn-primary btn-sm btn-white btn-success">
+                <i class="ace-icon fa fa-download"></i>
+                Xuất Excel
+            </button>
+        }
+    </div>
+}
+else
+{
+    <div class="alert alert-block alert-danger">
+        <button class="close" data-dismiss="alert" type="button">
+            <i class="ace-icon fa fa-times"></i>
+        </button>
+        <i class="ace-icon fa fa-warning red"></i>
+        Không có dữ liệu
+    </div>
+}
+@section Scripts {
+    <script type="text/javascript">
+
+        var tableToExcel = (function () {
+            var uri = 'data:application/vnd.ms-excel;base64,'
+              , template = '<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40"><head><!--[if gte mso 9]><xml><x:ExcelWorkbook><x:ExcelWorksheets><x:ExcelWorksheet><x:Name>{worksheet}</x:Name><x:WorksheetOptions><x:DisplayGridlines/></x:WorksheetOptions></x:ExcelWorksheet></x:ExcelWorksheets></x:ExcelWorkbook></xml><![endif]--></head><body><table>{table}</table></body></html>'
+              , base64 = function (s) { return window.btoa(unescape(encodeURIComponent(s))) }
+              , format = function (s, c) { return s.replace(/{(\w+)}/g, function (m, p) { return c[p]; }) }
+            return function (table, name) {
+                if (!table.nodeType) table = document.getElementById(table)
+                var ctx = { worksheet: name || 'Worksheet', table: table.innerHTML }
+                window.location.href = uri + base64(format(template, ctx))
+            }
+        })()
+    </script>
+    @Html.ScriptBottom_ValidationMvc()
+    @Html.ScriptBottom_DatePicker("dd/MM/yyyy")
+}
+
+

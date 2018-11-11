@@ -1,0 +1,443 @@
+﻿@using Erp.BackOffice.App_GlobalResources
+@using Erp.BackOffice.Helpers
+@using Erp.BackOffice.Sale.Models
+@using Erp.BackOffice.Account.Models
+
+@model PurchaseOrderViewModel
+
+@{
+    if (Model.Id > 0)
+    {
+        ViewBag.Title = Wording.PageEdit_PurchaseOrder;
+    }
+    else
+    {
+        ViewBag.Title = Wording.PageCreate_PurchaseOrder;
+    }
+
+    Layout = "~/Views/Shared/ACE_AdminLayout.cshtml";
+
+    //IEnumerable<SelectListItem> SaleList = (IEnumerable<SelectListItem>)ViewBag.SaleList;
+
+    SelectList provinceList = Erp.BackOffice.Helpers.SelectListHelper.GetSelectList_Location("0", null,Wording.Empty);
+
+    IEnumerable<SelectListItem> productCategoryList = Erp.BackOffice.Helpers.Common.GetSelectList_Category("product", null, "value");
+    IEnumerable<SelectListItem> warehouseList = (IEnumerable<SelectListItem>)ViewBag.warehouseList;
+    Erp.BackOffice.Models.PageSetting pageSetting = new Erp.BackOffice.Models.PageSetting
+    {
+        ModuleName = "PurchaseOrder",
+        ActionName = "Create",
+        PageTitle = ViewBag.Title,
+        DisplaySearchPanel = false,
+        IsPopup = false,
+        DisplayBackButton = true
+    };
+}
+
+@section HeadOfPage {
+    @Html.ScriptTop_ChosenStyle()
+}
+
+<style type="text/css">
+    .has-error .field-validation-error, .has-error .field-validation-valid {
+        color: #de2a2a;
+    }
+</style>
+
+@using (Html.BeginPageHeaderContainer(pageSetting))
+{
+
+}
+
+@using (Html.BeginForm_AceStyle((string)ViewBag.Title, pageSetting.ActionName, pageSetting.ModuleName, null, FormMethod.Post, new { id = "CreatePurchaseOrder", @class = "form-horizontal clearfix" }))
+{
+    @Html.ValidationSummary(true)
+    <div class="row">
+        <div class="col-sm-7">
+            <div id="Search_Product">
+            </div>
+          
+            <div id="listOrderDetail" class="table-responsive top-10">
+                <table class="table table-bordered bottom-5">
+                    <thead>
+                        <tr>
+                            <th class="detail-th-orderno">STT</th>
+                            <th class="detail-th-product-name">Tên sản phẩm</th>
+                            <th class="detail-th-quantity">Số lượng</th>
+                            <th class="detail-th-price">Đơn giá</th>
+                            <th class="detail-th-discount">% CK @Html.TextBox("InputDiscount", 0, new { style = "width:50px; text-align:right" })</th>
+                            <th class="detail-th-total">Thành tiền</th>
+                            <th class="detail-th-quantity"></th>
+                        </tr>
+                    </thead>
+                    <tbody class="detailList">
+                        @if (Model.DetailList.Count > 0)
+                        {
+                            foreach (var item in Model.DetailList)
+                            {
+                                @Html.Partial("LoadProductItem", item);
+                            }
+                        }
+                    </tbody>
+                    <tfoot>
+                        <tr>
+                            <td>
+                                <input style="width:30px;" autocomplete="off" data-val="true" data-val-required="Vui lòng chọn sản phẩm!" id="ProductItemCount" name="ProductItemCount" type="text" value="@(Model.DetailList != null && Model.DetailList.Count > 0 ? Model.DetailList.Count.ToString() : "")" readonly="readonly" />
+                            </td>
+                            <td></td>
+                            <td id="TongSoLuong" align="right" style="font-weight:bold"></td>
+                            <td colspan="2"></td>
+                            <td id="TongThanhTien" align="right" style="font-weight:bold"></td>
+                            <td></td>
+                        </tr>
+                    </tfoot>
+                </table>
+                <span style="color:red" class="field-validation-valid help-inline" data-valmsg-for="ProductItemCount" data-valmsg-replace="true"></span>
+            </div>
+        </div>
+        <div class="col-sm-5">
+            <div class="tabbable">
+                <ul class="nav nav-tabs padding-12 tab-color-blue background-blue" id="tabCustomer">
+                    <li class="active">
+                        <a data-toggle="tab" href="#tab1">Thông tin chi tiết</a>
+                    </li>
+                </ul>
+
+                <div class="tab-content">
+                    <div id="tab1" class="tab-pane in active">
+                        @if (Model.Id > 0)
+                        {
+                            <div class="detail-view">
+                                <div class="row control-group">
+                                    @Html.DetailViewItemFor2(m => m.Code)
+                                </div>
+                            </div>
+                        }
+                        @if (Model.WarehouseDestinationId == null)
+                        {
+                            <div class="alert alert-danger" id="notification" style="display:none">
+                                <button type="button" class="close" data-dismiss="alert">
+                                    <i class="ace-icon fa fa-times"></i>
+                                </button>
+
+                                <strong>
+                                    <i class="ace-icon fa fa-times"></i>
+                                    Thông báo!
+                                </strong>
+
+                                @*<div class="detail_list_product">*@
+                                Vui lòng chọn nhà cung cấp, kho đích đến để thêm sản phẩm
+                                @*</div>*@
+                                <br>
+                            </div>
+                        }
+                        @*@Html.CustomDropDownListFor(model => model.BranchId, drugStoreList, WidthType.span4, true, null, DropdownListStyle.DropdownListStyleChosen)*@
+                        @Html.ModulePopupFor(m => m.SupplierId, "Supplier", Model.SupplierName, true, true)
+                        @Html.CustomDropDownListFor(model => model.WarehouseDestinationId, warehouseList, WidthType.span12, true, "- chọn -")
+                        @*@Html.CustomDropDownListFor(model => model.SalerId, SaleList, WidthType.span12, true, "- chọn -")*@
+                        @*@Html.CustomDropDownListFor(model => model.PaymentMethod, SelectListHelper.GetSelectList_Category("FormPayment", null, "Name", null), WidthType.span12, true, null, DropdownListStyle.DropdownListStyleDefault)*@
+                        @Html.CustomTextAreaFor(model => model.Note, Wording.Note, WidthType.span12, true, null, "hide", "full-w")
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    using (Html.BeginButtonContainer(pageSetting))
+    {
+        <a class="btn btn-mini btn-primary" id="Save" name="Save" value="Save">
+            <i class="ace-icon fa fa-save"></i>
+            @Wording.Save
+        </a>
+    }
+}
+
+@section Scripts {
+
+    @Html.ScriptBottom_ValidationMvc()
+    @Html.ScriptBottom_ChosenStyle()
+
+    @*<link href="/Scripts/RadCombobox_v1/RadComboBoxLite.css" rel="stylesheet" />
+    <script src="/Scripts/RadCombobox_v1/rabCombobox.js"></script>*@
+
+    <script type="text/javascript">
+      
+        var $tr_template = $('#detailList tr:first-child');
+      
+        //tạo biến để lấy các chương trình khuyến mãi hiện tại theo ngày
+        var promotion = {};
+
+        $(document).ready(function () {
+            LoadNumberInput();
+            $('#Save').click(function () {
+                ShowLoading();
+                var WarehouseDestinationId = $("#WarehouseDestinationId").val();
+                var SupplierId = $("#SupplierId option:selected").val();
+                var messagge = "";
+                if (WarehouseDestinationId == '') {
+                    messagge += "Kho nhận chưa có <br>";
+                }
+                if (SupplierId == '') {
+                    messagge += "Nhà cung cấp chưa có <br>";
+                }
+                if (messagge != '') {
+                    alertPopup('Lỗi!', messagge, 'error');
+                    HideLoading();
+                }
+                else {
+                    ClearFormatBeforeSubmit($("#CreatePurchaseOrder"));
+                    $("#CreatePurchaseOrder").submit();
+                   // HideLoading();
+                }
+
+                //return false;
+            });
+
+            $("#notification").show();
+            $("#product_barcode").focus();
+            calcTotalAmount();
+
+            //$('#TotalAmount').numberFormat();
+            //$('#InputDiscount').numberOnly();
+
+            //$('.detail_item_qty').numberOnly();
+            //$('.detail_item_price').numberFormat();
+            //$('.detail_item_discount').numberOnly();
+
+            $('#InputDiscount').keypress(function (e) {
+                if (e.which == 13) {
+                    e.preventDefault();
+                    if ($(this).val() != '') {
+                        $(".detail_item_discount").val($(this).val()).trigger("change");
+                    }
+                }
+            });
+
+            $('#InputDiscount').change(function () {
+                if ($(this).val() != '') {
+                    $(".detail_item_discount").val($(this).val()).trigger("change");
+                }
+            });
+
+            $('#InputDiscount').focus(function () {
+                $(this).select();
+            });
+
+            // lấy địa chỉ theo khách hàng
+            $('#WarehouseDestinationId').change(function (e) {
+                e.preventDefault();
+                ShowLoading();
+                AppendSearchProduct($(this).val());
+                if ($(this).val() != null) {
+                    $("#notification").hide();
+                }
+                else
+                {
+                    $("#notification").show();
+                }
+                return false;
+            });
+
+            // tính thành tiền và tổng cộng
+            $('#listOrderDetail').on('change', '.detail_item_qty', function () {
+                $(this).val($(this).val().replace(/\-/g, ''));
+                $(this).val($(this).val().replace(/[^0-9.,]/g, ''));
+                var ralVal = numeral($(this).val());
+                if (ralVal <= 0) {
+                    $(this).val(1);
+                }
+                var $this = $(this);
+                var id = $this.closest('tr').data('id');
+                //tính tổng cộng
+                calcAmountItem(id);
+                calcTotalAmount();
+            });
+
+            $('#listOrderDetail').on('change', '.detail_item_price', function () {
+                var $this = $(this);
+                var id = $this.closest('tr').data('id');
+                calcAmountItem(id);
+                calcTotalAmount();
+            });
+
+            $('#listOrderDetail').on('change', '.detail_item_discount', function () {
+                var $this = $(this);
+                var id = $this.closest('tr').data('id');
+                //tính tổng cộng
+                calcAmountItem(id);
+                calcTotalAmount();
+            });
+
+            $('#listOrderDetail').on('focus', '.detail_item_discount', function () {
+                $(this).select();
+            });
+            $('#listOrderDetail').on('focus', '.detail_item_price', function () {
+                $(this).select();
+            });
+
+            $('#listOrderDetail').on('focus', '.detail_item_qty', function () {
+                $(this).select();
+            });
+
+            $('#listOrderDetail').on('keypress', '.detail_item_discount', function (e) {
+                if (e.which == 13) {
+                    e.preventDefault();
+                    $("#product_barcode").focus();
+                }
+            });
+
+            $('#listOrderDetail').on('keypress', '.detail_item_price', function (e) {
+                if (e.which == 13) {
+                    e.preventDefault();
+                    $(this).parent().next().find("input:first").focus().select();
+                }
+            });
+
+            $('#listOrderDetail').on('keypress', '.detail_item_qty', function (e) {
+                if (e.which == 13) {
+                    e.preventDefault();
+                    $(this).parent().next().find("input:first").focus().select();
+                }
+            });
+
+         
+            // xóa sản phẩm
+            $('#listOrderDetail').on('click', '.btn-delete-item', function () {
+                //$(this).closest('tr').next('tr.template_location').remove();
+                $(this).closest('tr').remove();
+
+                var countItem = $('.detailList tr').length;
+                $('#ProductItemCount').val(countItem);
+
+                if (countItem == 0) {
+                    $('#ProductItemCount').val('');
+                    $('#TongSoLuong').text('');
+                    $('#TongThanhTien').text('');
+                }
+                calcTotalAmount();
+
+                $('.detailList tr').each(function (index, tr) {
+                    $(tr).attr('role', index).attr("id", "product_item_" + index).data("id", index);
+                    $(tr).find('td:first-child').text(index + 1);
+
+                    $(tr).find('.detail_item_id input').attr('name', 'DetailList[' + index + '].ProductId').attr('id', 'DetailList_' + index + '__ProductId');
+                    $(tr).find('.detail_item_qty').attr('name', 'DetailList[' + index + '].Quantity').attr('id', 'DetailList_' + index + '__Quantity');
+                    $(tr).find('.detail_item_price').last().attr('name', 'DetailList[' + index + '].Price').attr('id', 'DetailList_' + index + '__Price');
+                    $(tr).find('.detail_item_price').first().attr('id', 'mask-DetailList_' + index + '__Price');
+                    $(tr).find('.detail_item_discount').attr('name', 'DetailList[' + index + '].DisCount').attr('id', 'DetailList_' + index + '__DisCount');
+                    $(tr).find('.detail_item_discount_amount').attr('name', 'DetailList[' + index + '].DisCountAmount1').attr('id', 'DetailList_' + index + '__DisCountAmount1');
+                });
+            });
+
+            //tính giảm giá, thuế
+            $('#TaxFee, #Discount').change(function () {
+                calcTotalAmount();
+            });
+
+        }); // end document ready
+
+        function searchProductByBarCodeContain(barcode) {
+            barcode = barcode.toLowerCase();
+            //var $productSelect = $('.detail_item_id').first();
+
+            var $optionList = $("#productSelectList").find('option');
+
+            var arrResulft = [];
+            for (var i = 0; i < $optionList.length; i++) {
+                var data_code = $($optionList[i]).data('code') != undefined ? $($optionList[i]).data('code').toString().toLowerCase() : undefined;
+                if (barcode.indexOf(data_code) != -1)
+                    arrResulft.push($($optionList[i]).attr('value'));
+
+                if (arrResulft.length == 1) {
+                    return arrResulft[0];
+                }
+            }
+
+            return arrResulft[0];
+        };
+
+        function calcAmountItem(id) {
+            var input_price = $('#DetailList_' + id + '__Price');
+            var price = input_price.val() != '' ? removeComma(input_price.val()) : 0;
+
+            //Số lượng
+            var input_qty = $('tr#product_item_' + id).find('.detail_item_qty');
+            var qty = 1;
+            if (input_qty.val() == '') {
+                input_qty.val(1);
+            } else {
+                qty = parseInt(removeComma(input_qty.val())) < 0 ? parseInt(removeComma(input_qty.val())) * -1 : parseInt(removeComma(input_qty.val()));
+            }
+
+            //Chiết khấu
+            var input_discount = $('tr#product_item_' + id).find('.detail_item_discount');
+            var discount = 0;
+            if (input_discount.val() == '') {
+                input_discount.val(0);
+            } else {
+                discount = parseInt(removeComma(input_discount.val()));
+            }
+
+            //Thành tiền
+            var total = parseFloat(price) * qty;
+            var discountAmount = discount * total / 100;
+            var totalAmount = total - discountAmount;
+
+            //console.log(price, qty);
+
+            $('tr#product_item_' + id).find('.detail_item_discount_amount').val(numeral(discountAmount).format('0,0'));
+            $('tr#product_item_' + id).find('.detail_item_total').text(numeral(totalAmount).format('0,0'));
+        };
+
+        function calcTotalAmount() {
+            var total = 0;
+            var total1 = 0;
+
+            var selector = '.detailList tr';
+            $(selector).each(function (index, elem) {
+                if ($(elem).find('.detail_item_total').text() != '') { // la số thì mới tính
+                    total += parseFloat(removeComma($(elem).find('.detail_item_total').text()));
+                    $("#TongThanhTien").text(numeral(total).format('0,0'));
+                }
+
+                if ($(elem).find('.detail_item_qty').val() != '') { // la số thì mới tính
+                    total1 += parseInt($(elem).find('.detail_item_qty').val().replace(/\-./g, ''));
+                    $("#TongSoLuong").text(currencyFormat(total1));
+                }
+
+                if (index == $(selector).length - 1) {
+                    $('#mask-TotalAmount').val(numeral(total).format('0,0'));
+                    $('#TotalAmount').val(numeral(total).format('0,0'));
+                }
+            });
+        };
+
+        function checkChosenProductOnTable() {
+            var flag = true;
+            $('#detailList select.detail_item_id').each(function (index, elem) {
+                if ($(elem).val() == '') {
+                    var message = $(elem).data('val-required') != undefined ? $(elem).data('val-required') : 'Chưa chọn sản phẩm!';
+                    $(elem).next('span').text(message);
+                    flag = false;
+                }
+            });
+            return flag;
+        };
+        function AppendSearchProduct(WarehouseDestinationId) {
+            ShowLoading();
+            $.get('/PurchaseOrder/SearchProductInvoice/?WarehouseDestinationId=' + WarehouseDestinationId, function (html) {
+                $("#Search_Product").html(html);
+                HideLoading();
+            });
+
+        };
+        //hàm gọi lại từ form tạo mới khách hàng
+        function ClosePopupAndDoSomethings(optionSelect) {
+            ClosePopup(false);
+            $("#SupplierId").val($(optionSelect).val()).triggerHandler('change');
+            $("#SupplierId_DisplayText").val($(optionSelect).text()).triggerHandler('change');
+            //var url = '/api/BackOfficeServiceAPI/FetchLocation';
+        }
+</script>
+
+}

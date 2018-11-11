@@ -1,0 +1,273 @@
+﻿@using Erp.BackOffice.App_GlobalResources
+@using Erp.BackOffice.Helpers
+@using Erp.BackOffice.Staff.Models
+
+@model StaffSocialInsuranceViewModel
+
+@{
+    ViewBag.Title = Wording.PageCreate_StaffSocialInsurance;
+
+    Layout = "~/Views/Shared/" + (Request["IsPopup"] == null ? "ACE_AdminLayout.cshtml" : "_PopupLayout.cshtml");
+
+    Erp.BackOffice.Models.PageSetting pageSetting = new Erp.BackOffice.Models.PageSetting
+    {
+        ModuleName = "StaffSocialInsurance",
+        ActionName = "Create",
+        PageTitle = ViewBag.Title,
+        DisplaySearchPanel = false,
+        IsPopup = false,
+        DisplayBackButton = true
+    };
+}
+
+
+
+@section HeadOfPage {
+    @Html.ScriptTop_ChosenStyle()
+}
+<style>
+    #mask-TienLuong, #PC_CV, #PC_TNN, #PC_TNVK, #PC_Khac {
+        text-align: right;
+    }
+</style>
+@if (ViewBag.FailedMessage != null && ViewBag.FailedMessage != "")
+{
+    <div class="alert alert-block alert-danger">
+        <button class="close" data-dismiss="alert" type="button">
+            <i class="ace-icon fa fa-times"></i>
+        </button>
+        <i class="ace-icon fa fa-warning red"></i>
+        @ViewBag.FailedMessage
+    </div>
+}
+
+@using (Html.BeginPageHeaderContainer(pageSetting))
+{
+
+}
+
+
+
+@using (Html.BeginForm_AceStyle((string)ViewBag.Title, pageSetting.ActionName, pageSetting.ModuleName, null, FormMethod.Post, new { @class = "form-horizontal" }))
+{
+    @Html.ValidationSummary(true)
+    <div class="row">
+        <div class="col-xs-12">
+            <div class="widget-box">
+                <div class="widget-header">
+                    <h5 class="widget-title"><i class="ace-icon fa fa-info-circle"></i>@Wording.StaffInfo</h5>
+                </div>
+                <div class="widget-body">
+                    <div class="widget-main">
+                        @Html.ModulePopupFor2(m => m.StaffId, "Staffs", Model.StaffName, false, false, false, null, null, "Search", "StaffSocialInsurance")
+                        @*@Html.CustomDropDownListFor(model => model.StaffId, SelectListHelper.GetSelectList_Staff_2(Model.StaffId, Wording.Empty), WidthType.span12, true, null, DropdownListStyle.DropdownListStyleChosen)*@
+                        <div class="control-group form-group" id="infor">
+                            <label class="control-label no-padding-right col-lg-5 col-md-4 col-sm-4"> Hiện thông tin</label>
+                            <div class="control-value col-lg-7 col-md-8 col-sm-8">
+                                <div class="clearfix">
+                                    <input id="show" name="show" type="checkbox" class="ace" />
+                                </div>
+
+                            </div>
+                        </div>
+                        <div id="staff">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-xs-12 top-5">
+            <div class="widget-box">
+                <div class="widget-header">
+                    <h4 class="widget-title">
+                        <i class="ace-icon fa fa-table"></i>
+                        @Wording.Infomation @Wording.SocialInsurance
+                    </h4>
+                </div>
+                <div class="widget-body">
+                    <div class="widget-main">
+                        @Html.CustomTextboxFor(model => model.SocietyCode, null, null, WidthType.span12)
+                        @*@Html.CustomTextboxFor(model => model.SocietyIssue, null, null, WidthType.span12)*@
+                        @Html.CustomDropDownListFor(model => model.ProvinceSociety, SelectListHelper.GetSelectList_Location("0", null, Wording.Empty), WidthType.span12, true, null, DropdownListStyle.DropdownListStyleDefault)
+                        @*<div class="control-group form-group">
+                                <label class="control-label no-padding-right control-label col-lg-5 col-md-4 col-sm-4" for="SocietyStartDate">@Wording.TimeInvolved</label>
+                                <div class="control-value col-lg-7 col-md-8 col-sm-8">
+                                    <div class="clearfix">
+                                        <span class="input-daterange input-group">
+                                            @Html.TextBox("SocietyStartDate", Request["SocietyStartDate"] != null ? Request["SocietyStartDate"] : "", new { @class = "col-sm-6", autocomplete = "off", placeholder = "Từ ngày" })
+                                            <span class="input-group-addon">
+                                                <i class="fa fa-exchange"></i>
+                                            </span>
+                                            @Html.TextBox("SocietyEndDate", Request["SocietyEndDate"] != null ? Request["SocietyEndDate"] : "", new { @class = "col-sm-6", autocomplete = "off", placeholder = "Đến ngày" })
+                                        </span>
+                                    </div>
+                                    <div class="clearfix">
+                                        <span class="field-validation-valid help-inline" data-valmsg-for="SocietyStartDate" data-valmsg-replace="true"></span>
+                                    </div>
+                                </div>
+                            </div>*@
+                        @Html.DatePicker(model => model.SocietyStartDate, "dd/MM/yyyy", "99/99/9999", true, false, "control-label col-lg-5 col-md-4 col-sm-4", "col-lg-7 col-md-8 col-sm-8", "col-xs-12")
+                        @Html.DatePicker(model => model.SocietyEndDate, "dd/MM/yyyy", "99/99/9999", true, false, "control-label col-lg-5 col-md-4 col-sm-4", "col-lg-7 col-md-8 col-sm-8", "col-xs-12")
+
+                        @Html.CustomTextboxFor(model => model.SocietyDefaultValue, null, null, WidthType.span12, true, new Dictionary<string, object> { { "class", "numberVNI" } })
+
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-xs-12 top-5">
+            <div class="widget-box">
+                <div class="widget-header">
+                    <h4 class="widget-title">
+                        <i class="ace-icon fa fa-table"></i>
+                        @Wording.HealthInsurance
+                    </h4>
+                </div>
+                <div class="widget-body">
+                    <div class="widget-main">
+                        @Html.CustomTextboxFor(model => model.MedicalCode, null, null, WidthType.span12)
+                        @Html.CustomDropDownListFor(model => model.ProvinceMedical, SelectListHelper.GetSelectList_Location("0", null, Wording.Empty), WidthType.span12, true, null, DropdownListStyle.DropdownListStyleDefault)
+                        @Html.DatePicker(model => model.MedicalStartDate, "dd/MM/yyyy", "99/99/9999", true, false, "control-label col-lg-5 col-md-4 col-sm-4", "col-lg-7 col-md-8 col-sm-8", "col-xs-12")
+                        @Html.DatePicker(model => model.MedicalEndDate, "dd/MM/yyyy", "99/99/9999", true, false, "control-label col-lg-5 col-md-4 col-sm-4", "col-lg-7 col-md-8 col-sm-8", "col-xs-12")
+
+                        @*<div class="control-group form-group">
+                                <label class="control-label no-padding-right control-label col-lg-5 col-md-4 col-sm-4" for="SocietyStartDate">@Wording.TimeInvolved</label>
+                                <div class="control-value col-lg-7 col-md-8 col-sm-8">
+                                    <div class="clearfix">
+                                        <span class="input-daterange input-group">
+                                            @Html.TextBox("MedicalStartDate", Request["MedicalStartDate"] != null ? Request["MedicalStartDate"] : "", new { @class = "", autocomplete = "off", placeholder = "Từ ngày" })
+                                            <span class="input-group-addon">
+                                                <i class="fa fa-exchange"></i>
+                                            </span>
+                                            @Html.TextBox("MedicalEndDate", Request["MedicalEndDate"] != null ? Request["MedicalEndDate"] : "", new { @class = "", autocomplete = "off", placeholder = "Đến ngày" })
+                                        </span>
+                                    </div>
+                                    <div class="clearfix">
+                                        <span class="field-validation-valid help-inline" data-valmsg-for="SocietyStartDate" data-valmsg-replace="true"></span>
+                                    </div>
+                                </div>
+                            </div>*@
+                        @Html.CustomTextboxFor(model => model.MedicalDefaultValue, null, null, WidthType.span12, true, new Dictionary<string, object> { { "class", "numberVNI" } })
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-xs-12 top-5">
+            <div class="widget-box">
+                <div class="widget-header">
+                    <h5 class="widget-title">
+                        <i class="ace-icon fa fa-info-circle"></i>
+                        @Wording.OtherInformation
+                    </h5>
+                </div>
+                <div class="widget-body">
+                    <div class="widget-main">
+                        @Html.CustomTextboxFor(model => model.TienLuong, null, null, WidthType.span12, true, new Dictionary<string, object> { { "class", "numberVNI" } })
+
+                        @Html.CustomTextboxFor(model => model.PC_CV, null, null, WidthType.span12, true, new Dictionary<string, object> { { "class", "numberVNI" } })
+
+                        @Html.CustomTextboxFor(model => model.PC_TNN, null, null, WidthType.span12, true, new Dictionary<string, object> { { "class", "numberVNI" } })
+
+                        @Html.CustomTextboxFor(model => model.PC_TNVK, null, null, WidthType.span12, true, new Dictionary<string, object> { { "class", "numberVNI" } })
+
+                        @Html.CustomTextboxFor(model => model.PC_Khac, null, null, WidthType.span12, true, new Dictionary<string, object> { { "class", "numberVNI" } })
+
+                        @Html.CustomTextboxFor(model => model.Note, null, null, WidthType.span12)
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    using (Html.BeginButtonContainer(pageSetting))
+    {
+        <button class="btn btn-mini btn-primary" type="submit" name="Submit" value="Save">
+            <i class="ace-icon fa fa-save"></i>
+            @Wording.Save
+        </button>
+    }
+}
+
+@section Scripts {
+    <script>
+        //truyền từ action create của controller qua khi thực hiện submit và return về lại view create, để nhận biết là được gọi theo dạng popup
+        var closePopup = '@ViewBag.closePopup';
+        $(document).ready(function () {
+            //nếu là được gọi theo dạng popup từ form khác thì chạy đoạn code bên dưới
+            if (closePopup != '') {
+                var option = '<option value="@Model.Id" >@Model.Note</option>';
+                //tên funtion có thể khác theo từng công việc riêng (đây chỉ là mẫu khi thêm mới sẽ gọi lại)
+                window.parent.ClosePopupAndAppendSelect(option);
+            }
+        });
+    </script>
+    @Html.ScriptBottom_ValidationMvc()
+    @Html.ScriptBottom_ChosenStyle()
+    @Html.ScriptBottom_DatePicker("dd/mm/yyyy")
+    <script>
+        $(document).ready(function () {
+            $('#infor').hide();
+            $("#StaffId").change(function () {
+                //Load
+                var id = this.value;
+                $('#infor').hide();
+                if (id != "") {
+                    $('#infor').show();
+                }
+
+            });
+            $("#TienLuong").numberFormat();
+            $("#mask-TienLuong").focus(function () {
+                $(this).select();
+            });
+            $("#PC_CV").focus(function () {
+                $(this).select();
+            });
+            $("#PC_TNN").focus(function () {
+                $(this).select();
+            });
+            $("#PC_TNVK").focus(function () {
+                $(this).select();
+            });
+            $("#PC_Khac").focus(function () {
+                $(this).select();
+            });
+            $("#SocietyCode").focus(function () {
+                $(this).select();
+            });
+            $("#MedicalCode").focus(function () {
+                $(this).select();
+            });
+            $("#SocietyDefaultValue").focus(function () {
+                $(this).select();
+            });
+            $("#MedicalDefaultValue").focus(function () {
+                $(this).select();
+            });
+            $('#show').change(function () {
+                if (this.checked) {
+                    //Load
+                    var id = $('#StaffId').val();
+                    if (id != null) {
+                        ShowLoading();
+                        $.get("/Staffs/DetailBasicFull", { Id: id })
+                          .done(function (data) {
+                              $("#staff").html(data);
+                              HideLoading();
+                          });
+                    }
+                }
+                else {
+                    $("#staff").html("");
+                }
+            });
+
+        });
+    </script>
+}

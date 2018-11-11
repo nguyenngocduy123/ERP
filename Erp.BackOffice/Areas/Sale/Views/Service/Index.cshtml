@@ -1,0 +1,190 @@
+﻿@model IEnumerable<ServiceViewModel>
+
+@using Erp.BackOffice.App_GlobalResources
+@using Erp.BackOffice.Sale.Models
+@using Erp.BackOffice.Helpers
+@using GridMvc.Html
+
+@{
+    ViewBag.Title = Wording.PageIndex_Service;
+    bool isPopup = Request["IsPopup"] != null && Request["IsPopup"].ToString().ToLower() == "true" ? true : false;
+    if (isPopup)
+    {
+        Layout = "~/Views/Shared/_PopupLayout.cshtml";
+    }
+    else
+    {
+        Layout = "~/Views/Shared/ACE_AdminLayout.cshtml";
+    }
+
+    Erp.BackOffice.Models.PageSetting pageSetting = new Erp.BackOffice.Models.PageSetting
+    {
+        ModuleName = "Service",
+        ActionName = "Index",
+        PageTitle = ViewBag.Title,
+        DisplaySearchPanel = true,
+        IsPopup = false,
+        DisplayBackButton = false
+    };
+}
+
+<link href="@Url.Content("~/assets/css/Gridmvc.css")" rel="stylesheet" type="text/css" />
+<script src="@Url.Content("~/Scripts/gridmvc.min.js")" type="text/javascript"> </script>
+
+@helper GridColumnCommand(int id)
+{
+    <div class="hidden-phone visible-desktop action-buttons" style="display: inline-block; float: left;">
+        <p>
+            @if (Erp.BackOffice.Filters.SecurityFilter.AccessRight("Delete", "Service", "Sale"))
+            {
+                <button name="Delete" value="Delete" type="submit" class="btn btn-mini btn-danger">
+                    <i class="ace-icon fa fa-trash bigger-120"></i>
+                </button>
+            }
+        </p>
+    </div>
+}
+
+@helper GridColumnName(string name, int id, string unit)
+{
+    name = string.IsNullOrEmpty(name) ? "No Title" : name;
+    <a href="@Url.Action("Edit", "Service", new { Id = id})"><b>@name</b>   </a><br />
+    if (!string.IsNullOrEmpty(unit))
+    {
+        <span>@unit</span>
+    }
+}
+
+@helper GridColumnCategoryValue(object value)
+{
+    var attr = Common.GetCategoryByValueOrId("value", value);
+    <span>@(attr != null ? attr.Name : "")</span>
+}
+@helper GridColumnCategoryCode(string serviceCode, string categoryCode)
+{
+    <b style="font-size:10px">@categoryCode</b>
+}
+@helper CheckDeleteColumns(int Id)
+{
+    <label>
+        <input class="ace class-delete-all" type="checkbox" name="DeleteId-checkbox" value="@Id">
+        <span class="lbl"></span>
+    </label>
+}
+
+@helper BuildCheckAll()
+{
+    <label>
+        <input class="ace" type="checkbox" name="checkAll" id="checkAll" />
+        <span class="lbl"></span>
+    </label>
+}
+
+@using (Html.BeginPageHeaderContainer(pageSetting))
+{
+    <p>
+        @Html.TextBox("txtCode", Request["txtCode"], new { @class = "form-control", autocomplete = "off", placeholder = "Mã dịch vụ" })
+        @Html.TextBox("txtSearch", Request["txtSearch"], new { @class = "form-control", autocomplete = "off", placeholder = "Tên dịch vụ" })
+        @Html.DropDownList("CategoryCode", SelectListHelper.GetSelectList_Category("service", Request["CategoryCode"], "Value", null), "Danh mục", new Dictionary<string, object> { { "class", "" }, { "data-val-required", "Bắt buộc chọn." } })
+    </p>
+}
+
+@if (ViewBag.SuccessMessage != null && ViewBag.SuccessMessage != "")
+{
+    <div class="alert alert-block alert-success">
+        <button class="close" data-dismiss="alert" type="button">
+            <i class="ace-icon fa fa-times"></i>
+        </button>
+        <i class="ace-icon fa fa-check green"></i>
+        @ViewBag.SuccessMessage
+    </div>
+}
+
+@if (ViewBag.FailedMessage != null && ViewBag.FailedMessage != "")
+{
+    <div class="alert alert-block alert-danger">
+        <button class="close" data-dismiss="alert" type="button">
+            <i class="ace-icon fa fa-times"></i>
+        </button>
+        <i class="ace-icon fa fa-warning red"></i>
+        @ViewBag.FailedMessage
+    </div>
+}
+<p>Tổng số: <b>@Erp.BackOffice.Helpers.Common.PhanCachHangNgan(Model.Count())</b></p>
+@if (!isPopup)
+{
+    using (Html.BeginForm("Delete", pageSetting.ModuleName, FormMethod.Post))
+    {
+        <div class="table-responsive">
+            @Html.Grid(Model).Columns(columns =>
+        {
+            columns.Add().Titled(BuildCheckAll().ToHtmlString()).SetWidth(20).Sanitized(false).Encoded(false).RenderValueAs(n => CheckDeleteColumns(n.Id));
+            columns.Add(u => u.Code).Titled(Wording.ProductCode).SetWidth(100);
+            columns.Add(u => u.CategoryCode).Titled("Danh mục").SetWidth(250).Sanitized(false).Encoded(false).RenderValueAs(n => GridColumnCategoryCode(n.Code, n.CategoryCode));
+            columns.Add().Titled(Wording.Name).Sortable(false).Sanitized(false).Encoded(false).RenderValueAs(u => GridColumnName(u.Name, u.Id, u.Unit));
+            //columns.Add().Titled("Chiết khấu").Sortable(false).Sanitized(false).Encoded(false).RenderValueAs(u => u.DiscountStaff + " " + (u.IsMoneyDiscount == true ? "VNĐ" : "%"));
+            columns.Add(u => u.CreatedDate).Titled(Wording.CreatedDate).SetWidth(130).Format("{0:dd/MM/yyyy HH:mm}");
+            columns.Add(u => u.ModifiedDate).Titled(Wording.ModifiedDate).SetWidth(130).Sortable(true).Format("{0:dd/MM/yyyy HH:mm}");
+            columns.Add(u => u.Id).Titled(Wording.Action).Sanitized(false).Encoded(false).RenderValueAs(u => GridColumnCommand(u.Id)).SetWidth(20);
+        }).WithPaging(10)
+        </div>
+        using (Html.BeginButtonContainer(pageSetting))
+        {
+            if (Erp.BackOffice.Filters.SecurityFilter.AccessRight("Create", "Service", "Sale"))
+            {
+                <a class="btn btn-info btn-mini" href="@Url.Action("Create", pageSetting.ModuleName)">
+                    <i class="ace-icon fa fa-plus"></i>
+                    @Wording.CreateNew
+                </a>
+            }
+            if (Erp.BackOffice.Filters.SecurityFilter.AccessRight("Delete", "Service", "Sale"))
+            {
+                <button name="DeleteAll" value="DeleteAll" type="submit" class="btn btn-mini btn-danger" onclick="return CheckIsval();">
+                    <i class="ace-icon fa fa-trash bigger-120"></i>
+                    @Wording.Delete
+                </button>
+            }
+        }
+    }
+}
+else
+{
+    @Html.Grid(Model).Columns(columns =>
+    {
+        //columns.Add().Titled(BuildCheckAll().ToHtmlString()).SetWidth(20).Sanitized(false).Encoded(false).RenderValueAs(n => CheckDeleteColumns(n.Id));
+        columns.Add().Titled(Html.DisplayNameFor(u => u.FirstOrDefault().Name).ToString()).Sortable(false).Sanitized(false).Encoded(false).RenderValueAs(u => GridColumnName(u.Name, u.Id, u.Unit));
+    }).WithPaging(10)
+}
+
+@section Scripts {
+    <script type="text/javascript">
+        function CheckIsval() {
+            if ($('[name="DeleteId-checkbox"]').is(':checked') == false) {
+                alert("Phải chọn ít nhất 1 item.");
+                return false;
+            }
+            else {
+                if (confirm('Bạn có chắc muốn xóa các item đã chọn ?')) {
+                    return true;
+                }
+                else {
+                    return false;
+                }
+            }
+        }
+
+        $('[name="Delete"]').click(function () {
+            if (confirm('Bạn có chắc muốn xóa item ?')) {
+                $(this).closest('tr').children('td').each(function (i, e) {
+                    $(this).find("input.class-delete-all").prop("checked", true);
+                    return true;
+                })
+            }
+            else {
+                return false;
+            }
+
+        })
+
+    </script>
+}

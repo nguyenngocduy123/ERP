@@ -1,0 +1,177 @@
+﻿@model IQueryable<Erp.Domain.Account.Entities.vwAccount_Liabilities>
+
+@using Erp.BackOffice.App_GlobalResources
+@using Erp.BackOffice.Account.Models
+@using Erp.BackOffice.Helpers
+@using GridMvc.Html
+
+@{
+    bool isPopup = Request["popup"] != null && Request["popup"].ToString().ToLower() == "true" ? true : false;
+    if (isPopup)
+    {
+        Layout = "~/Views/Shared/_PopupLayout.cshtml";
+    }
+    else
+    {
+        Layout = "~/Views/Shared/ACE_AdminLayout.cshtml";
+    }
+
+    string TargetModuleName = "Nhà thuốc";
+
+    int rowNumber = 0;
+    int numberOfItem = 10;
+    int currentPage = Request["grid-page"] != null ? Convert.ToInt32(Request["grid-page"]) : 1;
+
+    ViewBag.Title = "Công nợ " + TargetModuleName;
+    
+    Erp.BackOffice.Models.PageSetting pageSetting = new Erp.BackOffice.Models.PageSetting
+    {
+        ModuleName = "TransactionLiabilities",
+        ActionName = "LiabilitiesDrugStore",
+        PageTitle = ViewBag.Title,
+        DisplaySearchPanel = true,
+        IsPopup = false,
+        DisplayBackButton = false
+    };
+}
+
+@if (ViewBag.SuccessMessage != null && ViewBag.SuccessMessage != "")
+{
+    <div class="alert alert-block alert-success">
+        <button class="close" data-dismiss="alert" type="button">
+            <i class="ace-icon fa fa-times"></i>
+        </button>
+        <i class="ace-icon fa fa-check green"></i>
+        @ViewBag.SuccessMessage
+    </div>
+}
+
+@if (ViewBag.FailedMessage != null && ViewBag.FailedMessage != "")
+{
+    <div class="alert alert-block alert-danger">
+        <button class="close" data-dismiss="alert" type="button">
+            <i class="ace-icon fa fa-times"></i>
+        </button>
+        <i class="ace-icon fa fa-warning red"></i>
+        @ViewBag.FailedMessage
+    </div>
+}
+
+<link href="@Url.Content("~/assets/css/Gridmvc.css")" rel="stylesheet" type="text/css" />
+<script src="@Url.Content("~/Scripts/gridmvc.min.js")" type="text/javascript"></script>
+
+@helper GridColumnName(string TargetModule, string TargetCode, string TargetName, bool isPopup)
+{
+    if (isPopup)
+    {
+        <a onclick="parent.selectBranchItem(@TargetCode)">@TargetName</a>
+    }
+    else
+    {
+        <a onclick="OpenPopup('@Url.Action("LiabilitiesDetail", "TransactionLiabilities", new { TargetModule = TargetModule, TargetCode = TargetCode, TargetName = TargetName, popup = true })', 'Chi tiết công nợ', 0, 500)">@TargetName</a>
+    }
+}
+
+@helper GridColumnCategoryValue(object value)
+{
+    var attr = Erp.BackOffice.Helpers.Common.GetCategoryByValueOrId("value", value);
+    <span>@(attr != null ? attr.Name : "")</span>
+}
+
+@helper CheckDeleteColumns(int Id)
+{
+    <label>
+        <input class="ace class-delete-all" type="checkbox" name="DeleteId-checkbox" value="@Id">
+        <span class="lbl"></span>
+    </label>
+}
+
+@helper BuildCheckAll()
+{
+    <label>
+        <input class="ace" type="checkbox" name="checkAll" id="checkAll" />
+        <span class="lbl"></span>
+    </label>
+}
+
+@using (Html.BeginPageHeaderContainer(pageSetting))
+{
+
+    <p>
+        <input type="hidden" value="@Request["popup"]" name="popup" />
+        <input type="hidden" value="@Request["TargetType"]" name="TargetType" />
+        @Html.TextBox("TargetCode", Request["TargetCode"], new { @class = "form-control", autocomplete = "off", placeholder = "Mã " + TargetModuleName })
+        @Html.TextBox("TargetName", Request["TargetName"], new { @class = "form-control", autocomplete = "off", placeholder = "Tên " + TargetModuleName })
+    </p>
+    <p>
+        <label>
+            <input class="ace" type="checkbox" name="AllData" id="AllData" @(Request["AllData"] == "on" ? "checked" : "") />
+            <span class="lbl">Xem tất cả @TargetModuleName</span>
+        </label>
+    </p>
+}
+
+
+@Html.Grid(Model).Columns(columns =>
+{
+    columns.Add().Titled("#").SetWidth(50).RenderValueAs(o =>
+    {
+        rowNumber++;
+        return @<text> @(rowNumber + ((currentPage - 1) * numberOfItem)) </text>;
+    });
+    columns.Add(m => m.TargetCode).Titled("Mã " + TargetModuleName).SetWidth(150);
+    columns.Add().Titled("Tên " + TargetModuleName).Sortable(false).Sanitized(false).Encoded(false).RenderValueAs(u => GridColumnName(u.TargetModule, u.TargetCode, u.TargetName, isPopup));
+    columns.Add().Titled("Công nợ hiện tại").SetWidth(150).RenderValueAs(u => Erp.BackOffice.Helpers.Common.PhanCachHangNgan(u.Remain));
+}).WithPaging(50).SetRowCssClasses(u => u.Remain > 0 ? "warning red" : "")
+
+@section Scripts {
+@Html.ScriptBottom_ValidationMvc()
+    <script type="text/javascript">
+        function CheckIsval() {
+            if ($('[name="DeleteId-checkbox"]').is(':checked') == false) {
+                alert("Phải chọn ít nhất 1 item.");
+                return false;
+            }
+            else {
+                if (confirm('Bạn có chắc muốn xóa các item đã chọn ?')) {
+                    return true;
+                }
+                else {
+                    return false;
+                }
+            }
+        }
+
+        $('[name="Delete"]').click(function () {
+            if (confirm('Bạn có chắc muốn xóa item ?')) {
+                $(this).closest('tr').children('td').each(function (i, e) {
+                    $(this).find("input.class-delete-all").prop("checked", true);
+                    return true;
+                })
+            }
+            else {
+                return false;
+            }
+
+        })
+
+        $(function () {
+            var sum = 0;
+
+            $("tr.grid-row").each(function () {
+                var tr = $(this);
+                var rows = $(tr).children();
+                var amount = rows[3].innerHTML;
+
+                amount = amount.replace(/\./g, '');
+                amount = parseFloat(amount);
+                //console.log(amount);
+                sum += amount;
+            });
+
+            //sum = sum.toFixed(2);
+            var trTotals = "<tr><td></td><td></td><td></td><td style='color:red;font-weight:bold;'>" + currencyFormat(sum) + "</td></tr>"
+            $("tr.grid-row:last").after(trTotals);
+        });
+    </script>
+}

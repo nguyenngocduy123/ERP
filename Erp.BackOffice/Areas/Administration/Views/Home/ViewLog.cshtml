@@ -1,0 +1,18 @@
+﻿@using GridMvc.Html
+@model IEnumerable<Erp.Domain.Entities.BOLog>
+@{
+    ViewBag.Title = "ViewLog";
+    Layout = "~/Views/Shared/ACE_AdminLayout.cshtml";
+}
+
+@Html.Grid(Model).Columns(columns =>
+           {
+               //columns.Add().Titled("STT").SetWidth(20).RenderValueAs(n => (Model.ToList().IndexOf(n) + 1).ToString());
+               columns.Add(u => u.CreatedDate).Titled("Date").SetWidth(50);
+               columns.Add(u => u.UserName).Titled("User").SetWidth(50);
+
+               columns.Add(u => u.Area).Titled("Area").SetWidth(50);
+               columns.Add(u => u.Controller).Titled("Controller").SetWidth(50);
+               columns.Add(u => u.Action).Titled("Action").SetWidth(50);
+               columns.Add(u => u.Data).Titled("Data").SetWidth(50);
+           }).WithPaging(15)

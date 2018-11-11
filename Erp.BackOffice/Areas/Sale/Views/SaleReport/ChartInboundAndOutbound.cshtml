@@ -1,0 +1,222 @@
+﻿@using Erp.BackOffice.App_GlobalResources
+@using Erp.BackOffice.Models
+@using Erp.BackOffice.Sale.Models
+@using Erp.BackOffice.Helpers
+@model List<Sale_BaoCaoNhapXuatTonViewModel>
+@{
+    int index1 = 1;
+    Layout = null;
+}
+<script src="/Scripts/Chartjs-master/Chartjs.bundle.min.js"></script>
+<script src="/Scripts/Chartjs-master/globalConfig.js"></script>
+<div class="row">
+    <div class="col-sm-12">
+        <canvas id="canvas-chart"></canvas>
+    </div>
+</div>
+<div class="row">
+    <div class="col-sm-12">
+        <table id="CTable" class="table table-bordered">
+            <thead>
+                <tr>
+                    <th style="width:40px;">STT</th>
+                    <th style="width:100px;text-align:center">Số Lô</th>
+                    <th style="width:100px;text-align:center">Hạn dùng</th>
+                    <th style="width:100px;text-align:center">Tồn đầu kỳ</th>
+                    <th style="width:100px;text-align:center">Nhập trong kỳ</th>
+                    <th style="width:100px;text-align:center">Xuất trong kỳ</th>
+                    <th style="width:100px;text-align:center">Tồn cuối kỳ</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var wh in Model.GroupBy(x => x.WarehouseName))
+                {
+                    <tr class="alert-warning">
+                        <td colspan="3">@(wh.Key)</td>
+                        <td style="text-align:right">@(Common.PhanCachHangNgan(wh.Sum(x => x.First_Remain)))</td>
+                        <td style="text-align:right">@(Common.PhanCachHangNgan(wh.Sum(x => x.Last_InboundQuantity)))</td>
+                        <td style="text-align:right">@(Common.PhanCachHangNgan(wh.Sum(x => x.Last_OutboundQuantity)))</td>
+                        <td style="text-align:right">@(Common.PhanCachHangNgan(wh.Sum(x => x.Remain)))</td>
+                    </tr>
+                    foreach (var group in Model.GroupBy(x => new { x.ProductCode, x.WarehouseName }).Where(x => x.Key.WarehouseName == wh.Key))
+                    {
+                        int index2 = 1;
+                        <tr class="alert-info">
+                            <td>
+                                <span>@(index1)</span>
+                            </td>
+                            <td colspan="2">@(group.Key.ProductCode) - @(group.FirstOrDefault().ProductName)</td>
+                            <td style="text-align:right">@(Common.PhanCachHangNgan(group.Sum(x => x.First_Remain)))</td>
+                            <td style="text-align:right">@(Common.PhanCachHangNgan(group.Sum(x => x.Last_InboundQuantity)))</td>
+                            <td style="text-align:right">@(Common.PhanCachHangNgan(group.Sum(x => x.Last_OutboundQuantity)))</td>
+                            <td style="text-align:right">@(Common.PhanCachHangNgan(group.Sum(x => x.Remain)))</td>
+                        </tr>
+                        foreach (var item in Model.Where(x => x.ProductCode == group.Key.ProductCode && x.WarehouseName == group.Key.WarehouseName))
+                        {
+                            <tr>
+                                <td>
+                                    <span>@("  "+index1).@index2</span>
+                                </td>
+                                <td>@(item.LoCode)</td>
+                                <td>@(item.ExpiryDate == null ? "" : item.ExpiryDate.Value.ToString("dd/MM/yyyy"))</td>
+                                <td style="text-align:right">@(Common.PhanCachHangNgan(item.First_Remain))</td>
+                                <td style="text-align:right">@(Common.PhanCachHangNgan(item.Last_InboundQuantity))</td>
+                                <td style="text-align:right">@(Common.PhanCachHangNgan(item.Last_OutboundQuantity))</td>
+                                <td style="text-align:right">@(Common.PhanCachHangNgan(item.Remain))</td>
+                            </tr>
+                            index2++;
+                        }
+                        index1++;
+                    }
+                }
+            </tbody>
+            <thead>
+                <tr>
+                    <td colspan="3" style="text-align:right"><b>Tổng</b></td>
+                    <td style="text-align:right">@(Common.PhanCachHangNgan(Model.Sum(x => x.First_Remain)))</td>
+                    <td style="text-align:right">@(Common.PhanCachHangNgan(Model.Sum(x => x.Last_InboundQuantity)))</td>
+                    <td style="text-align:right">@(Common.PhanCachHangNgan(Model.Sum(x => x.Last_OutboundQuantity)))</td>
+                    <td style="text-align:right">@(Common.PhanCachHangNgan(Model.Sum(x => x.Remain)))</td>
+                </tr>
+            </thead>
+        </table>
+    </div>
+</div>
+<script>
+    (function () {
+        var colorRender = Chart.helpers.color;
+
+        var responseData = [];
+
+        @if(!string.IsNullOrEmpty(ViewBag.json))
+        {
+            @Html.Raw("responseData = " + ViewBag.json + ";");
+        }
+
+        //Tạo dữ liệu trục x
+        var arrayLabel = [];
+
+        for (var i in responseData) {
+            arrayLabel.push(responseData[i].label);
+        }
+
+        var dataPushToDataset = [];
+        var dataPushToDataset2 = [];
+        for (var i in arrayLabel) {
+            var item = responseData.filter(function (obj) {
+                return obj.label.toString() == arrayLabel[i];
+            });
+            if (item.length != 0) {
+                dataPushToDataset.push(item[0].data);
+                dataPushToDataset2.push(item[0].data2);
+            } else {
+                dataPushToDataset.push(0);
+                dataPushToDataset2.push(0);
+            }
+        }
+        var arrayDataset = [];
+        var newDataset = createNewDataset(dataPushToDataset, 'Nhập kho', window.chartColors.blue, window.chartColors.blue, 1);
+        arrayDataset.push(newDataset);
+        ////
+        var newDataset2 = createNewDataset(dataPushToDataset2, 'Xuất kho', window.chartColors.black, window.chartColors.black, 1);
+        arrayDataset.push(newDataset2);
+
+        var barChartData = {
+            labels: arrayLabel,
+            datasets: []
+        };
+
+        function createNewDataset(arrayData, label, backgroundColorValue, borderColorValue, borderWidth) {
+            var objectDataset = {
+                label: label,
+                backgroundColor: colorRender(backgroundColorValue).alpha(0.5).rgbString(),
+                borderColor: borderColorValue,
+                borderWidth: borderWidth,
+                data: []
+            };
+
+            for (var i in arrayData) {
+                objectDataset.data.push(arrayData[i]);
+            }
+
+            return objectDataset;
+        };
+
+        $(document).ready(function () {
+            //Chart.defaults.global.hover.mode = 'nearest';
+            var ctx = document.getElementById("canvas-chart").getContext("2d");
+
+            //legend: là các chú thích theo màu
+
+            var invoiceBar = new Chart(ctx, {
+                type: 'bar',
+                data: barChartData,
+                options: {
+                    responsive: true,
+                    legend: {
+                        position: 'top',
+                    },
+                    title: {
+                        display: false,
+                        text: 'Biểu đồ nhập xuất kho'
+                    },
+                    animation: {
+                        duration: 500,
+                        enabled: true,
+                    },
+                    scales: {
+                        yAxes: [
+                            {
+                                ticks: {
+                                    fontSize: window.outerWidth < 992 ? 9 : 12,
+                                    callback: function (label, index, labels) {
+                                        return Number(label).toFixed(0).toString().replace(/\d(?=(?:\d{3})+(?!\d))/g, '$&.');
+                                    }
+                                },
+                                scaleLabel: {
+                                    display: window.outerWidth < 992 ? false : true,
+                                    //labelString: '1k = 1000',
+                                }
+                            }
+                        ],
+                        xAxes: [{
+                            ticks: {
+                                fontSize: 10
+                            }
+                        }]
+                    },
+                    tooltips: {
+                        enabled: true,
+                        mode: 'single',
+                        callbacks: {
+                            title: function (tooltipItem, data) { return data.labels[tooltipItem[0].index]; },
+                            label: function (tooltipItems, data) {
+                                //return data.datasets[tooltipItems.datasetIndex].label + ': ' + Number(tooltipItems.yLabel/1000).toFixed(0).toString().replace(/\d(?=(?:\d{3})+(?!\d))/g,'$&.') + 'k';
+                                if (data.datasets[tooltipItems.datasetIndex].label == "Nhập kho") {
+                                    return "Nhập kho: " + Number(tooltipItems.yLabel).toFixed(0).toString().replace(/\d(?=(?:\d{3})+(?!\d))/g, '$&.');
+
+                                }
+                                else if (data.datasets[tooltipItems.datasetIndex].label == "Xuất kho") {
+                                    return "Xuất kho: " + Number(tooltipItems.yLabel).toFixed(0).toString().replace(/\d(?=(?:\d{3})+(?!\d))/g, '$&.');
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+
+            setTimeout(function () {
+                for (var i in arrayDataset) {
+                    console.log(arrayDataset[i]);
+                    barChartData.datasets.push(arrayDataset[i]);
+                }
+                invoiceBar.update();
+                //console.log('updated')
+            }, 500);
+        });
+
+        var colorNames = Object.keys(window.chartColors);
+
+    })();
+
+</script>

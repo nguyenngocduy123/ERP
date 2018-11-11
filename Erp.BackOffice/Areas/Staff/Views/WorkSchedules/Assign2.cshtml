@@ -1,0 +1,239 @@
+﻿@model Erp.Domain.Staff.Entities.WorkSchedules
+
+@using Erp.Domain.Entities
+@using Erp.Domain.Staff.Entities
+@using Erp.BackOffice.App_GlobalResources
+@using Erp.BackOffice.Staff.Models
+@using Erp.BackOffice.Helpers
+
+@{
+    ViewBag.Title = Wording.Assign;
+    Layout = "~/Views/Shared/ACE_AdminLayout.cshtml";
+
+    List<DateTime> dates = (List<DateTime>)ViewBag.dates;
+    List<DateTime> DayHoliday = (List<DateTime>)ViewBag.DayHoliday;
+    //IQueryable<Staffs> staffList = (IQueryable<Staffs>)ViewBag.staffList;
+    IQueryable<Shifts> ShiftsList = (IQueryable<Shifts>)ViewBag.ShiftsList;
+    List<Category> DayOff = (List<Category>)ViewBag.DayOff;
+}
+
+@if (ViewBag.SuccessMessage != null && ViewBag.SuccessMessage != "")
+{
+    <div class="alert alert-block alert-success">
+        <button class="close" data-dismiss="alert" type="button">
+            <i class="fa fa-remove"></i>
+        </button>
+        <i class="fa fa-ok green"></i>
+        @ViewBag.SuccessMessage
+    </div>
+}
+
+@if (ViewBag.FailedMessage != null && ViewBag.FailedMessage != "")
+{
+    <div class="alert alert-block alert-error">
+        <button class="close" data-dismiss="alert" type="button">
+            <i class="fa fa-remove"></i>
+        </button>
+        <i class="fa fa-warning-sign red"></i>
+        @ViewBag.FailedMessage
+    </div>
+}
+<div class="page-header">
+    <h1>@ViewBag.Title</h1>
+</div>
+<style>
+    #ClassAssign .class_checkbox {
+        margin: 0 -5px 10px;
+        border: 1px solid #e4e4e4;
+        padding: 5px 8px;
+        display: block;
+    }
+
+        #ClassAssign .class_checkbox span {
+            padding: 0 0 0 5px;
+        }
+
+    #ClassAssign div:nth-child(odd) .class_checkbox {
+        background: #f3f3f3;
+    }
+
+    input[type=checkbox].ace + .lbl::before, input[type=radio].ace + .lbl::before {
+        margin-right: 5px;
+    }
+
+    .help-inline {
+        color: #ff0000;
+    }
+
+    #ClassAssign h4 {
+        margin-top: 20px;
+    }
+
+        #ClassAssign h4 > span {
+            display: inline-block;
+            background: #f5f5f5;
+            padding: 5px 10px;
+            margin-right: 10px;
+            min-width: 150px;
+        }
+</style>
+@using (Html.BeginForm("Assign", "WorkSchedules", FormMethod.Get, new { @class = "form-search form-horizontal" }))
+{
+    <div class="widget-box collapsed">
+        <div class="widget-header " style="padding-top:4px;">
+            <div class="clearfix ">
+                <span class="control-group">
+                    <input class="form-control date-picker" readonly="true" data-date-format="dd/mm/yyyy" placeholder="Từ ngày" value="@Request["start_date"]" name="start_date" />
+                </span>
+                <span class="control-group">
+                    <input class="form-control date-picker" readonly="true" data-date-format="dd/mm/yyyy" placeholder="Đến ngày" value="@Request["end_date"]" name="end_date" />
+                </span>
+                <input name="Staff" type="hidden" value="@Request["Staff"]" />
+                <button onclick="return true;" class="btn btn-primary btn-sm">
+                    @Wording.See
+                    <i class="ace-icon fa fa-search icon-on-right bigger-110"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+}
+@using (Html.BeginForm("Assign", "WorkSchedules", null, FormMethod.Post, new { @class = "form-horizontal", id = "form-assign" }))
+{
+    if (ViewBag.Search == true)
+    {
+        <input name="Staff" type="hidden" value="@Request["Staff"]" />
+        <input name="start_date" type="hidden" value="@Request["start_date"]" />
+        <input name="end_date" type="hidden" value="@Request["end_date"]" />
+        <div class="row">
+            <div class="col-sm-12" id="ClassAssign">
+                @foreach (var a in ViewBag.staffList)
+                {
+                    <div class="widget-box">
+                        <div class="widget-header clearfix">
+                            <h5 class="widget-title"><i class=""></i>@a.Name</h5>
+                            <div class="widget-toolbar">
+                                <a href="#" data-action="collapse">
+                                    <i class="ace-icon fa fa-chevron-up"></i>
+                                </a>
+                            </div>
+                        </div>
+                        <div class="widget-body">
+                            <div class="widget-main clearfix">
+                                <div class="col-sm-2">
+                                    @if (!string.IsNullOrEmpty(a.ProfileImage))
+                                    {
+                                        <a data-toggle="tooltip" title='
+                                                    <img src="/Data/HinhSV/@(a.ProfileImage)" width="248" />'>
+                                                    <img class="profile-picture" src="/Data/HinhSV/@(a.ProfileImage)" width="135" height="165" alt="@a.Code" />
+                                                  </a>
+                                        <span class="label label-info label-white middle" style="width: 135px; font-size: 15px; line-height: 1; height: 20px;">
+                                            <b>@(!string.IsNullOrEmpty(a.Code) ? a.Code.ToString() : "")</b>
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span class="profile-picture" style="height:160px; width:135px"><img style="max-width:100%; margin-top:5px" src="/assets/img/no-avatar.png" alt="@a.Code" /></span>
+                                        <span class="label label-info label-white middle" style="width: 135px; font-size: 15px; line-height: 1; height: 20px;">
+                                            <b>@(!string.IsNullOrEmpty(a.Code) ? a.Code.ToString() : "")</b>
+                                        </span>
+                                    }
+                                </div>
+                                <div class="col-sm-10">
+                                    @foreach (var h in dates)
+                                    {
+                                        <div class="col-sm-2 shifts-@h.ToString("dd/MM/yyyy")">
+                                            <h4 class="smaller" style="text-align:center"><i class="fa fa-calendar"></i>@h.ToString("dd/MM/yyyy")</h4>
+                                            <h5 class="smaller" style="text-align:center">
+                                                @foreach (var q in DayHoliday.Where(x => x.ToString("dd/MM/yyyy") == h.ToString("dd/MM/yyyy")))
+                                                {
+
+                                                    if (h.ToString("dd/MM/yyyy") == q.ToString("dd/MM/yyyy"))
+                                                    {
+                                                        <i class="fa fa-star green"></i>
+                                                    }
+
+                                                }
+                                                @if (DayOff.Where(x => Convert.ToInt32(x.Value) == (int)h.DayOfWeek).Count() <= 0)
+                                                {
+                                                    @h.ToString("dddd")
+                                                }
+                                                else
+                                                {
+                                                    foreach (var r in DayOff.Where(x => Convert.ToInt32(x.Value) == ((int)h.DayOfWeek)))
+                                                    {
+                                                        <span style="color:red"> @h.ToString("dddd")</span>
+                                                    }
+                                                }
+                                            </h5>
+                                            <div class="col-sm-3">
+                                            </div>
+                                            <div class="col-sm-9">
+                                                @foreach (var item in ShiftsList.AsEnumerable())
+                                                {
+                                                    <label class="shifts_checkbox clearfix">
+                                                        <input type="checkbox" value="@a.Id-@h.ToString("dd/MM/yyyy")-@item.Id" name="shifts_id" class="ace" /><span class="lbl">@item.Code</span>
+                                                    </label>
+                                                }
+                                            </div>
+                                        </div>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+
+            </div>
+
+            <div class="col-sm-12 form-group">
+                <div class="col-sm-10 col-sm-offset-2">
+                    <button type="submit" class="btn btn-success btn-sm" name="Submit" value="Save">
+                        <i class="fa fa-check"></i>
+                        @Wording.Save
+                    </button>
+                    <input type="text" style="opacity:0;height:0;width:0;" value="for-test" name="shifts_id_for_vaidate" id="shifts_id_for_vaidate" data-val="true" data-val-required="Hãy chọn ca làm việc" />
+                    <span class="field-validation-valid help-inline" data-valmsg-for="shifts_id_for_vaidate" data-valmsg-replace="true"></span>
+                </div>
+            </div>
+        </div>
+    }
+}
+
+@section Scripts {
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $(document).on('change', 'input[name="shifts_id"]', function () {
+                $('#shifts_id_for_vaidate').next().html('');
+                if ($('input[name="shifts_id"]:checked').length > 0)
+                    $('#shifts_id_for_vaidate').val('for-test');
+                else
+                    $('#shifts_id_for_vaidate').val('pass');
+            });
+        });
+
+        function loadClassAssign() {
+            $('input[name="shifts_id"]').prop('checked', false);
+            $.ajax({
+                type: 'GET',
+                url: '@Url.Action("FetchShifts", "WorkSchedules", new { area = "Staff" })',
+                data: {},
+                dataType: 'json',
+                success: function (res) {
+                    for (var i = 0; i < res.length; i++) {
+                        var date = convertCSharpDateToJavaScriptDate(res[i].Day);
+                        var day = date.getDate();
+                        var month = date.getMonth() + 1;
+                        var dateStr = (day < 10 ? '0' + day : day) + '/' + (month < 10 ? '0' + month : month) + '/' + date.getFullYear();
+                        $('input[name="shifts_id"][value="' + res[i].StaffId + "-" + dateStr + "-" + res[i].ShiftsId + '"]').prop('checked', true);
+
+                    }
+                }
+            });
+        }
+        loadClassAssign();
+
+    </script>
+    @Html.ScriptBottom_ValidationMvc()
+    @Html.ScriptBottom_DatePicker("dd/mm/yyyy")
+    @Html.ScriptBottom_ChosenStyle()
+}

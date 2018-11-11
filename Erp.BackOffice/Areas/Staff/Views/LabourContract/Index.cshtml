@@ -1,0 +1,353 @@
+﻿@model IEnumerable<LabourContractViewModel>
+
+    @using Erp.BackOffice.App_GlobalResources
+    @using Erp.BackOffice.Staff.Models
+    @using Erp.BackOffice.Helpers
+    @using GridMvc.Html
+    @using Erp.BackOffice.Filters
+    @{
+        ViewBag.Title = Wording.PageIndex_LabourContract;
+        Layout = "~/Views/Shared/ACE_AdminLayout.cshtml";
+        Erp.BackOffice.Models.PageSetting pageSetting = new Erp.BackOffice.Models.PageSetting
+        {
+            ModuleName = "LabourContract",
+            ActionName = "Index",
+            PageTitle = ViewBag.Title,
+            DisplaySearchPanel = true,
+            IsPopup = false,
+            DisplayBackButton = false,
+            AdvancedSearch = true,
+            SearchOjectAttr = ViewBag.ListOjectAttrSearch
+        };
+
+    }
+
+    @if (ViewBag.SuccessMessage != null && ViewBag.SuccessMessage != "")
+    {
+        <div class="alert alert-block alert-success">
+            <button class="close" data-dismiss="alert" type="button">
+                <i class="ace-icon fa fa-times"></i>
+            </button>
+            <i class="ace-icon fa fa-check green"></i>
+            @ViewBag.SuccessMessage
+        </div>
+    }
+
+    @if (ViewBag.FailedMessage != null && ViewBag.FailedMessage != "")
+    {
+        <div class="alert alert-block alert-danger">
+            <button class="close" data-dismiss="alert" type="button">
+                <i class="ace-icon fa fa-times"></i>
+            </button>
+            <i class="ace-icon fa fa-warning red"></i>
+            @ViewBag.FailedMessage
+        </div>
+    }
+
+    <link href="@Url.Content("~/assets/css/Gridmvc.css")" rel="stylesheet" type="text/css" />
+    <script src="@Url.Content("~/Scripts/gridmvc.min.js")" type="text/javascript"></script>
+
+    @helper GridColumnCategoryValue(string value, string Code)
+        {
+            var attr = Erp.BackOffice.Helpers.Common.GetCategoryByValueCodeOrId("value", value, Code);
+            <span>@(attr != null ? attr.Name : "")</span>
+}
+
+    @helper GridColumnStatus(string Status, string status2)
+        {
+            switch (Status)
+            {
+                case "Còn hiệu lực":
+                    <label class="label label-success arrowed-in-right" data-rel="tooltip" title="" data-placement="bottom" data-original-title="@status2">@Status</label>
+                    break;
+                case "Sắp hết":
+                    <label class="label label-danger arrowed-in-right" data-rel="tooltip" title="" data-placement="bottom" data-original-title="@status2">@Status</label>
+                    break;
+                case "Hết hạn":
+                    <label class="label label-black arrowed-in-right" data-rel="tooltip" title="" data-placement="bottom" data-original-title="@status2">@Status</label>
+                    break;
+            }
+}
+    @section HeadOfPage {
+        @Html.ScriptTop_ChosenStyle()
+        <style type="text/css">
+            .label-black.arrowed-in-right:after {
+                border-color: #666 transparent #666 #666;
+            }
+
+            .label-black.arrowed-in:before {
+                border-color: #666 #666 #666 transparent;
+            }
+
+            .profile-picture {
+                padding: 0px !important;
+            }
+        </style>
+    }
+
+
+    @helper GridColumnCommand(int id, string Status, DateTime? SignDay)
+        {
+            <p>
+                @if (SecurityFilter.AccessRight("Extend", "LabourContract", "Staff"))
+                {
+                    if (Status == "Sắp hết")
+                    {
+                        <a class="btn btn-mini btn-info" href="@Url.Action("Extend", "LabourContract", new { Id = id })">
+                            <i class="fa fa-external-link-square bigger-120"></i>
+                            @Wording.extend
+                        </a>
+                    }
+                }
+            </p>
+            <p>
+                @if (SignDay > DateTime.Now)
+                {
+                    <a class="btn btn-mini btn-success" href="@Url.Action("Edit", "LabourContract", new { Id = id })">
+                        <i class="fa fa-edit bigger-120"></i>
+                    </a>
+                }
+            </p>
+            <p>
+                <button name="Delete" value="Delete" type="submit" class="btn btn-mini btn-danger">
+                    <i class="ace-icon fa fa-trash bigger-120"></i>
+                </button>
+            </p>
+}
+    @helper CheckDeleteColumns(int Id)
+        {
+            <label>
+                <input class="ace class-delete-all" type="checkbox" name="DeleteId-checkbox" value="@Id">
+                <span class="lbl"></span>
+            </label>
+}
+
+    @helper BuildCheckAll()
+        {
+            <label>
+                <input class="ace" type="checkbox" name="checkAll" id="checkAll" />
+                <span class="lbl"></span>
+            </label>
+}
+    @using (Html.BeginPageHeaderContainer(pageSetting))
+    {
+        <p>
+            @Html.TextBox("Code", Request["Code"], new { @class = "form-control", autocomplete = "off", placeholder = Wording.ContractCode + "..." })
+            @Html.TextBox("Staff", Request["Staff"], new { @class = "form-control", autocomplete = "off", placeholder = Wording.CodeStaff + "..." })
+            @Html.TextBox("NameStaff", Request["NameStaff"], new { @class = "form-control", autocomplete = "off", placeholder = Wording.NameStaff + "..." })
+            @Html.DropDownList("Status", SelectListHelper.GetSelectList_Category("LabourContract_Status", Request["Status"], "Name", null), "- Trạng thái -", new Dictionary<string, object> { { "class", "form-control" }, { "data-val-required", "Bắt buộc chọn." } })
+            @Html.DropDownList("Type", SelectListHelper.GetSelectList_ContractType(Request["Type"], "Loại hợp đồng"), new Dictionary<string, object> { { "class", "form-control" }, { "data-val-required", "Bắt buộc chọn." } })
+            @Html.DropDownList("FormWork", SelectListHelper.GetSelectList_Category("LabourContract_FormWork", Request["FormWork"], "Name", null), "- Hình thức làm việc -", new Dictionary<string, object> { { "class", "form-control" }, { "data-val-required", "Bắt buộc chọn." } })
+        </p>
+    }
+
+    @helper GridColumnName(string name, int id, string code, DateTime? birthday, string ProfileImage, string Status, string Status2)
+        {
+        <div class="col-xs-4">
+            <div class="ace-thumbnails clearfix">
+                    <a href="@(Erp.BackOffice.Helpers.Common.KiemTraTonTaiHinhAnh(ProfileImage,"Staff","user"))" title="@name" data-rel="colorbox" class="cboxElement">
+                        <img  class="" src="@(Erp.BackOffice.Helpers.Common.KiemTraTonTaiHinhAnh(ProfileImage,"Staff","user"))" style="width:65px;height:75px;border:1px solid #808080" />
+                    </a>
+            </div>
+        </div>
+            <div class="col-xs-8">
+                @if (string.IsNullOrEmpty(name))
+                {
+                    <p> <a href="@Url.Action("Detail", "Staffs", new { area = "Staff", Id = id })" target="_blank"><b><i class="fa fa-user-circle-o"></i>  No Title</b></a></p>
+                }
+                else
+                {
+                    <p>
+                        <a href="@Url.Action("Detail", "Staffs", new { area = "Staff", Id = id })" target="_blank">
+                            <b>
+                                @*@if (gender == true)
+                                    {
+                                        <i style="color:#ff00dc" class="fa fa-female" data-rel="tooltip" title="" data-placement="bottom" data-original-title="Giới tính: Nữ"></i>
+                                    }
+                                    else
+                                    {
+                                        <i class="fa fa-male" data-rel="tooltip" title="" data-placement="bottom" data-original-title="Giới tính: Nam"></i>
+                                    }*@
+                                @name
+                            </b>
+                        </a>
+                    </p>
+                }
+                <p><i class="fa fa-barcode" data-rel="tooltip" title="" data-placement="bottom" data-original-title="Mã nhân viên"></i> @code</p>
+                @*<p><i class="fa fa-calendar" data-rel="tooltip" title="" data-placement="bottom" data-original-title="Ngày sinh"></i> @birthday.Value.ToString("dd/MM/yyyy")</p>*@
+                <p>  @GridColumnStatus(Status, Status2)</p>
+            </div>
+}
+    @helper GridColumnLabourInfo(string Code, string ContractName, int id, string ApprovedName,
+        int ApprovedId, string FormWork, int? WageAgreement, DateTime? SignDay, string Status, string Status2)
+        {
+            <div class="col-xs-6">
+                <a onclick="OpenPopup('@Url.Action("Detail", "LabourContract", new { Id = id,IsPopup=true })', 'Chi tiết hợp đồng', 0, 300)"><p class="sum"><i class="glyphicon glyphicon-qrcode" data-rel="tooltip" title="" data-placement="bottom" data-original-title="Mã hợp đồng"></i> <b> @Code</b></p></a>
+                <p class="sum"><i class="fa fa-file-o" data-rel="tooltip" title="" data-placement="bottom" data-original-title="Tên hợp đồng"></i>  @ContractName</p>
+                <p class="sum"><i class="fa fa-calendar-plus-o" data-rel="tooltip" title="" data-placement="bottom" data-original-title="Ngày ký hợp đồng"></i> @SignDay.Value.ToString("dd/MM/yyyy")</p>
+
+            </div>
+
+            <div class="col-xs-6">
+                @if (string.IsNullOrEmpty(ApprovedName))
+                {
+                    <p> <a href="@Url.Action("Detail", "Staffs", new { area = "Staff", Id = ApprovedId })" target="_blank"><b><i class="fa fa-user-circle-o"></i>  No Title</b></a></p>
+                }
+                else
+                {
+                    <p>
+                        <a href="@Url.Action("Detail", "Staffs", new { area = "Staff", Id = ApprovedId })" target="_blank">
+                            <b>
+                                <i class="fa fa-users" data-rel="tooltip" title="" data-placement="bottom" data-original-title="Người đại diện công ty ký hợp đồng"></i>
+                                @ApprovedName
+                            </b>
+                        </a>
+                    </p>
+                }
+                <p class="sum"><i class="fa fa-bandcamp" data-rel="tooltip" title="" data-placement="bottom" data-original-title="Hình thức làm việc"></i>  @FormWork</p>
+                <p class="sum"><i class="fa fa-money" data-rel="tooltip" title="" data-placement="bottom" data-original-title="Mức lương cơ bản"></i> @Common.PhanCachHangNgan(WageAgreement) VND</p>
+
+            </div>
+
+
+}
+    @helper GridColumnTimeInfo(string ContractTypeName, DateTime? EffectiveDay, DateTime? ExpiryDate)
+        {
+            <p class="sum"><i class="fa fa-adjust" data-rel="tooltip" title="" data-placement="bottom" data-original-title="Loại hợp đồng"></i>  @ContractTypeName</p>
+            <p class="sum"><i class="fa fa-calendar-check-o" data-rel="tooltip" title="" data-placement="bottom" data-original-title="Ngày hiệu lực"></i> @EffectiveDay.Value.ToString("dd/MM/yyyy")</p>
+            <p class="sum"><i class="fa fa-calendar-times-o" data-rel="tooltip" title="" data-placement="bottom" data-original-title="Ngày hết hạn"></i> @ExpiryDate.Value.ToString("dd/MM/yyyy")</p>
+}
+    @helper GridColumnPlaceInfo(string position, string department, string branch)
+        {
+            if (position == "1")
+            {
+                <p style="color:red" class="sum"><i class="glyphicon glyphicon-credit-card" data-rel="tooltip" title="" data-placement="bottom" data-original-title="Chức vụ"></i>  @GridColumnCategoryValue(position, "position")</p>
+            }
+            else
+                if (position == "2")
+            {
+                <p style="color:#de6566" class="sum"><i class="glyphicon glyphicon-credit-card" data-rel="tooltip" title="" data-placement="bottom" data-original-title="Chức vụ"></i>  @GridColumnCategoryValue(position, "position")</p>
+            }
+            else if (position == "3")
+            {
+                <p style="color:#ff892a" class="sum"><i class="glyphicon glyphicon-credit-card" data-rel="tooltip" title="" data-placement="bottom" data-original-title="Chức vụ"></i>  @GridColumnCategoryValue(position, "position")</p>
+            }
+            else if (position == "4")
+            {
+                <p style="color:orange" class="sum"><i class="glyphicon glyphicon-credit-card" data-rel="tooltip" title="" data-placement="bottom" data-original-title="Chức vụ"></i>  @GridColumnCategoryValue(position, "position")</p>
+            }
+            else
+            {
+                <p style="color:black" class="sum"><i class="glyphicon glyphicon-credit-card" data-rel="tooltip" title="" data-placement="bottom" data-original-title="Chức vụ"></i>  @GridColumnCategoryValue(position, "position")</p>
+            }
+            <p class="sum"><i class="glyphicon glyphicon-th-large" data-rel="tooltip" title="" data-placement="bottom" data-original-title="Phòng ban"></i>  @department</p>
+            <p class="sum"><i class="glyphicon glyphicon-home" data-rel="tooltip" title="" data-placement="bottom" data-original-title="Chi nhánh"></i>  @branch</p>
+}
+    @using (Html.BeginForm("Delete", "LabourContract", FormMethod.Post))
+    {
+        <div class="table-responsive">
+            @Html.Grid(Model).Columns(columns =>
+                {
+                    columns.Add().Titled(BuildCheckAll().ToHtmlString()).SetWidth(20).Sanitized(false).Encoded(false).RenderValueAs(n => CheckDeleteColumns(n.Id));
+                    columns.Add().Titled("Thông tin nhân viên").Sortable(false).Sanitized(false).Encoded(false).RenderValueAs(u => GridColumnName(u.StaffName, u.StaffId.Value, u.StaffCode, u.StaffBirthday, u.StaffProfileImage, u.Status, u.Status2));
+                    columns.Add().Titled("Thông tin hợp đồng").Sortable(false).Sanitized(false).Encoded(false).RenderValueAs(u => GridColumnLabourInfo(u.Code, u.Name, u.Id, u.ApprovedUserName, u.ApprovedUserId.Value, u.FormWork, u.WageAgreement, u.SignedDay, u.Status, u.Status2));
+                    columns.Add().Titled("Nơi làm việc").Sortable(false).Sanitized(false).Encoded(false).RenderValueAs(u => GridColumnPlaceInfo(u.PositionStaff, u.StaffDepartmentName, u.StaffBranchName));
+                    columns.Add().Titled("Thời hạn hợp đồng").Sortable(false).Sanitized(false).Encoded(false).RenderValueAs(u => GridColumnTimeInfo(u.ContractTypeName, u.EffectiveDate, u.ExpiryDate));
+       //columns.Add().Titled("Thông tin").Sortable(false).SetWidth(200).Sanitized(false).Encoded(false).RenderValueAs(u => GridColumnDate(u.CreatedDate, u.FullName));
+       //columns.Add(u => u.ModifiedUserId).Titled(Html.DisplayNameFor(u => u.FirstOrDefault().ModifiedUserId).ToString()).SetWidth(100).RenderValueAs(u => u.ModifiedUserName);
+       //columns.Add(u => u.ModifiedDate).Titled(Wording.ModifiedDate).SetWidth(100).Sortable(true);
+       columns.Add(u => u.Id).Titled(Wording.Action).Sanitized(false).Encoded(false).RenderValueAs(u => GridColumnCommand(u.Id, u.Status, u.SignedDay));
+                }).WithPaging(10)
+        </div>
+        using (Html.BeginButtonContainer(pageSetting))
+        {
+            if (Erp.BackOffice.Filters.SecurityFilter.AccessRight("Create", "LabourContract", "Staff"))
+            {
+                <a class="btn btn-mini btn-primary" href="@Url.Action("Create", pageSetting.ModuleName)">
+                    <i class="ace-icon fa fa-plus"></i>
+                    @Wording.CreateNew
+                </a>
+            }
+            if (Erp.BackOffice.Filters.SecurityFilter.AccessRight("Delete", "LabourContract", "Staff"))
+            {
+                <button class="btn btn-mini btn-danger" type="submit" name="DeleteAll" value="DeleteAll" onclick="return CheckIsval();">
+                    <i class="ace-icon fa fa-trash"></i>
+                    @Wording.Delete
+                </button>
+            }
+        }
+    }
+    @section Scripts {
+        <script type="text/javascript">
+        //    1.4 Xóa hợp đồng
+        function LabourContractDelete(id) {
+            if (confirm('Bạn có chắc muốn xóa các item đã chọn ?')) {
+                ShowLoading();
+                $.post("@Url.Action("Delete", "LabourContract", new { area = "Staff" })", { Id: id })
+            .done(function (data) {
+                $("#btn_delete_LabourContract_" + id).closest('tr').remove();
+                HideLoading();
+            });
+                return false;
+            }
+            else {
+                return false;
+            }
+        };
+
+        $(document).ready(function () {
+            $('[data-rel="tooltip"]').tooltip({ container: 'body' });
+        });
+        $(document).ready(function () {
+
+            $('#WageAgreement').numberFormat();
+        });
+        function Download(Id, file) {
+            $.ajax({
+                url: '/DocumentField/CheckDownload',
+                type: 'GET',
+                data: { Id: Id, file: file },
+                success: function (res) {
+                    if (res == "success") {
+                        // alert('Tải thành công!');
+                        location.href = '/DocumentField/Download?Id=' + Id + '&file=' + file;
+                    } else {
+                        alert('Tập tin không tồn tại!');
+                    }
+                }
+            });
+
+        };
+
+        function CheckIsval() {
+            if ($('[name="DeleteId-checkbox"]').is(':checked') == false) {
+                alert("Phải chọn ít nhất 1 item.");
+                return false;
+            }
+            else {
+                if (confirm('Bạn có chắc muốn xóa các item đã chọn ?')) {
+                    return true;
+                }
+                else {
+                    return false;
+                }
+            }
+        }
+
+        $('[name="Delete"]').click(function () {
+            if (confirm('Bạn có chắc muốn xóa item ?')) {
+                $(this).closest('tr').children('td').each(function (i, e) {
+                    $(this).find("input.class-delete-all").prop("checked", true);
+                    return true;
+                })
+            }
+            else {
+                return false;
+            }
+
+        })
+        </script>
+        @Html.ScriptBottom_ValidationMvc()
+        @Html.ScriptBottom_DatePicker("dd/mm/yyyy")
+        @Html.ScriptBottom_ChosenStyle()
+    }

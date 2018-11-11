@@ -1,0 +1,393 @@
+﻿@model IEnumerable<TransferWorkViewModel>
+
+    @using Erp.BackOffice.App_GlobalResources
+    @using Erp.BackOffice.Staff.Models
+    @using Erp.BackOffice.Helpers
+    @using GridMvc.Html
+
+    @{
+        ViewBag.Title = Wording.PageIndex_TransferWork;
+        bool isPopup = Request["IsPopup"] != null && Request["IsPopup"].ToString().ToLower() == "true" ? true : false;
+        if (isPopup)
+        {
+            Layout = "~/Views/Shared/_PopupLayout.cshtml";
+        }
+        else
+        {
+            Layout = "~/Views/Shared/ACE_AdminLayout.cshtml";
+        }
+        Erp.BackOffice.Models.PageSetting pageSetting = new Erp.BackOffice.Models.PageSetting
+        {
+            ModuleName = "TransferWork",
+            ActionName = "Index",
+            PageTitle = ViewBag.Title,
+            DisplaySearchPanel = true,
+            IsPopup = false,
+            DisplayBackButton = false
+        };
+        string branchold = (string.IsNullOrEmpty(Request["branchOldId"]) == false ? Request["branchOldId"] : "0");
+        string branchnew = (string.IsNullOrEmpty(Request["branchNewId"]) == false ? Request["branchNewId"] : "0");
+    }
+
+    @if (ViewBag.SuccessMessage != null && ViewBag.SuccessMessage != "")
+    {
+        <div class="alert alert-block alert-success">
+            <button class="close" data-dismiss="alert" type="button">
+                <i class="ace-icon fa fa-times"></i>
+            </button>
+            <i class="ace-icon fa fa-check green"></i>
+            @ViewBag.SuccessMessage
+        </div>
+    }
+
+    @if (ViewBag.FailedMessage != null && ViewBag.FailedMessage != "")
+    {
+        <div class="alert alert-block alert-danger">
+            <button class="close" data-dismiss="alert" type="button">
+                <i class="ace-icon fa fa-times"></i>
+            </button>
+            <i class="ace-icon fa fa-warning red"></i>
+            @ViewBag.FailedMessage
+        </div>
+    }
+    <link href="@Url.Content("~/assets/css/Gridmvc.css")" rel="stylesheet" type="text/css" />
+    <script src="@Url.Content("~/Scripts/gridmvc.min.js")" type="text/javascript"></script>
+
+    @helper GridColumnCommand(int id, string status, int? CreateUser)
+        {
+            @*<div class="hidden-phone visible-desktop action-buttons" style="display: inline-block; float: left;">*@
+
+            if (status == Wording.StatusSalaryAdvance_Pending && CreateUser == ViewBag.User)
+            {
+                if (Erp.BackOffice.Filters.SecurityFilter.AccessRight("Cancel", "TransferWork", "Staff"))
+                {
+                    <a title="Hủy" class="btn btn-mini btn-danger" href="@Url.Action("Cancel", "TransferWork", new { Id = id })">
+                        <i class="glyphicon glyphicon-remove "></i>
+                        @Wording.TransferWorkStatus_Cancel
+                    </a>
+                }
+            }
+            if (status == Wording.StatusSalaryAdvance_Cancel)
+            {
+                <button name="Delete" value="Delete" type="submit" id="btn_delete_TransferWork_@id" class="btn btn-mini btn-danger" onclick="return TransferWorkDelete(@id)">
+                    <i class="ace-icon fa fa-trash bigger-120"></i>
+                    @*@Wording.Delete*@
+                </button>
+            }
+            if (status == Wording.TransferWorkStatus_Cancel)
+            {
+                if (Erp.BackOffice.Filters.SecurityFilter.AccessRight("Edit", "TransferWork", "Staff"))
+                {
+                    <a name="Edit" class="btn btn-mini btn-success"
+                       onclick="OpenPopup('@Url.Action("Edit", "TransferWork", new { Id = id, IsPopup = true })', '@Wording.PageEdit_TransferWork', 500, 300)">
+                        <i class="ace-icon fa fa-edit"></i>
+                    </a>
+                }
+            }
+            <p>
+                @if (status == Wording.TransferWorkStatus_Pending || status == Wording.TransferWorkStatus_Approved)
+                {
+                    if (Erp.BackOffice.Filters.SecurityFilter.AccessRight("Approval", "TransferWork", "Staff"))
+                    {
+                        <a class="btn btn-mini btn-success" href="@Url.Action("Approval", "TransferWork", new { Id = id })">
+
+                            @if (status == Wording.TransferWorkStatus_Pending)
+                            {
+                                <i class="fa fa-check"></i>
+                                @Wording.Browser
+                            }
+                            @if (status == Wording.TransferWorkStatus_Approved)
+                            {
+                                <i class="fa fa-save"></i>
+                                @Wording.TransferWorkStatus_Delivered
+                            }
+                        </a>
+                    }
+                }
+                @if (status == Wording.TransferWorkStatus_Pending)
+                {
+                    if (Erp.BackOffice.Filters.SecurityFilter.AccessRight("Refure", "TransferWork", "Staff"))
+                    {
+                        <a name="Edit" class="btn btn-mini btn-danger" title="Từ chối"
+                           onclick="OpenPopup('@Url.Action("Refure", "TransferWork", new { Id = id, IsPopup = true })', '@Wording.Reason', 500, 300)">
+                            <i class="glyphicon glyphicon-remove"></i>
+                            @Wording.StatusSalaryAdvance_Refure
+                        </a>
+                    }
+                }
+            </p>
+            @*</div>*@
+}
+    @helper GridColumnCategoryValue(string value, string code)
+        {
+            var attr = Erp.BackOffice.Helpers.Common.GetCategoryByValueCodeOrId("value", value, code);
+            <span>@(attr != null ? attr.Name : "")</span>
+}
+    @helper GridColumnInfoStaff(string position, string department, string branch)
+        {
+            if (position == "Giám Đốc")
+            {
+                <p style="color:red" class="sum"><i class="glyphicon glyphicon-credit-card" data-rel="tooltip" title="" data-placement="bottom" data-original-title="Chức vụ"></i>  @position</p>
+            }
+            else
+                if (position == "Phó Giám Đốc")
+            {
+                <p style="color:#de6566" class="sum"><i class="glyphicon glyphicon-credit-card" data-rel="tooltip" title="" data-placement="bottom" data-original-title="Chức vụ"></i>  @position</p>
+            }
+            else if (position == "Trưởng Phòng")
+            {
+                <p style="color:#ff892a" class="sum"><i class="glyphicon glyphicon-credit-card" data-rel="tooltip" title="" data-placement="bottom" data-original-title="Chức vụ"></i>  @position</p>
+            }
+            else if (position == "Phó Trưởng Phòng")
+            {
+                <p style="color:orange" class="sum"><i class="glyphicon glyphicon-credit-card" data-rel="tooltip" title="" data-placement="bottom" data-original-title="Chức vụ"></i>  @position</p>
+            }
+            else
+            {
+                <p style="color:black" class="sum"><i class="glyphicon glyphicon-credit-card" data-rel="tooltip" title="" data-placement="bottom" data-original-title="Chức vụ"></i>  @position</p>
+            }
+            <p class="sum"><i class="glyphicon glyphicon-th-large" data-rel="tooltip" title="" data-placement="bottom" data-original-title="Phòng ban"></i>  @department</p>
+            <p class="sum"><i class="glyphicon glyphicon-home" data-rel="tooltip" title="" data-placement="bottom" data-original-title="Chi nhánh"></i>  @branch</p>
+}
+    @helper GridColumnStatus(string Status)
+        {
+            switch (Status)
+            {
+                case "Chờ duyệt":
+                    <label class="label label-info  arrowed-in-right">@Status</label>
+                    break;
+                case "Hủy":
+                    <label class="label label-black arrowed-in-right">@Status</label>
+                    break;
+                case "Đã duyệt":
+                    <label class="label label-warning arrowed-in-right">@Status</label>
+                    break;
+                case "Đã chuyển":
+                    <label class="label label-success arrowed-in-right">@Status</label>
+                    break;
+                case "Từ chối":
+                    <label class="label label-danger arrowed-in-right">@Status</label>
+                    break;
+            }
+}
+
+
+    @helper GridColumnResidenceInfo(string Code, string DayDecision, string DayEffective, int id, string NameUser, bool isPopup, string status, string CodeStaffOld, string CodeStaffNew)
+        {
+            if (Erp.BackOffice.Filters.SecurityFilter.AccessRight("Detail", "TransferWork", "Staff"))
+            {
+                <a title="Mã quyết định điều chuyển công tác" onclick="OpenPopup('@Url.Action("Detail", "TransferWork", new { Id = id,IsPopup=true })', '@Wording.PageDetail_TransferWork', 500, 700)"><p class="sum"><i class="glyphicon glyphicon-qrcode" data-rel="tooltip" title="" data-placement="bottom" data-original-title="Mã quyết định điều chuyển công tác"></i> <b> @Code</b></p></a>
+
+            }
+            else
+            {
+                <p class="sum"><i class="glyphicon glyphicon-qrcode" data-rel="tooltip" title="" data-placement="bottom" data-original-title="Mã quyết định điều chuyển công tác"></i>  @Code</p>
+            }
+            <p class="sum"><i class="fa fa-calendar-minus-o" data-rel="tooltip" title="" data-placement="bottom" data-original-title="Ngày điều chuyển"></i>  @DayDecision -  <i class="fa fa-calendar-check-o" data-rel="tooltip" title="" data-placement="bottom" data-original-title="Ngày hiệu lực"></i>  @DayEffective</p>
+            <p class="sum"><i class="fa fa-code" data-rel="tooltip" title="" data-placement="bottom" data-original-title="Mã nhân viên cũ"></i>  @CodeStaffOld -  <i class="fa fa-codepen" data-rel="tooltip" title="" data-placement="bottom" data-original-title="Mã nhân viên mới"></i>  @CodeStaffNew</p>
+            //  <p class="sum"><i class="fa fa-user-circle-o" data-rel="tooltip" title="" data-placement="bottom" data-original-title="Người lập phiếu"></i>  @NameUser</p>
+}
+    @helper GridColumnName(string name, int id, string code, DateTime? birthday, bool gender, string ProfileImage, string Status)
+        {
+            <div class="col-xs-4">
+                <div class="ace-thumbnails clearfix">
+                        <a href="@(Erp.BackOffice.Helpers.Common.KiemTraTonTaiHinhAnh(ProfileImage,"Staff","user"))" title="@name" data-rel="colorbox" class="cboxElement">
+                            <img class="" src="@(Erp.BackOffice.Helpers.Common.KiemTraTonTaiHinhAnh(ProfileImage,"Staff","user"))" style="width:65px;height:75px;border:1px solid #808080" />
+                        </a>
+                </div>
+            </div>
+            <div class="col-xs-8">
+                @if (string.IsNullOrEmpty(name))
+                {
+                    <p> <a href="@Url.Action("Detail", "Staffs", new { area = "Staff", Id = id })" target="_blank"><b><i class="fa fa-user-circle-o"></i>  No Title</b></a></p>
+                }
+                else
+                {
+                    <p>
+                        <a href="@Url.Action("Detail", "Staffs", new { area = "Staff", Id = id })" target="_blank">
+                            <b>
+                                @Html.Raw(Erp.BackOffice.Helpers.Common.KiemTraGioiTinh(gender))
+                                @name
+                            </b>
+                        </a>
+                    </p>
+                    <p><i class="fa fa-barcode" data-rel="tooltip" title="" data-placement="bottom" data-original-title="Mã nhân viên hiện tại"></i> @code</p>
+                    @*<p><i class="fa fa-calendar" data-rel="tooltip" title="" data-placement="bottom" data-original-title="Ngày sinh"></i> @birthday.Value.ToString("dd/MM/yyyy")</p>*@
+                    @GridColumnStatus(Status)
+                }
+            </div>
+}
+    @section HeadOfPage {
+        @Html.ScriptTop_ChosenStyle()
+        <style>
+            .label-black.arrowed-in-right:after {
+                border-color: #666 transparent #666 #666;
+            }
+
+            .label-black.arrowed-in:before {
+                border-color: #666 #666 #666 transparent;
+            }
+
+            .chosen-container-single .chosen-single span {
+                margin-top: -5px;
+            }
+
+            .profile-picture {
+                padding: 0px;
+            }
+
+            select {
+                height: 34px;
+                margin-right: 5px;
+            }
+
+            .form-inline .control-label, .form-inline .form-group {
+                margin-bottom: 5px;
+                vertical-align: middle;
+            }
+
+            .form-search .control-group select, .form-search .control-group input {
+                margin-right: 0px !important;
+            }
+        </style>
+    }
+
+    @using (Html.BeginPageHeaderContainer(pageSetting))
+    {
+        <p>
+            @Html.TextBox("Staff", Request["Staff"], new { @class = "form-control", autocomplete = "off", placeholder = Wording.CodeNameStaff + "..." })
+            @Html.TextBox("Code", Request["Code"], new { @class = "form-control", autocomplete = "off", placeholder = Wording.CodeDecisions + "..." })
+            @Html.DropDownList("PositionOld", SelectListHelper.GetSelectList_Category("position", Request["PositionOld"], "Value", "Chức vụ cũ"), new Dictionary<string, object> { { "class", "form-control" }, { "data-val-required", "Bắt buộc chọn." } })
+            @Html.DropDownList("branchOldId", SelectListHelper.GetSelectList_Branch(Request["branchOldId"], "Chi nhánh cũ"), new Dictionary<string, object> { { "class", "form-control" }, { "data-val-required", "Bắt buộc chọn." } })
+            @Html.DropDownList("DepartmentOldId", SelectListHelper.GetSelectList_BranchDepartment(Request["DepartmentOldId"], Int32.Parse(branchold), "Phòng ban cũ"), new Dictionary<string, object> { { "class", "form-control" }, { "data-val-required", "Bắt buộc chọn." } })
+            @Html.DropDownList("Status", SelectListHelper.GetSelectList_Category("TransferWork_Status", Request["Status"], "Value", null), "Trạng thái", new Dictionary<string, object> { { "class", "form-control" }, { "data-val-required", "Bắt buộc chọn." } })
+            @Html.DropDownList("UID", SelectListHelper.GetSelectList_UserbyCreateModuel(Request["UID"], "Create", "TransferWork", null), "Người lập phiếu", new Dictionary<string, object> { { "class", "form-control" } })
+            @Html.DropDownList("PositionNew", SelectListHelper.GetSelectList_Category("position", Request["PositionNew"], "Value", "Chức vụ mới"), new Dictionary<string, object> { { "class", "form-control" }, { "data-val-required", "Bắt buộc chọn." } })
+            @Html.DropDownList("branchNewId", SelectListHelper.GetSelectList_Branch(Request["branchNewId"], "Chi nhánh mới"), new Dictionary<string, object> { { "class", "form-control" }, { "data-val-required", "Bắt buộc chọn." } })
+            @Html.DropDownList("DepartmentNewId", SelectListHelper.GetSelectList_BranchDepartment(Request["DepartmentNewId"], Int32.Parse(branchnew), "Phòng ban mới"), new Dictionary<string, object> { { "class", "form-control" }, { "data-val-required", "Bắt buộc chọn." } })
+            <span class="input-daterange input-group">
+                @Html.TextBox("start_DayDecision", Request["start_DayDecision"] != null ? Request["start_DayDecision"] : "", new { @class = "form-control", autocomplete = "off", placeholder = "Ngày điều chuyển từ..." })
+                <span class="input-group-addon">
+                    <i class="fa fa-exchange"></i>
+                </span>
+                @Html.TextBox("end_DayDecision", Request["end_DayDecision"] != null ? Request["end_DayDecision"] : "", new { @class = "form-control", autocomplete = "off", placeholder = "đến..." })
+            </span>
+            <span class="input-daterange input-group">
+                @Html.TextBox("start_date", Request["start_date"] != null ? Request["start_date"] : "", new { @class = "form-control", autocomplete = "off", placeholder = "Ngày hiệu lực từ..." })
+                <span class="input-group-addon">
+                    <i class="fa fa-exchange"></i>
+                </span>
+                @Html.TextBox("end_date", Request["end_date"] != null ? Request["end_date"] : "", new { @class = "form-control", autocomplete = "off", placeholder = "đến..." })
+            </span>
+        </p>
+    }
+    @using (Html.BeginForm("Delete", "TransferWork", FormMethod.Post))
+    {
+        if (Model != null)
+        {
+            <div class="table-responsive">
+                @Html.Grid(Model).Columns(columns =>
+                         {
+                             columns.Add().Titled(Wording.StaffTranswork).SetWidth(300).Sortable(false).Sanitized(false).Encoded(false).RenderValueAs(u => GridColumnName(u.NameStaff, u.StaffId.Value, u.CodeStaff, u.Birthday, u.Gender.Value, u.ProfileImage, u.Status));
+                             columns.Add().Titled(Wording.InfoTransferWork).Sortable(false).Sanitized(false).Encoded(false).RenderValueAs(u => GridColumnResidenceInfo(u.Code, u.DayDecision.HasValue ? u.DayDecision.Value.ToString("dd/MM/yyyy") : "", u.DayEffective.HasValue ? u.DayEffective.Value.ToString("dd/MM/yyyy") : "", u.Id, u.NameUser, isPopup, u.Status, u.CodeStaffOld, u.CodeStaffNew));
+                             columns.Add().Titled(Wording.BranchOldId).Sortable(false).Sanitized(false).Encoded(false).RenderValueAs(u => GridColumnInfoStaff(u.PositionOldName, u.Staff_DepartmentOld, u.BranchNameOld));
+                             columns.Add().Titled(Wording.BranchNewId).Sortable(false).Sanitized(false).Encoded(false).RenderValueAs(u => GridColumnInfoStaff(u.PositionNewName, u.Staff_DepartmentNew, u.BranchNameNew));
+                             columns.Add(u => u.Reason).Titled(Wording.Reason);
+                    //columns.Add().Titled(Wording.Status).Sortable(false).SetWidth(100).Sanitized(false).Encoded(false).RenderValueAs(u => GridColumnStatus(u.Status));
+                    columns.Add(u => u.Id).Titled(Wording.Action).Sanitized(false).Encoded(false).RenderValueAs(u => GridColumnCommand(u.Id, u.Status, u.CreatedUserId));
+                         }).WithPaging(10)
+            </div>
+        }
+        using (Html.BeginButtonContainer(pageSetting))
+        {
+            @*<a class="btn btn-mini btn-primary" href="@Url.Action("Create", "TransferWork")">
+                    <i class="ace-icon fa fa-plus"></i>
+                    @Wording.CreateNew
+                </a>*@
+            if (Erp.BackOffice.Filters.SecurityFilter.AccessRight("Create", "TransferWork", "Staff"))
+            {
+                @Html.Button(Wording.CreateNew, ButtonType.aTag, ButtonColor.Primary, ButtonSize.Mini, true, IconType.Plus, IconSize.Default, false, new { @onclick = "OpenPopup('" + Url.Action("Create", "TransferWork", new { area = "Staff", IsPopup = "true" }) + "', '" + Wording.PageCreate_TransferWork + "', 0, 500)" })
+            }
+        }
+    }
+
+    @section Scripts {
+        <script type="text/javascript">
+        //    1.4 Xóa tài khoản
+        function TransferWorkDelete(id) {
+            if (confirm('Bạn có chắc muốn xóa các item đã chọn ?')) {
+                ShowLoading();
+                $.post("@Url.Action("Delete", "TransferWork", new { area = "Staff" })", { id: id })
+            .done(function (data) {
+                $("#btn_delete_TransferWork_" + id).closest('tr').remove();
+                HideLoading();
+            });
+                return false;
+            }
+            else {
+                return false;
+            }
+        };
+        $(document).ready(function () {
+            $('[data-rel="tooltip"]').tooltip({ container: 'body' });
+        });
+
+        //Fetch Department of University
+        var urDepartmentl = '/api/BackOfficeServiceAPI/FetchBranchDepartment';
+        var departmentNew = $('[name="DepartmentNewId"]'); // cache it
+
+        $('[name="branchNewId"]').change(function () {
+            ShowLoading();
+            departmentNew.empty(); // remove any existing options
+            $(document.createElement('option'))
+                        .attr('value', '')
+                        .text('- Rỗng -')
+                        .appendTo(departmentNew).trigger('chosen:updated');
+            var id = $(this).val(); // Use $(this) so you don't traverse the DOM again
+            $.getJSON(urDepartmentl, { BranchId: id }, function (response) {
+                departmentNew.empty(); // remove any existing options
+                $(response).each(function () {
+                    $(document.createElement('option'))
+                        .attr('value', this.Id)
+                        .text(this.Staff_DepartmentId)
+                        .appendTo(departmentNew).trigger('chosen:updated');
+                    HideLoading();
+                });
+            });
+        });
+        //Fetch Department of University
+        var urDepartmentl = '/api/BackOfficeServiceAPI/FetchBranchDepartment';
+        var department = $('[name="DepartmentOldId"]'); // cache it
+
+        $('[name="branchOldId"]').change(function () {
+            ShowLoading();
+            department.empty(); // remove any existing options
+            $(document.createElement('option'))
+                        .attr('value', '')
+                        .text('- Rỗng -')
+                        .appendTo(department).trigger('chosen:updated');
+            var id = $(this).val(); // Use $(this) so you don't traverse the DOM again
+            $.getJSON(urDepartmentl, { BranchId: id }, function (response) {
+                department.empty(); // remove any existing options
+                $(response).each(function () {
+                    $(document.createElement('option'))
+                        .attr('value', this.Id)
+                        .text(this.Staff_DepartmentId)
+                        .appendTo(department).trigger('chosen:updated');
+                    HideLoading();
+                });
+            });
+        });
+        function ClosePopupAndDoSomething() {
+            ClosePopup(true);
+
+        }
+        function ClosePopupAndAppendSelect() {
+            ShowLoading();
+            ClosePopup(true);
+        }
+        </script>
+        @Html.ScriptBottom_ValidationMvc()
+        @Html.ScriptBottom_DatePicker("dd/mm/yyyy")
+        @Html.ScriptBottom_ChosenStyle()
+    }

@@ -1,0 +1,201 @@
+﻿@using Erp.BackOffice.App_GlobalResources
+@using Erp.BackOffice.Helpers
+@using Erp.BackOffice.Crm.Models
+
+@model TaskViewModel
+
+@{
+    ViewBag.Title = Wording.PageCreate_Task;
+
+    Layout = "~/Views/Shared/" + (Request["IsPopup"] == null ? "ACE_AdminLayout.cshtml" : "_PopupLayout.cshtml");
+    //Layout = "~/Views/Shared/_PopupLayout.cshtml";
+    Erp.BackOffice.Models.PageSetting pageSetting = new Erp.BackOffice.Models.PageSetting
+    {
+        ModuleName = "Task",
+        ActionName = "Create",
+        PageTitle = ViewBag.Title,
+        DisplaySearchPanel = false,
+        IsPopup = false,
+        DisplayBackButton = true
+    };
+    var path = Erp.BackOffice.Helpers.Common.GetSetting("uploads_image_path_user");
+}
+
+@section HeadOfPage {
+    @Html.ScriptTop_ChosenStyle()
+    <style>
+        .btn.btn-white {
+            /*border-color: rgba(204, 204, 204, 0)!important;*/
+            border-width: 0px !important;
+        }
+
+            .btn.btn-white:hover, .btn.btn-white:focus, .btn.btn-white.active,
+            .btn.btn-white:active, .open > .btn.btn-white.dropdown-toggle,
+            .open > .btn.btn-white.active.dropdown-toggle {
+                background-color: rgba(59, 183, 51, 0.46) !important;
+                border-color: #629959;
+                color: #3a3434 !important;
+            }
+
+        .img_user {
+            width: 40px !important;
+            height: 40px !important;
+            margin: 0 auto;
+            /* display: block; */
+            border-radius: 100%;
+            border: 2px solid;
+        }
+
+        .user_check {
+            width: 30px !important;
+        }
+    </style>
+}
+@using (Html.BeginPageHeaderContainer(pageSetting))
+{
+}
+@using (Html.BeginForm_AceStyle((string)ViewBag.Title, pageSetting.ActionName, pageSetting.ModuleName, null, FormMethod.Post, new { @class = "form-horizontal" }))
+{
+  
+    <div class="col-sm-5">
+        @Html.ValidationSummary(true)
+        <input type="hidden" value="@Request["IsPopup"]" name="IsPopup" />
+        <input type="hidden" name="UrlReferrer" value="@Request.UrlReferrer" />
+        @Html.HiddenFor(model => model.ParentType)
+        @Html.HiddenFor(model => model.ParentId)
+        @Html.CustomTextboxFor(model => model.Subject, null, null, WidthType.span6, true)
+        @*@Html.CustomDropDownListFor(model => model.Status, SelectListHelper.GetSelectList_Category("task_status", null, "Value", Wording.Empty), WidthType.span4, DropdownListStyle.DropdownListStyleDefault, true, null)*@
+        @Html.DateTimePicker(model => model.StartDate, "dd/MM/yyyy H:mm", "00/00/0000 00:00:00", true, false)
+        @Html.DateTimePicker(model => model.DueDate, "dd/MM/yyyy H:mm", "00/00/0000 00:00:00", true, false)
+
+        @*@Html.CustomDropDownListFor(model => model.ParentType, SelectListHelper.GetSelectList_Module(null), WidthType.span4, DropdownListStyle.DropdownListStyleChosen, true, null)*@
+        @*@Html.CustomDropDownListFor(model => model.ContactId, SelectListHelper.GetSelectList_Contact(null), WidthType.span4, DropdownListStyle.DropdownListStyleChosen, true, null)*@
+        @Html.CustomDropDownListFor(model => model.Priority, SelectListHelper.GetSelectList_Category("task_priority", null, "Value", Wording.Empty), null, true,null, DropdownListStyle.DropdownListStyleDefault)
+        @Html.CustomTextAreaFor(model => model.Description, null, WidthType.span12, true)
+    </div>
+    <div class="col-sm-7">
+        <div class="tabbable tabs-right">
+            <ul class="nav nav-tabs padding-12 tab-color-blue background-blue" id="tab">
+                @for (int ii = 0; ii < Model.ListUserType.Count(); ii++)
+                {
+                    <li id="tab_li_@ii" class="">
+                        <a data-toggle="tab" href="#tab_@(ii)">@Model.ListUserType[ii].Name<span class="badge badge-danger pull-right" id="count_check_@ii">0</span></a>
+                    </li>
+                }
+            </ul>
+
+            <div class="tab-content" style="height:355px;">
+                @for (int ii = 0; ii < Model.ListUserType.Count(); ii++)
+                {
+                    <div id="tab_@(ii)" class="tab-pane" style="height:100%;">
+                        <div class="bottom-10">
+                            <label>
+                                <input class="ace" type="checkbox" name="checkAll_@ii" id="checkAll_@ii" onclick="CheckAll(@ii)" />
+                                <span class="lbl" style="margin-left: 2px;">Tất cả</span>
+                            </label>
+                        </div>
+                        <div data-toggle="buttons" class="btn-group">
+
+                            @foreach (var i in Model.ListUser.Where(x => x.UserTypeId.Value == (Model.ListUserType[ii].Id)))
+                            {
+                                <label class="btn btn-sm btn-white" data-toggle="tooltip" onclick="clickActive(this, @ii)" title="@i.FullName" id="label_@i.Id" name="label_@ii" style="padding:2px!important;margin-left:2px!important;margin-bottom:2px!important;width:200px">
+                                    <input type="checkbox" value="@i.Id" id="check_@ii" name="user_check" class="user_check">
+                                    @*<img style="width:50px;height:65px" src="~/assets/img/no-avatar.png">*@
+                                    @if (string.IsNullOrEmpty(i.ProfileImage))
+                                    {
+                                        <img class="img_user pull-left" src="~/assets/img/no-avatar.png">
+                                        <strong> @i.FullName</strong> <br>
+                                        <i class="fa fa-calendar"></i>
+                                        <em>  @(i.DateOfBirth == null ? "chưa có" : i.DateOfBirth.Value.ToShortDateString()) </em>
+                                    }
+                                    else
+                                    {
+                                        <img class="img-user" src="~@path@i.ProfileImage">
+                                        <strong> @i.FullName </strong> <br>
+                                        <i class="fa fa-calendar"></i>
+                                        <em> @(i.DateOfBirth == null ? "chưa có" : i.DateOfBirth.Value.ToShortDateString()) </em>
+                                    }
+                                </label>
+                            }
+
+                        </div>
+
+                    </div>
+
+                }
+            </div>
+        </div>
+    </div>
+    using (Html.BeginButtonContainer(pageSetting))
+    {
+        <button class="btn btn-mini btn-primary" type="submit" name="Submit" value="Save">
+            <i class="ace-icon fa fa-save"></i>
+            @Wording.Save
+        </button>
+    }
+}
+
+@section Scripts {
+    <script>
+        var urlRefer = '@ViewBag.urlRefer';
+        //truyền từ action create của controller qua khi thực hiện submit và return về lại view create, để nhận biết là được gọi theo dạng popup
+        var closePopup = '@ViewBag.closePopup';
+        $(document).ready(function () {
+            //nếu là được gọi theo dạng popup từ form khác thì chạy đoạn code bên dưới
+            if (closePopup != '') {
+                var option = '<option value="@Model.Id" >@Model.Subject</option>';
+                //tên funtion có thể khác theo từng công việc riêng (đây chỉ là mẫu khi thêm mới sẽ gọi lại)
+                //nếu có url thì gọi hàm này để trang ngoài iframe nhảy trang
+                if (urlRefer != '') {
+                    window.parent.ClosePopupAndRedirectToURL(urlRefer);
+                }
+                window.parent.ClosePopupAndDoSomething(option);
+            }
+        });
+        $(document).ready(function () {
+            $('[data-rel="tooltip"]').tooltip({ container: 'body' });
+
+        });
+        $(document).ready(function () {
+            $('#tab_0').addClass("active");
+            $('#tab_li_0').addClass("active");
+        });
+        function clickActive(elem, id) {
+            //  console.log(1111);
+            var $this = $(elem);
+
+            var $chekbox = $this.find('input[type="checkbox"]');
+            var $label = $this.find('label[name="label_' + id + '"]');
+            if ($chekbox.is(':checked')) {
+                $chekbox.prop('checked', false);
+                $label.removeClass('active');
+                $('span[id="count_check_' + id + '"]').text(parseInt($('span[id="count_check_' + id + '"]').text()) - 1);
+
+            } else {
+                $chekbox.prop('checked', true);
+                $label.addClass('active');
+                $('span[id="count_check_' + id + '"]').text(parseInt($('span[id="count_check_' + id + '"]').text()) + 1);
+
+            }
+            //$('span[id="count_check_' + id + '"]').text($this.parent().find(' > label.active').length);
+        }
+
+        function CheckAll(id) {
+            if ($('input[name="checkAll_' + id + '"]').is(':checked')) {
+                $('input[id="check_' + id + '"]').prop('checked', true);
+                $('label[name="label_' + id + '"]').addClass("active");
+                var label_check = $('label[name="label_' + id + '"]').length;
+                $('span[id="count_check_' + id + '"]').text(label_check);
+                //console.log(id);
+            } else {
+                $('input[id="check_' + id + '"]:checked').prop('checked', false);
+                $('label[name="label_' + id + '"]').removeClass("active");
+                var label_check = $('label[name="label_' + id + '"]').length;
+                $('span[id="count_check_' + id + '"]').text(0);
+            }
+        }
+    </script>
+@Html.ScriptBottom_ValidationMvc()
+@Html.ScriptBottom_ChosenStyle()
+@Html.ScriptBottom_DatePicker("dd/mm/yyyy")
+}

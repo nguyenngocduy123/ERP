@@ -1,0 +1,54 @@
+﻿@using Erp.BackOffice.App_GlobalResources
+@using Erp.BackOffice.Helpers
+@using Erp.BackOffice.Sale.Models
+
+@model RequestInboundViewModel
+
+@{
+    ViewBag.Title ="Lý do không chấp thuận yêu cầu nhập kho";
+
+    Layout = "~/Views/Shared/_PopupLayout.cshtml";
+    Erp.BackOffice.Models.PageSetting pageSetting = new Erp.BackOffice.Models.PageSetting
+    {
+        ModuleName = "RequestInbound",
+        ActionName = "Refure",
+        PageTitle = ViewBag.Title,
+        DisplaySearchPanel = false,
+        IsPopup = false,
+        DisplayBackButton = true
+    };
+}
+
+@section HeadOfPage {
+    @Html.ScriptTop_ChosenStyle()
+}
+@using (Html.BeginPageHeaderContainer(pageSetting))
+{
+
+}
+@using (Html.BeginForm_AceStyle((string)ViewBag.Title, pageSetting.ActionName, pageSetting.ModuleName, null, FormMethod.Post, new { @class = "form-horizontal" }))
+{
+    @Html.ValidationSummary(true)
+    @Html.HiddenFor(model => model.Id)
+    @Html.HiddenFor(model => model.Code)
+    @Html.CustomTextAreaFor(model => model.CancelReason, null, WidthType.span12)
+    using (Html.BeginButtonContainer(pageSetting))
+    {
+        <button class="btn btn-mini btn-primary" type="submit" name="Submit" value="Save" onclick="return ClosePopupAndDoSomething();">
+            <i class="ace-icon fa fa-save"></i>
+            @Wording.Save
+        </button>
+    }
+}
+
+@section Scripts {
+    <script>
+    function ClosePopupAndDoSomething() {
+        ClosePopup(true);
+
+    }
+</script>
+    @Html.ScriptBottom_ValidationMvc()
+    @Html.ScriptBottom_DatePicker("dd/mm/yyyy")
+    @Html.ScriptBottom_ChosenStyle()
+}

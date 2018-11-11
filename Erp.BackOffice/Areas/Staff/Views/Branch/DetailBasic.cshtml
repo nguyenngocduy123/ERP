@@ -1,0 +1,252 @@
+﻿@using Erp.BackOffice.App_GlobalResources
+@using Erp.BackOffice.Helpers
+@using Erp.BackOffice.Staff.Models
+@model  BranchViewModel
+@{
+    ViewBag.Title = "Thông tin chi nhánh";
+    //var branchDepartment = ViewBag.BranchDepartment != null ? (Erp.Domain.Staff.Entities.BranchDepartment)ViewBag.BranchDepartment : null;
+
+    Layout = null;
+    Erp.BackOffice.Models.PageSetting pageSetting = new Erp.BackOffice.Models.PageSetting
+    {
+        ModuleName = "Branch",
+        ActionName = "DetailBasic",
+        PageTitle = ViewBag.Title,
+        DisplaySearchPanel = false,
+        IsPopup = false,
+        DisplayBackButton = false
+    };
+}
+@using (Html.BeginPageHeaderContainer(pageSetting))
+{
+    @Html.HiddenFor(model => model.ParentId)
+}
+<p>
+
+    @if (Model.ParentId == null || Model.ParentId.Value <= 0)
+    {
+        if (Erp.BackOffice.Filters.SecurityFilter.AccessRight("Create", "Branch", "Staff"))
+        {
+            <a class="btn btn-mini btn-primary " onclick="OpenPopup('@Url.Action("Create", "Branch", new { area = "Staff", BranchId = Model.Id, IsPopup = "true" })', 'Tạo nhà thuốc mới', 500, 500)">
+                <i class="ace-icon fa fa-plus"></i>
+                Thêm nhà thuốc mới
+            </a>
+        }
+        if (Erp.BackOffice.Filters.SecurityFilter.AccessRight("Edit", "Branch", "Staff"))
+        {
+            <a class="btn btn-mini btn-success " onclick="OpenPopup('@Url.Action("Edit", "Branch", new { area = "Staff",Id=Model.Id, IsPopup = "true" })', 'Cập nhật thông tin chi nhánh', 500, 500)">
+                <i class="ace-icon fa fa-edit"></i>
+                Cập nhật thông tin chi nhánh
+            </a>
+        }
+        if (Erp.BackOffice.Filters.SecurityFilter.AccessRight("Delete", "Branch", "Staff"))
+        {
+            <a class="btn btn-mini btn-danger " onclick="BranchDelete(@Model.Id)">
+                <i class="ace-icon fa fa-remove"></i>
+                Xóa thông tin chi nhánh
+            </a>
+        }
+
+    }
+    else
+    {
+        @*if (Erp.BackOffice.Filters.SecurityFilter.AccessRight("Create", "Staffs", "Staff"))
+        {
+            <a class="btn btn-mini btn-primary " onclick="OpenPopup('@Url.Action("Create", "Staffs", new { area = "Staff", BranchDepartmentId = Model.Id, IsPopup = "true" })', 'Thêm nhân viên mới', 500, 500)">
+                <i class="ace-icon fa fa-plus"></i>
+                Thêm nhân viên mới
+            </a>
+        }*@
+        if (Erp.BackOffice.Filters.SecurityFilter.AccessRight("Edit", "Branch", "Staff"))
+        {
+            <a class="btn btn-mini btn-success " onclick="OpenPopup('@Url.Action("Edit", "Branch", new { area = "Staff", Id = Model.Id, IsPopup = "true" })', 'Cập nhật thông tin nhà thuốc', 500, 500)">
+                <i class="ace-icon fa fa-edit"></i>
+                Cập nhật thông tin nhà thuốc
+            </a>
+        }
+
+        <a class="btn btn-mini btn-danger " onclick="BranchDelete(@Model.Id)">
+            <i class="ace-icon fa fa-remove"></i>
+            Xóa thông tin nhà thuốc
+        </a>
+    }
+</p>
+<div class="widget-container-col ui-sortable" id="widget-container-col-10" style="min-height: 108px;">
+    <div class="widget-box ui-sortable-handle" id="widget-box-10" style="opacity: 1;">
+        <div class="widget-header widget-header-small">
+            <h5 class="widget-title smaller"><i class="fa fa-bars"></i> @Model.Name </h5>
+            <div class="widget-toolbar no-border">
+                <ul class="nav nav-tabs" id="myTab">
+                    <li class="active">
+                        <a data-toggle="tab" href="#home" aria-expanded="true"><i class="fa fa-university"></i> Thông tin chi tiết</a>
+                    </li>
+                    @*@if (branchDepartment != null)
+                    {
+                        <li class="">
+                            <a data-toggle="tab" href="#profile" aria-expanded="false"><i class="fa fa-users"></i> Danh sách nhân viên</a>
+                        </li>
+                    }*@
+                </ul>
+            </div>
+        </div>
+
+        <div class="widget-body">
+            <div class="widget-main padding-6">
+                <div class="tab-content">
+                    <div id="home" class="tab-pane active clearfix">
+                        <div class="detail-view col-xs-12 top-10">
+
+                                <div class="row control-group">
+                                    @Html.DetailViewItemFor2(model => model.Name, null, null, "col-xs-3", "col-xs-9")
+                                </div>
+                                <div class="row control-group">
+                                    @Html.DetailViewItemFor2(model => model.Code, null, null, "col-xs-3", "col-xs-9")
+                                </div>
+                                <div class="row control-group">
+                                    @Html.DetailViewItemFor2(model => model.Phone, null, null, "col-xs-3", "col-xs-9")
+                                </div>
+                                <div class="row control-group">
+                                    @Html.DetailViewItemFor2(model => model.Email, null, null, "col-xs-3", "col-xs-9")
+                                </div>
+                                <div class="row control-group">
+                                    @Html.DetailViewItemFor2(model => model.ProvinceName, null, null, "col-xs-3", "col-xs-9")
+                                </div>
+                                <div class="row control-group">
+                                    @Html.DetailViewItemFor2(model => model.DistrictName, null, null, "col-xs-3", "col-xs-9")
+                                </div>
+                                <div class="row control-group">
+                                    @Html.DetailViewItemFor2(model => model.WardName, null, null, "col-xs-3", "col-xs-9")
+                                </div>
+                                <div class="row control-group">
+                                    @Html.DetailViewItemFor2(model => model.Address, null, null, "col-xs-3", "col-xs-9")
+                                </div>
+                            @if (Model.ParentId != null || Model.ParentId > 0)
+                            {
+                                <div class="row control-group">
+                                    @Html.DetailViewItemFor2(model => model.MaxDebitAmount, null, null, "col-xs-3", "col-xs-9")
+                                </div>
+                            }
+                        </div>
+                    </div>
+
+                    @*<div id="profile" class="tab-pane clearfix">
+
+                        <div id="PanelBranchManager">
+                            <div class="branch-department">
+                                @if (branchDepartment != null)
+                                {
+                                    @Html.Action("Index", "BranchDepartment", new { BranchId = branchDepartment.Sale_BranchId })
+                                }
+                            </div>
+                        </div>
+                        <div id="DepartmentDetail" style="display:none"></div>
+                        <div id="StaffDetail" style="display:none"></div>
+                    </div>*@
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    //Script xử lý sơ đồ phòng ban bơi hết vào đây
+    var nBranchIdSelected = -1;
+    var nDepartmentIdSelected = -1;
+    var nStaffIdSelected = -1;
+
+    var Panel_BranchManager = null;
+    var Panel_DepartmentDetail = null;
+    var Panel_StaffDetail = null;
+    $(document).ready(function () {
+        var parent=$("#ParentId").val();
+        if (parseInt(parent) >0) {
+             //ele.find('label .control-label').html('Tên phòng GDĐT');
+             SetTextForId($('#Code'), "Mã nhà thuốc");
+             SetTextForId($('#Name'), "Tên nhà thuốc");
+         }
+        });
+        function SetTextForId(ele, strName) {
+            var a = $(ele).closest('div .control-group');
+            a.find('label').html(strName);
+        }
+    //Phần chi nhánh
+    //   1.1 Build treeview
+    $(function () {
+        Panel_BranchManager = $("#PanelBranchManager");
+        Panel_DepartmentDetail = $("#DepartmentDetail");
+        Panel_StaffDetail = $("#StaffDetail");
+    });
+
+
+    //    1.3 Chuyển về danh sách Chi nhánh/ phòng ban
+    function BackToPanelBranchManager() {
+        Panel_BranchManager.show();
+        Panel_DepartmentDetail.hide();
+        Panel_StaffDetail.hide();
+    }
+
+    //    1.3 Chuyển về thông tin phòng ban
+    function BackToPanelDepartmentDetail() {
+        // LoadClassDetail(nClassIdSelected);
+        Panel_DepartmentDetail.show();
+        //  Panel_ClassDetail.hide();
+        Panel_StaffDetail.hide();
+    }
+    //    1.4 Xóa chi nhánh
+    function BranchDelete(id) {
+        if (confirm('Bạn có chắc muốn xóa các item đã chọn ?')) {
+            ShowLoading();
+            $.post("@Url.Action("Delete", "Branch", new { area = "Staff" })", { id: id })
+        .done(function (data) {
+            //$("#branch-item-" + id).remove();
+            location.reload();
+            HideLoading();
+        });
+            return false;
+        }
+        else {
+            return false;
+        }
+    }
+
+
+
+    //    1.4 Xóa phòng ban
+    function DepartmentDelete(id) {
+        if (confirm('Bạn có chắc muốn xóa các item đã chọn ?')) {
+            ShowLoading();
+            $.post("@Url.Action("Delete", "Staffs", new { area = "Staff" })", { Id: id, IsPopUp: true })
+        .done(function (data) {
+            $("#department-item-" + id).parent().remove();
+            HideLoading();
+        });
+            return false;
+        }
+        else {
+            return false;
+        }
+    }
+    function showBranchIfEmptyDepartment(id) {
+        $('#department-item-' + id).show();
+        $('#PanelBranchManager #label-none-assign').hide();
+    }
+    function showLabelEmptyDepartment() {
+        var flagHasBranchVisible = false;
+        $('.branch').each(function (i, elem) {
+            if ($(elem).is(':visible')) {
+                flagHasBranchVisible = true;
+                return;
+            }
+        });
+        if (flagHasBranchVisible == false)
+            $('#PanelBranchManager #label-none-assign').show();
+    }
+    function showDepartmentvIfEmptyStaff(id) {
+        $('#department-item-' + id).show();
+        $('#PanelBranchManager #label-none-assign').hide();
+    }
+    function ClosePopupAndRedirectToURL(url) {
+        ClosePopup(true);
+        location.href = url;
+    }
+</script>

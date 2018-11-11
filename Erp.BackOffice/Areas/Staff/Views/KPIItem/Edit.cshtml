@@ -1,0 +1,68 @@
+@using Erp.BackOffice.App_GlobalResources
+@using Erp.BackOffice.Helpers
+@using Erp.BackOffice.Staff.Models
+
+@model KPIItemViewModel
+
+@{
+    ViewBag.Title = Wording.PageEdit_KPIItem;
+
+    bool isPopup = Request["IsPopup"] != null && Request["IsPopup"].ToString().ToLower() == "true" ? true : false;
+    if (isPopup)
+    {
+        Layout = "~/Views/Shared/_PopupLayout.cshtml";
+    }
+    else
+    {
+        Layout = "~/Views/Shared/ACE_AdminLayout.cshtml";
+    }
+    Erp.BackOffice.Models.PageSetting pageSetting = new Erp.BackOffice.Models.PageSetting
+    {
+        ModuleName = "KPIItem",
+        ActionName = "Edit",
+        PageTitle = ViewBag.Title,
+        DisplaySearchPanel = false,
+        IsPopup = false,
+        DisplayBackButton = true
+    };
+}
+
+@section HeadOfPage {
+    @Html.ScriptTop_ChosenStyle()
+}
+
+@*@using (Html.BeginPageHeaderContainer(pageSetting))
+{
+
+}*@
+
+@using (Html.BeginForm_AceStyle((string)ViewBag.Title, "Edit", "KPIItem", null, FormMethod.Post, new { @class = "form-horizontal" }))
+{
+    @Html.ValidationSummary(true)
+    @Html.HiddenFor(model => model.Id)
+    @Html.HiddenFor(model => model.CreatedUserId)
+    @Html.HiddenFor(model => model.CreatedDate)
+    @Html.HiddenFor(model => model.IsDeleted)
+    @Html.HiddenFor(model => model.KPICatalogId)
+
+    @Html.CustomTextboxFor(model => model.Name, null, null, WidthType.span6)
+    @Html.CustomTextboxFor(model => model.Measure, null, null, WidthType.span2)
+    @Html.CustomTextboxFor(model => model.TargetScore_From, null, null, WidthType.span6)
+    @Html.CustomTextboxFor(model => model.TargetScore_To, null, null, WidthType.span6)
+    @Html.CustomTextboxFor(model => model.KPIWeight, null, null, WidthType.span6)
+    @Html.CustomTextAreaFor(model => model.Description, null, WidthType.span12)
+
+    using (Html.BeginButtonContainer(pageSetting))
+    {
+        <button class="btn btn-mini btn-primary" type="submit" name="Submit" value="Save">
+            <i class="ace-icon fa fa-save"></i>
+            @Wording.Save
+        </button>
+    }
+}
+
+@section Scripts {
+
+    @Html.ScriptBottom_ValidationMvc()
+    @Html.ScriptBottom_ChosenStyle()
+}

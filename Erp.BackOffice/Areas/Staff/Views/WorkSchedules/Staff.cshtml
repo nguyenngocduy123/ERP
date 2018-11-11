@@ -1,0 +1,440 @@
+﻿@model IEnumerable<StaffsViewModel>
+
+@using Erp.BackOffice.App_GlobalResources
+@using Erp.BackOffice.Staff.Models
+@using Erp.BackOffice.Helpers
+@using GridMvc.Html
+
+@{
+    ViewBag.Title = Wording.PageIndex_Staff;
+    Layout = "~/Views/Shared/ACE_AdminLayout.cshtml";
+}
+
+
+@if (ViewBag.SuccessMessage != null && ViewBag.SuccessMessage != "")
+{
+    <div class="alert alert-block alert-success">
+        <button class="close" data-dismiss="alert" type="button">
+            <i class="icon-remove"></i>
+        </button>
+        <i class="ace-icon fa fa-check green"></i>
+        @ViewBag.SuccessMessage
+    </div>
+}
+
+@if (ViewBag.FailedMessage != null && ViewBag.FailedMessage != "")
+{
+    <div class="alert alert-danger">
+        <button type="button" class="close" data-dismiss="alert">
+            <i class="ace-icon fa fa-times"></i>
+        </button>
+        <i class="ace-icon fa fa-times"></i>
+        @Html.Raw(ViewBag.FailedMessage)
+    </div>
+}
+<link href="@Url.Content("~/assets/css/Gridmvc.css")" rel="stylesheet" type="text/css" />
+<script src="@Url.Content("~/Scripts/gridmvc.min.js")" type="text/javascript"> </script>
+
+@helper GridColumnName(string name, int id, string code, DateTime? birthday, bool gender)
+{
+if (string.IsNullOrEmpty(name))
+{
+        <p> <a href="@Url.Action("Detail", "Staffs", new { area = "Staff", Id = id })" target="_blank"><b><i class="fa fa-user-circle-o"></i>  No Title</b></a></p>
+}
+else
+{
+        <p>
+            <a href="@Url.Action("Detail", "Staffs", new { area = "Staff", Id = id })" target="_blank">
+                <b>
+                    @if (gender == true)
+                    {
+                        <i style="color:#ff00dc" class="fa fa-female"></i>
+                    }
+                    else
+                    {
+                        <i class="fa fa-male"></i>
+                    }
+                    @name
+                </b>
+            </a>
+        </p>
+        <p class="sum"><i class="fa fa-barcode"></i>  @code</p>
+        <p class="sum"><i class="fa fa-calendar"></i>  @birthday.Value.ToString("dd/MM/yyyy")</p>
+}
+}
+@helper GridColumnResidenceInfo(string phone, string email, string Address, string Phone2, string Email2, string DistrictName, string WardName, string ProvinceName)
+{
+    <p class="sum"><i class="fa fa-phone" data-rel="tooltip" title="" data-placement="bottom" data-original-title="Số điện thoại"></i>  @phone ; @Phone2</p>
+    <p class="sum"><i class="fa fa-envelope" data-rel="tooltip" title="" data-placement="bottom" data-original-title="Email"></i>  @email ; @Email2</p>
+    <p class="sum"><i class="fa fa-map-marker" data-rel="tooltip" title="" data-placement="bottom" data-original-title="Địa chỉ"></i>  @Address - @DistrictName - @WardName - @ProvinceName</p>
+}
+@helper GridColumnInfoStaff(string position, string department, string branch)
+{
+    <p class="sum"><i class="glyphicon glyphicon-credit-card"></i>  @position</p>
+    <p class="sum"><i class="glyphicon glyphicon-th-large"></i>  @department</p>
+    <p class="sum"><i class="glyphicon glyphicon-home"></i>  @branch</p>
+}
+@helper GridColumnProfileImage(string ProfileImage, string name)
+{
+        <a data-toggle="tooltip" title='
+            <img src="@(ProfileImage)" width="248" />'>
+            <img class="profile-picture" src="@(ProfileImage)" width="65" height="80" alt="@name" />
+        </a>
+}
+
+@helper GridColumnDate(object date)
+{
+string sOut = date != null ? ((DateTime) date).ToString("dd/MM/yyyy") : "01/01/1900";
+if (sOut != "01/01/1900")
+{
+        <span>@sOut</span>
+}
+}
+@helper CheckDeleteColumns(long Id)
+{
+    <label>
+        <input class="ace class-delete-all" type="checkbox" name="staff-checkbox" id="staff-checkbox" value="@Id">
+        <span class="lbl"></span>
+    </label>
+}
+
+@helper BuildCheckAll()
+{
+    <label>
+        <input type="checkbox" name="checkAll" id="checkAll" class="ace" />
+        <span class="lbl"></span>
+    </label>
+}
+<div class="page-header">
+    <h1>
+        @ViewBag.Title
+        @*<small><i class="ace-icon fa fa-angle-double-right"></i>...</small>*@
+    </h1>
+</div>
+@section HeadOfPage {
+    @Html.ScriptTop_ChosenStyle()
+    <style type="text/css">
+        .chosen-search:after {
+            content: none !important;
+        }
+
+        .chosen-onthispage {
+            margin-right: 2px;
+        }
+
+            .chosen-onthispage label {
+                display: none;
+            }
+
+            .chosen-onthispage .control-group {
+                margin: 0px;
+                display: inline-block;
+            }
+
+        .chosen-single {
+            border-radius: 0px !important;
+            height: 34px !important;
+            line-height: 34px !important;
+            margin-top: -5px !important;
+        }
+
+        .form-search input {
+            padding: 0px 4px;
+            height: 34px;
+            line-height: 26px;
+        }
+
+        .chosen-container {
+            width: 300px !important;
+            max-width: 100%;
+        }
+
+        #ItemType_chosen {
+            width: 150px !important;
+        }
+
+        .radio {
+            margin-right: 5px;
+        }
+
+        .btn-group-mini > .btn, .btn-mini {
+            margin-bottom: 5px;
+            margin-top: 2px;
+        }
+
+        .form-group {
+            height: 34px;
+            padding: 0px;
+            padding-right: 4px;
+        }
+
+        .form-inline button, .form-inline a {
+            margin-top: 0px;
+        }
+
+        .widget-header {
+            padding-left: 6px;
+            padding-top: 5px;
+        }
+        .form-inline .form-group {
+    margin-bottom: 1px;
+}
+    </style>
+}
+@using (Html.BeginForm("Staff", "WorkSchedules", FormMethod.Get, new { @class = "form-inline form-search" }))
+{
+    <div class="col-sm-12" style="padding:0px">
+        <div class="widget-box collapsed">
+            <div class="widget-header" style="padding-top:4px;">
+                @*<h5 class="widget-title"><i class="fa fa-search"></i>  Tìm kiếm nâng cao</h5>*@
+                <span class="control-group">
+                    @Html.TextBox("Code", Request["Code"], new { placeholder = Wording.CodeStaff })
+                </span>
+                <span class="control-group">
+                    @Html.TextBox("Name", Request["Name"], new { placeholder = Wording.NameStaff })
+                </span>
+                <span class="form-group">
+                    <button onclick="return true;" class="btn btn-primary btn-sm" name="search">
+                        @Wording.Search
+                        <i class="ace-icon fa fa-search icon-on-right bigger-110"></i>
+                    </button>
+                </span>
+                <span class="form-group">
+                    <a href="@Url.Action("Staff", "WorkSchedules", new { area = "Staff" })" class="btn btn-black btn-sm">
+                        @Wording.Reset
+                        <i class="ace-icon fa fa-refresh icon-on-right bigger-110 "></i>
+                    </a>
+                </span>
+                <div class="widget-toolbar">
+                    <a href="#" data-action="collapse">
+                        <i class="ace-icon fa fa-chevron-down"></i>
+                    </a>
+                </div>
+            </div>
+            <div class="widget-body" style="display:none">
+                <div class="widget-main clearfix">
+                    <div class="col-sm-6">
+                        <span class="row">
+                            <span class="col-sm-4">
+                                <label>Chức vụ</label>
+                            </span>
+                            <span class="col-sm-8">
+                                @Html.CustomDropDownList("", "Position", Request["Position"], SelectListHelper.GetSelectList_Category("position", null, "Value", Wording.Empty), WidthType.span6, DropdownListStyle.DropdownListStyleChosen, null, false, false)
+                                @*@Html.DropDownList("Position", (SelectList)ViewData["PositionList"], new Dictionary<string, object> { { "class", "form-control" }, { "data-val-required", "Bắt buộc chọn." } })*@
+                            </span>
+                        </span>
+                        <span class="row">
+                            <span class="col-sm-4">
+                                <label>Chi nhánh</label>
+                            </span>
+                            <span class="col-sm-8">
+                                @Html.CustomDropDownList("", "branchId", Request["branchId"], SelectListHelper.GetSelectList_Branch(null, Wording.Empty), WidthType.span6, DropdownListStyle.DropdownListStyleChosen, null, false, false)
+                                @*@Html.DropDownList("branchId", (SelectList)ViewData["BranchList"], new Dictionary<string, object> { { "class", "form-control" }, { "data-val-required", "Bắt buộc chọn." } })*@
+                            </span>
+                        </span>
+                        <span class="row">
+                            <span class="col-sm-4">
+                                <label>Phòng ban</label>
+                            </span>
+                            <span class="col-sm-8">
+                                @Html.CustomDropDownList("", "DepartmentId", Request["DepartmentId"], new List<SelectListItem> { new SelectListItem { Text = Wording.Empty, Value = "" } }, WidthType.span6, DropdownListStyle.DropdownListStyleChosen, null, false, false)
+                                @*@Html.DropDownList("DepartmentId", (SelectList)ViewData["DepartmentList"], new Dictionary<string, object> { { "class", "form-control" }, { "data-val-required", "Bắt buộc chọn." } })*@
+                            </span>
+                        </span>
+                        <span class="row">
+                            <span class="col-sm-4">
+                                <label>Dân tộc</label>
+                            </span>
+                            <span class="col-sm-8">
+                                @Html.CustomDropDownList("", "Ethnic", Request["Ethnic"], SelectListHelper.GetSelectList_Category("ethnic", null, "Name", Wording.Empty), WidthType.span6, DropdownListStyle.DropdownListStyleChosen, null, false, false)
+                                @*@Html.DropDownList("Ethnic", (SelectList)ViewData["EthnicList"], new Dictionary<string, object> { { "class", "form-control" }, { "data-val-required", "Bắt buộc chọn." } })*@
+                            </span>
+                        </span>
+                        <span class="row">
+                            <span class="col-sm-4">
+                                <label>Tôn giáo</label>
+                            </span>
+                            <span class="col-sm-8">
+                                @Html.CustomDropDownList("", "Religion", Request["Religion"], SelectListHelper.GetSelectList_Category("religion", null, "Name", Wording.Empty), WidthType.span6, DropdownListStyle.DropdownListStyleChosen, null, false, false)
+                                @*@Html.DropDownList("Religion", (SelectList)ViewData["ReligionList"], new Dictionary<string, object> { { "class", "form-control" }, { "data-val-required", "Bắt buộc chọn." } })*@
+                            </span>
+                        </span>
+                    </div>
+
+                    <div class="col-sm-6">
+                        <span class="row">
+                            <span class="col-sm-4">
+                                <label>Tình trạng hôn nhân</label>
+                            </span>
+                            <span class="col-sm-8">
+                                @Html.CustomDropDownList("", "MaritalStatus", Request["MaritalStatus"], SelectListHelper.GetSelectList_Category("MaritalStatus", null, "Name", Wording.Empty), WidthType.span6, DropdownListStyle.DropdownListStyleChosen, null, false, false)
+                                @*@Html.DropDownList("MaritalStatus", (SelectList)ViewData["MaritalStatusList"], new Dictionary<string, object> { { "class", "form-control" }, { "data-val-required", "Bắt buộc chọn." } })*@
+                            </span>
+                        </span>
+                        <span class="row">
+                            <span class="col-sm-4">
+                                <label>Quốc tịch</label>
+                            </span>
+                            <span class="col-sm-8">
+                                @Html.CustomDropDownList("", "CountryId", Request["CountryId"], (SelectList) ViewData["CountryList"], WidthType.span6, DropdownListStyle.DropdownListStyleChosen, null, false, false)
+                                @*@Html.DropDownList("CountryId", (SelectList)ViewData["CountryList"], new Dictionary<string, object> { { "class", "form-control" }, { "data-val-required", "Bắt buộc chọn." } })*@
+                            </span>
+                        </span>
+                        <span class="row">
+                            <span class="col-sm-4">
+                                <label>Thành phố/Tỉnh</label>
+                            </span>
+                            <span class="col-sm-8">
+                                @Html.CustomDropDownList("", "ProvinceId", Request["ProvinceId"], (SelectList) ViewData["ProvinceList"], WidthType.span6, DropdownListStyle.DropdownListStyleChosen, null, false, false)
+                                @*@Html.DropDownList("ProvinceId", (SelectList)ViewData["ProvinceList"], new Dictionary<string, object> { { "class", "form-control" }, { "data-val-required", "Bắt buộc chọn." } })*@
+                            </span>
+                        </span>
+                        <span class="row">
+                            <span class="col-sm-4">
+                                <label>Quận/Huyện</label>
+                            </span>
+                            <span class="col-sm-8">
+                                @Html.CustomDropDownList("", "DistrictId", Request["DistrictId"], (SelectList) ViewData["DistrictList"], WidthType.span6, DropdownListStyle.DropdownListStyleChosen, null, false, false)
+                                @*@Html.DropDownList("DistrictId", (SelectList)ViewData["DistrictList"], new Dictionary<string, object> { { "class", "form-control" }, { "data-val-required", "Bắt buộc chọn." } })*@
+                            </span>
+                        </span>
+                        <span class="row">
+                            <span class="col-sm-4">
+                                <label>Phường/Xã</label>
+                            </span>
+                            <span class="col-sm-8">
+                                @Html.CustomDropDownList("", "WardId", Request["WardId"], (SelectList) ViewData["WardList"], WidthType.span6, DropdownListStyle.DropdownListStyleChosen, null, false, false)
+                                @*@Html.DropDownList("WardId", (SelectList)ViewData["WardList"], new Dictionary<string, object> { { "class", "form-control" }, { "data-val-required", "Bắt buộc chọn." } })*@
+                            </span>
+                        </span>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@using (Html.BeginForm("Staff", "WorkSchedules", null, FormMethod.Post, new { @class = "form-horizontal clearfix", id = "form-staff" }))
+{
+    <div class="col-sm-12" style="padding:0px">
+        <button name="AddStaff" value="AddStaff" type="submit" class="btn btn-mini btn-primary" onclick="return CheckIsval();">
+            <i class="ace-icon fa fa-cog bigger-120"></i>
+            @Wording.WorkSchedules
+        </button>
+        @if (Model != null)
+        {
+            if (ViewBag.Search)
+            {
+                <div class="table-responsive">
+                @Html.Grid(Model).Columns(columns =>
+           {
+               columns.Add().Titled(BuildCheckAll().ToHtmlString()).SetWidth(20).Sanitized(false).Encoded(false).RenderValueAs(n => CheckDeleteColumns(n.Id));
+               columns.Add().Titled(Wording.Image).Sanitized(false).Encoded(false).RenderValueAs(n => GridColumnProfileImage(n.ProfileImagePath, n.Name));
+               columns.Add().Titled(Wording.PersonalInfo).Sortable(false).Sanitized(false).Encoded(false).RenderValueAs(u => GridColumnName(u.Name, u.Id, u.Code, u.Birthday, u.Gender.Value));
+               columns.Add().Titled(Wording.InfoStaff).Sortable(false).Sanitized(false).Encoded(false).RenderValueAs(n => GridColumnInfoStaff(n.PositionName, n.Staff_DepartmentId, n.BranchName));
+               columns.Add().Titled(Wording.ResidenceInfo).Sortable(false).Sanitized(false).Encoded(false).RenderValueAs(n => GridColumnResidenceInfo(n.Phone, n.Email, n.Address, n.Phone2, n.Email2, n.DistrictName, n.WardName, n.ProvinceName));
+           })
+                    </div>
+
+            }
+        }
+    </div>
+}
+@section Scripts {
+    <script>
+        function CheckIsval() {
+            if ($('[name="staff-checkbox"]').is(':checked') == false) {
+                alert("Phải chọn ít nhất 1 nhân viên.");
+                return false;
+            }
+            else {
+                if (confirm('Bạn có chắc muốn thiết lập lịch làm việc cho các nhân viên đã chọn ?')) {
+                    return true;
+                }
+                else {
+                    return false;
+                }
+            }
+        }
+        function ClosePopupAndDoSomething() {
+            ClosePopup(true);
+        }
+
+        var url = '/api/BackOfficeServiceAPI/FetchLocation';
+        var districts = $('[name="DistrictId"]'); // cache it
+        var ward = $('[name="WardId"]');
+
+        $('[name="ProvinceId"]').change(function () {
+            ShowLoading();
+            var id = $(this).val(); // Use $(this) so you don't traverse the DOM again
+            $.getJSON(url, { parentId: id }, function (response) {
+                districts.empty(); // remove any existing options
+                ward.empty();
+                $(document.createElement('option'))
+                        .attr('value', '')
+                        .text('- Rỗng -')
+                        .appendTo(ward).trigger('chosen:updated');
+                $(response).each(function () {
+                    $(document.createElement('option'))
+                        .attr('value', this.Id)
+                        .text(capitalizeFirstAllWords(this.Name.toLowerCase().replace('huyện', '').replace('quận', '')))
+                        .appendTo(districts).trigger('chosen:updated');
+                    HideLoading();
+                });
+            });
+        });
+
+        $('[name="DistrictId"]').change(function () {
+            ShowLoading();
+            var id = $(this).val(); // Use $(this) so you don't traverse the DOM again
+            $.getJSON(url, { parentId: id }, function (response) {
+                ward.empty(); // remove any existing options
+                $(response).each(function () {
+                    $(document.createElement('option'))
+                        .attr('value', this.Id)
+                        .text(capitalizeFirstAllWords(this.Name.toLowerCase()))
+                        .appendTo(ward).trigger('chosen:updated');
+                    HideLoading();
+                });
+            });
+        });
+
+        //Fetch Department of University
+        var urDepartmentl = '/api/BackOfficeServiceAPI/FetchBranchDepartment';
+        var department = $('[name="DepartmentId"]'); // cache it
+
+        $('[name="branchId"]').change(function () {
+            ShowLoading();
+            department.empty(); // remove any existing options
+            $(document.createElement('option'))
+                        .attr('value', '')
+                        .text('- Rỗng -')
+                        .appendTo(department).trigger('chosen:updated');
+            var id = $(this).val(); // Use $(this) so you don't traverse the DOM again
+            $.getJSON(urDepartmentl, { BranchId: id }, function (response) {
+                department.empty(); // remove any existing options
+
+                $(response).each(function () {
+                    $(document.createElement('option'))
+                        .attr('value', this.Id)
+                        .text(this.Staff_DepartmentId)
+                        .appendTo(department).trigger('chosen:updated');
+                    HideLoading();
+                });
+            });
+        });
+
+        $(function () {
+            $('#form-staff').submit(function () {
+                if ($(this).valid()) {
+                    ShowLoading();
+                    @*var list = [@Request["staff-checkbox"]];
+                    LoadStaff(list,false);*@
+                }
+            });
+        });
+    </script>
+    @Html.ScriptBottom_ValidationMvc()
+    @Html.ScriptBottom_ChosenStyle()
+}

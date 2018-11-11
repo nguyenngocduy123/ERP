@@ -1,0 +1,94 @@
+@using Erp.BackOffice.App_GlobalResources
+@using Erp.BackOffice.Helpers
+@using Erp.BackOffice.Sale.Models
+
+@model ServiceScheduleViewModel
+
+@{
+    ViewBag.Title ="Chi tiết lịch đặt phục vụ";
+
+    Layout = "~/Views/Shared/" + (Request["IsPopup"] == null ? "ACE_AdminLayout.cshtml" : "_PopupLayout.cshtml");
+    
+    Erp.BackOffice.Models.PageSetting pageSetting = new Erp.BackOffice.Models.PageSetting
+    {        
+        ModuleName = "ServiceSchedule",
+        ActionName = "Detail",
+        PageTitle = ViewBag.Title,
+        DisplaySearchPanel = false,
+        IsPopup = false,
+        DisplayBackButton = true
+    };
+}
+<style>
+    .profile-picture {
+        width: 187px;
+        height: 217px;
+    }
+    </style>
+@helper GridColumnStatusName(string status)
+{
+    switch (status)
+    {
+        case "pending":
+            <span class="label label-info arrowed arrowed-right">Khách đặt</span>
+            break;
+        case "inprogress":
+        <span class="label label-warning arrowed arrowed-right">Đang phục vụ</span>
+            break;
+        case "completed":
+        <span class="label label-success arrowed arrowed-right">Đã xong</span>
+            break;
+        case "cancel":
+        <span class="label label-danger arrowed arrowed-right">Đã hủy</span>
+            break;
+    }
+}
+@using(Html.BeginPageHeaderContainer(pageSetting))
+{
+
+}
+<div class="row">
+    <div class="col-sm-4" style="padding-right:0px;text-align:center">
+        <span class="profile-picture">
+            <img id="avatar" alt="@Model.CustomerName" src="@Model.CustomerImagePath" style="width:100%" />
+            <span class="label label-info label-white middle" style="width: 100%; font-size: 20px; line-height: 1; height: 30px;">
+                <b>@(!string.IsNullOrEmpty(Model.CustomerCode) ? Model.CustomerCode.ToString() : "")</b>
+            </span>
+        </span>
+        <span class="label label-info label-xlg arrowed-in arrowed-in-right" style="margin-top:4px;width:209px;">
+            <b>@(!string.IsNullOrEmpty(Model.CustomerName) ? Model.CustomerName.ToString() : "")</b>
+        </span>
+    </div>
+    <div class="col-sm-8">
+        <div class="detail-view">
+            <div class="row control-group">
+                @Html.DetailViewItem(Model.Code,"Code","Mã đặt trước",null,null)
+            </div>
+            <div class="row control-group">
+                @Html.DetailViewItem(Model.StartDate.Value.ToString("dd/MM/yyyy HH:mm"), "StartDate", Wording.StartDate, null, null)
+            </div>
+            <div class="row control-group">
+                @Html.DetailViewItem(Model.DueDate.Value.ToString("dd/MM/yyyy HH:mm"), "DueDate", Wording.DueDate, null, null)
+            </div>
+            <div class="row control-group">
+                @Html.DetailViewItem(GridColumnStatusName(Model.Status), "Status", Wording.Status, null, null)
+            </div>
+            <div class="row control-group">
+                @Html.DetailViewItem(Model.BranchName, "BranchName", Wording.BranchName, null, null)
+            </div>
+            <div class="row control-group">
+                @Html.DetailViewItem(Model.ServiceCode, "ServiceCode", Wording.ServiceCode, null, null)
+            </div>
+            <div class="row control-group">
+                @Html.DetailViewItem(Model.ServiceName, "ServiceName", Wording.Service, null, null)
+            </div>
+            <div class="row control-group">
+                @Html.DetailViewItem(Model.Note, "Note", Wording.Note, null, null)
+            </div>
+            <div class="row control-group">
+                @Html.DetailViewItem(Model.CreatedDate.Value.ToString("dd/MM/yyyy HH:mm"), "CreatedDate", Wording.CreatedDate, null, null)
+            </div>
+        </div>
+    </div>
+
+</div>

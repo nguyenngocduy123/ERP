@@ -1,0 +1,215 @@
+﻿@using Erp.BackOffice.App_GlobalResources
+@using Erp.Domain.Sale.Entities
+
+@using Erp.BackOffice.Helpers
+@using GridMvc.Html
+
+@model IQueryable<vwReportCustomer>
+
+@{
+    ViewBag.Title = "Thống kê chiết khấu nhân viên";
+    Layout = "~/Views/Shared/ACE_AdminLayout.cshtml";
+    Erp.BackOffice.Models.PageSetting pageSetting = new Erp.BackOffice.Models.PageSetting
+    {
+        ModuleName = "SaleReport",
+        ActionName = "Commision",
+        PageTitle = ViewBag.Title,
+        DisplaySearchPanel = true,
+        IsPopup = false,
+        DisplayBackButton = false
+    };
+
+    string branchId = Request["branchId"] != null ? Request["branchId"] : "0";
+
+    string SalerId = Request["salerId"] != null ? Request["salerId"] : "0";
+    var salerSelected = SelectListHelper.GetSelectList_FullUserName(null, null).Where(x => x.Value == SalerId).FirstOrDefault();
+    string SalerName = salerSelected == null ? "Tất cả" : salerSelected.Text;
+
+    bool single = Request["single"] != null ? Convert.ToBoolean(Request["single"]) : true;
+    int quarter = Request["quarter"] != null ? Convert.ToInt32(Request["quarter"]) : 1;
+    int month = Request["month"] != null ? Convert.ToInt32(Request["month"]) : DateTime.Now.Month;
+    int year = Request["year"] != null ? Convert.ToInt32(Request["year"]) : DateTime.Now.Year;
+
+    DateTime StartDate = DateTime.Now;
+    DateTime EndDate = DateTime.Now;
+
+    string dateRange = Erp.BackOffice.Helpers.Common.ConvertToDateRange(ref StartDate, ref EndDate, single, year, month, quarter);
+
+    string start = StartDate.ToString("yyyy-MM-dd");
+    string end = EndDate.ToString("yyyy-MM-dd 23:59:59");
+}
+
+<link href="http://netdna.bootstrapcdn.com/font-awesome/3.2.1/css/font-awesome.css" rel="stylesheet" />
+<link href="http://cdn.kendostatic.com/2013.2.918/styles/kendo.common.min.css" rel="stylesheet" />
+<link href="https://kendo.cdn.telerik.com/2015.3.930/styles/kendo.default.min.css" rel="stylesheet" />
+<link href="/ReportViewer/styles/telerikReportViewer-9.0.15.225.css" rel="stylesheet" />
+<!-- THEMES:  black    blueopal    bootstrap    default    Fiori    Flat    HighContrast    material    MaterialBlack    Metro    MetroBlack    Moonlight    Nova    Office365    Silver    Uniform -->
+<!--kendo.all.min.js can be used as well instead of kendo.web.min.js and kendo.mobile.min.js-->
+
+<style>
+    #reportViewer1 {
+        /*position: absolute;*/
+        left: 5px;
+        right: 5px;
+        top: 120px;
+        bottom: 5px;
+        overflow: hidden;
+        font-family: Verdana, Arial;
+        height: 700px;
+    }
+
+        #reportViewer1 * {
+            -webkit-box-sizing: initial;
+            -moz-box-sizing: initial;
+            box-sizing: initial;
+        }
+
+    .help-inline {
+        color: red;
+    }
+</style>
+
+
+@using (Html.BeginPageHeaderContainer(pageSetting))
+{
+    <p>
+        @Html.DropDownList("branchId", SelectListHelper.GetSelectList_Branch(0, null))
+        @Html.DropDownList("salerId", SelectListHelper.GetSelectList_FullUserName(SalerId, "- Nhân viên -"))
+    </p>
+    <p>
+        Xem dữ liệu theo
+        <label>
+            <input id="single1" name="single" type="radio" class="ace" value="true">
+            <span class="lbl"> Tháng</span>
+        </label>
+        <label>
+            <input id="single2" name="single" type="radio" class="ace" value="false">
+            <span class="lbl"> Quý</span>
+        </label>
+        <select id="month" name="month">
+            @for (int i = 1; i <= 12; i++)
+            {
+                <option @(month == i ? "Selected" : "") value="@i">Tháng @i</option>
+            }
+        </select>
+        <select id="quarter" name="quarter" style="display:none">
+            <option @(quarter == 1 ? "Selected" : "") value="1">Quý I</option>
+            <option @(quarter == 2 ? "Selected" : "") value="2">Quý II</option>
+            <option @(quarter == 3 ? "Selected" : "") value="3">Quý III</option>
+            <option @(quarter == 4 ? "Selected" : "") value="4">Quý IV</option>
+        </select>
+
+        <select id="year" name="year">
+            @for (int i = DateTime.Now.Year - 2; i <= DateTime.Now.Year + 2; i++)
+            {
+                <option @(year == i ? "Selected" : "") value="@i">Năm @i</option>
+            }
+        </select>
+    </p>
+}
+@if (!string.IsNullOrEmpty(Request["branchId"]))
+{
+    <div class="row">
+        <div class="col-xs-12">
+            <div id="reportViewer1">
+                loading...
+            </div>
+        </div>
+    </div>
+
+    <script src="http://cdn.kendostatic.com/2013.2.918/js/kendo.web.min.js"></script>
+    <!--kendo.mobile.min.js - optional, if gestures/touch support is required-->
+    <script src="http://cdn.kendostatic.com/2013.2.918/js/kendo.mobile.min.js"></script>
+    <script src="/ReportViewer/js/telerikReportViewer-9.0.15.225.min.js"></script>
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            var single = @(single ? "true" : "false");
+
+            if(single)
+            {
+                $("#single1").prop("checked", true);
+                $("#month").show();
+                $("#quarter").hide();
+            }
+            else
+            {
+                $("#single2").prop("checked", true);
+                $("#month").hide();
+                $("#quarter").show();
+            }
+
+            $("#single1").change(function () {
+                if ($(this).val() == 'true') {
+                    $("#month").show();
+                    $("#quarter").hide();
+                    single = true;
+                }
+            });
+
+            $("#single2").change(function () {
+                if ($(this).val() == 'false') {
+                    $("#month").hide();
+                    $("#quarter").show();
+                    single = false;
+                }
+            });
+
+            $("#reportViewer1")
+                .telerik_ReportViewer({
+
+                    // The URL of the service which will serve reports.
+                    // The URL corresponds to the name of the controller class (ReportsController).
+                    // For more information on how to configure the service please check http://www.telerik.com/help/reporting/telerik-reporting-rest-conception.html.
+                    serviceUrl: "/api/reports/",
+
+                    // The URL for the report viewer template. The template can be edited -
+                    // new functionalities can be added and unneeded ones can be removed.
+                    // For more information please check http://www.telerik.com/help/reporting/html5-report-viewer-templates.html.
+                    templateUrl: '/ReportViewer/templates/telerikReportViewerTemplate-9.0.15.225.html',
+
+                    //ReportSource - report description
+                    reportSource: {
+
+                        // The report can be set to a report file name (trdx report definition)
+                        // or CLR type name (report class definition).
+                        report: "Erp.BackOffice.Areas.Sale.Views.SaleReport.Design.Commision, Erp.BackOffice, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null", //'/Reports/SampleReport.trdx', //
+
+                        // Parameters name value dictionary
+                        parameters: {
+                            BranchName : $("#branchId option:selected").val() == '' ? 'Tất cả' : $("#branchId option:selected").text(),
+                            BranchId : @(string.IsNullOrEmpty(branchId) == false ? branchId : "0"),
+                            SalerId : @(string.IsNullOrEmpty(SalerId) == false ? SalerId : "0"),
+                            StartDate: '@start',
+                            EndDate: '@end',
+                            DateRange: '@Html.Raw(dateRange)'
+                        }
+                    },
+
+                    // Specifies whether the viewer is in interactive or print preview mode.
+                    // PRINT_PREVIEW - Displays the paginated report as if it is printed on paper. Interactivity is not enabled.
+                    // INTERACTIVE - Displays the report in its original width and height without paging. Additionally interactivity is enabled.
+                    viewMode: telerikReportViewer.ViewModes.PRINT_PREVIEW,
+
+                    // Sets the scale mode of the viewer.
+                    // Three modes exist currently:
+                    // FIT_PAGE - The whole report will fit on the page (will zoom in or out), regardless of its width and height.
+                    // FIT_PAGE_WIDTH - The report will be zoomed in or out so that the width of the screen and the width of the report match.
+                    // SPECIFIC - Uses the scale to zoom in and out the report.
+                    scaleMode: telerikReportViewer.ScaleModes.SPECIFIC,
+
+                    // Zoom in and out the report using the scale
+                    // 1.0 is equal to 100%, i.e. the original size of the report
+                    scale: 1.0,
+
+                    ready: function () {
+                        //this.refreshReport();
+                    },
+                });
+        });
+    </script>
+}
+else
+{
+    <div class="alert alert-info">Chọn chi nhánh để xem báo cáo</div>
+}

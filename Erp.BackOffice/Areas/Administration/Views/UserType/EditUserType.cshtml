@@ -1,0 +1,58 @@
+﻿@model Erp.BackOffice.Administration.Models.EditUserTypeModel
+@using Erp.BackOffice.App_GlobalResources
+@using Erp.BackOffice.Helpers
+
+@{
+    ViewBag.Title = Wording.UpdateUserType;
+    Layout = "~/Views/Shared/ACE_AdminLayout.cshtml";
+    Erp.BackOffice.Models.PageSetting pageSetting = new Erp.BackOffice.Models.PageSetting
+    {
+        ModuleName = "UserType",
+        ActionName = "EditUserType",
+        PageTitle = ViewBag.Title,
+        DisplaySearchPanel = false,
+        IsPopup = false,
+        DisplayBackButton = true
+    };
+}
+@using (Html.BeginPageHeaderContainer(pageSetting))
+{
+
+}
+@using (Html.BeginForm_AceStyle((string)ViewBag.Title, "EditUserType", "UserType", null, FormMethod.Post, new { @class = "form-horizontal" }))
+{
+    @Html.ValidationSummary(true)
+    @Html.CustomTextboxFor(model => model.Name, null, null, WidthType.span12)
+    @Html.CustomTextboxFor(model => model.Code, null, null, WidthType.span4, true)
+    @Html.SpinnerFor(model => model.OrderNo, 100, 0, 1, SpinnerStyle.SpinnerStyle1, true)
+    @Html.CustomTextboxFor(model => model.Note, null, null, WidthType.span12)
+
+    @Html.HiddenFor(model => model.Id)
+    @Html.HiddenFor(model => model.IsSystem)
+    using (Html.BeginButtonContainer(pageSetting))
+    {
+        <button class="btn btn-mini btn-primary" type="submit" name="Submit" value="Save">
+            <i class="ace-icon fa fa-save"></i>
+            @Wording.Save
+        </button>
+    }
+}
+
+@section Scripts {
+    @Html.ScriptBottom_ValidationMvc()
+<script>
+    $(document).ready(function () {
+
+        var vdScope = '@Model.Scope';
+        if (vdScope == 'True') vdScope = 'true';
+        if (vdScope == 'False') vdScope = 'false';
+
+        if (vdScope != '') {
+            $('#Scope option[value="' + vdScope + '"]').attr("selected", "selected");
+
+        };
+    });
+    </script>
+
+}
+

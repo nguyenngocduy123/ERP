@@ -1,0 +1,155 @@
+﻿@using Erp.BackOffice.App_GlobalResources
+@using Erp.BackOffice.Sale.Models
+
+@using Erp.BackOffice.Helpers
+@using GridMvc.Html
+
+@model string
+
+@{
+    ViewBag.Title = Wording.ChartProductSaleInMonth;
+    Layout = null;
+        
+}
+
+@*<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.5.0/Chart.min.js"></script>*@
+<script src="/Scripts/Chartjs-master/Chartjs.bundle.min.js"></script>
+@*<script src="http://www.chartjs.org/assets/Chart.js"></script>*@
+
+@*<div class="page-header">
+        <h1>
+            @ViewBag.Title
+        </h1>
+    </div>*@
+
+<div class="row">
+    <div class="col-xs-12">
+        <canvas id="service-sale-chart" style=""></canvas>
+    </div>
+</div>
+
+<script src="/Scripts/Chartjs-master/globalConfig.js"></script>
+<script>
+
+    (function () {
+        function createNewDataset(arrayData, label, borderColorValue, borderWidth) {
+            var objectDataset = {
+                label: label,
+                backgroundColor: [],
+                borderColor: borderColorValue,
+                borderWidth: borderWidth,
+                data: []
+            };
+
+            var arrBGColor = Object.keys(window.chartColors).map(function(key, index) {
+                return window.chartColors[key];
+            });
+
+            for (var i in arrayData) {
+                objectDataset.backgroundColor.push(colorRender(arrBGColor[i]).alpha(0.8).rgbString());
+                objectDataset.data.push(arrayData[i]);
+            }
+
+            return objectDataset;
+        };
+
+        var colorRender = Chart.helpers.color;
+
+        var responseData = @Html.Raw(ViewBag.json);
+
+        //nếu không có dữ liệu thì tạo dữ liệu rỗng
+        if(responseData.length == 0){
+            responseData.push({label:'Chưa có dữ liệu', data: 100});
+        }
+
+        var totalData = 0;
+        var arrayLabel = [];
+        var dataPushToDataset = [];
+        for (var i in responseData) {
+            arrayLabel.push(responseData[i].label);
+            dataPushToDataset.push(responseData[i].data);
+
+            totalData += responseData[i].data;
+        }
+
+        var arrayDataset = [];
+        var newDataset = createNewDataset(dataPushToDataset, 'Top 10 dich vu', window.chartColors.blue, 0);
+        arrayDataset.push(newDataset);
+
+        var pieChartData = {
+            labels: arrayLabel,
+            datasets: []
+        };
+
+        $(document).ready(function () {
+            //Chart.defaults.global.hover.mode = 'nearest';
+            var salechart =document.getElementById("service-sale-chart");
+            var ctx = document.getElementById("service-sale-chart").getContext("2d");
+
+            //legend: là các chú thích theo màu
+
+            var productTop10Pie = new Chart(ctx, {
+                type: 'doughnut',
+                data: pieChartData,
+                options: {
+                    responsive: true,
+                    legend: {
+                        position: 'left',
+                    },
+                    title: {
+                        display: true,
+                        text: 'Top 10 DV sử dụng nhiều trong tháng (tính đến ngày hiện tại)'
+                    },
+                    animation: {
+                        duration: 1000,
+                        enabled: true,
+                    },
+                    tooltips: {
+                        enabled: true,
+                        mode: 'single',
+                        callbacks: {
+                            title: function (tooltipItems, data) {
+                                var value = data.datasets[tooltipItems[0].datasetIndex].data[tooltipItems[0].index];
+                                var percent = (value / totalData) * 100;
+                                return "DV: " + data.labels[tooltipItems[0].index] + ' (' + Math.round(percent) + '%)';
+                            },
+                            label: function(tooltipItem, data) {
+                                var multiLabel = [];
+                                multiLabel.push(responseData[tooltipItem.index].label2);
+                                var value = data.datasets[tooltipItem.datasetIndex].data[tooltipItem.index];
+                                var valueFormat = Number(value/1000).toFixed(0).toString().replace(/\d(?=(?:\d{3})+(?!\d))/g,'$&.') + 'k / ' + Number(totalData/1000).toFixed(0).toString().replace(/\d(?=(?:\d{3})+(?!\d))/g,'$&.') + 'k';
+                                multiLabel.push(valueFormat);
+                                return multiLabel;
+                            }
+                        }
+                    }
+                }
+            });
+
+            setTimeout(function(){
+                for(var i in arrayDataset){
+                    pieChartData.datasets.push(arrayDataset[i]);
+                }
+                productTop10Pie.update(); console.log('updated')
+            },500);
+
+            salechart.onclick = function (evt) {
+                var month = $("#month :selected").val();
+                var year = $("#year :selected").val();
+                var activePoints = productTop10Pie.getElementsAtEvent(evt);
+                if (activePoints[0]) {
+                    var chartData = activePoints[0]['_chart'].config.data;
+                    var idx = activePoints[0]['_index'];
+
+                    var label = chartData.labels[idx];
+                    var value = chartData.datasets[0].data[idx];
+                    var id = chartData.Code[idx];
+                    //OpenPopup('@Url.Action("Detail", "Customer", new { area = "Account" })?Id=' + id + '&IsPopup=true&IsDetailChart=true&TargetMonth='+month+'&TargetYear='+year, 'Thông tin doanh số '+label, 0, 500);
+                      
+                }
+            };
+
+        });
+    })();
+
+</script>

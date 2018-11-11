@@ -1,0 +1,522 @@
+﻿@using Erp.BackOffice.App_GlobalResources
+@using Erp.BackOffice.Helpers
+@using GridMvc.Html
+
+@model Erp.BackOffice.Staff.Models.StaffsViewModel
+
+@{
+    ViewBag.Title = Wording.PageDetailStaff + ": " + Model.Name;
+    Layout = "~/Views/Shared/" + (Request["IsPopup"] == null ? "ACE_AdminLayout.cshtml" : "_PopupLayout.cshtml");
+    Erp.BackOffice.Models.PageSetting pageSetting = new Erp.BackOffice.Models.PageSetting
+    {
+        ModuleName = "Staffs",
+        ActionName = "Detail",
+        PageTitle = ViewBag.Title,
+        DisplaySearchPanel = false,
+        IsPopup = false,
+        DisplayBackButton = false
+    };
+
+}
+@if (ViewBag.FailedMessage != null && ViewBag.FailedMessage != "")
+{
+    <div class="alert alert-block alert-danger">
+        <button class="close" data-dismiss="alert" type="button">
+            <i class="ace-icon fa fa-times"></i>
+        </button>
+        <i class="ace-icon fa fa-warning red"></i>
+        @ViewBag.FailedMessage
+    </div>
+}
+@section HeadOfPage {
+    @Html.ScriptTop_ChosenStyle()
+}
+@using (Html.BeginPageHeaderContainer(pageSetting))
+{
+
+}
+@using (Html.BeginButtonContainer(pageSetting))
+{
+    @Html.Button(Wording.Edit, ButtonType.aTag, ButtonColor.Primary, ButtonSize.Mini, true, IconType.Edit, IconSize.Default, false, new { @class = "btn-StaffsEdit", @onclick = "OpenPopup('" + Url.Action("Edit", "Staffs", new { area = "Staff", Id = Model.Id }) + "', '" + Wording.PageEdit_Staff + "', 700, 650)" })
+
+}
+
+<div class="row">
+    <div class="col-sm-12">
+        <div class="tabbable tabs-left">
+            <ul class="nav nav-tabs padding-12" id="tabCustomer">
+                <li class="active">
+                    <a data-toggle="tab" href="#tab1">
+                        <i class="ace-icon fa fa-user-o"></i>
+                        <span class="hidden-phone">@Wording.PersonalInfo</span>
+                    </a>
+                </li>
+
+                <li>
+                    <a data-toggle="tab" href="#tab2">
+                        <i class="ace-icon fa fa-users"></i>
+                        <span class="hidden-phone">DS người thân</span>
+                    </a>
+                </li>
+                <li>
+                    <a data-toggle="tab" href="#tab3">
+                        <i class="ace-icon fa fa-cc-visa"></i>
+                        <span class="hidden-phone">DS tài khoản ngân hàng</span>
+                    </a>
+                </li>
+                <li>
+                    <a data-toggle="tab" href="#tab4">
+                        <i class="ace-icon fa fa-graduation-cap"></i>
+                        <span class="hidden-phone">DS bằng cấp liên quan</span>
+                    </a>
+                </li>
+                <li>
+                    <a data-toggle="tab" href="#tab6">
+                        <i class="ace-icon fa fa-bars "></i>
+                        <span class="hidden-phone">Quá trình công tác</span>
+                    </a>
+                </li>
+                <li>
+                    <a data-toggle="tab" href="#tab7">
+                        <i class="ace-icon fa fa-money "></i>
+                        <span class="hidden-phone">Lương</span>
+                    </a>
+                </li>
+                <li>
+                    <a data-toggle="tab" href="#tab8">
+                        <i class="ace-icon fa fa-bookmark-o"></i>
+                        <span class="hidden-phone">Hợp đồng</span>
+                    </a>
+                </li>
+                <li>
+                    <a data-toggle="tab" href="#home">
+                        <i class="ace-icon fa fa-calendar-check-o"></i><span class="hidden-phone">DS ngày nghỉ</span>
+
+                    </a>
+                </li>
+
+                <li>
+                    <a data-toggle="tab" href="#profile">
+                        <i class="ace-icon fa fa-dollar "></i><span class="hidden-phone">Lịch sử tạm ứng lương</span>
+                    </a>
+                </li>
+                <li>
+                    <a data-toggle="tab" href="#khenthuong_kyluat">
+                        <i class="ace-icon fa fa-balance-scale"></i><span class="hidden-phone">Khen thưởng-Kỷ luật</span>
+                    </a>
+                </li>
+                <li>
+                    <a data-toggle="tab" href="#ls_luong">
+                        <i class="ace-icon fa fa-money"></i><span class="hidden-phone">Lịch sử lương</span>
+                    </a>
+                </li>
+                <li>
+                    <a data-toggle="tab" href="#ls_hoahong">
+                        <i class="ace-icon fa fa-percent"></i><span class="hidden-phone">Lịch sử hoa hồng (chiết khấu)</span>
+                    </a>
+                </li>
+                <li>
+                    <a data-toggle="tab" href="#ls_dieuchuyen">
+                        <i class="ace-icon fa fa-refresh"></i><span class="hidden-phone">Lịch sử điều chuyển</span>
+                    </a>
+                </li>
+            </ul>
+            <div class="tab-content">
+                <div class="tab-pane clearfix active" id="tab1">
+                    <div class="row">
+                        <div class="col-sm-3">
+                            <div class="profile-picture" style="display:block; text-align:center">
+                                <a onclick="addImage();">
+                                    <img id="avatar" alt="@Model.Name" src="@(Erp.BackOffice.Helpers.Common.KiemTraTonTaiHinhAnh(Model.ProfileImage, "Staff", "user"))" style="max-width:100%" />
+                                </a>
+                            </div>
+                            <span class="label label-info label-white middle" style="width: 100%; font-size: 20px; line-height: 1; height: 30px;">
+                                <b>@(!string.IsNullOrEmpty(Model.ProfileImage) ? Model.ProfileImage.ToString() : "")</b>
+                            </span>
+                            <div id="ImageCreate" hidden>
+                                <div class="col-sm-12" style="padding:0px">
+                                    <div class="widget-box">
+                                        <div class="widget-body">
+                                            <div class="widget-main clearfix">
+                                                @using (Html.BeginForm("Detail", "Staffs", null, FormMethod.Post, new { @id = "form-profileimage", @class = "form-horizontal", enctype = "multipart/form-data" }))
+                                            {
+                                                    @Html.ValidationSummary(true)
+                                                    <span>
+                                                        @Html.FileUploadFor(model => model.ProfileImagePath, model => model.ProfileImageFile, WidthType.span12)
+                                                    </span>
+                                                    <span>
+                                                        <button style="margin-top:30px" type="submit" class="btn btn-success btn-green btn-minier" name="Submit" value="Save">
+                                                            <i class="ace-icon fa fa-floppy-o"></i>
+                                                            @Wording.Save
+                                                        </button>
+                                                        <button style="margin-top:30px" type="button" class="btn btn-black btn-minier" onclick="AllowClose();">
+                                                            <span class="ace-icon fa fa-window-close"></span>
+                                                            @Wording.Close
+                                                        </button>
+                                                    </span>
+                                            }
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="detail-view col-sm-9">
+                            <div class="col-sm-6">
+                                <div class="row control-group">
+                                    @Html.DetailViewItemFor2(model => model.Code, null, null, "col-xs-5", "col-xs-7")
+                                </div>
+                                <div class="row control-group">
+                                    @Html.DetailViewItemFor2(model => model.Birthday, null, null, "col-xs-5", "col-xs-7")
+                            </div>
+                            <div class="row control-group">
+                                @Html.DetailViewItemFor2(model => model.Gender, null, null, "col-xs-5", "col-xs-7")
+                            </div>
+                            <div class="row control-group">
+                                @Html.DetailViewItemFor2(model => model.Religion, null, null, "col-xs-5", "col-xs-7")
+                            </div>
+                            <div class="row control-group">
+                                @Html.DetailViewItemFor2(model => model.Ethnic, null, null, "col-xs-5", "col-xs-7")
+                            </div>
+                            <div class="row control-group">
+                                @Html.DetailViewItemFor2(model => model.MaritalStatus, null, null, "col-xs-5", "col-xs-7")
+                            </div>
+                            <div class="row control-group">
+                                @Html.DetailViewItemFor2(model => model.CountryId, null, null, "col-xs-5", "col-xs-7")
+                            </div>
+                            <div class="row control-group">
+                                @Html.DetailViewItemFor2(model => model.IdCardNumber, null, null, "col-xs-5", "col-xs-7")
+                            </div>
+                            <div class="row control-group">
+                                @Html.DetailViewItemFor2(model => model.IdCardDate, null, null, "col-xs-5", "col-xs-7")
+                            </div>
+                            <div class="row control-group">
+                                @Html.DetailViewItemFor2(model => model.CardIssuedName, null, null, "col-xs-5", "col-xs-7")
+                            </div>
+                            <div class="row control-group">
+                                @Html.DetailViewItemFor2(model => model.Address, null, null, "col-xs-5", "col-xs-7")
+                            </div>
+                            <div class="row control-group">
+                                @Html.DetailViewItemFor2(model => model.WardName, null, null, "col-xs-5", "col-xs-7")
+                            </div>
+                            <div class="row control-group">
+                                @Html.DetailViewItemFor2(model => model.DistrictName, null, null, "col-xs-5", "col-xs-7")
+                            </div>
+                            <div class="row control-group">
+                                @Html.DetailViewItemFor2(model => model.ProvinceName, null, null, "col-xs-5", "col-xs-7")
+                            </div>
+                        </div>
+
+                        <div class="col-sm-6">
+                            <div class="row control-group">
+                                @Html.DetailViewItemFor2(model => model.UserName, null, null, "col-xs-5", "col-xs-7")
+                            </div>
+                            <div class="row control-group">
+                                @Html.DetailViewItemFor2(model => model.PositionName, null, null, "col-xs-5", "col-xs-7")
+                            </div>
+                            <div class="row control-group">
+                                @Html.DetailViewItemFor2(model => model.BranchName, null, null, "col-xs-5", "col-xs-7")
+                            </div>
+                            <div class="row control-group">
+                                @Html.DetailViewItemFor2(model => model.Staff_DepartmentId, null, null, "col-xs-5", "col-xs-7")
+                            </div>
+                            <div class="row control-group">
+                                @Html.DetailViewItemFor2(model => model.StartDate, null, null, "col-xs-5", "col-xs-7")
+                            </div>
+                            <div class="row control-group">
+                                @Html.DetailViewItemFor2(model => model.EndDate, null, null, "col-xs-5", "col-xs-7")
+                            </div>
+                            <div class="row control-group">
+                                @Html.DetailViewItemFor2(model => model.Technique, null, null, "col-xs-5", "col-xs-7")
+                            </div>
+                            <div class="row control-group">
+                                @Html.DetailViewItemFor2(model => model.Literacy, null, null, "col-xs-5", "col-xs-7")
+                            </div>
+                            <div class="row control-group">
+                                @Html.DetailViewItemFor2(model => model.Language, null, null, "col-xs-5", "col-xs-7")
+                            </div>
+                            <div class="row control-group">
+                                @Html.DetailViewItemFor2(model => model.Phone, null, null, "col-xs-5", "col-xs-7")
+                            </div>
+                            <div class="row control-group">
+                                @Html.DetailViewItemFor2(model => model.Phone2, null, null, "col-xs-5", "col-xs-7")
+                            </div>
+                            <div class="row control-group">
+                                @Html.DetailViewItemFor2(model => model.Email, null, null, "col-xs-5", "col-xs-7")
+                            </div>
+                            <div class="row control-group">
+                                @Html.DetailViewItemFor2(model => model.Email2, null, null, "col-xs-5", "col-xs-7")
+                            </div>
+
+                        </div>
+
+                    </div>
+                </div>
+                </div>
+                <div class="tab-pane clearfix" id="tab2">
+                    <div class="col-sm-12">
+                        @Html.Action("Index", "StaffFamily", new { area = "Staff", StaffId = Model.Id })
+                    </div>
+                </div>
+                <div class="tab-pane clearfix" id="tab3">
+                    <div class="col-sm-12">
+                        @Html.Action("Index", "Bank", new { area = "Staff", StaffId = Model.Id })
+                    </div>
+                </div>
+                <div class="tab-pane clearfix" id="tab4">
+                    <div class="col-sm-12">
+                        @Html.Action("Index", "Technique", new { area = "Staff", StaffId = Model.Id })
+                    </div>
+                </div>
+                <div class="tab-pane clearfix" id="tab6">
+                    <div class="col-sm-12">
+                        @Html.Action("Index", "WorkingProcess", new { area = "Staff", StaffId = Model.Id })
+                    </div>
+                </div>
+                <div class="tab-pane clearfix" id="tab7">
+                    @Html.Action("Index", "ProcessPay", new { area = "Staff", StaffId = Model.Id })
+
+                </div>
+                <div class="tab-pane clearfix" id="tab8">
+                    @Html.Action("List", "LabourContract", new { area = "Staff", StaffId = Model.Id })
+
+                </div>
+                <div id="home" class="tab-pane">
+                    @Html.Action("List", "DayOff", new { area = "Staff", StaffId = Model.Id })
+                </div>
+                <div id="profile" class="tab-pane clearfix">
+                    @Html.Action("List", "SalaryAdvance", new { area = "Staff", StaffId = Model.Id })
+                </div>
+                <div id="khenthuong_kyluat" class="tab-pane clearfix">
+                    @Html.Action("List", "BonusDiscipline", new { area = "Staff", StaffId = Model.Id })
+                </div>
+                <div id="ls_luong" class="tab-pane clearfix">
+                    @Html.Action("List", "Payment", new { area = "Account", StaffId = Model.Id })
+                </div>
+                <div id="ls_hoahong" class="tab-pane clearfix">
+                    @Html.Action("ListCommisionStaff", "SaleReport", new { area = "Sale", StaffId = Model.Id })
+                </div>
+                <div id="ls_dieuchuyen" class="tab-pane clearfix">
+                    @Html.Action("List", "TransferWork", new { area = "Staff", StaffId = Model.Id })
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script type="text/javascript">
+                var url = '/api/BackOfficeServiceAPI/FetchLocation';
+                var districts = $('#DistrictId'); // cache it
+                var ward = $('#WardId');
+
+                $("#ProvinceId").change(function () {
+                    ShowLoading();
+                    var id = $(this).val(); // Use $(this) so you don't traverse the DOM again
+                    $.getJSON(url, { parentId: id }, function (response) {
+                        districts.empty(); // remove any existing options
+                        ward.empty();
+                        $(document.createElement('option'))
+                                .attr('value', '')
+                                .text('- Rỗng -')
+                                .appendTo(ward).trigger('chosen:updated');
+                        $(response).each(function () {
+                            $(document.createElement('option'))
+                                .attr('value', this.Id)
+                                .text(capitalizeFirstAllWords(this.Name.toLowerCase().replace('huyện', '').replace('quận', '')))
+                                .appendTo(districts).trigger('chosen:updated');
+                            HideLoading();
+                        });
+                    });
+                });
+
+                $("#DistrictId").change(function () {
+                    ShowLoading();
+                    var id = $(this).val(); // Use $(this) so you don't traverse the DOM again
+                    $.getJSON(url, { parentId: id }, function (response) {
+                        ward.empty(); // remove any existing options
+                        $(response).each(function () {
+                            $(document.createElement('option'))
+                                .attr('value', this.Id)
+                                .text(capitalizeFirstAllWords(this.Name.toLowerCase()))
+                                .appendTo(ward).trigger('chosen:updated');
+                            HideLoading();
+                        });
+                    });
+                });
+                //Fetch Department of University
+                var urDepartmentl = '/api/BackOfficeServiceAPI/FetchBranchDepartment';
+                var department = $('#BranchDepartmentId'); // cache it
+
+                $("#Sale_BranchId").change(function () {
+                    ShowLoading();
+                    department.empty(); // remove any existing options
+                    $(document.createElement('option'))
+                                .attr('value', '')
+                                .text('- Rỗng -')
+                                .appendTo(department).trigger('chosen:updated');
+                    var id = $(this).val(); // Use $(this) so you don't traverse the DOM again
+                    $.getJSON(urDepartmentl, { BranchId: id }, function (response) {
+                        department.empty(); // remove any existing options
+
+                        $(response).each(function () {
+                            $(document.createElement('option'))
+                                .attr('value', this.Staff_DepartmentId)
+                                .text(this.Name)
+                                .appendTo(department).trigger('chosen:updated');
+                            HideLoading();
+                        });
+                    });
+                });
+
+                function ClosePopupAndReloadPageStaffDetail() {
+                    ClosePopup(true);
+                    ShowLoading();
+                };
+                function ClosePopupAndDoSomething() {
+                    ClosePopup(true);
+                    ShowLoading();
+                }
+                function ClosePopupAndAppendSelect() {
+                    ShowLoading();
+                    ClosePopup(true);
+                }
+
+                function ClosePopupAndRedirectToURL(url) {
+                    ClosePopup(true);
+                    location.href = url;
+                }
+                //    1.4 Xóa thân nhân
+                function StaffFamilyDelete(id) {
+                    if (confirm('Bạn có chắc muốn xóa các item đã chọn ?')) {
+                        ShowLoading();
+                        $.post("@Url.Action("Delete", "StaffFamily", new { area = "Staff" })", { id: id })
+                        .done(function (data) {
+                            $("#btn_delete_stafffamily_" + id).closest('tr').remove();
+                            HideLoading();
+                        });
+                        return false;
+                    }
+                    else {
+                        return false;
+                    }
+                };
+                //    1.4 Xóa tài khoản
+                function BankDelete(id) {
+                    if (confirm('Bạn có chắc muốn xóa các item đã chọn ?')) {
+                        ShowLoading();
+                        $.post("@Url.Action("Delete", "Bank", new { area = "Staff" })", { id: id })
+                    .done(function (data) {
+                        $("#btn_delete_bank_" + id).closest('tr').remove();
+                        HideLoading();
+                    });
+                        return false;
+                    }
+                    else {
+                        return false;
+                    }
+                };
+                //    1.4 Xóa thân nhân
+                function TechniqueDelete(id) {
+                    if (confirm('Bạn có chắc muốn xóa các item đã chọn ?')) {
+                        ShowLoading();
+                        $.post("@Url.Action("Delete", "Technique", new { area = "Staff" })", { id: id })
+                    .done(function (data) {
+                        $("#btn_delete_technique_" + id).closest('tr').remove();
+                        HideLoading();
+                    });
+                        return false;
+                    }
+                    else {
+                        return false;
+                    }
+                };
+
+                //    1.4 Xóa ngày nghỉ
+                function DayOffDelete(id) {
+                    if (confirm('Bạn có chắc muốn xóa các item đã chọn ?')) {
+                        ShowLoading();
+                        $.post("@Url.Action("Delete", "DayOff", new { area = "Staff" })", { id: id })
+                    .done(function (data) {
+                        $("#btn_delete_dayoff_" + id).closest('tr').remove();
+                        HideLoading();
+                    });
+                        return false;
+                    }
+                    else {
+                        return false;
+                    }
+                };
+
+                //    1.4 Xóa quá trình công tác
+                function WorkingProcessDelete(id) {
+                    if (confirm('Bạn có chắc muốn xóa các item đã chọn ?')) {
+                        ShowLoading();
+                        $.post("@Url.Action("Delete", "WorkingProcess", new { area = "Staff" })", { id: id })
+                    .done(function (data) {
+                        $("#btn_delete_workingprocess_" + id).closest('tr').remove();
+                        HideLoading();
+                    });
+                        return false;
+                    }
+                    else {
+                        return false;
+                    }
+                };
+                //    1.4 Xóa bậc lương
+                function ProcessPayDelete(id) {
+                    if (confirm('Bạn có chắc muốn xóa các item đã chọn ?')) {
+                        ShowLoading();
+                        $.post("@Url.Action("Delete", "ProcessPay", new { area = "Staff" })", { id: id })
+                    .done(function (data) {
+                        $("#btn_delete_processpay_" + id).closest('tr').remove();
+                        HideLoading();
+                    });
+                        return false;
+                    }
+                    else {
+                        return false;
+                    }
+                };
+
+                //    1.4 Xóa khen thưởng - kỷ luật
+                function BonusDisciplineDelete(id) {
+                    if (confirm('Bạn có chắc muốn xóa các item đã chọn ?')) {
+                        ShowLoading();
+                        $.post("@Url.Action("Delete", "BonusDiscipline", new { area = "Staff" })", { id: id })
+                    .done(function (data) {
+                        $("#btn_delete_BonusDiscipline_" + id).closest('tr').remove();
+                        HideLoading();
+                    });
+                        return false;
+                    }
+                    else {
+                        return false;
+                    }
+                };
+
+                $(function () {
+                    $('#form-profileimage').submit(function () {
+                        if ($(this).valid()) {
+                            ShowLoading();
+                        }
+                    });
+                });
+                //hiển thị thẻ div hình ảnh khi đổi ảnh đại diện
+                function addImage() {
+                    var materialSelected = $("#MaterialId").find("option:selected");
+                    $("#ImageCreate").removeClass("hidden");
+                    $("#ImageCreate").show();
+                    //$('.btn-edit-note').hide();
+                    //$('.btn-save-note, .btn-cancel-edit-note').show();
+                }
+                //đóng thẻ div ảnh
+                function AllowClose() {
+                    var materialSelected = $("#MaterialId").find("option:selected");
+                    $("#ImageCreate").addClass("hidden");
+                }
+    </script>
+    @Html.ScriptBottom_ValidationMvc()
+    @Html.ScriptBottom_ChosenStyle()
+    @Html.ScriptBottom_DatePicker("dd/MM/yyyy H:mm")
+}

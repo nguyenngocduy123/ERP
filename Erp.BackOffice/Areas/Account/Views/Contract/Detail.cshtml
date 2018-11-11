@@ -1,0 +1,250 @@
+﻿@using Erp.BackOffice.App_GlobalResources
+@using Erp.BackOffice.Helpers
+@using Erp.BackOffice.Account.Models
+@using GridMvc.Html
+@model ContractViewModel
+
+@{
+    Model.Type = GridColumnCategoryValue(Model.Type, "ContractType").ToString();
+    Model.InfoPartyAViewModel.Position = GridColumnCategoryValue(Model.InfoPartyAViewModel.Position, "position").ToString();
+    Layout = "~/Views/Shared/" + (Request["IsPopup"] == null ? "ACE_AdminLayout.cshtml" : "_PopupLayout.cshtml");
+    ViewBag.Title = Wording.PageDetail_Contract;
+}
+@helper GridColumnCategoryValue(object value, string code)
+{
+    var attr = Erp.BackOffice.Helpers.Common.GetCategoryByValueCodeOrId("value", value, code);
+    @(attr != null ? attr.Name : "");
+}
+
+
+
+    <div class="col-sm-12" style="padding:0px">
+        <div class="widget-box">
+            <div class="widget-header">
+                <h5 class="widget-title">@ViewBag.Title</h5>
+            </div>
+            <div class="widget-body">
+                <div class="widget-main clearfix">
+                    <div class="col-sm-6">
+                        <h4 class="header smaller lighter blue">Nội dung hợp đồng</h4>
+                        <p></p>
+                        @if (ViewBag.Type == "ContractLease")
+                        {
+                            <div class="detail-view">
+                                <div class="row control-group">
+                                    @Html.DetailViewItemFor2(model => model.Code, null, null, "col-sm-3", "col-sm-9")
+                                </div>
+                                <div class="row control-group">
+                                    @Html.DetailViewItemFor2(model => model.Quantity, null, null, "col-sm-3", "col-sm-9")
+                                </div>
+                                <div class="row control-group">
+                                    @Html.DetailViewItemFor2(model => model.Type, null, null, "col-sm-3", "col-sm-9")
+                                </div>
+                                <div class="row control-group">
+                                    @Html.DetailViewItemFor2(model => model.Place, null, null, "col-sm-3", "col-sm-9")
+                                </div>
+                                <div class="row control-group">
+                                    @Html.DetailViewItemFor2(model => model.EffectiveDate, null, null, "col-sm-3", "col-sm-9")
+                                </div>
+                                <div class="row control-group">
+                                    @Html.DetailViewItemFor2(model => model.CreatedDate, null, null, "col-sm-3", "col-sm-9")
+                                </div>
+                                <div class="row control-group">
+                                    @Html.DetailViewItemFor2(model => model.TransactionCode, null, null, "col-sm-3", "col-sm-9")
+                                </div>
+                                <div class="row control-group">
+                                    @Html.DetailViewItemFor2(model => model.ContractLeaseModel.NameCondos, null, null, "col-sm-3", "col-sm-9")
+                                </div>
+                                <div class="row control-group">
+                                    @Html.DetailViewItemFor2(model => model.ContractLeaseModel.Quantity, null, null, "col-sm-3", "col-sm-9")
+                                </div>
+                                <div class="row control-group">
+                                    @Html.DetailViewItem(Erp.BackOffice.Helpers.Common.PhanCachHangNgan(Model.ContractLeaseModel.Price), "ContractLeaseModel.Price", Wording.Price, null, null, "col-sm-3", "col-sm-9")
+                                </div>
+                                <div class="row control-group">
+                                    @Html.DetailViewItemFor2(model => model.ContractLeaseModel.Unit, null, null, "col-sm-3", "col-sm-9")
+                                </div>
+                                <div class="row control-group">
+                                    @Html.DetailViewItemFor2(model => model.ContractLeaseModel.UnitMoney, null, null, "col-sm-3", "col-sm-9")
+                                </div>
+                                <div class="row control-group">
+                                    @Html.DetailViewItemFor2(model => model.ContractLeaseModel.DayPay, null, null, "col-sm-3", "col-sm-9")
+                                </div>
+                                <div class="row control-group">
+                                    @Html.DetailViewItemFor2(model => model.ContractLeaseModel.DayHandOver, null, null, "col-sm-3", "col-sm-9")
+                                </div>
+                                <div class="row control-group">
+                                    @Html.DetailViewItemFor2(model => model.ContractLeaseModel.EffectiveDate, null, null, "col-sm-3", "col-sm-9")
+                                </div>
+                                <div class="row control-group">
+                                    @Html.DetailViewItemFor2(model => model.ContractLeaseModel.ExpiryDate, null, null, "col-sm-3", "col-sm-9")
+                                </div>
+                            </div>
+                        }
+                        else if (ViewBag.Type == "ContractSell")
+                        {
+                            <div class="detail-view">
+                                <div class="row control-group">
+                                    @Html.DetailViewItemFor2(model => model.Code, null, null, "col-sm-3", "col-sm-9")
+                                </div>
+                                <div class="row control-group">
+                                    @Html.DetailViewItemFor2(model => model.Quantity, null, null, "col-sm-3", "col-sm-9")
+                                </div>
+                                <div class="row control-group">
+                                    @Html.DetailViewItemFor2(model => model.Type, null, null, "col-sm-3", "col-sm-9")
+                                </div>
+                                <div class="row control-group">
+                                    @Html.DetailViewItemFor2(model => model.Place, null, null, "col-sm-3", "col-sm-9")
+                                </div>
+                                <div class="row control-group">
+                                    @Html.DetailViewItemFor2(model => model.EffectiveDate, null, null, "col-sm-3", "col-sm-9")
+                                </div>
+                                <div class="row control-group">
+                                    @Html.DetailViewItemFor2(model => model.CreatedDate, null, null, "col-sm-3", "col-sm-9")
+                                </div>
+                                <div class="row control-group">
+                                    @Html.DetailViewItemFor2(model => model.TransactionCode, null, null, "col-sm-3", "col-sm-9")
+                                </div>
+                                <div class="row control-group">
+                                    @Html.DetailViewItemFor2(model => model.ContractSellModel.NameCondos, null, null, "col-sm-3", "col-sm-9")
+                                </div>
+                                <div class="row control-group">
+                                    @Html.DetailViewItemFor2(model => model.ContractSellModel.Quantity, null, null, "col-sm-3", "col-sm-9")
+                                </div>
+                                <div class="row control-group">
+                                    @Html.DetailViewItem(Erp.BackOffice.Helpers.Common.PhanCachHangNgan(Model.ContractSellModel.Price), "ContractSellModel.Price", Wording.Price, null, null, "col-sm-3", "col-sm-9")
+                                </div>
+                                <div class="row control-group">
+                                    @Html.DetailViewItemFor2(model => model.ContractSellModel.Unit, null, null, "col-sm-3", "col-sm-9")
+                                </div>
+                                <div class="row control-group">
+                                    @Html.DetailViewItemFor2(model => model.ContractSellModel.UnitMoney, null, null, "col-sm-3", "col-sm-9")
+                                </div>
+                                <div class="row control-group">
+                                    @Html.DetailViewItemFor2(model => model.ContractSellModel.VAT, null, null, "col-sm-3", "col-sm-9")
+                                </div>
+                                <div class="row control-group">
+                                    @Html.DetailViewItem(Erp.BackOffice.Helpers.Common.PhanCachHangNgan(Model.ContractSellModel.MaintenanceCosts), "ContractSellModel.MaintenanceCosts", Wording.MaintenanceCosts, null, null, "col-sm-3", "col-sm-9")
+                                </div>
+                                <div class="row control-group">
+                                    @Html.DetailViewItemFor2(model => model.ContractSellModel.DayHandOver, null, null, "col-sm-3", "col-sm-9")
+                                </div>
+                                <div class="row control-group">
+                                    @Html.DetailViewItemFor2(model => model.ContractSellModel.DayPay, null, null, "col-sm-3", "col-sm-9")
+                                </div>
+                            </div>
+                        }
+                    </div>
+                    <div class="col-sm-6">
+                        <div class="row">
+                            <h4 class="header smaller lighter blue">Bên A</h4>
+                            <p></p>
+                            <div class="detail-view">
+
+                                <div class="row control-group">
+                                    @Html.DetailViewItemFor2(model => model.InfoPartyAViewModel.CompanyName, null, null, "col-sm-3", "col-sm-9")
+                                </div>
+                                <div class="row control-group">
+                                    @Html.DetailViewItemFor2(model => model.InfoPartyAViewModel.Name, null, null, "col-sm-3", "col-sm-9")
+                                </div>
+                                <div class="row control-group">
+                                    @Html.DetailViewItemFor2(model => model.InfoPartyAViewModel.Birthday, null, null, "col-sm-3", "col-sm-9")
+                                </div>
+                                <div class="row control-group">
+                                    @Html.DetailViewItemFor2(model => model.InfoPartyAViewModel.Phone, null, null, "col-sm-3", "col-sm-9")
+                                </div>
+                                <div class="row control-group">
+                                    @Html.DetailViewItemFor2(model => model.InfoPartyAViewModel.AccountNumber, null, null, "col-sm-3", "col-sm-9")
+                                </div>
+                                <div class="row control-group">
+                                    @Html.DetailViewItemFor2(model => model.InfoPartyAViewModel.Bank, null, null, "col-sm-3", "col-sm-9")
+                                </div>
+                                <div class="row control-group">
+                                    @Html.DetailViewItemFor2(model => model.InfoPartyAViewModel.TaxCode, null, null, "col-sm-3", "col-sm-9")
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <h4 class="header smaller lighter blue">Bên B</h4>
+                            <p></p>
+                            <div class="detail-view">
+                                <div class="row control-group">
+                                    @Html.DetailViewItemFor2(model => model.CustomerViewModel.CompanyName, null, null, "col-sm-3", "col-sm-9")
+                                </div>
+                                <div class="row control-group">
+                                    @Html.DetailViewItemFor2(model => model.CustomerViewModel.Code, null, null, "col-sm-3", "col-sm-9")
+                                </div>
+                                <div class="row control-group">
+                                    @Html.DetailViewItemFor2(model => model.CustomerViewModel.Birthday, null, null, "col-sm-3", "col-sm-9")
+                                </div>
+
+                                <div class="row control-group">
+                                    @Html.DetailViewItemFor2(model => model.CustomerViewModel.Phone, null, null, "col-sm-3", "col-sm-9")
+                                </div>
+                                <div class="row control-group">
+                                    @Html.DetailViewItemFor2(model => model.CustomerViewModel.Mobile, null, null, "col-sm-3", "col-sm-9")
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-12" style="padding:0px">
+        <div class="widget-box">
+            <div class="widget-header">
+                <h5 class="widget-title">Tiến trình thanh toán</h5>
+            </div>
+            <div class="widget-body">
+                <div class="widget-main clearfix">
+                    @Html.Button(Wording.CreateNew, ButtonType.aTag, ButtonColor.Info, ButtonSize.Mini, true, IconType.Plus, IconSize.Default, false, new { @class = "btn-ProcessPaymentCreate", @onclick = "OpenPopup('" + Url.Action("Create", "ProcessPayment", new { area = "Account", Id = Model.Id, isPopup = "true" }) + "', '" + Wording.PageCreate_ProcessPayment + "', 700, 450)" })
+                    @*@Html.Button(Wording.CreateNew, ButtonType.aTag, ButtonColor.Info, ButtonSize.Mini, true, IconType.Plus, IconSize.Default, false, new { @href = Url.Action("Create", "ProcessPayment", new { area = "Account", Id = Model.Id, isPopup = "true" }) })*@
+                    @Html.Action("Index", "ProcessPayment", new { area = "Account", Id = Model.Id })
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-12" style="padding:0px">
+            <div class="widget-box">
+                <div class="widget-header">
+                    <h5 class="widget-title">Tập tin đính kèm</h5>
+                </div>
+                <div class="widget-body">
+                    <div class="widget-main clearfix">
+                        @*@Html.Button(Wording.CreateNew, ButtonType.aTag, ButtonColor.Info, ButtonSize.Mini, true, IconType.Plus, IconSize.Default, false, new { @href = Url.Action("Create", "DocumentField", new { area = "Staff", Id = Model.Id }) })*@
+                        @Html.Button(Wording.CreateNew, ButtonType.aTag, ButtonColor.Info, ButtonSize.Mini, true, IconType.Plus, IconSize.Default, false, new { @class = "btn-DepartmentEdit", @onclick = "OpenPopup('" + Url.Action("Create", "DocumentField", new { area = "Staff", Id = Model.Id,Category="Contract",isPopup="true" }) + "', '" + Wording.PageCreate_DocumentField + "', 700, 550)" })
+                        @Html.Action("GetListDocumentFieldByModule", "DocumentField", new { area = "Staff", category = "Contract", CategoryId = Model.Id })
+                    </div>
+                </div>
+            </div>
+        </div>
+@section Scripts {
+    <script type="text/javascript">
+        function ClosePopupAndAppendSelect() {
+            ShowLoading();
+            ClosePopup(true);
+        }
+
+        function ClosePopupAndRedirectToURL(url) {
+            ClosePopup(true);
+            location.href = url;
+        }
+        function Download(Id, file) {
+            $.ajax({
+                url: '/DocumentField/CheckDownload',
+                type: 'GET',
+                data: { Id: Id, file: file },
+                success: function (res) {
+                    if (res == "success") {
+                        // alert('Tải thành công!');
+                        location.href = '/DocumentField/Download?Id=' + Id + '&file=' + file;
+                    } else {
+                        alert('Tập tin không tồn tại!');
+                    }
+                }
+            });
+
+        };
+    </script>
+}

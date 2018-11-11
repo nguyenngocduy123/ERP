@@ -1,0 +1,71 @@
+@using Erp.BackOffice.App_GlobalResources
+@using Erp.BackOffice.Helpers
+@using Erp.BackOffice.Crm.Models
+
+@model CampaignViewModel
+
+@{
+    ViewBag.Title = Wording.PageEdit_Campaign;
+
+    //Layout = "~/Views/Shared/ACE_AdminLayout.cshtml";
+    bool isPopup = Request["popup"] != null && Request["popup"].ToString().ToLower() == "true" ? true : false;
+    if (isPopup)
+    {
+        Layout = "~/Views/Shared/_PopupLayout.cshtml";
+    }
+    else
+    {
+        Layout = "~/Views/Shared/ACE_AdminLayout.cshtml";
+    }
+    Erp.BackOffice.Models.PageSetting pageSetting = new Erp.BackOffice.Models.PageSetting
+    {
+        ModuleName = "Campaign",
+        ActionName = "Edit",
+        PageTitle = ViewBag.Title,
+        DisplaySearchPanel = false,
+        IsPopup = false,
+        DisplayBackButton = true,
+        AdvancedSearch = true,
+    };
+}
+
+@section HeadOfPage {
+    @Html.ScriptTop_ChosenStyle()
+}
+@using (Html.BeginPageHeaderContainer(pageSetting))
+{
+}
+@using (Html.BeginForm_AceStyle((string)ViewBag.Title, "Edit", "Campaign", null, FormMethod.Post, new { @class = "form-horizontal" }))
+{
+    @Html.ValidationSummary(true)
+    @Html.HiddenFor(model => model.Id)
+    @Html.HiddenFor(model => model.CreatedUserId)
+    @Html.HiddenFor(model => model.CreatedDate)
+    @Html.HiddenFor(model => model.IsDeleted)
+
+    @Html.CustomTextboxFor(model => model.Name, null, null, WidthType.span4, true)
+    @Html.CustomDropDownListFor(model => model.Type, Model.TypeSelectList, WidthType.span2, true, null, DropdownListStyle.DropdownListStyleDefault)
+    @Html.CustomDropDownListFor(model => model.Status, Model.StatusSelectList, WidthType.span2, true, null, DropdownListStyle.DropdownListStyleDefault)
+    @Html.DateInput(model => model.StartDate, "dd/MM/yyyy", "99/99/9999", true)
+    @Html.DateInput(model => model.EndDate, "dd/MM/yyyy", "99/99/9999", true)
+    @Html.SpinnerFor(model => model.BudgetedCost, 100, 0, 1, SpinnerStyle.SpinnerStyle1, true)
+    @Html.SpinnerFor(model => model.ExpectedRevenue, 100, 0, 1, SpinnerStyle.SpinnerStyle1, true)
+    @Html.SpinnerFor(model => model.ActualCost, 100, 0, 1, SpinnerStyle.SpinnerStyle1, true)
+    @Html.SpinnerFor(model => model.ExpectedResponse, 100, 0, 1, SpinnerStyle.SpinnerStyle1, true)
+    @Html.SpinnerFor(model => model.Commision, 100, 0, 1, SpinnerStyle.SpinnerStyle1, true)
+
+    using (Html.BeginButtonContainer(pageSetting))
+    {
+        <button style="margin-top:10px" type="submit" class="btn btn-info" name="Submit" value="Save">
+            <i class="ace-icon fa fa-save bigger-110"></i>
+            @Wording.Save
+        </button>
+    }
+}
+
+@section Scripts {
+
+    @Html.ScriptBottom_ValidationMvc()
+    @Html.ScriptBottom_ChosenStyle()
+    @Html.ScriptBottom_DatePicker("dd/mm/yyyy")
+}

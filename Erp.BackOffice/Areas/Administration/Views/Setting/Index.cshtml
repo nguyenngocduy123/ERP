@@ -1,0 +1,75 @@
+﻿@model IEnumerable<Erp.BackOffice.Areas.Administration.Models.SettingViewModel>
+
+@using Erp.BackOffice.Helpers
+@using GridMvc.Html
+
+@{
+    ViewBag.Title = Resources.Wording.Settings;
+    Layout = "~/Views/Shared/ACE_AdminLayout.cshtml";
+
+    Erp.BackOffice.Models.PageSetting pageSetting = new Erp.BackOffice.Models.PageSetting
+    {
+        ModuleName = "Setting",
+        ActionName = "Index",
+        PageTitle = ViewBag.Title,
+        DisplaySearchPanel = true,
+        IsPopup = false,
+        DisplayBackButton = false
+    };
+}
+
+@helper GridColumnCommand(bool? IsLocked, int id, string actionName, string controllerName)
+{
+    var Locked = IsLocked == true ? true : false;
+    if (!(bool)Locked)
+    {
+        @Html.Partial("_DeleteItemPartial", new ViewDataDictionary { { "Id", id }, { "ActionName", actionName }, { "ControllerName", controllerName } })
+    }
+}
+
+@helper EditLink(string name, int id)
+{
+    if (string.IsNullOrEmpty(name))
+    {
+        <a href="@Url.Action("Edit", "Setting", new {Id = id })">Empty</a>
+    }
+    else
+    {
+        <a href="@Url.Action("Edit", "Setting", new { Id = id})">@name</a>
+    }
+}
+
+@using (Html.BeginPageHeaderContainer(pageSetting))
+{
+
+        <p>
+            @Html.TextBox("textSearch", Request["textSearch"], new { @class = "form-control", autocomplete = "off", placeholder = "Từ khóa" })
+        </p>
+}
+
+@if (ViewBag.AlertMessage != null && ViewBag.AlertMessage != "")
+{
+    <div class="alert alert-block alert-success">
+        <button class="close" data-dismiss="alert" type="button">
+            <i class="icon-remove"></i>
+        </button>
+        <i class="ace-icon fa fa-check green"></i>
+        @ViewBag.AlertMessage
+    </div>
+}
+
+@Html.Grid(Model).Columns(columns =>
+{
+    columns.Add(m => m.Key).Titled(Html.DisplayNameFor(m => m.Key).ToString()).Sanitized(false).Encoded(false).RenderValueAs(m => EditLink(m.Key, m.Id));
+    columns.Add(m => m.Value).Titled(Html.DisplayNameFor(m => m.Value).ToString());
+    columns.Add(m => m.Note).Titled(Html.DisplayNameFor(m => m.Note).ToString());
+    columns.Add(u => u.Id).Titled(Resources.Wording.Action).Sanitized(false).Encoded(false).RenderValueAs(u => GridColumnCommand(u.IsLocked, u.Id, "Delete", "Setting"));
+})
+
+@using (Html.BeginButtonContainer(pageSetting))
+{
+    <a class="btn btn-info btn-mini" onclick="OpenPopup('@Url.Action("Create", "Setting", new { IsPopup = true })', '', 700, 550)">
+        <i class="ace-icon fa fa-plus"></i>
+        @Resources.Wording.CreateNew
+    </a>
+}

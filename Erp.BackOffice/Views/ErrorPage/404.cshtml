@@ -1,0 +1,24 @@
+﻿@{
+    Layout = null;    
+}
+@using Erp.BackOffice.App_GlobalResources
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>@Resources.Wording.Not_Premitted</title>
+    
+</head>
+<body>
+    <div>        
+        <p><strong>404.</strong> <span>@Resources.Wording.Not_Premitted</span></p>
+        <p>@Resources.Wording.NotAllowedToAccess</p>
+        @if (HttpContext.Current.Request.UrlReferrer != null)
+        {
+            <p> <a href="@HttpContext.Current.Request.UrlReferrer.AbsoluteUri">@Resources.Wording.ClickHereToBack</a></p>
+        }
+    </div>  
+</body>
+</html>
+

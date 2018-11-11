@@ -1,0 +1,55 @@
+﻿@using Erp.BackOffice.App_GlobalResources
+@using Erp.BackOffice.Sale.Models
+@using Erp.BackOffice.Helpers
+@model List<Sale_BaoCaoTonKhoViewModel>
+@{
+    Layout = null;
+    int index = 1;
+}
+
+<table id="CTable" class="table table-bordered">
+    <thead>
+        <tr class="" style="display:none">
+            <th class="" colspan="10" style="text-align:center"><h4>BÁO CÁO TỒN KHO</h4></th>
+        </tr>
+        <tr>
+            <th style="width:40px;text-align:center">STT</th>
+            <th style="width:100px;text-align:center">Mã sản phẩm</th>
+            <th style="width:200px;text-align:center">Tên sản phẩm</th>
+            <th style="width:100px;text-align:center">Nhóm sản phẩm</th>
+            <th style="width:100px;text-align:center">Nhà sản xuất</th>
+            <th style="width:150px;text-align:center">Kho</th>
+            <th style="width:100px;text-align:center">Số Lô</th>
+            <th style="width:100px;text-align:center">Hạn dùng</th>
+            @*<th style="width:100px;text-align:center">Đơn giá</th>*@
+            <th style="width:100px;text-align:center">Đơn vị tính</th>
+            <th style="width:100px;text-align:center">Số lượng</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr class="@(index%2==0?"alert-warning":"")">
+                <td>
+                    <span>@(index++)</span>
+                </td>
+                <td>@(item.ProductCode)</td>
+                <td>@(item.ProductName)</td>
+                <td>@(item.CategoryCode)</td>
+                <td>@(item.Manufacturer)</td>
+                <td>@(item.WarehouseName)</td>
+                <td>@(item.LoCode)</td>
+                <td>@(item.ExpiryDate == null ? "" : item.ExpiryDate.Value.ToString("dd/MM/yyyy"))</td>
+                @*<td style="text-align:right">@(Common.PhanCachHangNgan(item.Price))</td>*@
+                <td>@(item.ProductUnit)</td>
+                <td style="text-align:right">@(Common.PhanCachHangNgan(item.Quantity))</td>
+            </tr>
+        }
+    </tbody>
+    <thead>
+        <tr>
+            <td colspan="9" style="text-align:right"><b>Tổng</b></td>
+            <td style="text-align:right">@(Common.PhanCachHangNgan(Model.Sum(x => x.Quantity)))</td>
+        </tr>
+    </thead>
+</table>

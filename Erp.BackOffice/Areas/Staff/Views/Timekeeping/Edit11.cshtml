@@ -1,0 +1,182 @@
+﻿@using Erp.BackOffice.App_GlobalResources
+@using Erp.BackOffice.Helpers
+@using Erp.BackOffice.Staff.Models
+
+@model WorkSchedulesViewModel
+
+@{
+    ViewBag.Title = Wording.EditTimekeeping;
+
+    Layout = "~/Views/Shared/_PopupLayout.cshtml";
+    Erp.BackOffice.Models.PageSetting pageSetting = new Erp.BackOffice.Models.PageSetting
+    {
+        ModuleName = "Timekeeping",
+        ActionName = "Edit",
+        PageTitle = ViewBag.Title,
+        DisplaySearchPanel = false,
+        IsPopup = false,
+        DisplayBackButton = false
+    };
+
+}
+@section HeadOfPage {
+    @Html.ScriptTop_ChosenStyle()
+    <style type="text/css">
+        .date-picker {
+            width: 100% !important;
+        }
+
+        #demo_time1 {
+            padding-left: 5px !important;
+            padding-right: 5px !important;
+            width: 100% !important;
+        }
+
+        #demo_time2 {
+            padding-left: 5px !important;
+            padding-right: 5px !important;
+            width: 100% !important;
+        }
+
+        .mbsc-sense-ui .dwwr {
+            color: #000;
+            background: #ccc;
+            border: 2px solid #fff;
+            border-radius: 3px;
+        }
+
+        .mbsc-sense-ui .dww {
+            color: #000;
+            background: #ccc;
+            border: 2px solid #fff;
+            border-radius: 3px;
+        }
+    </style>
+}
+<script src="~/Scripts/mobiscroll/js/mobiscroll.core.js"></script>
+<script src="~/Scripts/mobiscroll/js/mobiscroll.frame.js"></script>
+<script src="~/Scripts/mobiscroll/js/mobiscroll.scroller.js"></script>
+
+<script src="~/Scripts/mobiscroll/js/mobiscroll.util.datetime.js"></script>
+<script src="~/Scripts/mobiscroll/js/mobiscroll.datetimebase.js"></script>
+<script src="~/Scripts/mobiscroll/js/mobiscroll.datetime.js"></script>
+<script src="~/Scripts/mobiscroll/js/mobiscroll.frame.sense-ui.js"></script>
+
+<script src="~/Scripts/mobiscroll/js/mobiscroll.mobiscroll-dark.js"></script>
+<!-- langue -->
+<script src="~/Scripts/mobiscroll/js/i18n/mobiscroll.i18n.en-VN.js"></script>
+<link href="~/Scripts/mobiscroll/css/mobiscroll.animation.css" rel="stylesheet" type="text/css">
+<link href="~/Scripts/mobiscroll/css/mobiscroll.frame.css" rel="stylesheet" type="text/css">
+<link href="~/Scripts/mobiscroll/css/mobiscroll.frame.sense-ui.css" rel="stylesheet" type="text/css">
+<link href="~/Scripts/mobiscroll/css/mobiscroll.scroller.css" rel="stylesheet" type="text/css">
+<link href="~/Scripts/mobiscroll/css/mobiscroll.scroller.sense-ui.css" rel="stylesheet" type="text/css">
+
+@using (Html.BeginForm_AceStyle((string)ViewBag.Title, "Edit", "Timekeeping", null, FormMethod.Post, new { @class = "form-horizontal" }))
+{
+    @Html.ValidationSummary(true)
+    @Html.HiddenFor(model => model.Id)
+    @Html.HiddenFor(model => model.StartTime)
+    @Html.HiddenFor(model => model.StartTimeOut)
+    @Html.HiddenFor(model => model.EndTime)
+    @Html.HiddenFor(model => model.EndTimeIn)
+    <div class="col-sm-8">
+        <div class="detail-view">
+                <div class="row control-group">
+                    @Html.DetailViewItemFor2(model => model.Code, null, null, "col-xs-5", "col-xs-7")
+                </div>
+                <div class="row control-group">
+                    @Html.DetailViewItemFor2(model => model.Name, null, null, "col-xs-5", "col-xs-7")
+                </div>
+                <div class="row control-group">
+                    @Html.DetailViewItemFor2(model => model.NameShifts, null, null, "col-xs-5", "col-xs-7")
+                </div>
+            @*<div class="row control-group">
+                @Html.DetailViewItemFor2(model => model.StartTime, null, null, "col-xs-5", "col-xs-7")
+            </div>
+            <div class="row control-group">
+                @Html.DetailViewItemFor2(model => model.EndTime, null, null, "col-xs-5", "col-xs-7")
+            </div>*@
+                <div class="row control-group">
+                    @Html.DetailViewItemFor2(model => model.Day, null, null, "col-xs-5", "col-xs-7")
+                </div>
+                <div class="row control-group">
+                    @Html.DetailViewItemFor2(model => model.Total_minute_work, null, null, "col-xs-5", "col-xs-7")
+                </div>
+                <div class="row control-group">
+                    @Html.DetailViewItemFor2(model => model.Total_minute_work_early, null, null, "col-xs-5", "col-xs-7")
+                </div>
+                <div class="row control-group">
+                    @Html.DetailViewItemFor2(model => model.Total_minute_work_late, null, null, "col-xs-5", "col-xs-7")
+                </div>
+                <div class="row control-group">
+                    @Html.DetailViewItemFor2(model => model.Total_minute_work_overtime, null, null, "col-xs-5", "col-xs-7")
+                </div>
+        </div>
+    @Html.CustomDropDownListFor(model => model.Symbol, SelectListHelper.GetSelectList_SymbolTimekeeping(Model.Symbol, Wording.Empty, false), WidthType.span12, true, null)
+        <div data-role="fieldcontain" class="demo-cont control-group form-group" id="demo_cont_time">
+            <label for="demo_time1" class="control-label col-lg-5 col-md-4 col-sm-4">@Wording.HoursIn</label>
+            <div class="control-value col-lg-7 col-md-8 col-sm-8">
+                <input type="text" id="demo_time1" name="HoursIn" value="@(Model.HoursIn.HasValue?Model.HoursIn.Value.ToString("HH:mm"):"")" />
+                <span class="field-validation-valid help-inline" data-valmsg-for="HoursIn" data-valmsg-replace="true"></span>
+            </div>
+        </div>
+        <div data-role="fieldcontain" class="demo-cont control-group form-group" id="demo_cont_time">
+            <label for="demo_time2" class="control-label col-lg-5 col-md-4 col-sm-4">@Wording.HoursOut</label>
+            <div class="control-value col-lg-7 col-md-8 col-sm-8">
+                <input type="text" id="demo_time2" name="HoursOut" value="@(Model.HoursOut.HasValue?Model.HoursOut.Value.ToString("HH:mm"):"")" />
+                <span class="field-validation-valid help-inline" data-valmsg-for="HoursOut" data-valmsg-replace="true"></span>
+            </div>
+        </div>
+     </div>
+    <div class="col-sm-4">
+        @if (!string.IsNullOrEmpty(Model.ProfileImage))
+        {
+            <a data-toggle="tooltip" title='
+            <img  id="ProfileImage" src="@(Model.ImagePath)" style="width:100%" />'>
+                <img class="profile-picture" src="@(Model.ImagePath)" style="width:100%;height:356px"  alt="" />
+        </a>
+        }
+        else
+        {
+            <span class="profile-picture" style="height:177px; width:100%"><img id="ProfileImage" style="height:356px; width:100%" src="/assets/img/no-avatar.png" alt="" /></span>
+        }
+    </div>
+    using (Html.BeginButtonContainer(pageSetting))
+    {
+        <button class="btn btn-mini btn-primary" type="submit" name="Submit" value="Save">
+            <i class="ace-icon fa fa-save"></i>
+            @Wording.Save
+        </button>
+        }
+        }
+
+        @section Scripts {
+            <script>
+                $(function () {
+
+                    function init() {
+
+
+                        // Time demo initialization
+                        $('#demo_time1').mobiscroll().time({
+                            theme: 'sense-ui',     // Specify theme like: theme: 'ios' or omit setting to use default
+                            mode: 'mixed',       // Specify scroller mode like: mode: 'mixed' or omit setting to use default
+                            display: 'modal', // Specify display mode like: display: 'bottom' or omit setting to use default
+                            lang: 'en-VN'        // Specify language like: lang: 'pl' or omit setting to use default
+                        });
+
+                        $('#demo_time2').mobiscroll().time({
+                            theme: 'sense-ui',     // Specify theme like: theme: 'ios' or omit setting to use default
+                            mode: 'mixed',       // Specify scroller mode like: mode: 'mixed' or omit setting to use default
+                            display: 'modal', // Specify display mode like: display: 'bottom' or omit setting to use default
+                            lang: 'en-VN'        // Specify language like: lang: 'pl' or omit setting to use default
+                        });
+                    }
+                    init();
+
+                });
+            </script>
+            @Html.ScriptBottom_ValidationMvc()
+            @Html.ScriptBottom_DatePicker("dd/mm/yyyy")
+            @Html.ScriptBottom_ChosenStyle()
+        }

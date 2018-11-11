@@ -1,0 +1,260 @@
+@using Erp.BackOffice.App_GlobalResources
+@using Erp.BackOffice.Helpers
+@using System.Globalization;
+@{
+    ViewBag.Title = "Báo cáo xuất kho";
+    Layout = "~/Views/Shared/ACE_AdminLayout.cshtml";
+    Erp.BackOffice.Models.PageSetting pageSetting = new Erp.BackOffice.Models.PageSetting
+    {
+        ModuleName = "SaleReport",
+        ActionName = "Sale_BaoCaoXuatKho",
+        PageTitle = ViewBag.Title,
+        DisplaySearchPanel = true,
+        IsPopup = false,
+        DisplayBackButton = false,
+        SearchButtonText = "Xem báo cáo"
+    };
+    Calendar calendar = CultureInfo.InvariantCulture.Calendar;
+    var weekdefault = calendar.GetWeekOfYear(DateTime.Now, CalendarWeekRule.FirstFourDayWeek, DayOfWeek.Monday);
+    string Month = Request["month"] != null ? Request["month"] : DateTime.Now.Month.ToString();
+    string Year = Request["year"] != null ? Request["year"] : DateTime.Now.Year.ToString();
+    string week = Request["week"] != null ? Request["week"] : weekdefault.ToString();
+    string branchId = Request["branchId"] != null ? Request["branchId"] : "";
+    if (Request["branchId"] == null)
+    {
+        if (Erp.BackOffice.Filters.SecurityFilter.IsAdminDrugStore() || Erp.BackOffice.Filters.SecurityFilter.IsStaffDrugStore())
+        {
+            branchId = Erp.BackOffice.Helpers.Common.CurrentUser.DrugStore;
+        }
+    }
+    ViewData["branchId"] = branchId;
+}
+
+@section HeadOfPage {
+
+
+    <style type="text/css">
+        .cell-center {
+            text-align: center;
+        }
+
+        .tr-bold {
+            font-weight: 700;
+        }
+
+        .ctl {
+            position: relative;
+            /*float: left;*/
+            margin-right: 3px;
+        }
+
+            .ctl .error {
+                position: absolute;
+                background: #de2a2a;
+                left: 0px;
+                top: 28px;
+                padding: 2px 5px;
+                color: #fff;
+                z-index: 999;
+            }
+
+                .ctl .error:before {
+                    border-bottom: 7px solid #de2a2a;
+                    border-left: 7px solid transparent;
+                    border-right: 7px solid transparent;
+                    left: 9px;
+                    top: -6px;
+                    content: "";
+                    display: inline-block;
+                    position: absolute;
+                }
+
+        .icon-add {
+            margin-top: 0px !important;
+        }
+
+        /*.combojax {
+            display: inline-block;
+            position: initial !important;
+            float: none !important;
+        }*/
+    </style>
+}
+
+<div id="page_header" class="widget-box">
+    <div class="widget-header">
+        <h5 class="widget-title">
+            <i class="ace-icon fa fa-star orange"></i>
+            Báo cáo xuất kho
+        </h5>
+        <div class="widget-toolbar">
+            <a class="btn-search" href="#" data-action="collapse">
+                <i class="ace-icon fa fa-search blue"></i>
+            </a>
+            <a class="btn-setting"></a>
+        </div>
+    </div>
+
+    <div class="widget-body" style="display: block;">
+        <div class="widget-main">
+            <div class="search-view form-inline" id="SaleReport">
+
+                @Html.Partial("_PartialSearchDrugStore", ViewData["branchId"])
+                <p>
+                    Xem dữ liệu theo
+                    <label>
+                        <input id="single3" name="single" type="radio" class="ace" value="week">
+                        <span class="lbl"> Tuần</span>
+                    </label>
+                    <label>
+                        <input id="single1" name="single" type="radio" class="ace" value="month" checked="checked">
+                        <span class="lbl"> Tháng</span>
+                    </label>
+
+                    <label>
+                        <input id="single2" name="single" type="radio" class="ace" value="quarter">
+                        <span class="lbl"> Quý</span>
+                    </label>
+
+                    <select id="month" name="month">
+                        @for (int i = 1; i <= 12; i++)
+                        {
+                            <option @(Month == i.ToString() ? "Selected" : "") value="@i">Tháng @i</option>
+                        }
+                    </select>
+                    <select id="quarter" name="quarter" style="display:none">
+                        <option value="1">Quý I</option>
+                        <option value="2">Quý II</option>
+                        <option value="3">Quý III</option>
+                        <option value="4">Quý IV</option>
+                    </select>
+                    <select id="week" name="week" style="display:none">
+                        @for (int i = 1; i <= 52; i++)
+                        {
+                            <option @(week == i.ToString() ? "Selected" : "") value="@i">Tuần @i</option>
+                        }
+                    </select>
+                    <select id="year" name="year">
+                        @for (int i = 2016; i <= DateTime.Now.Year; i++)
+                        {
+                            <option @(Year == i.ToString() ? "Selected" : "") value="@i">Năm @i</option>
+                        }
+                    </select>
+                    @Html.DropDownList("WarehouseId", SelectListHelper.GetSelectList_Warehouse(Request["WarehouseId"], null), "Kho quản lý", new Dictionary<string, object> { { "class", "" }, { "data-val-required", "Bắt buộc chọn." } })
+                </p>
+                <p style="margin:0px;">
+                    <button class="btn btn-mini btn-primary" name="search" onclick="searchreact()" type="submit" value="Search">
+                        Xem báo cáo
+                    </button>
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row" style="padding-top: 5px;">
+    <div class="col-xs-12">
+        <div id="react_report" class="table-responsive">
+
+        </div>
+    </div>
+</div>
+
+@using (Html.BeginButtonContainer(pageSetting))
+{
+    <button class="btn btn-white btn-success btn-sm" type="button" value="Export" onclick="GetPrint(true)">
+        <i class="ace-icon fa fa-file-excel-o"></i>
+        Xuất excel
+    </button>
+     <button class="btn btn-white btn-success btn-sm" type="button" value="Export" onclick="GetPrint(false)">
+        <i class="ace-icon fa fa-print"></i>
+        In báo cáo
+    </button>
+}
+
+@section Scripts {
+    @Html.ScriptBottom_ValidationMvc()
+    @Html.ScriptBottom_DatePicker("dd/MM/yyyy")
+
+    @*<script src="/Scripts/combojax.js"></script>
+    <link href="/assets/css/combojax.css" rel="stylesheet" />*@
+    @*<script src="~/Scripts/cmreactjs/Sale_BaoCaoXuatKho.jsx"></script>*@
+    <script>
+        searchreact();
+        function searchreact() {
+            GetDatatable('/SaleReport/_GetListSale_BCXK', '@Html.Raw(ViewBag.Title)','');
+        };
+        function GetDatatable(url, title) {
+            var month = $("#month option:selected").val();
+            var quarter = $("#quarter option:selected").val();
+            var year = $("#year option:selected").val();
+            var CityId = $("#CityId option:selected").val();
+            var DistrictId = $("#DistrictId option:selected").val();
+            var branchId = $("#branchId option:selected").val();
+            var week = $("#week option:selected").val();
+            var single = $("[name='single']:checked").val();
+            var WarehouseId = $('#WarehouseId').val();
+            var formdata = {
+                month: month,
+                quarter: quarter,
+                year: year,
+                CityId: CityId,
+                DistrictId: DistrictId,
+                branchId: branchId,
+                week: week,
+                single: single,
+                WarehouseId: WarehouseId
+            };
+            //$("#react_report").html("");
+            ClickEventHandlerHTML(true, "/SaleReport/_GetListSale_BCXK", "#react_report", formdata, function () {
+            });
+        };
+    </script>
+<script>
+    $(function () {
+        $("#quarter").val(currentQuarter);
+
+        var single = "month";
+
+        $("#single1").change(function () {
+            if ($(this).val() == 'month') {
+                $("#month").show();
+                $("#week").hide();
+                $("#quarter").hide();
+                single = "month";
+            }
+        });
+
+        $("#single2").change(function () {
+            if ($(this).val() == 'quarter') {
+                $("#month").hide();
+                $("#week").hide();
+                $("#quarter").show();
+                single = "quarter";
+            }
+        });
+        $("#single3").change(function () {
+            if ($(this).val() == 'week') {
+                $("#month").hide();
+                $("#quarter").hide();
+                $("#week").show();
+                single = "week";
+            }
+        });
+    });
+
+    function GetPrint(type) {
+        var month = $("#month option:selected").val();
+        var quarter = $("#quarter option:selected").val();
+        var year = $("#year option:selected").val();
+        var CityId = $("#CityId option:selected").val();
+        var DistrictId = $("#DistrictId option:selected").val();
+        var branchId = $("#branchId option:selected").val();
+        var week = $("#week option:selected").val();
+        var single = $("[name='single']:checked").val();
+        var WarehouseId = $('#WarehouseId').val();
+        OpenPopup('/SaleReport/PrintBCXK/?single=' + single + '&year=' + year + '&month=' + month + '&quarter=' + quarter + '&week=' + week + '&CityId=' + CityId + '&DistrictId=' + DistrictId + '&branchId=' + branchId + '&WarehouseId=' + WarehouseId + '&ExportExcel=' + type + '&IsPopup=true', '', 0, 0);
+        HideLoading();
+    };
+</script>
+}

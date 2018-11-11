@@ -1,0 +1,16 @@
+﻿
+@{
+    var deleteUserTypeId = Convert.ToInt32(ViewData["DeleteUserTypeId"]);
+}
+
+<div class="hidden-phone visible-desktop action-buttons">
+
+    @using (Html.BeginForm("DeleteUserType", "UserType", FormMethod.Post))
+    {
+        <input type="hidden" value="@deleteUserTypeId" name="DeleteUserTypeId"/>
+        <button type="submit" class="btn btn-mini btn-danger" onclick="return confirm('Bạn có muốn xóa dữ liệu không ?');">
+             <i class="ace-icon fa fa-trash bigger-120"></i>
+        </button>
+        }
+
+</div>

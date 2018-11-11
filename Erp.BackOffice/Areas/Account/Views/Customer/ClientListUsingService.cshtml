@@ -1,0 +1,126 @@
+﻿@model List<UsingServiceLogDetailViewModel>
+
+@using Erp.BackOffice.App_GlobalResources
+@using Erp.BackOffice.Sale.Models
+@using Erp.BackOffice.Helpers
+@using Erp.Domain.Account.Entities
+@using Erp.Domain.Sale.Entities
+@using GridMvc.Html
+
+@{
+    Layout = "~/Views/Shared/ACE_ClientLayout.cshtml";
+    ViewBag.Title = "Danh sách KH sử dụng dịch vụ/tái khám";
+    Erp.BackOffice.Models.PageSetting pageSetting = new Erp.BackOffice.Models.PageSetting
+    {
+        ModuleName = "Customer",
+        ActionName = "ClientListUsingService",
+        PageTitle = ViewBag.Title,
+        DisplaySearchPanel = true,
+        IsPopup = false,
+        DisplayBackButton = false
+    };
+}
+
+@section HeadOfPage {
+    <style>
+        .ui-ribbon {
+            position: relative;
+            display: block;
+            text-align: center;
+            font-size: 15px;
+            font-weight: 600;
+            color: #fff;
+            transform: rotate(43deg);
+            padding: 7px 0;
+            left: -2px;
+            top: 19px;
+            width: 140px;
+            line-height: 20px;
+            /*background-color: rgba(183, 51, 51, 0.94);*/
+            box-shadow: 0 0 3px rgba(0,0,0,.3);
+        }
+
+        .ui-ribbon-wrapper {
+            position: absolute;
+            overflow: hidden;
+            width: 108px;
+            height: 103px;
+            top: 0px;
+            right: 12px;
+            z-index: 1;
+        }
+    </style>
+<style>
+    .fa-150 {
+        font-size: 1.5em;
+    }
+</style>
+
+}
+@using (Html.BeginPageHeaderContainer(pageSetting))
+{
+    @Html.TextBox("txtCode", Request["txtCode"], new { @class = "", autocomplete = "off", placeholder = "Mã đơn hàng..." })
+    @Html.TextBox("txtCusName", Request["txtCusName"], new { @class = "", autocomplete = "off", placeholder = "Tên khách hàng..." })
+}
+<div class="row" style="margin-bottom:50px">
+    @foreach (var item in Model)
+    {
+        <div class="col-xs-12">
+            <div class="ui-ribbon-wrapper">
+                @if (item.Type == "usedservice")
+                {
+                    <div class="ui-ribbon" style="background-color:#FEE188">
+                        <span>Sử dụng DV</span>
+                    </div>
+                }
+                else
+                {
+                    <div class="ui-ribbon" style="background-color:#87B87F;">
+                        <span>Tái khám</span>
+                    </div>
+                }
+            </div>
+            <div class="btn btn-white btn-primary btn-bold" style="text-align: left;  white-space: normal; width: 100%; margin-bottom: 10px; " onclick="loadProject('@Url.Action("CameraUsingService", "Customer", new {area="Account", Id = item.Id })')">
+                <h4>
+                    <b style="color: #0058ff;">Dịch vụ: @item.ServiceName</b>
+                    <i style="font-size:13px;">Ngày tạo: @item.CreatedDate.Value.ToString("dd/MM/yyyy HH:mm")</i>
+                </h4>
+                <p>Khách hàng: @item.CustomerName</p>
+                <p>Mã hóa đơn: @item.ProductInvoiceCode</p>
+            </div>
+        </div>
+    }
+</div>
+<div class="row">
+    <footer class="btn-white btn-default">
+        <div class="col-sm-3 pull-left">
+            <a title="Trở về trang chính" class="btn btn-white btn-default btn-sm" href="@Url.Action("Client", pageSetting.ModuleName)" style="border-radius:100%;width:37px;height:37px;line-height:2.5!important">
+                <i class="ace-icon fa-150 fa fa-arrow-left"></i>
+            </a>
+        </div>
+    </footer>
+</div>
+
+@section Scripts {
+    <script src="~/Scripts/jquery.signalR-2.2.1.min.js" type="text/javascript"></script>
+    <script src="~/signalr/hubs"></script>
+<script>
+    function loadProject(url) {
+        location.href = url;
+    }
+</script>
+    <script type="text/javascript">
+        $(function () {
+            var erpHub = $.connection.erpHub;
+
+            //Start the connection.
+            $.connection.hub.start().done(function () {
+            });
+
+            //erpHub.client.loadUrl = function (url, userId) {
+            //    //erpHub.server.SendAlert(userId,,"Kết nối thành công!!!");
+            //    window.location = url;
+            //};
+        });
+    </script>
+}

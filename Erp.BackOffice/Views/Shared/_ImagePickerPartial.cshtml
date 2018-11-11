@@ -1,0 +1,132 @@
+﻿@inherits System.Web.Mvc.WebViewPage
+
+@{
+
+    string imagePickerName = (string)ViewData["imagePickerName"];
+    string inputName = imagePickerName.Replace("-image-picker", "");
+    string inputName_ForString64 = (string)ViewData["inputName_ForString64"];
+
+    string pathValue = (string)ViewData["pathValue"];
+    string string64Value = (string)ViewData["string64Value"];
+
+    var title = ViewData["title"];
+    
+    string displayControlValue = string.Empty;
+    if (string64Value != null && string64Value != string.Empty)
+    {
+        displayControlValue = string64Value;
+    }
+    else
+    {
+        displayControlValue = pathValue != null && pathValue != string.Empty ? Url.Content(pathValue) : Url.Content("~/Images/NoImage.jpg");
+    }
+}
+
+<br />
+<span class="profile-picture" style="margin-top:-25px;">
+    <img src="@displayControlValue" id="@imagePickerName" name="@imagePickerName" class="editable editable-click editable-empty" /></span>
+
+<script type="text/javascript">
+    $(function () {
+        var displayControlName = "[name='@imagePickerName']";//'avatar';
+        var valueControlName = "[name='@inputName_ForString64']";//'hdfLanguageIconActive';
+        var controlName = "[name='@inputName']";
+
+        $(controlName).on("change", function (e) {
+            $(controlName).valid();
+        });
+
+        $(valueControlName).on("change", function (e) {
+            $(controlName).valid();
+        });
+
+        //editables on first profile page
+        $.fn.editable.defaults.mode = 'inline';
+        $.fn.editableform.loading = "<div class='editableform-loading'><i class='light-blue icon-2x icon-spinner icon-spin'></i></div>";
+        $.fn.editableform.buttons = '<button type="submit" class="btn btn-info editable-submit"><i class="ace-icon fa fa-check icon-white"></i></button>' +
+                                    '<button type="button" class="btn editable-cancel"><i class="icon-remove"></i></button>';
+
+        // *** editable avatar *** //
+        try {
+            if (/msie\s*(8|7|6)/.test(navigator.userAgent.toLowerCase())) Image.prototype.appendChild = function (el) { }
+            var last_gritter
+            $(displayControlName).editable({
+                type: 'image',
+                name: displayControlName,
+                value: null,
+                image: {
+                    btn_choose: 'Change @title',
+                    droppable: true,
+                    name: displayControlName,
+                    max_size: 5120000,//~5Mb
+                    on_error: function (code) {
+                        if (last_gritter) $.gritter.remove(last_gritter);
+                        if (code == 1) {//file format error
+                            last_gritter = $.gritter.add({
+                                title: 'File phải là tập tin ảnh!',
+                                text: 'Vui lòng chọn ảnh thuộc định dạng: jpg|gif|png !',
+                                class_name: 'gritter-error gritter-center'
+                            });
+                        } else if (code == 2) {//file size rror
+                            last_gritter = $.gritter.add({
+                                title: 'Tập tin quá lớn!',
+                                text: 'Tập tin không được lớn quá 5MB',
+                                class_name: 'gritter-error gritter-center'
+                            });
+                        }
+                        else {//other error
+                        }
+                    },
+                    on_success: function () {
+                        $.gritter.removeAll();
+                    }
+                },
+                url: function (params) {
+                    // ***UPDATE AVATAR HERE*** //
+                    //You can replace the contents of this function with Erpples/profile-avatar-update.js for actual upload
+
+
+                    var deferred = new $.Deferred
+
+                    //if value is empty, means no valid files were selected
+                    //but it may still be submitted by the plugin, because "" (empty string) is different from previous non-empty value whatever it was
+                    //so we return just here to prevent problems
+                    var value = $(displayControlName).next().find('input[type=hidden]:eq(0)').val();
+                    if (!value || value.length == 0) {
+                        deferred.resolve();
+                        return deferred.promise();
+                    }
+
+
+                    //dummy upload
+                    setTimeout(function () {
+                        if ("FileReader" in window) {
+                            //for browsers that have a thumbnail of selected image
+                            var thumb = $(displayControlName).next().find('img').data('normal');
+                            if (thumb) {
+                                $(displayControlName).get(0).src = thumb;
+                                $(valueControlName).val(thumb);
+                                $(controlName).valid();
+                            }
+                        }
+
+                        deferred.resolve({ 'status': 'OK' });
+
+                        @*if (last_gritter) $.gritter.remove(last_gritter);
+                        last_gritter = $.gritter.add({
+                            title: '@title Updated!',
+                            text: 'Uploading to server can be easily implemented. A working Erpple is included with the template.',
+                            class_name: 'gritter-info gritter-center'
+                        });*@
+
+                    }, parseInt(Math.random() * 800 + 800))
+
+                    return deferred.promise();
+                },
+
+                success: function (response, newValue) {
+                }
+            })
+        } catch (e) { }
+    });
+</script>

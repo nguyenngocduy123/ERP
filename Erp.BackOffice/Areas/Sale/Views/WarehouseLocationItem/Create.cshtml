@@ -1,0 +1,57 @@
+@using Erp.BackOffice.App_GlobalResources
+@using Erp.BackOffice.Helpers
+@using Erp.BackOffice.Sale.Models
+
+@model WarehouseLocationItemViewModel
+
+@{
+    ViewBag.Title = Wording.PageCreate_WarehouseLocationItem;
+
+    Layout = "~/Views/Shared/" + (Request["IsPopup"] == null ? "ACE_AdminLayout.cshtml" : "_PopupLayout.cshtml");
+
+}
+
+@section HeadOfPage {
+    @Html.ScriptTop_ChosenStyle()
+}
+
+@using (Html.BeginForm_AceStyle((string)ViewBag.Title, "Create", "WarehouseLocationItem", null, FormMethod.Post, new { @class = "form-horizontal" }))
+{
+    @Html.ValidationSummary(true)
+
+    <input type="hidden" value="@Request["IsPopup"]" name="IsPopup" />
+
+    @Html.CustomTextboxFor(model => model.Name, null, null, WidthType.span12)
+        @Html.CustomTextboxFor(model => model.SN, null, null, WidthType.span12)
+    @Html.CustomTextboxFor(model => model.Shelf, null, null, WidthType.span12)
+    @Html.CustomTextboxFor(model => model.Floor, null, null, WidthType.span12)
+    @Html.CustomTextboxFor(model => model.Position, null, null, WidthType.span12)
+    @Html.CustomTextboxFor(model => model.IsOut, null, null, WidthType.span12)
+    @Html.CustomDropDownListFor(model => model.WarehouseId, WarehouseIdList, WidthType.span12, true, null, DropdownListStyle.DropdownListStyleDefault)
+    @Html.CustomDropDownListFor(model => model.ProductId, ProductIdList, WidthType.span12, true, null, DropdownListStyle.DropdownListStyleDefault)
+    @Html.CustomDropDownListFor(model => model.ProductInboundId, ProductInboundIdList, WidthType.span12, true, null, DropdownListStyle.DropdownListStyleDefault)
+    @Html.CustomDropDownListFor(model => model.ProductInboundDetailId, ProductInboundDetailIdList, WidthType.span12, true, null, DropdownListStyle.DropdownListStyleDefault)
+
+
+    <button style="margin-top:10px" type="submit" class="btn btn-info" name="Submit" value="Save">
+        <i class="ace-icon fa fa-save bigger-110"></i>
+        @Wording.Save
+    </button>
+}
+
+@section Scripts {    
+    <script>
+        //truyền từ action create của controller qua khi thực hiện submit và return về lại view create, để nhận biết là được gọi theo dạng popup
+        var closePopup = '@ViewBag.closePopup';
+        $(document).ready(function () {
+            //nếu là được gọi theo dạng popup từ form khác thì chạy đoạn code bên dưới
+            if (closePopup != '') {
+                var option = '<option value="@Model.Id" >@Model.Name</option>';
+                //tên funtion có thể khác theo từng công việc riêng (đây chỉ là mẫu khi thêm mới sẽ gọi lại)
+                window.parent.ClosePopupAndAppendSelect(option);
+            }
+        });
+    </script>
+    @Html.ScriptBottom_ValidationMvc()    
+    @Html.ScriptBottom_ChosenStyle()
+}

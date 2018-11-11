@@ -1,0 +1,39 @@
+E:\LocalProjects\SavinaTraining\SavinaTraining\SavinaTraining.Utilities\bin\Debug\SavinaTraining.Utilities.dll
+E:\LocalProjects\SavinaTraining\SavinaTraining\SavinaTraining.Utilities\bin\Debug\SavinaTraining.Utilities.pdb
+E:\LocalProjects\SavinaTraining\SavinaTraining\SavinaTraining.Utilities\obj\Debug\SavinaTraining.Utilities.dll
+E:\LocalProjects\SavinaTraining\SavinaTraining\SavinaTraining.Utilities\obj\Debug\SavinaTraining.Utilities.pdb
+E:\projects\SavinaTraining\doc\prj\SavinaTraining.Utilities\bin\Debug\SavinaTraining.Utilities.dll
+E:\projects\SavinaTraining\doc\prj\SavinaTraining.Utilities\bin\Debug\SavinaTraining.Utilities.pdb
+E:\projects\SavinaTraining\doc\prj\SavinaTraining.Utilities\bin\Debug\Newtonsoft.Json.dll
+E:\projects\SavinaTraining\doc\prj\SavinaTraining.Utilities\bin\Debug\System.Net.Http.Formatting.dll
+E:\projects\SavinaTraining\doc\prj\SavinaTraining.Utilities\bin\Debug\Newtonsoft.Json.xml
+E:\projects\SavinaTraining\doc\prj\SavinaTraining.Utilities\bin\Debug\System.Net.Http.Formatting.xml
+E:\projects\SavinaTraining\doc\prj\SavinaTraining.Utilities\obj\Debug\SavinaTraining.Utilities.csprojResolveAssemblyReference.cache
+E:\projects\SavinaTraining\doc\prj\SavinaTraining.Utilities\obj\Debug\SavinaTraining.Utilities.dll
+E:\projects\SavinaTraining\doc\prj\SavinaTraining.Utilities\obj\Debug\SavinaTraining.Utilities.pdb
+D:\FooVN\SamsungPlus\trunk\src\SavinaTraining.Utilities\bin\Debug\SavinaTraining.Utilities.dll
+D:\FooVN\SamsungPlus\trunk\src\SavinaTraining.Utilities\bin\Debug\SavinaTraining.Utilities.pdb
+D:\FooVN\SamsungPlus\trunk\src\SavinaTraining.Utilities\bin\Debug\Newtonsoft.Json.dll
+D:\FooVN\SamsungPlus\trunk\src\SavinaTraining.Utilities\bin\Debug\System.Net.Http.Formatting.dll
+D:\FooVN\SamsungPlus\trunk\src\SavinaTraining.Utilities\bin\Debug\Newtonsoft.Json.xml
+D:\FooVN\SamsungPlus\trunk\src\SavinaTraining.Utilities\bin\Debug\System.Net.Http.Formatting.xml
+D:\FooVN\SamsungPlus\trunk\src\SavinaTraining.Utilities\obj\Debug\SavinaTraining.Utilities.dll
+D:\FooVN\SamsungPlus\trunk\src\SavinaTraining.Utilities\obj\Debug\SavinaTraining.Utilities.pdb
+D:\FooVN\SamsungPlus\trunk\src\SavinaTraining.Utilities\obj\Debug\SavinaTraining.Utilities.csprojResolveAssemblyReference.cache
+D:\02. Solutions\Z. Company\07.QTS\06.Samsung\SavinaTraining.Utilities\bin\Debug\SavinaTraining.Utilities.dll
+D:\02. Solutions\Z. Company\07.QTS\06.Samsung\SavinaTraining.Utilities\bin\Debug\SavinaTraining.Utilities.pdb
+D:\02. Solutions\Z. Company\07.QTS\06.Samsung\SavinaTraining.Utilities\bin\Debug\Newtonsoft.Json.dll
+D:\02. Solutions\Z. Company\07.QTS\06.Samsung\SavinaTraining.Utilities\bin\Debug\System.Net.Http.Formatting.dll
+D:\02. Solutions\Z. Company\07.QTS\06.Samsung\SavinaTraining.Utilities\bin\Debug\Newtonsoft.Json.xml
+D:\02. Solutions\Z. Company\07.QTS\06.Samsung\SavinaTraining.Utilities\bin\Debug\System.Net.Http.Formatting.xml
+D:\02. Solutions\Z. Company\07.QTS\06.Samsung\SavinaTraining.Utilities\obj\Debug\SavinaTraining.Utilities.dll
+D:\02. Solutions\Z. Company\07.QTS\06.Samsung\SavinaTraining.Utilities\obj\Debug\SavinaTraining.Utilities.pdb
+D:\02. Solutions\Z. Company\07.QTS\05.KTX\src\SavinaTraining.Utilities\bin\Debug\SavinaTraining.Utilities.dll
+D:\02. Solutions\Z. Company\07.QTS\05.KTX\src\SavinaTraining.Utilities\bin\Debug\SavinaTraining.Utilities.pdb
+D:\02. Solutions\Z. Company\07.QTS\05.KTX\src\SavinaTraining.Utilities\bin\Debug\Newtonsoft.Json.dll
+D:\02. Solutions\Z. Company\07.QTS\05.KTX\src\SavinaTraining.Utilities\bin\Debug\System.Net.Http.Formatting.dll
+D:\02. Solutions\Z. Company\07.QTS\05.KTX\src\SavinaTraining.Utilities\bin\Debug\Newtonsoft.Json.xml
+D:\02. Solutions\Z. Company\07.QTS\05.KTX\src\SavinaTraining.Utilities\bin\Debug\System.Net.Http.Formatting.xml
+D:\02. Solutions\Z. Company\07.QTS\05.KTX\src\SavinaTraining.Utilities\obj\Debug\SavinaTraining.Utilities.csprojResolveAssemblyReference.cache
+D:\02. Solutions\Z. Company\07.QTS\05.KTX\src\SavinaTraining.Utilities\obj\Debug\SavinaTraining.Utilities.dll
+D:\02. Solutions\Z. Company\07.QTS\05.KTX\src\SavinaTraining.Utilities\obj\Debug\SavinaTraining.Utilities.pdb

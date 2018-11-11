@@ -1,0 +1,61 @@
+﻿@model List<UserSettingViewModel>
+@using Erp.BackOffice.App_GlobalResources
+@using Erp.BackOffice.Helpers
+@using Erp.BackOffice.Areas.Administration.Models
+@using GridMvc.Html
+
+@{
+    ViewBag.Title = Wording.ProfileSetting;
+    Layout = "~/Views/Shared/ACE_AdminLayout.cshtml";
+}
+
+@helper GridColumnValue(string key, string note)
+{
+    <p>Khóa: @key</p>
+    <p>Mô tả: @note</p>
+}
+
+@helper GridColumnName(string name, int settingId, string value)
+{
+    <p><b>@name</b></p>
+    <p>
+        <div class="input-group">
+            @Html.TextBox("UserSettingValue" + settingId, value, new { @class = "form-control" })
+            <span class="input-group-btn">
+                <button type="button" class="btn btn-success btn-sm" onclick="Update(@settingId); return false;">
+                    <span class="ace-icon fa fa-save icon-on-right bigger-110"></span>
+                    @Wording.Save
+                </button>
+            </span>
+        </div>
+
+
+    </p>
+}
+
+<div class="page-header">
+    <h1>
+        @ViewBag.Title
+    </h1>
+</div>
+
+@Html.Grid(Model).Columns(columns =>
+    {
+        columns.Add(m => m.SettingName).SetWidth(300).Titled(Wording.Key).Sanitized(false).Encoded(false).RenderValueAs(u => GridColumnName(u.SettingName, u.SettingId, u.Value));
+        columns.Add().Titled(Wording.Note).Sanitized(false).Encoded(false).RenderValueAs(u => GridColumnValue(u.SettingKey, u.SettingNote));
+    }).Selectable(false)
+
+<script type="text/javascript">
+    function Update(settingId) {
+        var userId = $("#UserId").val();
+        var value = $("#UserSettingValue" + settingId).val();
+        ShowLoading();
+
+        $.post("@Url.Action("UserSetting", "User", new { area = "Administration" })"
+            , { settingId: settingId, userId: userId, value: value })
+        .done(function (rs) {
+            HideLoading();
+            alert(rs.message);
+        });
+    }
+</script>

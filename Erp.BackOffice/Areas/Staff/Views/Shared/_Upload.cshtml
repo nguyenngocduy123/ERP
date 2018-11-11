@@ -1,0 +1,29 @@
+﻿
+<link href="~/assets/css/fileinput.css" rel="stylesheet" />
+<link href="~/Scripts/fileInput/themes/explorer/theme.css" rel="stylesheet" />
+<script src="~/Scripts/fileInput/js/fileinput.js"></script>
+<script src="~/Scripts/fileInput/themes/explorer/theme.js"></script>
+<form enctype="multipart/form-data">
+
+    <div class="form-group">
+        <input id="file-1" type="file" multiple class="file" data-overwrite-initial="false" data-min-file-count="1">
+    </div>
+</form>
+<script>
+    $("#file-1").fileinput({
+     uploadUrl: '/DocumentField/Upload/', // you must set a valid URL here else you will get an error
+   //  allowedFileExtensions: ['jpg', 'png', 'gif'],
+     overwriteInitial: false,
+     maxFileSize: 1000000,
+     maxFilesNum: 10,
+     resizeImage: true,
+     maxImageWidth: 700,
+     maxImageHeight: 700,
+     resizePreference: 'width',
+     //allowedFileTypes: ['image', 'video', 'flash'],
+     slugCallback: function (filename) {
+         return filename.replace('(', '_').replace(']', '_');
+     }
+    });
+
+</script>

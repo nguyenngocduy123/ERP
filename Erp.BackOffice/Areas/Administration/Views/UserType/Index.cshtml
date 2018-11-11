@@ -1,0 +1,157 @@
+﻿@model ListUsersTypeModel
+@using Erp.BackOffice.App_GlobalResources
+@using Erp.BackOffice.Helpers
+@using Erp.BackOffice.Administration.Models
+@using GridMvc.Html
+
+@{
+    ViewBag.Title = Wording.UserTypes;
+    Layout = "~/Views/Shared/ACE_AdminLayout.cshtml";
+    Erp.BackOffice.Models.PageSetting pageSetting = new Erp.BackOffice.Models.PageSetting
+    {
+        ModuleName = "UserType",
+        ActionName = "Index",
+        PageTitle = ViewBag.Title,
+        DisplaySearchPanel = false,
+        IsPopup = false,
+        DisplayBackButton = false
+    };
+}
+@if (ViewBag.SuccessMessage != null && ViewBag.SuccessMessage != "")
+{
+    <div class="alert alert-block alert-success">
+        <button class="close" data-dismiss="alert" type="button">
+            <i class="icon-remove"></i>
+        </button>
+        <i class="ace-icon fa fa-check green"></i>
+        @ViewBag.SuccessMessage
+    </div>
+}
+
+@if (ViewBag.FailedMessage != null && ViewBag.FailedMessage != "")
+{
+    <div class="alert alert-block alert-error">
+        <button class="close" data-dismiss="alert" type="button">
+            <i class="icon-remove"></i>
+        </button>
+        <i class="icon-warning-sign red"></i>
+        @ViewBag.FailedMessage
+    </div>
+}
+
+<!--Grid.Mvc style-->
+<link href="@Url.Content("~/assets/css/Gridmvc.css")" rel="stylesheet" type="text/css" />
+<script src="@Url.Content("~/Scripts/gridmvc.min.js")" type="text/javascript"> </script>
+
+
+
+@helper GridColumnCommand(int id)
+{
+    <div class="hidden-phone visible-desktop action-buttons" style="display: inline-block; float: left;">
+        <p>
+            <button name="Delete" value="Delete" type="submit" class="btn btn-mini btn-danger">
+                <i class="ace-icon fa fa-trash bigger-120"></i>
+            </button>
+        </p>
+    </div>
+}
+
+@helper GridColumnTypeName(string typeName, int id,bool? IsSystem)
+{
+    if (IsSystem != null && IsSystem == true)
+    { 
+    <span>@typeName</span>
+    }
+    else
+    { 
+    if (string.IsNullOrEmpty(typeName))
+    {
+        <a href="@Url.Action("EditUserType", "UserType", new { AreaName = "Administration", userTypeId = id })">No Title</a>
+    }
+    else
+    {
+        <a href="@Url.Action("EditUserType", "UserType", new { AreaName = "Administration", userTypeId = id })">@typeName</a>
+    }
+    }
+}
+
+@helper GridColumnDisplay(bool? isInternal,string textName){
+    if (isInternal == false) { textName = "Internal";@textName }
+    else{
+        if (isInternal == true)
+        {
+            textName = "External";@textName}
+        else {@textName};
+        
+    };
+}
+
+@helper CheckDeleteColumns(int Id)
+{
+    <label>
+        <input class="ace class-delete-all" type="checkbox" name="DeleteAll-checkbox" value="@Id">
+        <span class="lbl"></span>
+    </label>
+}
+
+@using (Html.BeginPageHeaderContainer(pageSetting))
+{
+}
+@using (Html.BeginForm("DeleteAll", "UserType", FormMethod.Post))
+{
+
+    <div style="float: left">
+
+        @Html.Grid(Model.UserTypes).Columns(columns =>
+           {
+               //columns.Add().Titled(Wording.IndexNumber).SetWidth(20).RenderValueAs(n => (Model.UserTypes.ToList().IndexOf(n) + 1).ToString());
+               columns.Add().Titled(Html.CheckBox("checked", false, new { id = "checkAll", style = "opacity:100" }).ToString()).SetWidth(20).Sanitized(false).Encoded(false).RenderValueAs(n => CheckDeleteColumns(n.Id));
+               columns.Add(u => u.Name).Titled(Wording.UserType).SetWidth(220).Sortable(false).Sanitized(false).Encoded(false).RenderValueAs(u => GridColumnTypeName(u.Name, u.Id,u.IsSystem));
+               columns.Add(u => u.OrderNo).Titled(Wording.OrderNo).SetWidth(50).Sortable(false);
+               columns.Add(u => u.Scope).Titled(Wording.Scope).SetWidth(70).Sortable(false).Sanitized(false).Encoded(false).RenderValueAs(u => GridColumnDisplay(u.Scope, ""));
+               columns.Add(u => u.Id).Titled(Wording.Action).Sanitized(false).Encoded(false).RenderValueAs(u => GridColumnCommand(u.Id));
+           })
+    </div>
+    using (Html.BeginButtonContainer(pageSetting))
+    {
+        @Html.Button(Wording.CreateNew, ButtonType.aTag, ButtonColor.Info, ButtonSize.Mini, true, IconType.Plus, IconSize.Default, false, new { @href = Url.Action("AddUserType", "UserType") })
+   
+        <button class="btn btn-mini btn-danger" type="submit" name="DeleteAll" value="DeleteAll" onclick="return CheckIsval();">
+            <i class="ace-icon fa fa-trash"></i>
+            @Wording.Delete
+        </button>
+    }
+}
+
+@section Scripts {
+    <script type="text/javascript">
+        function CheckIsval() {
+            if ($('[name="DeleteAll-checkbox"]').is(':checked') == false) {
+                alert("Phải chọn ít nhất 1 item.");
+                return false;
+            }
+            else {
+                if (confirm('Bạn có chắc muốn xóa các item đã chọn ?')) {
+                    return true;
+                }
+                else {
+                    return false;
+                }
+            }
+        }
+
+        $('[name="Delete"]').click(function () {
+            if (confirm('Bạn có chắc muốn xóa item ?')) {
+                $(this).closest('tr').children('td').each(function (i, e) {
+                    $(this).find("input.class-delete-all").prop("checked", true);
+                    return true;
+                })
+            }
+            else {
+                return false;
+            }
+
+        })
+
+    </script>
+}

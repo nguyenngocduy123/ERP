@@ -1,0 +1,74 @@
+﻿@using Erp.BackOffice.App_GlobalResources
+@using Erp.BackOffice.Helpers
+@{
+    ViewBag.Title = "Chức năng";
+    Layout = "~/Views/Shared/ACE_AdminLayout.cshtml";
+    int Id = (int)ViewBag.Id;
+    if (Id == 0)
+    {
+        return;
+    }
+
+    var current_menu = CacheHelper.PagesMenu.Where(item => item.Id == Id).FirstOrDefault();
+
+    var list = CacheHelper.PagesMenu.Where(item => item.ParentId == Id).OrderBy(item => item.OrderNo).ToList();
+    ViewBag.Title = current_menu.Name;
+
+    Erp.BackOffice.Models.PageSetting pageSetting = new Erp.BackOffice.Models.PageSetting
+    {
+        ModuleName = "",
+        ActionName = "",
+        PageTitle = ViewBag.Title,
+        DisplaySearchPanel = false,
+        IsPopup = false,
+        DisplayBackButton = false,
+        HideClearButton = true,
+        SearchButtonText = ""
+    };
+}
+
+@using (Html.BeginPageHeaderContainer(pageSetting))
+{
+    
+}
+
+@*@if(!string.IsNullOrEmpty(current_menu.DashboardView))
+{
+    @Html.Partial(@current_menu.DashboardView)
+}
+
+<hr class="space" />*@
+
+@foreach (var item in list)
+{
+    var subList = CacheHelper.PagesMenu.Where(x => x.ParentId == item.Id).OrderBy(x => x.OrderNo).ToList();
+    if (subList.Count > 0)
+    {
+        <h3 class="header smaller lighter green" style="padding-bottom:5px">
+            <i class="@item.CssClassIcon"></i>
+            @item.Name
+        </h3>
+        <p></p>
+        <p>
+            @foreach (var subItem in subList)
+            {
+                <a href="@subItem.PageUrl" class="btn btn-white btn-info btn-bold" style="margin-bottom:5px">
+                    <i class="@subItem.CssClassIcon bigger-120 blue"></i>
+                    @subItem.Name
+                </a>
+            }
+        </p>
+    }
+    else
+    {
+        <a href="@item.PageUrl" class="btn btn-white btn-info btn-bold" style="margin-bottom:5px">
+            <i class="@item.CssClassIcon bigger-120 blue"></i>
+            @item.Name
+        </a>
+
+    }
+}
+
+@section Scripts {
+
+}

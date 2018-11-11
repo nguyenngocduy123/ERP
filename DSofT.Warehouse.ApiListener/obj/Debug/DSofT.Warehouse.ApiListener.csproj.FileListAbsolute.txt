@@ -1,0 +1,2 @@
+C:\Users\Kai\Desktop\DatViet\DatViet\Work\DatViet\4.Source\ERP_TRANGHA\src\DSofT.Warehouse.ApiListener\obj\Debug\DSofT.Warehouse.ApiListener.csprojAssemblyReference.cache
+C:\Users\Kai\Desktop\DatViet\DatViet\Work\DatViet\4.Source\ERP_TRANGHA\src\DSofT.Warehouse.ApiListener\obj\Debug\DSofT.Warehouse.ApiListener.csproj.CoreCompileInputs.cache

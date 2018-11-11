@@ -1,0 +1,148 @@
+﻿@model CommisionCustomerDetailViewModel
+
+@using Erp.BackOffice.App_GlobalResources
+@using Erp.BackOffice.Sale.Models
+@using Erp.BackOffice.Helpers
+@using GridMvc.Html
+
+@{
+    ViewBag.Title = Wording.PageIndex_CommisionDetail + " cho khách hàng " + Model.CustomerName;
+    Layout = "~/Views/Shared/_PopupLayout.cshtml";
+
+    Erp.BackOffice.Models.PageSetting pageSetting = new Erp.BackOffice.Models.PageSetting
+    {
+        ModuleName = "CommisionCustomer",
+        ActionName = "Create",
+        PageTitle = ViewBag.Title,
+        DisplaySearchPanel = true,
+        IsPopup = false,
+        DisplayBackButton = false
+    };
+
+    int orderNo = 0;
+}
+
+<link href="@Url.Content("~/assets/css/Gridmvc.css")" rel="stylesheet" type="text/css" />
+
+@using (Html.BeginPageHeaderContainer(pageSetting))
+{
+
+}
+
+@if (ViewBag.SuccessMessage != null && ViewBag.SuccessMessage != "")
+{
+    <div class="alert alert-block alert-success">
+        <button class="close" data-dismiss="alert" type="button">
+            <i class="ace-icon fa fa-times"></i>
+        </button>
+        <i class="ace-icon fa fa-check green"></i>
+        @ViewBag.SuccessMessage
+    </div>
+}
+
+@if (ViewBag.FailedMessage != null && ViewBag.FailedMessage != "")
+{
+    <div class="alert alert-block alert-danger">
+        <button class="close" data-dismiss="alert" type="button">
+            <i class="ace-icon fa fa-times"></i>
+        </button>
+        <i class="ace-icon fa fa-warning red"></i>
+        @ViewBag.FailedMessage
+    </div>
+}
+
+@using (Html.BeginForm_AceStyle((string)ViewBag.Title, "Create", "CommisionCustomer", null, FormMethod.Post, new { @class = "form-horizontal" }))
+{
+    @Html.ValidationSummary(true)
+    @Html.HiddenFor(m => m.CustomerId)
+
+    <table class="table table-bordered" style="margin-bottom:80px">
+        <thead>
+            <tr>
+                <th width="30">STT</th>
+                <th>Tên mặt hàng</th>
+                <th width="120">Giá bán</th>
+                <th width="150">Giá trị (% hoặc số tiền)</th>
+                <th width="120">Chiết khấu số tiền</th>
+            </tr>
+        </thead>
+        <tbody class="detailList">
+            @foreach (var item in Model.DetailList)
+            {
+                orderNo++;
+                <tr>
+                    <td>@orderNo</td>
+                    <td>@item.Name</td>
+                    <td>@Common.PhanCachHangNgan(item.Price)</td>
+                    <td>
+                        @Html.Hidden("DetailList[" + (orderNo - 1) + "].Id", item.Id)
+                        @Html.Hidden("DetailList[" + (orderNo - 1) + "].ProductId", item.ProductId)
+                        @Html.Hidden("DetailList[" + (orderNo - 1) + "].Price", item.Price)
+                        @Html.TextBox("DetailList[" + (orderNo - 1) + "].CommissionValue", item.CommissionValue, new { style = "width:85px; text-align:right; " + (item.CommissionValue > 0 ? "border:1px solid green; font-weight:bold; color:green" : ""), @class = "input-price", autocomplete = "off" })
+                        @Html.TextBox("DetailList[" + (orderNo - 1) + "].CommissionValueText", (item.IsMoney != null && item.IsMoney == true ? "VNĐ" : "%"), new { style = "width:40px; text-align:center", @readonly = "readonly" })
+                    </td>
+                    <td>
+                        <label>
+                            <input class="detail_item_check ace" type="checkbox" name="DetailList[@(orderNo - 1)].IsMoney" data-index="@(orderNo - 1)" id="DetailList_@(orderNo - 1)__IsMoney" value="@(item.IsMoney != null && item.IsMoney == true ? "true" : "false")" @(item.IsMoney != null && item.IsMoney == true ? "checked=\"checked\"" : "") />
+                            <span class="lbl"></span>
+                        </label>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    using (Html.BeginButtonContainer(pageSetting))
+    {
+        <button class="btn btn-mini btn-primary" type="submit" name="Submit" value="Save">
+            <i class="ace-icon fa fa-save"></i>
+            @Wording.Save
+        </button>
+    }
+}
+
+@section Scripts {
+    <script type="text/javascript">
+        $(function () {
+            $(".detail_item_check").change(function () {
+                var index = $(this).data("index");
+                if ($(this).prop("checked")) {
+                    $("#DetailList_" + index + "__IsMoney").val(true);
+                    $("#DetailList_" + index + "__CommissionValueText").val("VNĐ");
+                }
+                else {
+                    $("#DetailList_" + index + "__IsMoney").val(false);
+                    $("#DetailList_" + index + "__CommissionValueText").val("%");
+                }
+            });
+        });
+        function CheckIsval() {
+            if ($('[name="DeleteId-checkbox"]').is(':checked') == false) {
+                alert("Phải chọn ít nhất 1 item.");
+                return false;
+            }
+            else {
+                if (confirm('Bạn có chắc muốn xóa các item đã chọn ?')) {
+                    return true;
+                }
+                else {
+                    return false;
+                }
+            }
+        }
+
+        $('[name="Delete"]').click(function () {
+            if (confirm('Bạn có chắc muốn xóa item ?')) {
+                $(this).closest('tr').children('td').each(function (i, e) {
+                    $(this).find("input.class-delete-all").prop("checked", true);
+                    return true;
+                })
+            }
+            else {
+                return false;
+            }
+
+        })
+
+    </script>
+}

@@ -1,0 +1,234 @@
+@using Erp.BackOffice.App_GlobalResources
+@using Erp.BackOffice.Helpers
+@using Erp.BackOffice.Staff.Models
+
+@model TaxIncomePersonViewModel
+
+@{
+    ViewBag.Title = Wording.PageCreate_TaxIncomePerson;
+
+    Layout = "~/Views/Shared/" + (Request["IsPopup"] == null ? "ACE_AdminLayout.cshtml" : "_PopupLayout.cshtml");
+
+    Erp.BackOffice.Models.PageSetting pageSetting = new Erp.BackOffice.Models.PageSetting
+    {
+        ModuleName = "TaxIncomePerson",
+        ActionName = "Create",
+        PageTitle = ViewBag.Title,
+        DisplaySearchPanel = false,
+        IsPopup = false,
+        DisplayBackButton = true
+    };
+}
+
+@section HeadOfPage {
+    @Html.ScriptTop_ChosenStyle()
+}
+
+@if (ViewBag.FailedMessage != null && ViewBag.FailedMessage != "")
+{
+    <div class="alert alert-block alert-danger">
+        <button class="close" data-dismiss="alert" type="button">
+            <i class="ace-icon fa fa-times"></i>
+        </button>
+        <i class="ace-icon fa fa-warning red"></i>
+        @ViewBag.FailedMessage
+    </div>
+}
+
+@using (Html.BeginPageHeaderContainer(pageSetting))
+{
+
+}
+
+@using (Html.BeginForm_AceStyle((string)ViewBag.Title, pageSetting.ActionName, pageSetting.ModuleName, null, FormMethod.Post, new { @class = "form-horizontal" }))
+{
+    @Html.ValidationSummary(true)
+
+    @*<input type="hidden" value="@Request["IsPopup"]" name="IsPopup" />*@
+
+    <div class="col-sm-12 no-padding" style="padding-bottom:10px; padding-left:0px; padding-right:0px;">
+        <div class="col-sm-12 no-padding">
+            <div class="widget-box">
+                <div class="widget-header">
+                    <h4 class="widget-title">
+                        <i class="ace-icon"></i>
+                        @Wording.Infomation @Wording.Tax.ToLower()
+                    </h4>
+                </div>
+                <div class="widget-body">
+                    <div class="widget-main">
+                        @Html.CustomTextboxFor(model => model.Code, null, null, WidthType.span12)
+                        
+                        @Html.CustomTextboxFor(model => model.Name, null, null, WidthType.span12)
+                        @Html.CustomDropDownListFor(model => model.GeneralTaxationId, SelectListHelper.GetSelectList_Location("0", null, Wording.Empty), WidthType.span12, true, null, DropdownListStyle.DropdownListStyleDefault)
+                        @Html.CustomDropDownListFor(model => model.GeneralManageId, SelectListHelper.GetSelectList_Category("TaxGeneralManage", null, Wording.Empty), WidthType.span12, true, null, DropdownListStyle.DropdownListStyleDefault)
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-sm-12 no-padding">
+            <div class="widget-box top-5">
+                <div class="widget-header">
+                    <h4 class="widget-title">
+                        <i class="ace-icon"></i>
+                        @Wording.PageIndex_Staffs
+                    </h4>
+                </div>
+                <div class="widget-body">
+                    <div class="widget-main">
+                        @Html.CustomDropDownListFor(model => model.BranchId, SelectListHelper.GetSelectList_Branch(null, Wording.Empty), WidthType.span12, true, null, DropdownListStyle.DropdownListStyleDefault)
+                        <span class="input-group-addon">
+                            <button id="loadStaffs" type="button" class="btn btn-primary btn-white btn-sm"><i class="fa fa-cloud-upload"></i> Lấy dữ liệu</button>
+                        </span>
+                        <button class="btn btn-mini btn-success" type="button" name="AddStaff" value="Save" onclick="OpenPopup('/Staffs/Search?IsPopup=true&OrderNo=Reduced', 'Tìm kiếm dữ liệu', 800, 600)">
+                            <i class="ace-icon fa fa-plus"></i>
+                            @Wording.AddStaffs
+                        </button>
+                        <div class="table-responsive">
+                            <table class="table table-striped table-bordered table-hover">
+                                <thead>
+                                    <tr>
+                                        <td>Mã nhân viên</td>
+                                        <td>Họ và tên</td>
+                                        <td>Email</td>
+                                        <td>Giới tính</td>
+                                        <td>Quốc tịch</td>
+                                        <td>Số CMND</td>
+                                        <td>Phòng ban</td>
+                                        <td>Địa chỉ</td>
+                                        <td></td>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @if (Model.ListStaffsTax != null && Model.ListStaffsTax.Count() > 0)
+                                    {
+                                        foreach (var item in Model.ListStaffsTax)
+                                        {
+                                            <tr>
+                                                <td hidden><input name="StaffIds" value="@item.Id" /></td>
+                                                <td>@item.Code</td>
+                                                <td>@item.Name</td>
+                                                <td>@item.Email</td>
+                                                <td>@(item.Gender != false ? "Nữ" : "Nam")</td>
+                                                <td>@item.ContryName</td>
+                                                <td>@item.IdCardNumber</td>
+                                                <td>@item.BranchName </td>
+
+                                                <td>@item.ProvinceName </td>
+                                                <td> <a class="btn btn-danger btn-mini" onclick="RemoveType(this)"><i class="ace-icon fa fa-remove "></i> Xóa</a></td>
+                                            </tr>
+                                        }
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                        
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    using (Html.BeginButtonContainer(pageSetting))
+    {
+        <button class="btn btn-mini btn-primary" type="submit" name="Submit" value="Save">
+            <i class="ace-icon fa fa-save"></i>
+            @Wording.Save @Wording.Tax.ToLower()
+        </button>
+
+
+    }
+}
+
+@section Scripts {
+    <script>
+        //truyền từ action create của controller qua khi thực hiện submit và return về lại view create, để nhận biết là được gọi theo dạng popup
+        var closePopup = '@ViewBag.closePopup';
+        $(document).ready(function () {
+            //nếu là được gọi theo dạng popup từ form khác thì chạy đoạn code bên dưới
+            if (closePopup != '') {
+                var option = '<option value="@Model.Id" >@Model.Name</option>';
+                //tên funtion có thể khác theo từng công việc riêng (đây chỉ là mẫu khi thêm mới sẽ gọi lại)
+                window.parent.ClosePopupAndAppendSelect(option);
+            }
+        });
+
+        //Lấy dữ liệu nhân viên
+
+        $('#loadStaffs').click(function () {
+            $('.table tbody').html("");
+            var url = "@Url.Action("GetStaffs", "TaxIncomePerson")";
+            var branchId = $("#BranchId option:selected").val();
+            var startDate = $('input[name="StartDate"]').val();
+            var endDate = $('input[name="EndDate"]').val();
+            GetJsonStaff(null, branchId, startDate, endDate);
+        });
+
+        //Add
+        function GetJsonStaff(Id, branchId, startDate, endDate) {
+            var url = "@Url.Action("GetStaffs", "TaxIncomePerson")";
+            ShowLoading();
+            $.getJSON(url, {
+                Id : Id,
+                BranchId: branchId,
+                StartDate: startDate,
+                EndDate: endDate
+            })
+              .done(function (data) {
+                  var staff = jQuery.parseJSON(data);
+                  $.each(staff, function (i, item) {
+
+                      var td = '<tr><td hidden><input name="StaffIds" value="' + item.Id + '"/></td>';
+                     
+                      td += '<td>' + item.Code + '</td>';
+                      td += '<td>' + item.Name + '</td>';
+                      td += '<td>' + item.Email + '</td>';
+                      td += item.Gender == false ? '<td>Nam</td>' : '<td>Nữ</td>';
+                      td += '<td>' + item.ContryName + '</td>';
+                      td += '<td>' + item.IdCardNumber + '</td>';
+                    
+                      td += '<td>' + item.BranchName + '</td>';
+                      td += '<td>' + item.ProvinceName + '</td>';
+                      td += '<td><a type="button" class="btn btn-danger btn-mini" onclick="RemoveType(this)"><i class="ace-icon fa fa-remove "></i> Xóa</a></td></tr>';
+                      $('.table tbody').append(td);
+                  });
+
+                  HideLoading();
+              });
+        }
+
+        //remove staff
+
+        function RemoveType(ele) {
+            $(ele).closest('tr').remove();
+        }
+
+        function selectLocationItem(Id, Code, Name, Type) {
+            // thêm dòng mới
+            var staffs = $('input[name="StaffIds"]');
+            var dongmoi = true;
+            $.each(staffs, function (i, item) {
+                if ($(item).val() == Id) {
+                    dongmoi = false;
+                    return false;
+                }
+            });
+            //Xữ lý
+            if (!dongmoi) {
+                alert('Nhân viên đã có trong danh sách');
+            }
+            else {
+                GetJsonStaff(Id, null, null, null);
+            }
+
+        }
+
+
+    </script>
+    @Html.ScriptBottom_ValidationMvc()
+    @Html.ScriptBottom_ChosenStyle()
+    @Html.ScriptBottom_DatePicker("dd/mm/yyyy")
+
+
+}

@@ -1,0 +1,74 @@
+﻿@model Erp.BackOffice.Models.RegisterModel
+
+@using (Html.BeginForm("RegisterPartial", "User", new { returnUrl = ViewBag.ReturnUrl }, FormMethod.Post, new { id = "registerForm" }))
+{
+    @Html.AntiForgeryToken()
+    @Html.ValidationSummary();
+
+    <fieldset>
+        <label>
+            <span class="block input-icon input-icon-right">
+                @*<input type="text" placeholder="Username" class="span12">*@
+                @Html.TextBoxFor(m => m.UserName, new Dictionary<string, object> { { "placeholder", "Username" }, { "class", "span12" } })
+                @*@Html.ValidationMessageFor(m => m.UserName)*@
+                <i class="icon-user"></i>
+            </span>
+        </label>
+
+        <label>
+            <span class="block input-icon input-icon-right">
+                @*<input type="password" placeholder="Password" class="span12">*@
+                @Html.PasswordFor(m => m.Password, new Dictionary<string, object> { { "placeholder", "Password" }, { "class", "span12" } })
+                @*@Html.ValidationMessageFor(m => m.Password)*@
+                <i class="icon-lock"></i>
+            </span>
+        </label>
+
+        <label>
+            <span class="block input-icon input-icon-right">
+                @*<input type="password" placeholder="Repeat password" class="span12">*@
+                @Html.PasswordFor(m => m.ConfirmPassword, new Dictionary<string, object> { { "placeholder", "Repeat password" }, { "class", "span12" } })
+                @*@Html.ValidationMessageFor(m => m.ConfirmPassword)*@
+                <i class="icon-retweet"></i>
+            </span>
+        </label>
+
+        <div class="space-24"></div>
+
+        <div class="clearfix">
+            <button class="width-30 pull-left btn btn-small" type="reset"><i class="ace-icon fa fa-refresh"></i>Reset</button>
+            <button class="width-65 pull-right btn btn-small btn-success" name="UserRegister" value="Register" id="submitUserRegister">
+                Register<i class="icon-arrow-right icon-on-right"></i>
+            </button>
+        </div>
+    </fieldset>
+}
+
+<script>
+    $(document).ready(function () {
+        $('#submitUserRegister').click(function (e) {
+            e.preventDefault();
+            $.ajax({
+                type: "POST",
+                url: '@Url.Action("RegisterPartial", "User", new { ReturnUrl = ViewBag.ReturnUrl })',
+                data: $('#registerForm').serialize(),
+                success: function (result) {
+                    if (result.redirectTo) {
+                        // The operation was a success on the server as it returned
+                        // a JSON objet with an url property pointing to the location
+                        // you would like to redirect to => now use the window.location.href
+                        // property to redirect the client to this location
+                        window.location.href = result.redirectTo;
+                    } else {
+                        // The server returned a partial view => let's refresh
+                        // the corresponding section of our DOM with it
+                        $("#registerDiv").html(result);
+                    }
+                },
+                error: function () {
+
+                }
+            });
+        });
+    });
+</script>

@@ -1,0 +1,261 @@
+﻿@model IEnumerable<PurchaseOrderViewModel>
+
+@using Erp.BackOffice.App_GlobalResources
+@using Erp.BackOffice.Sale.Models
+@using Erp.BackOffice.Helpers
+@using GridMvc.Html
+
+@{
+    ViewBag.Title = Wording.PageIndex_PurchaseOrder;
+    Layout = "~/Views/Shared/ACE_AdminLayout.cshtml";
+    Erp.BackOffice.Models.PageSetting pageSetting = new Erp.BackOffice.Models.PageSetting
+    {
+        ModuleName = "PurchaseOrder",
+        ActionName = "Index",
+        PageTitle = ViewBag.Title,
+        DisplaySearchPanel = true,
+        IsPopup = false,
+        DisplayBackButton = false
+    };
+    IEnumerable<SelectListItem> warehouseList = (IEnumerable<SelectListItem>)ViewBag.warehouseList;
+
+}
+<style type="text/css">
+    .product-invoice-isdeleted {
+        text-decoration: line-through;
+    }
+</style>
+@if (ViewBag.SuccessMessage != null && ViewBag.SuccessMessage != "")
+{
+    <div class="alert alert-block alert-success">
+        <button class="close" data-dismiss="alert" type="button">
+            <i class="ace-icon fa fa-times"></i>
+        </button>
+        <i class="ace-icon fa fa-check green"></i>
+        @ViewBag.SuccessMessage
+    </div>
+}
+
+@if (ViewBag.FailedMessage != null && ViewBag.FailedMessage != "")
+{
+    <div class="alert alert-block alert-danger">
+        <button class="close" data-dismiss="alert" type="button">
+            <i class="ace-icon fa fa-times"></i>
+        </button>
+        <i class="ace-icon fa fa-warning red"></i>
+        @ViewBag.FailedMessage
+    </div>
+}
+
+<link href="@Url.Content("~/assets/css/Gridmvc.css")" rel="stylesheet" type="text/css" />
+<script src="@Url.Content("~/Scripts/gridmvc.min.js")" type="text/javascript"> </script>
+
+@helper GridColumnCommand(int id, string status)
+{
+    if (string.IsNullOrEmpty(status) == false && status.Equals(Wording.OrderStatus_pending))
+    {
+        <div class="hidden-phone visible-desktop action-buttons" style="display: inline-block; float: left;">
+            <p>
+                <button name="Delete" value="Delete" type="submit" class="btn btn-mini btn-danger">
+                    <i class="ace-icon fa fa-trash bigger-120"></i>
+                </button>
+            </p>
+        </div>
+    }
+}
+
+@helper GridColumnName(string name, int id, string note, string reason)
+{
+    name = string.IsNullOrEmpty(name) ? "No Title" : name;
+    <a href="@Url.Action("Detail", "PurchaseOrder", new { Id = id })">@name</a>
+
+    if (!string.IsNullOrEmpty(note) || !string.IsNullOrEmpty(reason))
+    {
+        note = note + "; " + reason;
+        <span class="help-button" data-rel="tooltip" data-placement="bottom" data-original-title="@note">?</span>
+    }
+}
+@helper GridColumnStatus(string status)
+{
+    switch (status)
+    {
+        case "pending":
+            <span class="label label-info pull-left" style="margin-right:5px">@Wording.OrderStatusDisplay_pending</span>
+            break;
+        case "inprogress":
+        <span class="label label-warning pull-left" style="margin-right:5px">@Wording.OrderStatusDisplay_inprogress</span>
+            break;
+        case "shipping":
+        <span class="label label-warning pull-left" style="margin-right:5px">@Wording.OrderStatusDisplay_shipping</span>
+            break;
+        case "complete":
+        <span class="label label-success pull-left" style="margin-right:5px">@Wording.OrderStatusDisplay_complete</span>
+            break;
+        case "delete":
+        <span class="label label-danger pull-left" style="margin-right:5px">@Wording.OrderStatusDisplay_delete</span>
+            break;
+    }
+}
+
+@helper CheckDeleteColumns(int Id)
+{
+    <label>
+        <input class="ace class-delete-all" type="checkbox" name="DeleteId-checkbox" value="@Id">
+        <span class="lbl"></span>
+    </label>
+}
+
+@helper BuildCheckAll()
+{
+    <label>
+        <input class="ace" type="checkbox" name="checkAll" id="checkAll" />
+        <span class="lbl"></span>
+    </label>
+}
+
+@using (Html.BeginPageHeaderContainer(pageSetting))
+{
+    using (Html.BeginForm(pageSetting.ActionName, pageSetting.ModuleName, FormMethod.Post, new { id = pageSetting.ModuleName, @class = "search-view form-inline" }))
+    {
+        <p>
+            @Html.TextBox("txtCode", Request["txtCode"], new { autocomplete = "off", placeholder = "Nhập mã..." })
+            <span class="input-daterange input-group">
+                @Html.TextBox("startDate", Request["startDate"] != null ? Request["startDate"] : "", new { autocomplete = "off", placeholder = "Ngày xuất từ..." })
+                <span class="input-group-addon">
+                    <i class="fa fa-exchange"></i>
+                </span>
+                @Html.TextBox("endDate", Request["endDate"] != null ? Request["endDate"] : "", new { autocomplete = "off", placeholder = "đến..." })
+            </span>
+            <span class="input-numberic input-group">
+                @Html.TextBox("txtMinAmount", Request["txtMinAmount"] != null ? Request["txtMinAmount"] : "", new { @class = "input-numberic", autocomplete = "off", placeholder = "Tổng tiền từ..." })
+                <span class="input-group-addon">
+                    <i class="fa fa-exchange"></i>
+                </span>
+                @Html.TextBox("txtMaxAmount", Request["txtMaxAmount"] != null ? Request["txtMaxAmount"] : "", new { @class = "input-numberic", autocomplete = "off", placeholder = "đến..." })
+            </span>
+            @Html.TextBox("txtSupplierName", Request["txtSupplierName"], new { autocomplete = "off", placeholder = "Nhập tên NCC..." })
+            <select class="form-control" name="warehouseDestinationId">
+                <option value="">- Kho đích đến -</option>
+                @foreach (var item in warehouseList)
+                {
+                    <option @(Request["warehouseDestinationId"] == item.Value ? "Selected" : "") value="@item.Value">@item.Text</option>
+                }
+            </select>
+        </p>
+    }
+
+}
+
+@using (Html.BeginForm("Delete", "PurchaseOrder", FormMethod.Post))
+{
+    <div class="table-responsive">
+        @Html.Grid(Model).Columns(columns =>
+    {
+        int index = 0;
+        columns.Add().Titled(Wording.OrderNo).SetWidth(30).RenderValueAs(n => (++index).ToString());
+        columns.Add().Titled(Wording.Status).SetWidth(100).Sanitized(false).Encoded(false).RenderValueAs(n => GridColumnStatus(n.Status));
+        columns.Add(u => u.CreatedDate).Titled(Wording.CreatedDate).SetWidth(130).Format("{0:dd/MM/yyyy HH:mm}");
+        columns.Add().Titled("Mã đơn hàng").Sortable(false).Sanitized(false).Encoded(false).RenderValueAs(u => GridColumnName(u.Code, u.Id, u.Note, u.CancelReason)).SetWidth(140);
+        columns.Add(u => u.TotalAmount).Titled(Wording.TotalAmount).Sortable(true).SetWidth(100).RenderValueAs(n => CommonSatic.ToCurrencyStr(n.TotalAmount,null)).Css("text-right");
+        columns.Add(u => u.SupplierName).Titled(Wording.Supplier).SetWidth(120);
+        columns.Add(u => u.WarehouseDestinationName).Titled(Wording.WarehouseDestination).SetWidth(120);
+        columns.Add().Titled("CT nhập kho").Sanitized(false).Encoded(false).RenderValueAs(n => string.Format("<a href=\"/ProductInbound/Detail/{0}\" target=\"_blank\">{1}</a>", n.ProductInboundId, n.ProductInboundCode)).SetWidth(120);
+        columns.Add(u => u.ModifiedDate).Titled(Wording.ModifiedDate).SetWidth(130).Sortable(true).Format("{0:dd/MM/yyyy HH:mm}");
+        columns.Add(u => u.IsArchive).Titled("TT ghi sổ").Sanitized(false).Encoded(false).RenderValueAs(n => (n.IsArchive ? "<span style=\"color:green\"><b>Đã ghi sổ</b></span>" : "<span style=\"color:red\"><b>Chưa ghi sổ</b></span>")).SetWidth(90).Sortable(true);
+    }).WithPaging(20).SetRowCssClasses(item => (item.IsDeleted.HasValue && item.IsDeleted.Value ? "product-invoice-isdeleted" : ""))
+    </div>
+    using (Html.BeginButtonContainer(pageSetting))
+    {
+        if (Erp.BackOffice.Filters.SecurityFilter.AccessRight("Create", "PurchaseOrder", "Sale"))
+        {
+            <a class="btn btn-mini btn-primary" href="@Url.Action("Create", pageSetting.ModuleName)">
+                <i class="ace-icon fa fa-plus"></i>
+                @Wording.CreateNew
+            </a>
+        }
+    }
+}
+
+
+
+<!-- Modal form thay đổi trạng thái -->
+<div id="order_status_modal" class="modal fade" role="dialog">
+    <div class="modal-dialog">
+        <!-- Modal content-->
+        <form class="modal-content" action="@Url.Action("UpdateStatus", "PurchaseOrder")" method="post">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">Thay đổi trạng thái cho đơn hàng có mã: <span id="order_code_popup"></span></h4>
+            </div>
+            <div class="modal-body">
+                <div class="form-group clearfix">
+                    <label class="col-sm-4">Trạng thái</label>
+                    <div class="col-sm-8">
+                        <select id="order_status" name="Status">
+                            <option value="pending">Đang chờ</option>
+                            <option value="outbound pending">Chờ xuất kho</option>
+                            @*<option value="outbound done">Đã xuất kho</option>*@
+                            <option value="shipping">Đang giao hàng</option>
+                            <option value="complete">Hoàn thành</option>
+                            <option value="cancel">Hủy</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <input type="hidden" value="" name="Id" id="order_id" />
+                <button type="submit" class="btn btn-success">Lưu</button>
+                <button type="button" class="btn btn-default" data-dismiss="modal">Đóng</button>
+            </div>
+        </form>
+
+    </div>
+</div>
+<!-- Modal -->
+@section Scripts {
+    <script type="text/javascript">
+
+        function CheckIsval() {
+            if ($('[name="DeleteId-checkbox"]').is(':checked') == false) {
+                alert("Phải chọn ít nhất 1 item.");
+                return false;
+            }
+            else {
+                if (confirm('Bạn có chắc muốn xóa các item đã chọn ?')) {
+                    return true;
+                }
+                else {
+                    return false;
+                }
+            }
+        }
+
+        $('[name="Delete"]').click(function () {
+            if (confirm('Bạn có chắc muốn xóa item ?')) {
+                $(this).closest('tr').children('td').each(function (i, e) {
+                    $(this).find("input.class-delete-all").prop("checked", true);
+                    return true;
+                })
+            }
+            else {
+                return false;
+            }
+
+        })
+
+        //mở form thay đổi trạng thái
+        function popupChangeOrderStatus(status, orderId, code, event) {
+            event.preventDefault();
+            $('#order_code_popup').text(code);
+            $('#order_id').val(orderId);
+            var option = $('#order_status option[text="' + status + '"]');
+            console.log(option);
+            $('#order_status').val(status);
+            $('#order_status_modal').modal({ backdrop: 'static' });
+        }
+
+    </script>
+
+    @Html.ScriptBottom_ValidationMvc()
+    @Html.ScriptBottom_DatePicker("dd/MM/yyyy")
+}

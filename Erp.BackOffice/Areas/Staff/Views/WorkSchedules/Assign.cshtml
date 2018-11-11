@@ -1,0 +1,156 @@
+﻿@model TimekeepingListViewModel
+
+@using Erp.Domain.Entities
+@using Erp.Domain.Staff.Entities
+@using Erp.BackOffice.App_GlobalResources
+@using Erp.BackOffice.Staff.Models
+@using Erp.BackOffice.Helpers
+
+@{
+    Layout = null;
+    //List<DateTime> dates = (List<DateTime>)ViewBag.dates;
+    List<Holidays> DayHoliday = (List<Holidays>)ViewBag.DayHoliday;
+    //IQueryable<Staffs> staffList = (IQueryable<Staffs>)ViewBag.staffList;
+    IQueryable<Shifts> ShiftsList = (IQueryable<Shifts>)ViewBag.ShiftsList;
+    List<Category> DayOff = (List<Category>)ViewBag.DayOff;
+
+}
+
+@helper GridColumnName(string name, int id, string code)
+{
+    if (string.IsNullOrEmpty(name))
+    {
+        <p style="margin-left:10px;"> <a href="@Url.Action("Detail", "Staffs", new { area = "Staff", Id = id })" target="_blank"><b><i class="fa fa-user-circle-o"></i>  No Title</b></a></p>
+    }
+    else
+    {
+        <p style="margin-left:10px;">
+            <a href="@Url.Action("Detail", "Staffs", new { area = "Staff", Id = id })" target="_blank">
+                <b><i class="fa fa-user-circle"></i> @name </b>
+            </a>
+        </p>
+        <p style="margin-left:10px;"><i class="fa fa-barcode" data-rel="tooltip" title="" data-placement="bottom" data-original-title="Mã nhân viên hiện tại"></i> @code</p>
+    }
+}
+@helper GridColumnProfileImage(string ProfileImage, string name)
+{
+    if (!string.IsNullOrEmpty(ProfileImage))
+    {
+        <a data-toggle="tooltip" title='
+            <img src="/Data/HinhSV/@(ProfileImage)" width="248" />'>
+            <img class="profile-picture" src="/Data/HinhSV/@(ProfileImage)" width="65" height="80" alt="@name" />
+        </a>
+    }
+    else
+    {
+        <span class="profile-picture" style="height:80px; width:65px"><img style="max-width:100%; margin-top:5px" src="/assets/img/no-avatar.png" alt="@name" /></span>
+    }
+}
+<div class="col-sm-12" style="width:100%">
+    <div class="box" style="width:100%">
+        @using (Html.BeginForm("Assign", "WorkSchedules", null, FormMethod.Post, new { @class = "form-horizontal", id = "form-assign" }))
+        {
+            <input name="timekeepingListId" type="hidden" value="@Model.Id" />
+            <div class="table-responsive" style="width:100%">
+                <div class="col-sm-12 table-fixed-column" style="padding:0px;">
+                    <table id="cTable" class="table">
+                        <thead>
+                            <tr>
+                                <th>
+                                    <span>Tên nhân viên</span>
+                                </th>
+                                @for (DateTime dt = ViewBag.aDateTime; dt <= ViewBag.retDateTime; dt = dt.AddDays(1))
+                                {
+                                    <th>
+                                        @if (DayOff.Where(x => Convert.ToInt32(x.OrderNo) == (int)dt.DayOfWeek && x.Value == "True").Count() <= 0)
+                                        {
+                                            <span data-rel="tooltip" title="" data-placement="bottom" data-original-title="@dt.ToString("dddd") - @dt.ToString("dd/MM/yyyy")">@dt.ToString("dd")</span>
+                                        }
+                                        else
+                                        {
+                                            <span data-rel="tooltip" title="" data-placement="bottom" data-original-title="@dt.ToString("dddd") - @dt.ToString("dd/MM/yyyy") - Ngày nghỉ của tuần">@dt.ToString("dd")</span>
+                                        }
+                                        @foreach (var q in DayHoliday.Where(x => x.DayStart <= dt && dt <= x.DayEnd))
+                                        {
+                                            <i class="fa fa-info-circle red popover-info" data-rel="popover" data-placement="bottom" title="" data-content="@q.Name" data-original-title="Ngày lễ" aria-describedby="popover315746"></i>
+                                        }
+                                    </th>
+                                }
+
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in ViewBag.staffList)
+                            {
+                                <tr>
+                                    <td data-name="">
+                                        @GridColumnName(item.Name, item.Id, item.Code)
+                                    </td>
+
+                                    @for (DateTime ii = ViewBag.aDateTime; ii <= ViewBag.retDateTime; ii = ii.AddDays(1))
+                                    {
+                                        <td class="">
+                                            @foreach (var items in ShiftsList.AsEnumerable())
+                                            {
+                                                <p style="min-width:40px;max-width:100%">
+                                                    <label class="shifts_checkbox clearfix">
+                                                        <input type="checkbox" value="@item.Id-@ii.ToString("dd/MM/yyyy")-@items.Id" name="shifts_id" class="ace" />
+                                                        <span class="lbl" data-rel="tooltip" title="" data-placement="bottom" data-original-title="@items.Name">@items.Code</span>
+                                                    </label>
+                                                </p>
+                                            }
+                                        </td>
+                                    }
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+@section Scripts {
+    <script type="text/javascript">
+        $(document).ready(function () {
+
+            $(document).on('change', 'input[name="shifts_id"]', function () {
+                $('#shifts_id_for_vaidate').next().html('');
+                if ($('input[name="shifts_id"]:checked').length > 0)
+                    $('#shifts_id_for_vaidate').val('for-test');
+                else
+                    $('#shifts_id_for_vaidate').val('pass');
+            });
+        });
+
+        function loadClassAssign() {
+            $('input[name="shifts_id"]').prop('checked', false);
+            $.ajax({
+                type: 'GET',
+                url: '@Url.Action("FetchShifts", "WorkSchedules", new { area = "Staff" })',
+                data: {},
+                dataType: 'json',
+                success: function (res) {
+                    for (var i = 0; i < res.length; i++) {
+                        var date = convertCSharpDateToJavaScriptDate(res[i].Day);
+                        var day = date.getDate();
+                        var month = date.getMonth() + 1;
+                        var dateStr = (day < 10 ? '0' + day : day) + '/' + (month < 10 ? '0' + month : month) + '/' + date.getFullYear();
+                        $('input[name="shifts_id"][value="' + res[i].StaffId + "-" + dateStr + "-" + res[i].ShiftsId + '"]').prop('checked', true);
+
+                    }
+                }
+            });
+        }
+        loadClassAssign();
+        $(document).ready(function () {
+            $('[data-rel="tooltip"]').tooltip({ container: 'body' });
+        });
+        $(document).ready(function () {
+            //HideLoading();
+        });
+    </script>
+    @Html.ScriptBottom_ValidationMvc()
+    @Html.ScriptBottom_DatePicker("dd/mm/yyyy")
+    @Html.ScriptBottom_ChosenStyle()
+}

@@ -1,0 +1,185 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{634130CF-1EA3-4B12-8A08-D858A2B615C1}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Erp.Domain</RootNamespace>
+    <AssemblyName>Erp.Domain</AssemblyName>
+    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="DotNetOpenAuth.OpenId">
+      <HintPath>..\packages\DotNetOpenAuth.OpenId.Core.4.0.3.12153\lib\net40-full\DotNetOpenAuth.OpenId.dll</HintPath>
+    </Reference>
+    <Reference Include="EntityFramework">
+      <HintPath>..\packages\EntityFramework.6.1.3\lib\net45\EntityFramework.dll</HintPath>
+    </Reference>
+    <Reference Include="EntityFramework.SqlServer">
+      <HintPath>..\packages\EntityFramework.6.1.3\lib\net45\EntityFramework.SqlServer.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
+    <Reference Include="System.Configuration" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Web" />
+    <Reference Include="System.Web.Extensions" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+    <Reference Include="WebMatrix.WebData, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\Erp.Domain.Staff\bin\Debug\WebMatrix.WebData.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Entities\Mapping\MetadataFieldMap.cs" />
+    <Compile Include="Entities\Mapping\ModuleMap.cs" />
+    <Compile Include="Entities\Mapping\ModuleRelationshipMap.cs" />
+    <Compile Include="Entities\Mapping\vwMetadataFieldMap.cs" />
+    <Compile Include="Entities\Mapping\_BOLogMap.cs" />
+    <Compile Include="Entities\Mapping\_CategoryMap.cs" />
+    <Compile Include="Entities\Mapping\_LanguageMap.cs" />
+    <Compile Include="Entities\Mapping\_LocationMap.cs" />
+    <Compile Include="Entities\Mapping\_LoginLogMap.cs" />
+    <Compile Include="Entities\Mapping\_MembershipMap.cs" />
+    <Compile Include="Entities\Mapping\_NewsMap.cs" />
+    <Compile Include="Entities\Mapping\_News_ViewedUserMap.cs" />
+    <Compile Include="Entities\Mapping\_OAuthMembershipMap.cs" />
+    <Compile Include="Entities\Mapping\_PageMap.cs" />
+    <Compile Include="Entities\Mapping\_PageMenuMap.cs" />
+    <Compile Include="Entities\Mapping\_RoleMap.cs" />
+    <Compile Include="Entities\Mapping\_SettingMap.cs" />
+    <Compile Include="Entities\Mapping\_UserMap.cs" />
+    <Compile Include="Entities\Mapping\_UserPageMap.cs" />
+    <Compile Include="Entities\Mapping\_UserSettingMap.cs" />
+    <Compile Include="Entities\Mapping\_UserTypeMap.cs" />
+    <Compile Include="Entities\Mapping\_UserTypePageMap.cs" />
+    <Compile Include="Entities\Mapping\_vwPageMap.cs" />
+    <Compile Include="Entities\Mapping\_vwUsersMap.cs" />
+    <Compile Include="Entities\Mapping\_vwPageMenuMap.cs" />
+    <Compile Include="Entities\MetadataField.cs" />
+    <Compile Include="Entities\Module.cs" />
+    <Compile Include="Entities\ModuleRelationship.cs" />
+    <Compile Include="Entities\vwMetadataField.cs" />
+    <Compile Include="Entities\_BOLog.cs" />
+    <Compile Include="Entities\_Category.cs" />
+    <Compile Include="Entities\_Language.cs" />
+    <Compile Include="Entities\_Location.cs" />
+    <Compile Include="Entities\_LoginLog.cs" />
+    <Compile Include="Entities\_Membership.cs" />
+    <Compile Include="Entities\_News.cs" />
+    <Compile Include="Entities\_News_ViewedUser.cs" />
+    <Compile Include="Entities\_OAuthMembership.cs" />
+    <Compile Include="Entities\_Page.cs" />
+    <Compile Include="Entities\_PageMenu.cs" />
+    <Compile Include="Entities\_Role.cs" />
+    <Compile Include="Entities\_Setting.cs" />
+    <Compile Include="Entities\_User.cs" />
+    <Compile Include="Entities\_UserPage.cs" />
+    <Compile Include="Entities\_UserSetting.cs" />
+    <Compile Include="Entities\_UserType.cs" />
+    <Compile Include="Entities\_UserTypePage.cs" />
+    <Compile Include="Entities\_vwPage.cs" />
+    <Compile Include="Entities\_vwUsers.cs" />
+    <Compile Include="Entities\_vwPageMenu.cs" />
+    <Compile Include="ErpDbContext.cs" />
+    <Compile Include="Interfaces\IMetadataFieldRepository.cs" />
+    <Compile Include="Interfaces\IModuleRelationshipRepository.cs" />
+    <Compile Include="Interfaces\IModuleRepository.cs" />
+    <Compile Include="Interfaces\_IBOLogRepositoty.cs" />
+    <Compile Include="Interfaces\_ICategoryRepository.cs" />
+    <Compile Include="Interfaces\_IGenericRepository.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Interfaces\_ILocationRepository.cs" />
+    <Compile Include="Interfaces\_ILoginLogRepository.cs" />
+    <Compile Include="Interfaces\_INewsRepository.cs" />
+    <Compile Include="Interfaces\_IPageMenuRepository.cs" />
+    <Compile Include="Interfaces\_IPageRepository.cs" />
+    <Compile Include="Interfaces\_IQueryHelper.cs" />
+    <Compile Include="Interfaces\_IRoleRepository.cs" />
+    <Compile Include="Interfaces\_ISettingLanguageRepository.cs" />
+    <Compile Include="Interfaces\_ISettingRepository.cs" />
+    <Compile Include="Interfaces\_IUserPageRepository.cs" />
+    <Compile Include="Interfaces\_IUserRepository.cs" />
+    <Compile Include="Interfaces\_IUserSettingRepository.cs" />
+    <Compile Include="Interfaces\_IUserTypePageRepository.cs" />
+    <Compile Include="Interfaces\_IUserTypeRepository.cs" />
+    <Compile Include="Interfaces\_IView_NewedUserRepository.cs" />
+    <Compile Include="Migrations\Configuration.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Repositories\MetadataFieldRepository.cs" />
+    <Compile Include="Repositories\ModuleRelationshipRepository.cs" />
+    <Compile Include="Repositories\ModuleRepository.cs" />
+    <Compile Include="Repositories\_BOLogRepository.cs" />
+    <Compile Include="Repositories\_CategoryRepository.cs" />
+    <Compile Include="Repositories\_GenericRepository.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Repositories\_LocationRepository.cs" />
+    <Compile Include="Repositories\_LoginLogRepository.cs" />
+    <Compile Include="Repositories\_NewsRepository.cs" />
+    <Compile Include="Repositories\_PageMenuRepository.cs" />
+    <Compile Include="Repositories\_PageRepository.cs" />
+    <Compile Include="Repositories\_QueryHelper.cs" />
+    <Compile Include="Repositories\_RoleRepository.cs" />
+    <Compile Include="Repositories\_SettingLanguageRepository.cs" />
+    <Compile Include="Repositories\_SettingRepository.cs" />
+    <Compile Include="Repositories\_UserPageRepository.cs" />
+    <Compile Include="Repositories\_UserRepository.cs" />
+    <Compile Include="Repositories\_UserSettingRepository.cs" />
+    <Compile Include="Repositories\_UserTypePageRepository.cs" />
+    <Compile Include="Repositories\_UserTypeRepository.cs" />
+    <Compile Include="Repositories\_View_NewedUserRepository.cs" />
+    <Compile Include="SqlHelper.cs" />
+    <Compile Include="SqlMapper.cs" />
+    <Compile Include="UrlCommon.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="App.config" />
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <WCFMetadata Include="Service References\" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Erp.Utilities\Erp.Utilities.csproj">
+      <Project>{e85f6ece-9181-4ad6-8775-10893358602b}</Project>
+      <Name>Erp.Utilities</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup />
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

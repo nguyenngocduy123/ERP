@@ -1,0 +1,58 @@
+﻿@model List<Erp.BackOffice.Sale.Models.ProductInvoiceViewModel>
+
+@using Erp.BackOffice.App_GlobalResources
+@using Erp.BackOffice.Account.Models
+@using Erp.BackOffice.Helpers
+@using GridMvc.Html
+
+<link href="@Url.Content("~/assets/css/Gridmvc.css")" rel="stylesheet" type="text/css" />
+
+<div class="clearfix">
+    @if (Model != null)
+    {
+        var customerGroup = Model.GroupBy(item => item.CustomerCode)
+            .Select((g, index) => new
+            {
+                Customer = g,
+                ListProductInvoice = g.ToList()
+            });
+
+        <table class="table table-striped grid-table" style="float:left">
+            <thead>
+                <tr>
+                    <th class="grid-header" style="width:100px;">Ngày hẹn trả</th>
+                    <th class="grid-header">Mã đơn hàng</th>
+                    <th class="grid-header" style="width: 100px; text-align: right">Số tiền</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in customerGroup)
+                {
+                    var customer = item.Customer.FirstOrDefault();
+                    <tr style="background: #eee">
+                        <td colspan="2"><a onclick="OpenPopup('@Url.Action("LiabilitiesDetail", "TransactionLiabilities", new { TargetModule = "Customer", TargetCode = customer.CustomerCode, TargetName = customer.CustomerName, popup = true })', 'Chi tiết công nợ', 0, 500)"><b>@customer.CustomerName</b></a></td>
+                        <td class="text-right"><b>@Common.PhanCachHangNgan(item.ListProductInvoice.Sum(i => i.RemainingAmount))</b></td>
+                    </tr>
+                    foreach (var productInvoice in item.ListProductInvoice)
+                    {
+                        <tr class="grid-row">
+                            <td class="grid-cell" style="font-size:11px">
+                                @(productInvoice.NextPaymentDate.HasValue ? productInvoice.NextPaymentDate.Value.ToString("dd/MM/yyyy") : "")
+                            </td>
+                            <td style="font-size:11px"><a onclick="OpenPopup('@Url.Action("Detail", "ProductInvoice", new { Area = "Sale", Id = productInvoice.Id, IsPopup = true })', 'Chi tiết đơn hàng', 0, 500)"><b>@productInvoice.Code</b></a></td>
+                            <td class="text-right" style="font-size:11px">
+                                <b class="red">@Erp.BackOffice.Helpers.Common.PhanCachHangNgan(productInvoice.RemainingAmount)</b>
+                            </td>
+                        </tr>
+                    }
+                }
+            </tbody>
+            <tfoot>
+                <tr>
+                    <td colspan="2"></td>
+                    <td class="text-right"><b>@Common.PhanCachHangNgan(Model.Sum(item => item.RemainingAmount))</b></td>
+                </tr>
+            </tfoot>
+        </table>
+    }
+</div>

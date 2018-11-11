@@ -1,0 +1,228 @@
+﻿@model IEnumerable<EmailLogViewModel>
+
+@using Erp.BackOffice.App_GlobalResources
+@using Erp.BackOffice.Crm.Models
+@using Erp.BackOffice.Helpers
+@using GridMvc.Html
+
+@{
+    ViewBag.Title = Wording.PageIndex_EmailLog;
+    bool isPopup = Request["popup"] != null && Request["popup"].ToString().ToLower() == "true" ? true : false;
+    if (isPopup)
+    {
+        Layout = "~/Views/Shared/_PopupLayout.cshtml";
+    }
+    else
+    {
+        Layout = "~/Views/Shared/ACE_AdminLayout.cshtml";
+    }
+
+    Erp.BackOffice.Models.PageSetting pageSetting = new Erp.BackOffice.Models.PageSetting
+    {
+        ModuleName = "EmailLog",
+        ActionName = "Index",
+        PageTitle = ViewBag.Title,
+        DisplaySearchPanel = true,
+        IsPopup = false,
+        DisplayBackButton = false,
+
+    };
+}
+
+@if (ViewBag.SuccessMessage != null && ViewBag.SuccessMessage != "")
+{
+    <div class="alert alert-block alert-success">
+        <button class="close" data-dismiss="alert" type="button">
+            <i class="ace-icon fa fa-times"></i>
+        </button>
+        <i class="ace-icon fa fa-check green"></i>
+        @ViewBag.SuccessMessage
+    </div>
+}
+
+@if (ViewBag.FailedMessage != null && ViewBag.FailedMessage != "")
+{
+    <div class="alert alert-block alert-danger">
+        <button class="close" data-dismiss="alert" type="button">
+            <i class="ace-icon fa fa-times"></i>
+        </button>
+        <i class="ace-icon fa fa-warning red"></i>
+        @ViewBag.FailedMessage
+    </div>
+}
+@helper GridColumnStatusName(string status)
+{
+    switch (status)
+    {
+        case "Đã gửi":
+            <span class="label label-success">@Wording.SMSLogStatus_Send</span>
+            break;
+        case "Chờ gửi":
+        <span class="label label-primary">@Wording.SMSLogStatus_Not_Submitted</span>
+            break;
+        case "Không gửi được":
+        <span class="label label-danger">@Wording.SMSLogStatus_Not_Send</span>
+            break;
+    }
+}
+<link href="@Url.Content("~/assets/css/Gridmvc.css")" rel="stylesheet" type="text/css" />
+<script src="@Url.Content("~/Scripts/gridmvc.min.js")" type="text/javascript"> </script>
+
+@helper GridColumnCommand(int id, string pageSetting)
+{
+    <p>
+        @if (Erp.BackOffice.Filters.SecurityFilter.AccessRight("Edit", "EmailLog", "Crm"))
+        {
+            <a class="btn btn-mini btn-success" href="@Url.Action("Edit", pageSetting, new { Id = id })">
+                <i class="ace-icon fa fa-edit"></i>
+            </a>
+        }
+        @if (Erp.BackOffice.Filters.SecurityFilter.AccessRight("Delete", "EmailLog", "Crm"))
+        {
+            <button name="Delete" value="Delete" type="submit" class="btn btn-mini btn-danger">
+                <i class="ace-icon fa fa-trash bigger-120"></i>
+            </button>
+        }
+    </p>
+
+}
+@helper GridColumnCheckTrue(bool? check)
+{
+    if (check == true)
+    {
+        <i class="fa fa-check green"></i>
+    }
+    else
+    {
+        <i class="fa fa-remove red"></i>
+    }
+
+}
+@helper GridColumnName(string name, int id, bool isPopup)
+{
+    if (isPopup)
+    {
+        <a onclick="parent.selectBranchItem(@id)">@name</a>
+    }
+    else
+    {
+        name = string.IsNullOrEmpty(name) ? "No Title" : name;
+        <a href="@Url.Action("Edit", "EmailLog" , new { Id= id })">@name</a>
+    }
+}
+
+@helper GridColumnCategoryValue(object value)
+{
+    var attr = Erp.BackOffice.Helpers.Common.GetCategoryByValueOrId("value", value);
+    <span>@(attr != null ? attr.Name : "")</span>
+}
+
+@helper CheckDeleteColumns(int Id)
+{
+    <label>
+        <input class="ace class-delete-all" type="checkbox" name="DeleteId-checkbox-Email" value="@Id">
+        <span class="lbl"></span>
+    </label>
+}
+
+@helper GridColumnName(int id, string customer)
+{
+    customer = string.IsNullOrEmpty(customer) ? "No Title" : customer;
+    <a href="@Url.Action("Detail", "EmailLog", new { Id = id})"><b>@customer</b>   </a><br />
+
+}
+
+@helper BuildCheckAll()
+{
+    <label>
+        <input class="ace" type="checkbox" name="checkAll" id="checkAll" />
+        <span class="lbl"></span>
+    </label>
+}
+@using (Html.BeginPageHeaderContainer(pageSetting))
+{
+    <p>
+        @Html.TextBox("txtCustomer", Request["txtCustomer"], new { @class = "", autocomplete = "off", placeholder = "Nhập Tên khách hàng ..." })
+        @Html.TextBox("txtEmail", Request["txtEmail"], new { @class = "", autocomplete = "off", placeholder = "Nhập Email ..." })
+        <span class="input-daterange input-group">
+            @Html.TextBox("startDate", Request["startDate"] != null ? Request["startDate"] : "", new { @class = "", autocomplete = "off", placeholder = "Ngày gửi từ..." })
+            <span class="input-group-addon">
+                <i class="fa fa-exchange"></i>
+            </span>
+            @Html.TextBox("endDate", Request["endDate"] != null ? Request["endDate"] : "", new { @class = "", autocomplete = "off", placeholder = "đến..." })
+        </span>
+        @Html.DropDownList("TargetModule", SelectListHelper.GetSelectList_Category("Target_Module", Request["TargetModule"], "- Module -"@*, Wording.TargetModule*@), new Dictionary<string, object> { { "class", "form-control" }, { "data-val-required", "Bắt buộc chọn." } })
+    </p>
+}
+
+
+@using (Html.BeginForm("Delete", "EmailLog", FormMethod.Post))
+{
+
+    <div class="table-responsive">
+        @Html.Grid(Model).Columns(columns =>
+   {
+       columns.Add().Titled(BuildCheckAll().ToHtmlString()).SetWidth(20).Sanitized(false).Encoded(false).RenderValueAs(n => CheckDeleteColumns(n.Id));
+       int index = 0;
+       columns.Add().Titled(Wording.OrderNo).SetWidth(30).RenderValueAs(n => (++index).ToString());
+       columns.Add(u => u.Status).Titled(Wording.Status).SetWidth(100).Sanitized(false).Encoded(false).RenderValueAs(n => GridColumnStatusName(n.Status));
+       columns.Add(u => u.SentDate).Titled(Wording.SentDate).SetWidth(130).Sortable(false).Sanitized(false).Encoded(false).RenderValueAs(u => GridColumnName(u.Id, u.SentDate.Value.ToString("dd/MM/yyyy HH:mm"))); ;
+       columns.Add(u => u.Customer).Titled(Wording.Customer).RenderValueAs(u => u.Customer);
+       columns.Add(u => u.Email).Titled(Wording.Email).SetWidth(250).RenderValueAs(u => u.Email);
+       //columns.Add(u => u.Body).Titled(Wording.Body).SetWidth(100).RenderValueAs(u => u.Body);
+
+       columns.Add(u => u.Id).Titled(Wording.Action).Sanitized(false).Encoded(false).RenderValueAs(u => GridColumnCommand(u.Id, pageSetting.ModuleName)).SetWidth(20);
+   }).WithPaging(10)
+    </div>
+    using (Html.BeginButtonContainer(pageSetting))
+    {
+        @*<a class="btn btn-mini btn-primary" href="@Url.Action("Create", pageSetting.ModuleName)">
+                <i class="ace-icon fa fa-plus"></i>
+                @Wording.CreateNew
+            </a>*@
+        <input type="hidden" name="UrlReferrerDelete" value="@Request.UrlReferrer" />
+        if (Erp.BackOffice.Filters.SecurityFilter.AccessRight("Delete", "EmailLog", "Crm"))
+        {
+            <button class="btn btn-mini btn-danger" type="submit" name="DeleteAll" value="DeleteAll" onclick="return CheckIsval();">
+                <i class="ace-icon fa fa-trash"></i>
+                @Wording.Delete
+            </button>
+        }
+
+    }
+}
+
+
+@section Scripts {
+    <script type="text/javascript">
+        function CheckIsval() {
+            if ($('[name="DeleteId-checkbox-Email"]').is(':checked') == false) {
+                alert("Phải chọn ít nhất 1 item.");
+                return false;
+            }
+            else {
+                if (confirm('Bạn có chắc muốn xóa các item đã chọn ?')) {
+                    return true;
+                }
+                else {
+                    return false;
+                }
+            }
+        }
+
+        $('[name="Delete"]').click(function () {
+            if (confirm('Bạn có chắc muốn xóa item ?')) {
+                $(this).closest('tr').children('td').each(function (i, e) {
+                    $(this).find("input.class-delete-all").prop("checked", true);
+                    return true;
+                })
+            }
+            else {
+                return false;
+            }
+
+        })
+
+    </script>
+}
+@Html.ScriptBottom_DatePicker("dd/mm/yyyy")

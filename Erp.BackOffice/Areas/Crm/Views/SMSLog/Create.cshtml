@@ -1,0 +1,110 @@
+﻿@using Erp.BackOffice.App_GlobalResources
+@using Erp.BackOffice.Helpers
+@using Erp.BackOffice.Crm.Models
+
+@model SMSLogViewModel
+@{
+    ViewBag.Title = Wording.PageCreate_SMSLog;
+
+
+    if (ViewBag.layout == true)
+    {
+        Layout = null;
+    }
+    else
+    {
+        Layout = "~/Views/Shared/" + (Request["IsPopup"] == null ? "ACE_AdminLayout.cshtml" : "_PopupLayout.cshtml");
+    }
+
+    Erp.BackOffice.Models.PageSetting pageSetting = new Erp.BackOffice.Models.PageSetting
+    {
+        ModuleName = "SMSLog",
+        ActionName = "Create",
+        PageTitle = ViewBag.Title,
+        DisplaySearchPanel = false,
+        IsPopup = false,
+        DisplayBackButton = false
+    };
+}
+
+@section HeadOfPage {
+
+    @Html.ScriptTop_ChosenStyle()
+
+}
+ 
+@using (Html.BeginPageHeaderContainer(pageSetting))
+{
+
+}
+@using (Html.BeginForm_AceStyle((string)ViewBag.Title, "Create", "SMSLog", null, FormMethod.Post, new { @class = "form-horizontal" }))
+{
+    @Html.ValidationSummary(true)
+    @Html.ModulePopupFor(m => m.CustomerID, "Customer", Model.Customer, false, true)
+    @Html.CustomTextboxFor(model => model.Phone, null, null, WidthType.span12, true);
+    @Html.CustomTextboxFor(model => model.Body, null, null, WidthType.span12, true);
+    @*@Html.LabelFor(model => model.Body, new { @class="control-label col-lg-5 col-md-4 col-sm-4"})
+    <div class="  col-lg-7 col-md-8 col-sm-8" >
+        <textarea class="ckeditor" cols="30" id="Content" name="Content" placeholder="" rows="2">@Model.Body</textarea>
+    </div>*@
+    @Html.HiddenFor(model => model.TargetModule);
+    @Html.HiddenFor(model => model.TargetID);
+
+    using (Html.BeginButtonContainer(pageSetting))
+    {
+        <input type="hidden" name="UrlReferrerCreate" value="@Request.UrlReferrer" />
+        <input type="hidden" value="@Request["IsPopup"]" name="IsPopup" />
+        <button class="btn btn-mini btn-primary" type="submit" name="Submit" value="Save">
+            <i class="ace-icon fa fa-save"></i>
+            @Wording.Save
+        </button>
+    }
+}
+
+@section Scripts {
+    <script>
+   var urlRefer = '@ViewBag.urlRefer';
+        //truyền từ action create của controller qua khi thực hiện submit và return về lại view create, để nhận biết là được gọi theo dạng popup
+        var closePopup = '@ViewBag.closePopup';
+        $(document).ready(function () {
+            //nếu là được gọi theo dạng popup từ form khác thì chạy đoạn code bên dưới
+            if (closePopup != '') {
+                var option = '<option value="@Model.Id" >@*@Model.Name*@</option>';
+                //tên funtion có thể khác theo từng công việc riêng (đây chỉ là mẫu khi thêm mới sẽ gọi lại)
+                //nếu có url thì gọi hàm này để trang ngoài iframe nhảy trang
+                if (urlRefer != '') {
+                    window.parent.ClosePopupAndRedirectToURL(urlRefer);
+                }
+                window.parent.ClosePopupAndDoSomething(option);
+            }
+
+           
+        });
+       $(document).ready(function () {
+           $('[data-rel="tooltip"]').tooltip({ container: 'body' });
+
+       });
+      
+       //hàm load Phone
+       var url = '/api/BackOfficeServiceAPI/FetchCustomerPhone';
+       var phone = $('#Phone'); // cache it
+
+       $("#CustomerID").change(function () {
+           var id = $(this).val(); // Use $(this) so you don't traverse the DOM again
+           $.getJSON(url, { CustomerID: id }, function (response) {
+               phone.val(response);
+               phone.text(response);
+           });
+
+       });
+
+    </script>
+
+    @Html.ScriptBottom_ValidationMvc()
+    @Html.ScriptBottom_DatePicker("dd/mm/yyyy")
+    @Html.ScriptBottom_ChosenStyle()
+}
+
+
+
+

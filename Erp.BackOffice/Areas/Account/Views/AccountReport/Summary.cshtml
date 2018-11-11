@@ -1,0 +1,44 @@
+﻿@model Erp.BackOffice.Account.Models.AccountReportSumaryViewModel
+
+<table class="table table-bordered table-striped">
+    <thead class="thin-border-bottom">
+        <tr>
+            <th>@Erp.BackOffice.App_GlobalResources.Wording.explain</th>
+
+            <th>@Erp.BackOffice.App_GlobalResources.Wording.TheAmount</th>
+        </tr>
+    </thead>
+
+    <tbody>
+        @*<tr>
+            <td><b class="bigger-120">Doanh Số</b></td>
+            <td align="right">
+                <b class="red bigger-120">@Erp.BackOffice.Helpers.Common.PhanCachHangNgan2(Model.DoanhSoTrongNgay) VND</b><br />
+            </td>
+        </tr>*@
+        <tr>
+            <td>Thu</td>
+            <td align="right">
+                <b class="blue">@Erp.BackOffice.Helpers.Common.PhanCachHangNgan2(Model.Thu) VND</b>
+            </td>
+        </tr>
+        <tr>
+            <td>Chi</td>
+            <td align="right">
+                <b class="blue">@Erp.BackOffice.Helpers.Common.PhanCachHangNgan2(Model.Chi) VND</b>
+            </td>
+        </tr>
+        <tr>
+            <td>Tiền Mặt</td>
+            <td align="right">
+                <b class="blue">@(Model.TienMat < 0 ? "-" : "")@Erp.BackOffice.Helpers.Common.PhanCachHangNgan2(Math.Abs(Model.TienMat)) VND</b>
+            </td>
+        </tr>
+        <tr>
+            <td>Chuyển khoản</td>
+            <td align="right">
+                <b class="blue">@(Model.ChuyenKhoan < 0 ? "-" : "")@Erp.BackOffice.Helpers.Common.PhanCachHangNgan2(Math.Abs(Model.ChuyenKhoan)) VND</b>
+            </td>
+        </tr>
+    </tbody>
+</table>

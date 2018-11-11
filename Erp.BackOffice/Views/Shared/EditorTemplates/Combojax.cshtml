@@ -1,0 +1,16 @@
+﻿@{
+    var combojaxId = ViewData["id"];
+    var source = ViewData["source"];    
+}
+
+<div class="combojax" id="@combojaxId"></div>
+
+<script type="text/javascript">
+    $(function () {
+        $("#@combojaxId").combojax({
+            source: '@source',
+            skip: 0,
+            take: 20
+        });
+    });
+</script>

@@ -1,0 +1,160 @@
+﻿@using Erp.BackOffice.App_GlobalResources
+@using Erp.BackOffice.Helpers
+@using Erp.BackOffice.Crm.Models
+
+@model ProcessViewModel
+
+@{
+    ViewBag.Title = Wording.PageCreate_Process;
+
+    Layout = "~/Views/Shared/" + (Request["IsPopup"] == null ? "ACE_AdminLayout.cshtml" : "_PopupLayout.cshtml");
+    Erp.BackOffice.Models.PageSetting pageSetting = new Erp.BackOffice.Models.PageSetting
+    {
+        ModuleName = "Process",
+        ActionName = "Create",
+        PageTitle = ViewBag.Title,
+        DisplaySearchPanel = false,
+        IsPopup = false,
+        DisplayBackButton = true
+    };
+
+}
+
+@section HeadOfPage {
+    @Html.ScriptTop_ChosenStyle()
+}
+@using (Html.BeginPageHeaderContainer(pageSetting))
+{
+
+}
+
+@using (Html.BeginForm_AceStyle((string)ViewBag.Title, pageSetting.ActionName, pageSetting.ModuleName, null, FormMethod.Post, new { @class = "form-horizontal" }))
+{
+    @Html.ValidationSummary(true)
+
+    <input type="hidden" value="@Request["IsPopup"]" name="IsPopup" />
+    <div class="col-sm-7">
+    @Html.CustomTextboxFor(model => model.Name, null, null, WidthType.span6, true)
+    @Html.CustomDropDownListFor(model => model.Category, Model.CategorySelectList, WidthType.span4, true, null, DropdownListStyle.DropdownListStyleDefault)
+    @Html.CustomDropDownListFor(model => model.DataSource, Model.EntitySelectList, WidthType.span6, true, null, DropdownListStyle.DropdownListStyleDefault)
+    @*@Html.CustomSwitchesFor(model => model.RecordIsCreated, SwitchesStyle.CheckboxStyle, true)
+    @Html.CustomSwitchesFor(model => model.RecordIsAssigned, SwitchesStyle.CheckboxStyle, true)
+    @Html.CustomSwitchesFor(model => model.RecordFieldsChanges, SwitchesStyle.CheckboxStyle, true)
+    @Html.CustomSwitchesFor(model => model.RecordIsDeleted, SwitchesStyle.CheckboxStyle, true)*@
+    @Html.CustomSwitchesFor(model => model.IsActive, SwitchesStyle.CheckboxStyle, true)
+    @Html.CustomTextboxFor(model => model.ActivateAs, null, null, WidthType.span4, true)
+        @Html.CustomTextboxFor(model => model.QueryRecivedUser, null, null, WidthType.span12, true)
+        </div>
+    <div class ="col-sm-5">
+       
+        @*<a class="btn btn-xs btn-primary btn-add-detail-item">Thêm sản phẩm</a>*@
+        <div class="widget-box">
+            <div class="widget-header">
+                <h5 class="widget-title"> Danh sách action thực hiện process</h5>
+            </div>
+            <div class="widget-body">
+                <div class="widget-main">
+                    <div class="box-body">
+                        <div class="table-responsive">
+                            <table class="table table-bordered">
+                                <thead>
+                                    <tr>
+                                        <th style="width:5%">STT</th>
+                                        <th style ="width:45%">Module</th>
+                                        <th style="width:45%">Action</th>
+                                        <th style="width:50px;"></th>
+                                    </tr>
+                                </thead>
+                                <tbody id="detailList">
+
+                                    <tr role="0">
+                                        <td>1</td>
+                                        <td class="has-error">
+                                            <input class="detail_item_module" type="text" id="DetailList_0_ModuleName" name="DetailList[0].ModuleName" value="" style="width:100%" data-val="true" data-val-required="Chưa nhập module name" />
+                                        </td>
+                                        <td class="has-error">
+                                            <input class="detail_item_action" type="text" id="DetailList_0_ActionName" name="DetailList[0].ActionName" value="" style="width:100%" data-val="true" data-val-required="Chưa nhập action name" />
+                                        </td>
+                                        <td class="text-center"><a class="btn btn-xs btn-danger">X</a></td>
+                                    </tr>
+
+                                </tbody>
+                                <tfoot>
+                                    <tr>
+                                        <td colspan="4">
+                                            <a class="btn btn-xs btn-primary btn-white btn-add-detail-item" style="border-width:0px;width:100%"><i class="ace fa fa-plus"></i> Thêm dòng mới</a>
+                                        </td>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                            <span style="color:red" class="field-validation-valid help-inline" data-valmsg-for="ProductItemCount" data-valmsg-replace="true"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+       
+
+    </div>
+    using (Html.BeginButtonContainer(pageSetting))
+    {
+        <input data-val="true" data-val-required="Chưa nhập thông tin" id="numOfdetailItem" name="numOfdetailItem" type="text" value="1" style="opacity:0; width:0px;">
+        <span class="field-validation-valid help-inline" style="color:red" data-valmsg-for="numOfdetailItem" data-valmsg-replace="true"></span>
+        <button class="btn btn-mini btn-primary" type="submit" name="Submit" value="Save">
+            <i class="ace-icon fa fa-save"></i>
+            @Wording.Save
+        </button>
+    }
+}
+
+@section Scripts {
+    <script>
+        var $tr_template = $('#detailList tr:first-child');
+        //truyền từ action create của controller qua khi thực hiện submit và return về lại view create, để nhận biết là được gọi theo dạng popup
+        var closePopup = '@ViewBag.closePopup';
+        $(document).ready(function () {
+            //nếu là được gọi theo dạng popup từ form khác thì chạy đoạn code bên dưới
+            if (closePopup != '') {
+                var option = '<option value="@Model.Id" >@Model.Name</option>';
+                //tên funtion có thể khác theo từng công việc riêng (đây chỉ là mẫu khi thêm mới sẽ gọi lại)
+                window.parent.ClosePopupAndAppendSelect(option);
+            }
+     
+        //thêm mới sản phẩm
+        $('.btn-add-detail-item').click(function () {
+
+            var len = $('#detailList tr').length;
+            var tr_new = $tr_template.clone()[0].outerHTML;
+            tr_new = tr_new.replace(/\[0\]/g, "[" + len + "]");
+            var $tr_new = $(tr_new);
+            $tr_new.attr('role', len);
+            $tr_new.find('td:first-child').text(len + 1);
+            $tr_new.find('.detail_item_action').text('');
+            $tr_new.find('.detail_item_module').text('');
+            $('#detailList').append($tr_new);
+            var $tr_after_append = $('tr[role="' + len + '"]');
+           
+            $('#numOfdetailItem').next('span').text('');
+            $('#numOfdetailItem').val(len);
+
+        });
+
+        // xóa sản phẩm
+        $('#detailList').on('click', '.btn-danger', function () {
+            $(this).closest('tr').remove();
+            if ($('#detailList tr').length == 0) {
+                $('#numOfdetailItem').val('');
+            }
+            $('#detailList tr').each(function (index, tr) {
+                $(tr).attr('role', index);
+                $(tr).find('td:first-child').text(index + 1);
+
+                $(tr).find('.detail_item_action').attr('name', 'DetailList[' + index + '].ActionName').attr('id', 'DetailList_' + index + '_ActionName');
+                $(tr).find('.detail_item_module').attr('name', 'DetailList[' + index + '].ModuleName').attr('id', 'DetailList_' + index + '_ModuleName');
+            });
+        });
+        });
+    </script>
+    @Html.ScriptBottom_ValidationMvc()
+    @Html.ScriptBottom_ChosenStyle()
+}

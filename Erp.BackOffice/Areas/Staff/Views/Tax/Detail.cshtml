@@ -1,0 +1,186 @@
+@using Erp.BackOffice.App_GlobalResources
+@using Erp.BackOffice.Helpers
+@using Erp.BackOffice.Staff.Models
+@using System.Globalization
+
+@model TaxViewModel
+
+@{
+    ViewBag.Title = "Chi tiết thuế thu nhập cá nhân";
+    CultureInfo cul = CultureInfo.GetCultureInfo("vi-VN");
+    Layout = "~/Views/Shared/ACE_AdminLayout.cshtml";
+
+    Erp.BackOffice.Models.PageSetting pageSetting = new Erp.BackOffice.Models.PageSetting
+    {
+        ModuleName = "Tax",
+        ActionName = "Edit",
+        PageTitle = ViewBag.Title,
+        DisplaySearchPanel = false,
+        IsPopup = false,
+        DisplayBackButton = true
+    };
+}
+
+@section HeadOfPage {
+    @Html.ScriptTop_ChosenStyle()
+    <style type="text/css">
+        table thead tr td {
+            text-align: center;
+            vertical-align: middle !important;
+        }
+
+        table thead th {
+            text-align: center;
+            vertical-align: middle !important;
+        }
+
+
+        .no-bodertable {
+            border: none !important;
+            border-bottom: none !important;
+            border-left: none !important;
+            border-right: none !important;
+        }
+    </style>
+
+    <script type="text/javascript">
+        var exportThis = (function () {
+            var uri = 'data:application/vnd.ms-excel;base64,',
+                template = '<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel"  xmlns="http://www.w3.org/TR/REC-html40"><head> <!--[if gte mso 9]><xml><x:ExcelWorkbook><x:ExcelWorksheets> <x:ExcelWorksheet><x:Name>{worksheet}</x:Name> <x:WorksheetOptions><x:DisplayGridlines/></x:WorksheetOptions> </x:ExcelWorksheet></x:ExcelWorksheets></x:ExcelWorkbook> </xml><![endif]--></head><body> <table>{table}</table></body></html>',
+                base64 = function (s) {
+                    return window.btoa(unescape(encodeURIComponent(s)))
+                },
+                format = function (s, c) {
+                    return s.replace(/{(\w+)}/g, function (m, p) { return c[p]; })
+                }
+            return function () {
+                var ctx = { worksheet: 'Thuế TNCN ' || 'Worksheet', table: document.getElementById("cTable").innerHTML }
+                window.location.href = uri + base64(format(template, ctx))
+            }
+        })()
+
+        var exportThisWithParameter = (function () {
+            var uri = 'data:application/vnd.ms-excel;base64,',
+                template = '<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel"  xmlns="http://www.w3.org/TR/REC-html40"><head> <!--[if gte mso 9]><xml><x:ExcelWorkbook><x:ExcelWorksheets> <x:ExcelWorksheet><x:Name>{worksheet}</x:Name> <x:WorksheetOptions><x:DisplayGridlines/></x:WorksheetOptions> </x:ExcelWorksheet></x:ExcelWorksheets></x:ExcelWorkbook> </xml><![endif]--></head><body> <table>{table}</table></body></html>',
+                base64 = function (s) {
+                    return window.btoa(unescape(encodeURIComponent(s)))
+                },
+                format = function (s, c) {
+                    return s.replace(/{(\w+)}/g, function (m, p) { return c[p]; })
+                }
+            return function (tableID, excelName) {
+                tableID = document.getElementById(tableID)
+                var ctx = { worksheet: excelName || 'Worksheet', table: tableID.innerHTML }
+                window.location.href = uri + base64(format(template, ctx))
+            }
+        })()
+    </script>
+}
+
+
+
+
+@using (Html.BeginPageHeaderContainer(pageSetting))
+{
+
+}
+
+
+<h4 class="page-header green"><b>@Model.Name @Model.Month / @Model.Year</b></h4>
+
+
+<table id="cTable" class="table table-bordered table-responsive">
+    <thead>
+        <tr>
+            <th>
+                STT
+            </th>
+            <th>Mã NV</th>
+            <th>Họ tên</th>
+            <th>Đơn vị công tác</th>
+            <th>Tổng thu thập chịu thuế</th>
+            <th>Tổng giảm trừ</th>
+            <th>Thu nhập tính thuế</th>
+            <th>Thuế tạm tính</th>
+
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model.Staffs)
+        {
+            <tr>
+                <td>@(Model.Staffs.IndexOf(item) + 1)</td>
+                <td>@item.Code</td>
+                <td>@item.Name</td>
+                <td>@item.BranchName</td>
+                <td style="text-align:right"><a href="#" onclick="OpenPopup('@Url.Action( "Index","ThuNhapChiuThue" , new {TaxIncomePersonDetailId= item.Id,staffId= item.StaffId ,TaxId = Model.Id , IsPopup= true })', '@Wording.PageIndex_ThuNhapChiuThue', 800, 600)">@(item.TongThuNhapChiuThue > 0 ? item.TongThuNhapChiuThue.ToString("#,###", cul.NumberFormat) : "0")</a> </td>
+                <td style="text-align:right"><a href="#" onclick="OpenPopup('@Url.Action( "Index" ,"GiamTruThueTNCN", new {TaxIncomePersonDetailId= item.Id,staffId= item.StaffId ,TaxId = Model.Id ,IsPopup= true })', '@Wording.PageIndex_GiamTruThueTNCN', 800, 600)">@(item.TongGiamTru > 0 ? item.TongGiamTru.ToString("#,###", cul.NumberFormat) : "0")</a></td>
+                <td style="text-align:right">@(item.ThuNhapTinhThue != 0 ? item.ThuNhapTinhThue.ToString("#,###", cul.NumberFormat) : "0")</td>
+                <td style="text-align:right">@(item.ThueTamTinh != 0 ? item.ThueTamTinh.ToString("#,###", cul.NumberFormat) : "0")</td>
+
+            </tr>
+        }
+        <tr>
+            <td colspan="4" style="text-align:right">Tổng</td>
+            <td style="text-align:right;font-weight:bold">@(Common.PhanCachHangNgan(Model.Staffs.Sum(a => a.TongThuNhapChiuThue)))</td>
+            <td style="text-align:right;font-weight:bold">@(Common.PhanCachHangNgan(Model.Staffs.Sum(a => a.TongGiamTru)))</td>
+            <td style="text-align:right;font-weight:bold">@(Common.PhanCachHangNgan(Model.Staffs.Sum(a => a.ThuNhapTinhThue)))</td>
+            <td style="text-align:right;font-weight:bold">@(Common.PhanCachHangNgan(Model.Staffs.Sum(a => a.ThueTamTinh)))</td>
+        </tr>
+    </tbody>
+</table>
+
+
+@using (Html.BeginButtonContainer(pageSetting))
+{
+    if (Erp.BackOffice.Filters.SecurityFilter.AccessRight("Edit", "Tax", "Staff"))
+    {
+        <a class="btn btn-mini btn-primary" onclick="OpenPopup('@Url.Action( "Edit","Tax" , new {Id = Model.Id , IsPopup= true })', '@Wording.PageEdit_Tax', 800, 600)">
+            <i class="ace-icon fa fa-edit"></i>
+            Chỉnh sửa
+        </a>
+    }
+    <a href="@Url.Action( "Synch","Tax" , new {Id = Model.Id})" class="btn btn-white btn-sm shyn">Đồng bộ</a>
+    <button onclick="exportThis()" class="btn btn-primary btn-sm btn-white btn-success">
+        <i class="ace-icon fa fa-download"></i>
+        Xuất Excel
+    </button>
+}
+
+@section Scripts {
+    <script type="text/javascript">
+        function CheckIsval() {
+            if ($('[name="DeleteAll-checkbox"]').is(':checked') == false) {
+                alert("Phải chọn ít nhất 1 item.");
+                return false;
+            }
+            else {
+                if (confirm('Bạn có chắc muốn xóa các item đã chọn ?')) {
+                    return true;
+                }
+                else {
+                    return false;
+                }
+            }
+        }
+
+        $('[name="Delete"]').click(function () {
+            if (confirm('Bạn có chắc muốn xóa item ?')) {
+                $(this).closest('tr').children('td').each(function (i, e) {
+                    $(this).find("input.class-delete-all").prop("checked", true);
+                    return true;
+                })
+            }
+            else {
+                return false;
+            }
+
+        })
+
+        $('.shyn').click(function () {
+            ShowLoading();
+        });
+
+
+    </script>
+}

@@ -1,0 +1,26 @@
+D:\02. Solutions\Z. Company\07.QTS\05.KTX\src\SavinaTraining.Utilities\bin\Debug\SavinaTraining.Utilities.dll
+D:\02. Solutions\Z. Company\07.QTS\05.KTX\src\SavinaTraining.Utilities\bin\Debug\SavinaTraining.Utilities.pdb
+D:\02. Solutions\Z. Company\07.QTS\05.KTX\src\SavinaTraining.Utilities\bin\Debug\Newtonsoft.Json.dll
+D:\02. Solutions\Z. Company\07.QTS\05.KTX\src\SavinaTraining.Utilities\bin\Debug\System.Net.Http.Formatting.dll
+D:\02. Solutions\Z. Company\07.QTS\05.KTX\src\SavinaTraining.Utilities\bin\Debug\Newtonsoft.Json.xml
+D:\02. Solutions\Z. Company\07.QTS\05.KTX\src\SavinaTraining.Utilities\bin\Debug\System.Net.Http.Formatting.xml
+D:\02. Solutions\Z. Company\07.QTS\05.KTX\src\SavinaTraining.Utilities\obj\Debug\SavinaTraining.Utilities.dll
+D:\02. Solutions\Z. Company\07.QTS\05.KTX\src\SavinaTraining.Utilities\obj\Debug\SavinaTraining.Utilities.pdb
+D:\02. Solutions\Z. Company\07.QTS\05.KTX\src\Dormitory.Utilities\bin\Debug\Dormitory.Utilities.dll
+D:\02. Solutions\Z. Company\07.QTS\05.KTX\src\Dormitory.Utilities\bin\Debug\Dormitory.Utilities.pdb
+D:\02. Solutions\Z. Company\07.QTS\05.KTX\src\Dormitory.Utilities\bin\Debug\Newtonsoft.Json.dll
+D:\02. Solutions\Z. Company\07.QTS\05.KTX\src\Dormitory.Utilities\bin\Debug\System.Net.Http.Formatting.dll
+D:\02. Solutions\Z. Company\07.QTS\05.KTX\src\Dormitory.Utilities\bin\Debug\Newtonsoft.Json.xml
+D:\02. Solutions\Z. Company\07.QTS\05.KTX\src\Dormitory.Utilities\bin\Debug\System.Net.Http.Formatting.xml
+D:\02. Solutions\Z. Company\07.QTS\05.KTX\src\Dormitory.Utilities\obj\Debug\Dormitory.Utilities.dll
+D:\02. Solutions\Z. Company\07.QTS\05.KTX\src\Dormitory.Utilities\obj\Debug\Dormitory.Utilities.pdb
+D:\02. Solutions\Z. Company\07.QTS\05.KTX\src\Dormitory.Utilities\obj\Debug\Dormitory.Utilities.csprojResolveAssemblyReference.cache
+D:\00.Solutions\01.Dormitory\src\Dormitory.Utilities\bin\Debug\Dormitory.Utilities.dll
+D:\00.Solutions\01.Dormitory\src\Dormitory.Utilities\bin\Debug\Dormitory.Utilities.pdb
+D:\00.Solutions\01.Dormitory\src\Dormitory.Utilities\bin\Debug\Newtonsoft.Json.dll
+D:\00.Solutions\01.Dormitory\src\Dormitory.Utilities\bin\Debug\System.Net.Http.Formatting.dll
+D:\00.Solutions\01.Dormitory\src\Dormitory.Utilities\bin\Debug\Newtonsoft.Json.xml
+D:\00.Solutions\01.Dormitory\src\Dormitory.Utilities\bin\Debug\System.Net.Http.Formatting.xml
+D:\00.Solutions\01.Dormitory\src\Dormitory.Utilities\obj\Debug\Dormitory.Utilities.csprojResolveAssemblyReference.cache
+D:\00.Solutions\01.Dormitory\src\Dormitory.Utilities\obj\Debug\Dormitory.Utilities.dll
+D:\00.Solutions\01.Dormitory\src\Dormitory.Utilities\obj\Debug\Dormitory.Utilities.pdb

@@ -1,0 +1,70 @@
+﻿@model Erp.BackOffice.Models.RegisterModel
+
+@using (Html.BeginForm("Register","User",FormMethod.Post)) {
+    @Html.AntiForgeryToken()
+    @Html.ValidationSummary()
+
+    <fieldset>
+
+        <label>
+            <span class="block input-icon input-icon-right">
+                @*<input type="text" placeholder="Username" class="span12">*@
+                @Html.TextBoxFor(m => m.UserName,new Dictionary<string, object> { 
+                                                                { "placeholder", "Username" }, { "class", "span12" }
+                                                            })
+                <i class="icon-user"></i>
+            </span>
+        </label>
+
+        <label>
+            <span class="block input-icon input-icon-right">
+                @*<input type="password" placeholder="Password" class="span12">*@
+                @Html.PasswordFor(m => m.Password,new Dictionary<string, object> { 
+                                                                { "placeholder", "Password" }, { "class", "span12" }
+                                                            })
+                <i class="icon-lock"></i>
+            </span>
+        </label>
+
+        <label>
+            <span class="block input-icon input-icon-right">
+                @*<input type="password" placeholder="Repeat password" class="span12">*@
+                @Html.PasswordFor(m => m.ConfirmPassword,new Dictionary<string, object> { 
+                                                                { "placeholder", "Repeat password" }, { "class", "span12" }
+                                                            })
+                <i class="icon-retweet"></i>
+            </span>
+        </label>
+
+
+        <div class="space-24"></div>
+
+        <div class="clearfix">
+            <button class="width-30 pull-left btn btn-small" type="reset"><i class="ace-icon fa fa-refresh"></i>Reset</button>
+            <button class="width-65 pull-right btn btn-small btn-success">
+                Register<i class="icon-arrow-right icon-on-right"></i>
+            </button>
+        </div>
+    </fieldset>
+    
+    @*<fieldset>
+        <legend>Registration Form 123</legend>
+        <ol>
+            <li>
+                @Html.LabelFor(m => m.UserName)
+                @Html.TextBoxFor(m => m.UserName)
+            </li>
+            <li>
+                @Html.LabelFor(m => m.Password)
+                @Html.PasswordFor(m => m.Password)
+            </li>
+            <li>
+                @Html.LabelFor(m => m.ConfirmPassword)
+                @Html.PasswordFor(m => m.ConfirmPassword)
+            </li>
+        </ol>
+        <input type="submit" value="Register" />
+    </fieldset>*@
+    
+}
+

@@ -1,0 +1,121 @@
+﻿@using Erp.BackOffice.App_GlobalResources
+@using Erp.BackOffice.Helpers
+@using Erp.BackOffice.Staff.Models
+
+@model RegisterForOvertimeViewModel
+
+@{
+    ViewBag.Title = Wording.PageEdit_RegisterForOvertime;
+
+    Layout = "~/Views/Shared/" + (Request["IsPopup"] == null ? "ACE_AdminLayout.cshtml" : "_PopupLayout.cshtml");
+    Erp.BackOffice.Models.PageSetting pageSetting = new Erp.BackOffice.Models.PageSetting
+    {
+        ModuleName = "RegisterForOvertime",
+        ActionName = "Edit",
+        PageTitle = ViewBag.Title,
+        DisplaySearchPanel = false,
+        IsPopup = false,
+        DisplayBackButton = false
+    };
+}
+
+@section HeadOfPage {
+    @Html.ScriptTop_ChosenStyle()
+<link rel="stylesheet" href="/assets/css/bootstrap-timepicker.min.css" />
+    <style type="text/css">
+    </style>
+}
+
+@using (Html.BeginPageHeaderContainer(pageSetting))
+{
+
+}
+@using (Html.BeginForm_AceStyle((string)ViewBag.Title, "Edit", "RegisterForOvertime", null, FormMethod.Post, new { @class = "form-horizontal", showButton = true }))
+{
+    @Html.ValidationSummary(true)
+    @Html.HiddenFor(model => model.Id)
+    @Html.HiddenFor(model => model.CreatedUserId)
+    @Html.HiddenFor(model => model.AssignedUserId)
+    @Html.HiddenFor(model => model.CreatedDate)
+    @Html.HiddenFor(model => model.IsDeleted)
+    @Html.HiddenFor(model => model.Code)
+    <input type="hidden" value="@Request["IsPopup"]" name="IsPopup" />
+    <div class="row" style="text-align:center">
+        <div class="col-xs-12">
+            <div class="widget-box">
+                <div class="widget-body">
+                    <div class="widget-main" style="background: #f7f7f7;">
+                        <div class="row">
+                            <div class="col-sm-5">
+                                <img id="avatar" alt="@Model.Name" src="@(Erp.BackOffice.Helpers.Common.KiemTraTonTaiHinhAnh(Model.ProfileImage,"Staff","user"))" style="width:130px;height:130px;border-radius:100%;border:1px solid #ccc" />
+                            </div>
+                            <div class="col-sm-7">
+                                <div style="color:#337ab7;border-bottom:3px solid" class="top-20"><h3><b>@Model.Name</b></h3></div>
+                                <div style="color:#337ab7">@Model.CodeStaff</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row top-10">
+        <div class="col-xs-12">
+            <div class="widget-box">
+                <div class="widget-body">
+                    <div class="widget-main">
+                        @Html.DatePicker(model => model.DayOvertime, "dd/MM/yyyy", "99/99/9999", true, true)
+                        @Html.CustomTextboxFor(model => model.str_StartHour, "HH:mm", null, WidthType.span12, true)
+                        @Html.CustomTextboxFor(model => model.str_EndHour, "HH:mm", null, WidthType.span12, true)
+                        @Html.CustomTextAreaFor(model => model.Note, null, WidthType.span12)
+                    </div>
+                </div>
+            </div>
+        
+        </div>
+    </div>
+    using (Html.BeginButtonContainer(pageSetting))
+    {
+        <button class="btn btn-mini btn-primary" type="submit" name="Submit" value="Save">
+            <i class="ace-icon fa fa-save"></i>
+            @Wording.Save
+        </button>
+    }
+
+}
+
+@section Scripts {
+<script src="/assets/js/bootstrap-timepicker.min.js"></script>
+    <script>
+                //truyền từ action create của controller qua khi thực hiện submit và return về lại view create, để nhận biết là được gọi theo dạng popup
+                var closePopup = '@ViewBag.closePopup';
+                $(document).ready(function () {
+                    //nếu là được gọi theo dạng popup từ form khác thì chạy đoạn code bên dưới
+                    if (closePopup != '') {
+                        var option = '<option value="@Model.Id" >@Model.Name</option>';
+                        //tên funtion có thể khác theo từng công việc riêng (đây chỉ là mẫu khi thêm mới sẽ gọi lại)
+                        window.parent.ClosePopupAndAppendSelect(option);
+                    }
+                    $('#str_EndHour').timepicker({
+                        minuteStep: 1,
+                        template: 'modal',
+                        appendWidgetTo: 'body',
+                        showSeconds: false,
+                        showMeridian: false,
+                        defaultTime: false
+                    });
+                    $('#str_StartHour').timepicker({
+                        minuteStep: 1,
+                        template: 'modal',
+                        appendWidgetTo: 'body',
+                        showSeconds: false,
+                        showMeridian: false,
+                        defaultTime: false
+                    });
+                });
+
+    </script>
+    @Html.ScriptBottom_ValidationMvc()
+    @Html.ScriptBottom_DatePicker("dd/mm/yyyy")
+    @Html.ScriptBottom_ChosenStyle()
+}

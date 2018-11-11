@@ -1,0 +1,354 @@
+﻿@using Erp.BackOffice.App_GlobalResources
+@using Erp.BackOffice.Helpers
+@using Erp.BackOffice.Sale.Models
+
+@model ProductInboundViewModel
+
+@{
+    ViewBag.Title = Wording.PageView_ProductInBound;
+
+    Layout = "~/Views/Shared/" + (Request["IsPopup"] == null ? "ACE_AdminLayout.cshtml" : "_PopupLayout.cshtml");
+    Erp.BackOffice.Models.PageSetting pageSetting = new Erp.BackOffice.Models.PageSetting
+    {
+        ModuleName = "ProductInBound",
+        ActionName = "Detail",
+        PageTitle = ViewBag.Title,
+        DisplaySearchPanel = false,
+        IsPopup = false,
+        DisplayBackButton = true
+    };
+    IEnumerable<SelectListItem> warehouseList = (IEnumerable<SelectListItem>)ViewBag.warehouseList;
+    var admin = Erp.BackOffice.Helpers.Common.CurrentUser.UserTypeName;
+    //var branchid = Erp.BackOffice.Helpers.Common.CurrentUser.BranchId;
+}
+
+@section HeadOfPage {
+    @Html.ScriptTop_ChosenStyle()
+}
+
+<style>
+    .lighter.block.green {
+        display: none !important;
+    }
+       .mini-popup {
+            position: relative;
+            display: inline;
+        }
+
+        #popup_huy {
+            position: absolute;
+            bottom: 45px;
+            left: 0px;
+            width: 410px;
+            height: 160px;
+            max-width: inherit;
+            top: inherit;
+        }
+             .popover {
+            max-width: 650px !important;
+        }
+</style>
+@using (Html.BeginPageHeaderContainer(pageSetting))
+{
+
+}
+@helper GridColumnStatusName(string status)
+{
+    switch (status)
+    {
+        case "pendding":
+            <span class="label label-warning">Chưa xử lý</span>
+            break;
+        case "success":
+        <span class="label label-success">Đã xử lý</span>
+            break;
+
+    }
+}
+@Html.ValidationSummary(true)
+@Html.HiddenFor(model => model.Id)
+@Html.HiddenFor(model => model.CreatedUserId)
+@Html.HiddenFor(model => model.CreatedDate)
+@Html.HiddenFor(model => model.IsDeleted)
+
+<div class="row">
+    <div class="col-sm-7">
+        <h4 class="green" style="margin-top:0px">
+            <span>Phiếu nhập: @Model.Code (@(Model.CreatedDate.HasValue?Model.CreatedDate.Value.ToString("dd/MM/yyyy HH:mm"):""))</span>
+            <span class="pull-right red"><b>@Model.TotalAmount.ToCurrencyStr(null)</b></span>
+        </h4>
+
+        @if (ViewBag.SuccessMessage != null && ViewBag.SuccessMessage != "")
+        {
+            <div class="alert alert-block alert-success">
+                <button class="close" data-dismiss="alert" type="button">
+                    <i class="ace-icon fa fa-times"></i>
+                </button>
+                <i class="ace-icon fa fa-check green"></i>
+                @ViewBag.SuccessMessage
+            </div>
+        }
+
+        @if (ViewBag.FailedMessage != null && ViewBag.FailedMessage != "")
+        {
+            <div class="alert alert-block alert-danger">
+                <button class="close" data-dismiss="alert" type="button">
+                    <i class="ace-icon fa fa-times"></i>
+                </button>
+                <i class="ace-icon fa fa-warning red"></i>
+                @Html.Raw(ViewBag.FailedMessage)
+            </div>
+        }
+        @if (!string.IsNullOrEmpty(Model.Note))
+        {
+            <div class="alert alert-warning">@Model.Note</div>
+        }
+
+        @if (Model.IsDeleted == true)
+        {
+            <div class="alert alert-danger">
+                <p><i class="ace-icon fa fa-warning red"></i> @Model.ModifiedUserName đã hủy bỏ chứng từ lúc @Model.ModifiedDate.Value.ToString("HH:mm dd/MM/yyyy").</p>
+                <p>Lý do hủy: @Model.Note</p>
+            </div>
+        }
+        <div id="listOrderDetail" class="table-responsive">
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th>STT</th>
+                        <th>Tên sản phẩm</th>
+                        <th>Lô</th>
+                        <th>Hạn SD</th>
+                        <th style="text-align:center">SL</th>
+                        <th style="text-align:right">Đơn giá</th>
+                        <th style="text-align:right">Thành tiền</th>
+                    </tr>
+                </thead>
+                <tbody id="detailList" class="detailList">
+                    @for (int i = 0; i < Model.DetailList.Count(); i++)
+                    {
+                        <tr>
+                            <td>@(i + 1)</td>
+                            <td>
+                                @Model.DetailList[i].ProductCode - @Model.DetailList[i].ProductName
+                                @if (Model.DetailList[i].ProductDamagedId != null && Model.DetailList[i].ProductDamagedId.Value > 0)
+                                {
+                                    <a onclick="ShowPopover(@Model.DetailList[i].ProductDamagedId)"
+                                       class="" id="a-popover-@Model.DetailList[i].ProductDamagedId">
+                                        @if (Model.DetailList[i].Status == "pendding")
+                                        {
+                                            <i class="ace-icon fa fa-exclamation-triangle bigger-120" style="color:#F89406"></i>
+
+                                        }
+                                        else
+                                        {
+                                            <i class="ace-icon fa fa-info-circle bigger-120" style="color:#82AF6F"></i>
+                                        }
+                                    </a>
+                                                            <!--content html-->
+                                    <div id="divContentHTML_@Model.DetailList[i].ProductDamagedId" style="display:none">
+                                        <p>Trạng thái: @GridColumnStatusName(Model.DetailList[i].Status)</p>
+                                        <p style="">Số lượng chênh lệch: @Model.DetailList[i].NumberAmount</p>
+                                        <p style="">Lý do: @Model.DetailList[i].Reason</p>
+                                        <p>
+                                            @if (Model.DetailList[i].Status == "pendding")
+                                            {
+                                                if (Erp.BackOffice.Filters.SecurityFilter.AccessRight("Approval", "ProductInbound", "Sale"))
+                                                {
+                                                    <a class="btn btn-mini btn-success" href="@Url.Action("Approval", "ProductInbound", new { Id = Model.DetailList[i].ProductDamagedId,ProductInboundId=Model.Id })">
+                                                        <i class="fa fa-check"></i>
+                                                        Chấp nhận
+                                                    </a>
+                                                }
+                                            }
+                                        </p>
+                                    </div>
+                                }
+                            </td>
+                            <td>
+                                @Model.DetailList[i].LoCode
+                            </td>
+                            <td>
+                                @(Model.DetailList[i].ExpiryDate == null ? "" : Model.DetailList[i].ExpiryDate.Value.ToString("dd/MM/yyyy"))
+                            </td>
+                            <td style="text-align:center">
+                                @Common.PhanCachHangNgan(Model.DetailList[i].Quantity)
+                            </td>
+                            <td style="text-align:right">
+                                @Model.DetailList[i].Price.ToCurrencyStr(null)
+                            </td>
+                            <td style="text-align:right">@((Model.DetailList[i].Price * Model.DetailList[i].Quantity).ToCurrencyStr(null))</td>
+                        </tr>
+                    }
+                </tbody>
+                <tfoot>
+                    <tr>
+                        <td colspan="4"></td>
+                        <td id="TongSoLuong" align="right" style="font-weight:bold">@(Common.PhanCachHangNgan(Model.DetailList.Sum(item => item.Quantity)))</td>
+                        <td></td>
+                        <td id="TongThanhTien" align="right" style="font-weight:bold">@CommonSatic.ToCurrencyStr(Model.DetailList.Sum(item => item.Price * item.Quantity),null)</td>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+    </div>
+    <div class="col-sm-5">
+        <div class="widget-box">
+            <div class="widget-header">
+                <h5 class="widget-title">Thông tin chi tiết</h5>
+            </div>
+            <div class="widget-body">
+                <div class="widget-main clearfix">
+                    <div class="detail-view col-xs-12">
+                        @if (Model.CreatedStaffId != null)
+                        {
+                            <div class="row control-group">
+                                <div class="col-xs-4 control-label"><label for="CreatedStaffId">Nhân viên lập phiếu</label></div><div class="col-xs-8 control-value" style=""><a href="/Staffs/Detail/?Id=@Model.CreatedStaffId" target="_blank">@Model.CreatedStaffName</a></div>
+                            </div>
+                        }
+                        <div class="row control-group">
+                            @Html.DetailViewItemFor2(model => model.Code, null, null, "col-xs-4", "col-xs-8")
+                        </div>
+                        <div class="row control-group">
+                            @Html.DetailViewItemFor2(model => model.CreatedDate, null, null, "col-xs-4", "col-xs-8")
+                        </div>
+                        <div class="row control-group">
+                            @Html.DetailViewItemFor2(model => model.WarehouseDestinationName, null, null, "col-xs-4", "col-xs-8")
+                        </div>
+                        <div class="row control-group">
+                            @Html.DetailViewItemFor2(model => model.Note, null, null, "col-xs-4", "col-xs-8")
+                        </div>
+                        @if (Model.PurchaseOrderId != null)
+                        {
+                            <div class="row control-group">
+                                <div class="col-xs-4 control-label"><label for="PurchaseOrderCode">Mã đơn mua hàng</label></div><div class="col-xs-8 control-value" style=""><a href="/PurchaseOrder/Detail/?TransactionCode=@Model.PurchaseOrderCode" target="_blank">@Model.PurchaseOrderCode</a></div>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+        <p></p>
+        <div class="widget-box">
+            <div class="widget-header">
+                <h5 class="widget-title">Chứng từ</h5>
+            </div>
+            <div class="widget-body">
+                <div class="widget-main">
+                    @{Html.RenderAction("Relationship", "Transaction", new { area = "Account", TransactionCode = Model.Code });}
+                </div>
+            </div>
+        </div>
+        <p></p>
+    </div>
+</div>
+
+@using (Html.BeginButtonContainer(pageSetting))
+{
+    if (!Model.IsArchive)
+    {
+        if (Erp.BackOffice.Filters.SecurityFilter.AccessRight("Edit", "ProductInBound", "Sale"))
+        {
+            <a class="btn btn-mini btn-primary" href="@Url.Action("Edit", pageSetting.ModuleName, new { Id = Model.Id })">
+                <i class="ace-icon fa fa-edit"></i>
+                Chỉnh sửa
+            </a>
+        }
+    }
+    @*if (Erp.BackOffice.Filters.SecurityFilter.AccessRight("UpdateLocationItem", "ProductInBound", "Sale"))
+    {
+        <a class="btn btn-primary btn-white btn-sm" href="@Url.Action("UpdateLocationItem", pageSetting.ModuleName, new { Id = Model.Id })">
+            Chỉnh sửa số lô / hạn sử dụng
+        </a>
+    }*@
+    <a href="@Url.Action("Print", new { Id = Model.Id })" target="_blank" class="btn btn-primary btn-white btn-sm"><i class="fa fa-print"></i> In phiếu</a>
+
+    if (Model.AllowEdit)
+    {
+        if (!Model.IsArchive)
+        {
+            if (Erp.BackOffice.Filters.SecurityFilter.AccessRight("Archive", "ProductInBound", "Sale"))
+            {
+                using (Html.BeginForm("Archive", pageSetting.ModuleName, FormMethod.Post, new { @class = "inline" }))
+                {
+                    @Html.HiddenFor(m => m.Id)
+                    <input type="hidden" name="IsPopup" value="@Request["IsPopup"]" />
+                    <button class="btn btn-mini btn-success" type="submit" name="Submit" value="Save">
+                        <i class="ace-icon fa fa-save"></i>
+                        Ghi sổ
+                    </button>
+                }
+            }
+            if (Erp.BackOffice.Filters.SecurityFilter.AccessRight("Delete", "ProductInBound", "Sale"))
+            {
+                <div class="mini-popup">
+                    <a class="btn btn-white btn-sm no-border" data-toggle="collapse" data-target="#popup_huy" style="color: red !important;">
+                        <i class="ace-icon fa fa-trash"></i>
+                        Hủy phiếu nhập
+                    </a>
+                    <div id="popup_huy" class="popover fade top">
+                        <div class="arrow" style="left: 50%;"></div>
+                        <h3 class="popover-title"><i class="ace-icon fa fa-bolt red"></i> Hủy đơn hàng</h3>
+                        <div class="popover-content">
+                            @using (Html.BeginForm_AceStyle((string)ViewBag.Title, "Delete", "ProductInBound", null, FormMethod.Post, new { id = "ProductInvoice_Delete", @class = "form-horizontal clearfix" }))
+                            {
+                                @Html.HiddenFor(m => m.Id)
+                                @Html.CustomTextAreaFor(model => model.Note, null, WidthType.span12)
+
+                                <p class="top-10">
+                                    <button id="btnDelete" class="btn btn-mini btn-primary" type="submit" name="Submit" value="Save" onclick="return submitDelete();">
+                                        Đồng ý
+                                    </button>
+                                    <a class="btn btn-white btn-sm no-border" data-toggle="collapse" data-target="#popup_huy">Đóng</a>
+                                </p>
+                            }
+                        </div>
+                    </div>
+                </div>
+            }
+        }
+        else
+        {
+            if (Erp.BackOffice.Filters.SecurityFilter.AccessRight("UnArchive", "ProductInBound", "Sale"))
+            {
+                using (Html.BeginForm("UnArchive", pageSetting.ModuleName, FormMethod.Post, new { @class = "inline" }))
+                {
+                    @Html.HiddenFor(m => m.Id)
+                     <input type="hidden" name="IsPopup" value="@Request["IsPopup"]" />
+                    <button class="btn btn-white btn-danger btn-sm no-border" type="submit" name="Submit" value="Save" onclick="return confirm('Bạn chắc chắn muốn thực hiện thao tác này?')">
+                        Bỏ ghi sổ
+                    </button>
+                }
+            }
+        }
+    }
+}
+
+@section Scripts {
+
+    @Html.ScriptBottom_ValidationMvc()
+    @Html.ScriptBottom_ChosenStyle()
+}
+<script>
+    function ShowPopover(Id) {
+        //popover option
+        $("#a-popover-" + Id).popover({
+            title: 'Thông tin chênh lệch của sản phẩm',
+            content: $('#divContentHTML_' + Id).html(),
+            placement: 'right',
+            html: true
+        });
+
+    }
+    function submitDelete() {
+        var note = $("#Note").val();
+        if (note == '') {
+            alertPopup('Bạn chưa nhập lý do hủy. Không thể hủy phiếu nhập này!', 'Xin hãy kiểm tra lại.', 'error');
+            return false;
+        }
+        else {
+            alertPopup('Hủy thành công!', '', 'success');
+            return true;
+        }
+    }
+</script>

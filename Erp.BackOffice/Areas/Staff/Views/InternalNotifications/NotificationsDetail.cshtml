@@ -1,0 +1,183 @@
+﻿@model  InternalNotificationsViewModel
+
+@using Erp.BackOffice.App_GlobalResources
+@using Erp.BackOffice.Administration.Models
+@using Erp.BackOffice.Helpers
+@using GridMvc.Html
+@{
+    ViewBag.Title = "Chi tiết thông báo nội bộ";
+    Layout = "~/Views/Shared/ACE_AdminLayout.cshtml";
+    if(ViewBag.Staff!=null)
+    { 
+    ViewBag.Staff.Position = GridColumnCategoryValue(ViewBag.Staff.Position, "position").ToString();
+    }
+    Erp.BackOffice.Models.PageSetting pageSetting = new Erp.BackOffice.Models.PageSetting
+    {
+        ModuleName = "InternalNotifications",
+        ActionName = "NotificationsDetail",
+        PageTitle = ViewBag.Title,
+        DisplaySearchPanel = false,
+        IsPopup = false,
+        DisplayBackButton = true
+    };
+    var path = Common.GetSetting("Staff");
+}
+@helper GridColumnCategoryValue(string value, string Code)
+{
+    var attr = Erp.BackOffice.Helpers.Common.GetCategoryByValueCodeOrId("value", value, Code);
+    @(attr != null ? attr.Name : "")
+}
+
+<style>
+    .profile-picture {
+        padding: 0px !important;
+    }
+</style>
+<link href="@Url.Content("~/assets/css/Gridmvc.css")" rel="stylesheet" type="text/css" />
+<script src="@Url.Content("~/Scripts/gridmvc.min.js")" type="text/javascript"> </script>
+@helper GridColumnDate(DateTime? CreateDate, DateTime? ModifiDate)
+{
+
+    <p class="sum"><i class="fa fa-calendar-plus-o" data-rel="tooltip" title="" data-placement="bottom" data-original-title="Ngày bình luận"></i> @CreateDate.Value.ToString("HH: mm dd/MM/yyyy")</p>
+    <p class="sum"><i class="fa fa-calendar-minus-o" data-rel="tooltip" title="" data-placement="bottom" data-original-title="Ngày sửa bình luận"></i>  @ModifiDate.Value.ToString("HH: mm dd/MM/yyyy")</p>
+}
+@helper GridColumnName(string name, int id, string code, bool gender, string ProfileImage,string path)
+{
+    <span class="col-sm-3" style="padding:0px;">
+        @if (!string.IsNullOrEmpty(ProfileImage))
+        {
+            <a data-toggle="tooltip" title='
+                <img src="@path@(ProfileImage)" width="248" />'>
+                <img class="profile-picture" src="@path@(ProfileImage)" width="35" height="44" alt="@name" />
+        </a>
+        }
+        else
+        {
+            <span class="profile-picture" style="height:44px; width:35px"><img style="max-width:100%; margin-top:5px" src="/assets/img/no-avatar.png" alt="@name" /></span>
+        }
+
+    </span>
+    <span class="col-sm-9">
+        @if (string.IsNullOrEmpty(name))
+        {
+            <p> <a href="@Url.Action("Detail", "Staffs", new { area = "Staff", Id = id })" target="_blank"><b><i class="fa fa-user-circle-o"></i>  No Title</b></a></p>
+        }
+        else
+        {
+            <p>
+                <a href="@Url.Action("Detail", "Staffs", new { area = "Staff", Id = id })" target="_blank">
+                    <b>
+                        @if (gender == true)
+                        {
+                            <i style="color:#ff00dc" class="fa fa-female" data-rel="tooltip" title="" data-placement="bottom" data-original-title="Giới tính: Nữ"></i>
+                        }
+                        else
+                        {
+                            <i class="fa fa-male" data-rel="tooltip" title="" data-placement="bottom" data-original-title="Giới tính: Nam"></i>
+                        }
+                        @name
+                    </b>
+                </a>
+            </p>
+            <p><i class="fa fa-barcode" data-rel="tooltip" title="" data-placement="bottom" data-original-title="Mã nhân viên hiện tại"></i> @code</p>
+        }
+    </span>
+}
+
+@helper GridColumnCommand(int id)
+{
+    @*<div class="hidden-phone visible-desktop action-buttons" style="display: inline-block; float: left;">*@
+    <p>
+        <a class="btn btn-mini btn-success" href="@Url.Action("EditNotificationsDetail", "InternalNotifications", new { Id = id })">
+            <i class="fa fa-edit bigger-120"></i>
+        </a>
+    </p>
+    <p>
+        <button name="Delete" value="Delete" type="submit" class="btn btn-mini btn-danger">
+            <i class="ace-icon fa fa-trash bigger-120"></i>
+        </button>
+    </p>
+    @*</div>*@
+}
+
+@using (Html.BeginPageHeaderContainer(pageSetting))
+{
+
+}
+<ul class="nav nav-tabs" id="myTab">
+    <li id="li-tab1" class="active"><a data-target="#tab1" data-toggle="tab">Nội dung thông báo</a></li>
+    <li id="li-tab2"><a data-target="#tab2" data-toggle="tab">Danh sách bình luận của nhân viên</a></li>
+</ul>
+<div class="tab-content">
+    <div class="tab-pane clearfix active" id="tab1">
+        <div class="widget-box">
+            <div class="widget-header widget-header-flat">
+                <h4 class="widget-title" style="text-align:center">@Model.Titles</h4>
+            </div>
+
+            <div class="widget-body">
+                <div class="widget-main">
+                    <div class="row" style="padding:20px;">
+                        @Html.Raw(Model.Content)
+                        <hr>
+                        @if (ViewBag.Staff != null)
+                        {
+                            <p style="text-align:right">@Model.CreatedDate.Value.ToString("HH: mm dd/MM/yyyy") - @ViewBag.Staff.Staff_DepartmentId, @ViewBag.Staff.BranchName</p>
+                            <p style="text-align:right">@Html.Raw(ViewBag.Staff.Position) : @ViewBag.Staff.Name</p>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div> 
+        </div>
+    <div class="tab-pane clearfix" id="tab2">
+        <div class="col-sm-11" style="width:94.666%;padding-right:0px;margin-bottom:10px">
+            @Html.TextBox("Comment_" + Model.Id, null, new { placeholder = Wording.Comment, style = "width:100%" })
+
+        </div>
+        <div class="col-sm-1" style="width:4.333%;padding:0px">
+            <a class="btn btn-mini btn-primary" onclick="CreateComment(@Model.Id)" style="width:100%">
+                <i class="fa fa-paper-plane  bigger-120" style="padding:5px;padding-left:8px;padding-right:8px;padding-bottom:6px;"></i>
+            </a>
+        </div>
+        @if (Model.NotificationsDetailList.Count() > 0)
+        {
+                <div class="col-sm-12" id="loadStaff">
+                    <p>
+                        Tổng bình luận: @Model.NotificationsDetailList.Count() - Bình luận trong ngày: @Model.NotificationsDetailList.Where(x => x.CreatedDate.Value.ToString("dd/MM/yyyy") == DateTime.Now.ToString("dd/MM/yyyy")).Count()
+                    </p>
+                  @Html.Grid(Model.NotificationsDetailList).Columns(columns =>
+                   {
+                       // columns.Add().Titled(BuildCheckAll().ToHtmlString()).SetWidth(20).Sanitized(false).Encoded(false).RenderValueAs(n => CheckDeleteColumns(n.Id));
+                       int index = 0;
+                       columns.Add().Titled(Wording.OrderNo).SetWidth(30).RenderValueAs(n => (++index).ToString());
+                       columns.Add().Titled("Nhân viên").Sortable(false).SetWidth(200).Sanitized(false).Encoded(false).RenderValueAs(u => GridColumnName(u.Name, u.StaffId.Value, u.Code, u.Gender.Value, u.ProfileImage,path));
+                       columns.Add().Titled("Nội dung bình luận").Sortable(false).Sanitized(false).Encoded(false).RenderValueAs(u => u.Comment);
+                       columns.Add().Titled("Thời gian").SetWidth(150).Sortable(false).Sanitized(false).Encoded(false).RenderValueAs(u => GridColumnDate(u.CreatedDate, u.ModifiedDate));
+                       columns.Add().Sanitized(false).Encoded(false).RenderValueAs(u => GridColumnCommand(u.Id)).SetWidth(20);
+                   }).WithPaging(10)
+                </div>
+
+        }
+    </div>
+
+</div>
+   
+    <script>
+        $(document).ready(function () {
+            $('[data-rel="tooltip"]').tooltip({ container: 'body' });
+        });
+        function CreateComment(id) {
+            var comment = $('input[name="Comment_'+id+'"]').val();
+            // console.log(checkSave);
+                    var formData = {
+                        comment: comment,
+                        NotificationsId: id
+                    };
+                    $("#ListCommentStaff").html('');
+                    ClickEventHandler(true, "/InternalNotifications/NotificationsDetail", "#ListCommentStaff", formData);
+                    location.reload();
+           // $("#loadStaff_" + id).closest('div').remove();
+
+        };
+    </script>

@@ -1,0 +1,273 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="ConfirmPassword_NotMatch" xml:space="preserve">
+    <value>Mật mã không trùng khớp</value>
+  </data>
+  <data name="ConfirmPassword_Required" xml:space="preserve">
+    <value>Vui lòng xác nhận lại mật khẩu</value>
+  </data>
+  <data name="DateInvalid" xml:space="preserve">
+    <value>Thuộc tính này phải là ngày</value>
+  </data>
+  <data name="DeleteUnSuccess" xml:space="preserve">
+    <value>Lỗi trong quá trình xóa. Vui lòng thử lại, hoặc liên hệ admin hệ thống!</value>
+  </data>
+  <data name="DeletingError" xml:space="preserve">
+    <value>Không thể xóa mẫu tin.</value>
+  </data>
+  <data name="EmailInvalid" xml:space="preserve">
+    <value>Thuộc tính này phải là địa chỉ email</value>
+  </data>
+  <data name="EndDateGreaterOrEqualNow" xml:space="preserve">
+    <value>"Ngày kết thúc" phải lớn hơn hoặc bằng ngày hôm nay.</value>
+  </data>
+  <data name="Password_LengthError" xml:space="preserve">
+    <value>{0} phải có ít nhất {2} ký tự.</value>
+  </data>
+  <data name="Password_Required" xml:space="preserve">
+    <value>Bắt buộc nhập Mật mã</value>
+  </data>
+  <data name="Required" xml:space="preserve">
+    <value>Bắt buộc nhập</value>
+  </data>
+  <data name="RequireItemSelection" xml:space="preserve">
+    <value>Bạn phải chọn  ít nhất 1 item.</value>
+  </data>
+  <data name="Save_Succeeded" xml:space="preserve">
+    <value>Đã lưu thành công. </value>
+  </data>
+  <data name="StringTooLongError" xml:space="preserve">
+    <value>Chuỗi vượt quá {0} ký tự</value>
+  </data>
+  <data name="Username_Required" xml:space="preserve">
+    <value>Bắt buộc nhập Tên đăng nhập</value>
+  </data>
+  <data name="ValidCheckCloseLottery" xml:space="preserve">
+    <value>Bạn chưa nhập số người thắng, số điểm tối thiểu, điểm thêm cho đợt rút thăm.</value>
+  </data>
+  <data name="ValueInvalid" xml:space="preserve">
+    <value>Giá trị không hợp lệ</value>
+  </data>
+  <data name="RelationError" xml:space="preserve">
+    <value>Không thể xóa! Vì hạng mục này đang được sử dụng bởi những tiến trình khác!</value>
+  </data>
+  <data name="StringError" xml:space="preserve">
+    <value>{0} không được vượt quá {1} ký tự.</value>
+  </data>
+  <data name="UrlError" xml:space="preserve">
+    <value>Không đúng định dạng Url</value>
+  </data>
+  <data name="RequiredAnswer" xml:space="preserve">
+    <value>Phải có ít nhất 2 đáp án và có ít nhất 1 đáp án đúng.</value>
+  </data>
+  <data name="Required2Answers" xml:space="preserve">
+    <value>Phải có ít nhất 2 đáp án</value>
+  </data>
+  <data name="RequireUpload" xml:space="preserve">
+    <value>Bạn phải upload file.</value>
+  </data>
+  <data name="SizeImgError" xml:space="preserve">
+    <value>Kích thước ảnh không được vượt quá 50MB.</value>
+  </data>
+  <data name="RangeError" xml:space="preserve">
+    <value>{0} phải nằm trong khoảng {1} - {2}</value>
+  </data>
+  <data name="NumberError" xml:space="preserve">
+    <value>{0} phải lớn hơn 0</value>
+  </data>
+  <data name="TrainingScheduleExisted" xml:space="preserve">
+    <value>Lịch thi của tuần này đã tồn tại, hãy chọn tuần khác.</value>
+  </data>
+  <data name="DateError" xml:space="preserve">
+    <value>Ngày bắt đầu phải nhỏ hơn Ngày kết thúc.</value>
+  </data>
+  <data name="UpdateUnsuccess" xml:space="preserve">
+    <value>Cập nhật không thành công.</value>
+  </data>
+  <data name="CertificateDateError" xml:space="preserve">
+    <value>Đã có Certificate trong khoảng thời gian từ: {0} đến: {1}. Vui lòng chọn lại khoảng thời gian khác.</value>
+  </data>
+  <data name="NumberError1" xml:space="preserve">
+    <value>{0} phải lớn hơn 1</value>
+  </data>
+  <data name="DateFormatError" xml:space="preserve">
+    <value>{0} phải theo định dạng: dd/mm/yyyy </value>
+  </data>
+  <data name="TimeError" xml:space="preserve">
+    <value>Giờ kết thúc không được nhỏ hơn Giờ bắt đầu</value>
+  </data>
+  <data name="EmailError" xml:space="preserve">
+    <value>Không đúng định dạng Email</value>
+  </data>
+  <data name="IntegerError" xml:space="preserve">
+    <value>Giá trị nhập vào phải là số nguyên dương.</value>
+  </data>
+  <data name="MaterialNotWarehouse" xml:space="preserve">
+    <value>Không có vật tư trong kho</value>
+  </data>
+  <data name="MaterialWarehouseNo" xml:space="preserve">
+    <value>Số lượng vật tư trong kho không đủ, không thể thêm vật tư vào phiếu xuất</value>
+  </data>
+  <data name="MaterialNoIssued" xml:space="preserve">
+    <value>Chưa xuất vật tư</value>
+  </data>
+  <data name="IssuedNoMaterial" xml:space="preserve">
+    <value>Trong phiếu xuất không có vật tư này</value>
+  </data>
+  <data name="NoDeleteRequest" xml:space="preserve">
+    <value>Bạn cần xóa hết chi tiết yêu cầu sửa chữa mới có thể xóa yêu cầu sửa chữa</value>
+  </data>
+  <data name="NoDeleteBrowser" xml:space="preserve">
+    <value>Yêu cầu sửa chữa đã duyệt, không thể xóa được !</value>
+  </data>
+  <data name="RequestCancelNoBrowser" xml:space="preserve">
+    <value>Yêu cầu đã bị hủy, không thể duyệt yêu cầu này nữa</value>
+  </data>
+  <data name="NoRequest" xml:space="preserve">
+    <value>Yêu cầu đã duyệt, không thể hủy yêu cầu</value>
+  </data>
+  <data name="ErrorNoEditUserMaterialIssued" xml:space="preserve">
+    <value>Bạn không phải là người lập phiếu, nên bạn không thể chỉnh sửa</value>
+  </data>
+  <data name="ErrorNoNewUserMaterialIssued" xml:space="preserve">
+    <value>Bạn không phải là người lập phiếu, nên bạn không thể thêm mới vật tư</value>
+  </data>
+  <data name="SuccessNoMaterialNew" xml:space="preserve">
+    <value>Bạn sửa chữa chưa hoàn thành, không thể thêm vật tư</value>
+  </data>
+  <data name="MaterialIntoWarehouseNoEditReceived" xml:space="preserve">
+    <value>Vật tư đã cập nhật vào kho, không thể sửa thông tin phiếu xuất được. Bạn cần xóa hết vật tư trong phiếu xuất mới có thể chỉnh sửa</value>
+  </data>
+  <data name="NoErpRoom" xml:space="preserve">
+    <value>Bạn chưa chọn phòng cần sửa chữa. Không thể thêm mới</value>
+  </data>
+  <data name="NoErpRoomNoSendRequest" xml:space="preserve">
+    <value>Không có phòng cần sửa chữa trong yêu cầu. Nên bạn không thể gửi yêu cầu</value>
+  </data>
+  <data name="QuantityMaxNoRequest" xml:space="preserve">
+    <value>Số lượng vật tư lớn hơn số lượng vật tư còn lại của phiếu xuất. Không thể thêm vật tư !!!</value>
+  </data>
+  <data name="InsertUnsucess" xml:space="preserve">
+    <value>Thêm mới không thành công</value>
+  </data>
+  <data name="FileDoesNotExist" xml:space="preserve">
+    <value>Tập tin không tồn tại</value>
+  </data>
+</root>

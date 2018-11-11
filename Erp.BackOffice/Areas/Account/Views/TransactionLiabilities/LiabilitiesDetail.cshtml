@@ -1,0 +1,509 @@
+﻿@model ResolveLiabilitiesViewModel
+
+@using Erp.BackOffice.App_GlobalResources
+@using Erp.BackOffice.Account.Models
+@using Erp.BackOffice.Helpers
+
+@{
+    ViewBag.Title = "Công nợ " + (Model.TargetModule == "Customer" ? "khách hàng" : Model.TargetModule == "DrugStore"?"nhà thuốc":"nhà cung cấp") + ": " + Model.TargetName;
+    bool isPopup = Request["popup"] != null && Request["popup"].ToString().ToLower() == "true" ? true : false;
+    if (isPopup)
+    {
+        Layout = "~/Views/Shared/_PopupLayout.cshtml";
+    }
+    else
+    {
+        Layout = "~/Views/Shared/ACE_AdminLayout.cshtml";
+    }
+
+    Erp.BackOffice.Models.PageSetting pageSetting = new Erp.BackOffice.Models.PageSetting
+    {
+        ModuleName = "TransactionLiabilities",
+        ActionName = "LiabilitiesDetail",
+        PageTitle = ViewBag.Title,
+        DisplaySearchPanel = false,
+        IsPopup = false,
+        DisplayBackButton = false
+    };
+
+}
+
+<style type="text/css">
+    #mask-Amount {
+        text-align: right;
+    }
+
+    #PaymentAmount {
+        text-align: right;
+    }
+</style>
+
+@using (Html.BeginPageHeaderContainer(pageSetting))
+{
+
+}
+
+@if (ViewBag.SuccessMessage != null && ViewBag.SuccessMessage != "")
+{
+    <div class="alert alert-block alert-success">
+        <button class="close" data-dismiss="alert" type="button">
+            <i class="ace-icon fa fa-times"></i>
+        </button>
+        <i class="ace-icon fa fa-check green"></i>
+        @ViewBag.SuccessMessage
+    </div>
+}
+
+@if (ViewBag.FailedMessage != null && ViewBag.FailedMessage != "")
+{
+    <div class="alert alert-block alert-danger">
+        <button class="close" data-dismiss="alert" type="button">
+            <i class="ace-icon fa fa-times"></i>
+        </button>
+        <i class="ace-icon fa fa-warning red"></i>
+        @ViewBag.FailedMessage
+    </div>
+}
+
+<div class="alert-required-transactionId alert alert-danger top-10" style="display:none">
+    <button type="button" class="close" data-dismiss="alert">
+        <i class="ace-icon fa fa-times"></i>
+    </button>
+
+    <strong>
+        <i class="ace-icon fa fa-times"></i>
+        Vui lòng nhập số tiền, chứng từ, phương thức cần thanh toán để tiến hành thanh toán công nợ!
+    </strong>
+    <br>
+</div>
+@using (Ajax.BeginForm("ResolveLiabilities", "TransactionLiabilities", new { }
+                        , new AjaxOptions()
+                        {
+                            HttpMethod = "POST",
+                            OnSuccess = "ResolveLiabilities_OnSuccess"
+                        }
+                        , new { id = "Form_ResolveLiabilities", @class = "form-horizontal" }))
+{
+    @Html.HiddenFor(model => model.TargetCode)
+    @Html.HiddenFor(model => model.TargetModule)
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="widget-box edit-view">
+                <div class="widget-header">
+                    <h5 class="widget-title">Thanh toán công nợ</h5>
+                </div>
+                <div class="widget-body">
+                    <div class="widget-main clearfix">
+                        <div id="" class="control-group form-group">
+                            <label class="control-label col-lg-5 col-md-4 col-sm-4" for="Amount">Số tiền</label>
+                            <div class="control-value col-lg-7 col-md-8 col-sm-8">
+                                @Html.TextBox("Amount")
+                            </div>
+                        </div>
+                        <div id="" class="control-group form-group">
+                            <label class="control-label col-lg-5 col-md-4 col-sm-4" for="Amount">Số tiền trả</label>
+                            <div class="control-value col-lg-7 col-md-8 col-sm-8">
+                                @Html.TextBox("PaymentAmount", "", new { @readonly = "readonly", @class = "paymentamount", autocomplete = "off" })
+                            </div>
+                        </div>
+                        <div id="" class="control-group form-group">
+                            <label class="control-label col-lg-5 col-md-4 col-sm-4" for="Amount">@Wording.PaymentMethod</label>
+                            <div class="control-value col-lg-7 col-md-8 col-sm-8">
+                                @Html.DropDownList("PaymentMethod", SelectListHelper.GetSelectList_Category("FormPayment", Request["PaymentMethod"], "- Rỗng -"@*, Wording.TargetModule*@), new Dictionary<string, object> { { "class", "form-control" }, { "data-val-required", "Bắt buộc chọn." } })
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="tabbable">
+        <ul class="nav nav-tabs padding-12 tab-color-blue background-blue" id="tabCustomer">
+            <li class="active">
+                <a data-toggle="tab" href="#tab1">
+                    @((Model.TargetModule == "Customer"|| Model.TargetModule == "DrugStore") ? "Đơn hàng cần thu tiền" : "Đơn mua hàng cần trả tiền")
+                </a>
+            </li>
+
+            <li>
+                <a data-toggle="tab" href="#tab2">@((Model.TargetModule == "Customer" || Model.TargetModule == "DrugStore") ? "Đơn hàng đã thu hết" : "Đơn mua hàng đã trả hết")</a>
+            </li>
+        </ul>
+
+        <div class="tab-content">
+            <div id="tab1" class="tab-pane in active">
+                @if (Model.TargetModule == "Customer" || Model.TargetModule == "DrugStore")
+                {
+                    @loadGridCustomer(Model.ListProductInvoice.Where(item => item.RemainingAmount > 0).OrderBy(item => item.CreatedDate).ToList())
+                }
+                else
+                {
+                    @loadGridPurchaseOrder(Model.ListPurchaseOrder.Where(item => item.RemainingAmount > 0).OrderBy(item => item.CreatedDate).ToList())
+                }
+            </div>
+
+            <div id="tab2" class="tab-pane">
+                @if (Model.TargetModule == "Customer" || Model.TargetModule == "DrugStore")
+                {
+                    @loadGridCustomer(Model.ListProductInvoice.Where(item => item.RemainingAmount == 0).ToList())
+                }
+                else
+                {
+                    @loadGridPurchaseOrder(Model.ListPurchaseOrder.Where(item => item.RemainingAmount == 0).ToList())
+                }
+            </div>
+        </div>
+    </div>
+    using (Html.BeginButtonContainer(pageSetting))
+    {
+        <p class="top-10">
+            <button class="btn btn-mini btn-primary" type="submit" name="Submit" value="Save" onclick="return checkOnSubmit();">
+                <i class="ace-icon fa fa-save"></i>
+                @Wording.Save
+            </button>
+        </p>
+    }
+
+
+}
+<div style="height:30px"></div>
+
+@helper LoadSubTable(List<TransactionLiabilitiesViewModel> ListTransactionLiabilities, List<ProcessPaymentViewModel> ListProcessPayment)
+{
+    <div class="row">
+        <div class="col-sm-6">
+            @if (ListTransactionLiabilities != null && ListTransactionLiabilities.Count > 0)
+            {
+            <table class="table table-striped grid-table" style="float:left; width:initial">
+                <thead>
+                    <tr>
+                        <th class="grid-header" style="width:130px;">Ngày giao dịch</th>
+                        <th class="grid-header" style="width:150px;">Loại giao dịch</th>
+                        <th class="grid-header" style="width:120px;">Ghi nợ</th>
+                        <th class="grid-header" style="width:100px;">Ghi có</th>
+                        <th class="grid-header">Ghi chú</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in ListTransactionLiabilities)
+                        {
+                        <tr class="grid-row">
+                            <td class="grid-cell" data-name="CreatedDate">@item.CreatedDate.Value.ToString("dd/MM/yyyy HH:mm")</td>
+                            <td class="grid-cell" data-name="TransactionType">@item.TransactionName</td>
+                            <td class="grid-cell" data-name="">@Erp.BackOffice.Helpers.Common.PhanCachHangNgan(item.Debit)</td>
+                            <td class="grid-cell" data-name="">@Erp.BackOffice.Helpers.Common.PhanCachHangNgan(item.Credit)</td>
+                            <td class="grid-cell" data-name="">
+                                @if (item.NextPaymentDate != null)
+                                    {
+                                    <p>Ngày hẹn trả: @(item.NextPaymentDate.HasValue ? item.NextPaymentDate.Value.ToString("dd/MM/yyyy") : "")</p>
+                                    }
+                                <p>@item.Note</p>
+                            </td>
+                        </tr>
+                        }
+                </tbody>
+            </table>
+            }
+        </div>
+    </div>
+}
+
+@helper loadGridCustomer(List<Erp.BackOffice.Sale.Models.ProductInvoiceViewModel> list)
+{
+    <table class="table table-striped grid-table">
+        <thead>
+            <tr>
+                <th class="grid-header" style="width:20px;"></th>
+                <th class="grid-header" style="width:20px;"></th>
+                <th class="grid-header" style="width:130px;">Ngày chứng từ</th>
+                <th class="grid-header" style="width:100px;">Mã chứng từ</th>
+                <th class="grid-header" style="width:100px;">Tổng tiền</th>
+                <th class="grid-header" style="width:100px;">Đã thu/Đã chi</th>
+                <th class="grid-header" style="width:100px;">Còn lại</th>
+                <th class="grid-header" style="width:100px;">Trả số tiền</th>
+                <th class="grid-header" style="width:100px;">Còn thiếu</th>
+                <th class="grid-header" style="width:130px;">Ngày hẹn trả tiếp theo</th>
+                <th class="grid-header">Ghi chú</th>
+            </tr>
+        </thead>
+        <tbody>
+
+            @for (int i = 0; i < list.Count; i++)
+            {
+            @Html.Hidden("model[" + i + "].MaChungTuGoc", Model.MaChungTuGoc)
+            @Html.Hidden("model[" + i + "].LoaiChungTuGoc", Model.LoaiChungTuGoc)
+            @Html.Hidden("model[" + i + "].ProcessPaymentId", Model.ProcessPaymentId)
+            @Html.Hidden("model[" + i + "].TargetModule", Model.TargetModule)
+            @Html.Hidden("model[" + i + "].TargetCode", Model.TargetCode)
+            <tr class="grid-row @(list[i].RemainingAmount > 0 ? "warning red" : "")">
+                <td class="grid-cell">
+                    @if (list[i].RemainingAmount > 0)
+                        {
+                        <label>
+                            <input name="TransactionId" type="checkbox" class="ace"
+                                   data-i="@i"
+                                   data-machungtu="@list[i].Code"
+                                   data-loaichungtu="ProductInvoice"
+                                   data-remain="@list[i].RemainingAmount"
+                                   data-nextpaymentdate="@(list[i].NextPaymentDate != null ? list[i].NextPaymentDate.Value.ToString("yyyy-MM-dd") : "")" />
+                            <span class="lbl"></span>
+                        </label>
+                        }
+                </td>
+                <td class="grid-cell">
+                    <a href="#" class="green show-details-btn" title="Show Details">
+                        <i class="ace-icon fa fa-angle-double-down bigger-120"></i>
+                    </a>
+                </td>
+                <td class="grid-cell">@list[i].CreatedDate.Value.ToString("dd/MM/yyyy HH:mm")</td>
+                <td class="grid-cell">@list[i].Code</td>
+                <td class="grid-cell">@Erp.BackOffice.Helpers.Common.PhanCachHangNgan(list[i].TotalAmount)</td>
+                <td class="grid-cell">@Erp.BackOffice.Helpers.Common.PhanCachHangNgan(list[i].PaidAmount)</td>
+                <td class="grid-cell">@Erp.BackOffice.Helpers.Common.PhanCachHangNgan(list[i].RemainingAmount)</td>
+                <td class="grid-cell">
+                    @Html.TextBox("model[" + i + "].Amount", "", new { style = "width:85px;height:24px", @readonly = "readonly", @class = "model_item_moneyliabilities", autocomplete = "off" })
+
+                </td>
+                <td class="grid-cell">
+                    @Html.TextBox("model[" + i + "].Money", "", new { style = "width:85px;height:24px", @readonly = "readonly", @class = "model_item_amountremain", autocomplete = "off" })
+                </td>
+
+                <td class="grid-cell">
+                    @Html.TextBox("model[" + i + "].NextPaymentDate", "", new { style = "width:100%;height:24px", @class = "datefield", type = "date", @readonly = "readonly", autocomplete = "off" })
+                </td>
+                <td class="grid-cell">
+                    @Html.TextArea("model[" + i + "].Note", "", new { style = "width:100%;height:24px", @class = "model_item_noteLiabilities", autocomplete = "off", @readonly = "readonly" })
+                </td>
+            </tr>
+            <tr class="detail-row">
+                <td colspan="11">
+                    <div class="table-detail clearfix">
+                        @LoadSubTable(list[i].ListTransactionLiabilities, list[i].ListProcessPayment)
+                    </div>
+                </td>
+            </tr>
+            }
+        </tbody>
+    </table>
+}
+@helper loadGridPurchaseOrder(List<Erp.BackOffice.Sale.Models.PurchaseOrderViewModel> list)
+{
+    <table class="table table-striped grid-table">
+        <thead>
+            <tr>
+                <th class="grid-header" style="width:20px;"></th>
+                <th class="grid-header" style="width:20px;"></th>
+                <th class="grid-header" style="width:130px;">Ngày chứng từ</th>
+                <th class="grid-header" style="width:100px;">Mã chứng từ</th>
+                <th class="grid-header" style="width:100px;">Tổng tiền</th>
+                <th class="grid-header" style="width:100px;">Đã chi</th>
+                <th class="grid-header" style="width:100px;">Còn lại</th>
+                <th class="grid-header" style="width:100px;">Đã trả số tiền</th>
+                <th class="grid-header" style="width:100px;">Còn nợ</th>
+                <th class="grid-header" style="width:130px;">Ngày hẹn trả tiếp theo</th>
+                <th class="grid-header">Ghi chú</th>
+            </tr>
+        </thead>
+        <tbody>
+
+            @for (int i = 0; i < list.Count; i++)
+            {
+            @Html.Hidden("model[" + i + "].MaChungTuGoc", Model.MaChungTuGoc)
+            @Html.Hidden("model[" + i + "].LoaiChungTuGoc", Model.LoaiChungTuGoc)
+            @Html.Hidden("model[" + i + "].ProcessPaymentId", Model.ProcessPaymentId)
+            @Html.Hidden("model[" + i + "].TargetModule", Model.TargetModule)
+            @Html.Hidden("model[" + i + "].TargetCode", Model.TargetCode)
+            <tr class="grid-row @(list[i].RemainingAmount > 0 ? "warning red" : "")">
+                <td class="grid-cell">
+                    @if (list[i].RemainingAmount > 0)
+                        {
+                        <label>
+                            <input name="TransactionId" type="checkbox" class="ace"
+                                   data-i="@i"
+                                   data-machungtu="@list[i].Code"
+                                   data-loaichungtu="ProductInvoice"
+                                   data-remain="@list[i].RemainingAmount"
+                                   data-nextpaymentdate="@(list[i].NextPaymentDate != null ? list[i].NextPaymentDate.Value.ToString("yyyy-MM-dd") : "")" />
+                            <span class="lbl"></span>
+                        </label>
+                        }
+                </td>
+                <td class="grid-cell">
+                    <a href="#" class="green show-details-btn" title="Show Details">
+                        <i class="ace-icon fa fa-angle-double-down bigger-120"></i>
+                    </a>
+                </td>
+                <td class="grid-cell">@list[i].CreatedDate.Value.ToString("dd/MM/yyyy HH:mm")</td>
+                <td class="grid-cell">@list[i].Code</td>
+                <td class="grid-cell">@Erp.BackOffice.Helpers.Common.PhanCachHangNgan(list[i].TotalAmount)</td>
+                <td class="grid-cell">@Erp.BackOffice.Helpers.Common.PhanCachHangNgan(list[i].PaidAmount)</td>
+                <td class="grid-cell">@Erp.BackOffice.Helpers.Common.PhanCachHangNgan(list[i].RemainingAmount)</td>
+                <td class="grid-cell">
+                    @Html.TextBox("model[" + i + "].Amount", "", new { style = "width:85px;height:24px", @readonly = "readonly", @class = "model_item_moneyliabilities", autocomplete = "off" })
+
+                </td>
+                <td class="grid-cell">
+                    @Html.TextBox("model[" + i + "].Money", "", new { style = "width:85px;height:24px", @readonly = "readonly", @class = "model_item_amountremain", autocomplete = "off" })
+                </td>
+
+                <td class="grid-cell">
+                    @Html.TextBox("model[" + i + "].NextPaymentDate", "", new { style = "width:100%;height:24px", @class = "datefield", type = "date", @readonly = "readonly", autocomplete = "off" })
+                </td>
+                <td class="grid-cell">
+                    @Html.TextArea("model[" + i + "].Note", "", new { style = "width:100%;height:24px", @class = "model_item_noteLiabilities", autocomplete = "off", @readonly = "readonly" })
+                </td>
+            </tr>
+            <tr class="detail-row">
+                <td colspan="11">
+                    <div class="table-detail clearfix">
+                        @LoadSubTable(list[i].ListTransactionLiabilities, list[i].ListProcessPayment)
+                    </div>
+                </td>
+            </tr>
+            }
+        </tbody>
+    </table>
+}
+@section Scripts {
+    @Html.ScriptBottom_ValidationMvc()
+    @Html.ScriptBottom_DatePicker("dd/mm/yyyy")
+
+    <script type="text/javascript">
+
+        $(function () {
+            $('#Amount').numberFormat();
+
+
+            $('.model_item_moneyliabilities').numberFormat();
+
+            $('input[type=checkbox][name=TransactionId]').change(function () {
+                var MaChungTuGoc = $(this).data("machungtu");
+                var LoaiChungTuGoc = $(this).data("loaichungtu");
+                var i = $(this).data("i");
+                $('#model_' + i + '__MaChungTuGoc').val(MaChungTuGoc);
+                $('#model_' + i + '__LoaiChungTuGoc').val(LoaiChungTuGoc);
+                $(".alert-required-transactionId").hide();
+                var TargetCode = $('#TargetCode').val();
+                $('#model_' + i + '__TargetCode').val(TargetCode);
+
+                calcAmountRemaining();
+                if ($('input[type=checkbox][name=TransactionId][data-i=' + i + ']').is(':checked') == false) {
+                    $('#model_' + i + '__Amount').val("");
+                    $('#model_' + i + '__Money').val("");
+                    $('#mask-model_' + i + '__Amount').val("");
+                    $('#model_' + i + '__Note').attr("readonly", "readonly");
+                    $('#model_' + i + '__Amount').attr("readonly", "readonly");
+                    $('#model_' + i + '__NextPaymentDate').attr("readonly", "readonly");
+                    $('#mask-model_' + i + '__Amount').attr("readonly", "readonly");
+                    showal = false;
+                }
+                if ($('input[type=checkbox][name=TransactionId]').is(':checked') == false) {
+                    $('#PaymentAmount').val(0);
+                    showal = false;
+                }
+
+
+            });
+            $('.model_item_moneyliabilities').focus(function () {
+                $(this).select();
+            });
+            $('#mask-Amount').focus(function () {
+                $(this).select();
+            });
+
+            $('#mask-Amount').keypress(function (e) {
+                if (e.which == 13) {
+                    e.preventDefault();
+                }
+            });
+
+            $('.show-details-btn').on('click', function (e) {
+                e.preventDefault();
+                $(this).closest('tr').next().toggleClass('open');
+                $(this).find(ace.vars['.icon']).toggleClass('fa-angle-double-down').toggleClass('fa-angle-double-up');
+            });
+        });
+
+        var showal = false;
+
+        function calcAmountRemaining() {
+            var $amount = $('#Amount');
+            if ($amount.val() == '' || $amount.val() == '0') {
+                alert('Nhập số tiền cần thanh toán công nợ!');
+                $('input[name=TransactionId]').prop('checked', false);
+                return false;
+            }
+
+
+            var amountValue = parseFloat($amount.val());
+            var totalRemaining = 0;
+            var $PaymentAmount = $('#PaymentAmount');
+
+            $('input[name=TransactionId]:checked').each(function (index, elem) {
+                var elemValue = parseFloat($(elem).data('remain'));
+                var i = $(elem).data("i");
+                var $pricemask = $(elem).closest('tr').find('#mask-model_' + i + '__Amount');
+                var $price = $(elem).closest('tr').find('#model_' + i + '__Amount');
+                var $AmountRemain = $(elem).closest('tr').find('#model_' + i + '__Money');
+                if (totalRemaining < amountValue) {
+
+                    if ((totalRemaining + elemValue) < amountValue) {
+                        totalRemaining += elemValue;
+                        $price.val(elemValue);
+                        $pricemask.val(currencyFormat(elemValue));
+                        $AmountRemain.val(0);
+                        $('#model_' + i + '__Note').removeAttr("readonly");
+                    } else {
+                        var valueRemaining = amountValue - totalRemaining
+                        totalRemaining += valueRemaining;
+                        $price.val(valueRemaining);
+                        $pricemask.val(currencyFormat(valueRemaining));
+                        $AmountRemain.val(currencyFormat(elemValue - valueRemaining));
+
+                        $('#model_' + i + '__NextPaymentDate').val($(this).data("nextpaymentdate"));
+                        $('#model_' + i + '__Note').removeAttr("readonly");
+                        $('#model_' + i + '__NextPaymentDate').removeAttr("readonly");
+                        if (showal == false) {
+                            showal = true;
+                            alert('Đã đủ số tiền cần thanh toán, nhập ngày trả tiếp theo và ghi chú(nếu chưa trả đủ nợ)!');
+                        }
+
+                    }
+                    $PaymentAmount.text(currencyFormat(totalRemaining));
+                    $PaymentAmount.val(totalRemaining);
+                } else {
+                    $price.val("");
+                    $pricemask.val("");
+                    $AmountRemain.val("");
+                    $(elem).prop('checked', false);
+                    $('#model_' + i + '__Note').attr("readonly", "readonly");
+                    $('#model_' + i + '__Amount').attr("readonly", "readonly");
+                    $('#model_' + i + '__NextPaymentDate').attr("readonly", "readonly");
+
+                    return true;
+                }
+
+            });
+
+        };
+
+        function ResolveLiabilities_OnSuccess(rs) {
+            location.reload();
+        }
+
+        function checkOnSubmit() {
+            var $amount = $('#Amount');
+            var $PaymentMethod = $('#PaymentMethod');
+            var paymentOption = $PaymentMethod.find('option:selected').val();
+            if ($amount.val() == '' || $amount.val() == '0' || paymentOption == '') {
+                $(".alert-required-transactionId").show();
+                return false;
+            }
+            else {
+                $(".alert-required-transactionId").hide();
+                return true;
+            }
+        }
+    </script>
+}

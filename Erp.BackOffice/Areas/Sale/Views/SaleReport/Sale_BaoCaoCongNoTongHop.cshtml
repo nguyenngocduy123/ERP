@@ -1,0 +1,207 @@
+@using Erp.BackOffice.App_GlobalResources
+@using Erp.BackOffice.Helpers
+
+@{
+    ViewBag.Title = "Báo cáo công nợ tổng hợp";
+    Layout = "~/Views/Shared/ACE_AdminLayout.cshtml";
+    Erp.BackOffice.Models.PageSetting pageSetting = new Erp.BackOffice.Models.PageSetting
+    {
+        ModuleName = "SaleReport",
+        ActionName = "Sale_BaoCaoCongNoTongHop",
+        PageTitle = ViewBag.Title,
+        DisplaySearchPanel = true,
+        IsPopup = false,
+        DisplayBackButton = false,
+        SearchButtonText = "Xem báo cáo"
+    };
+
+    DateTime aDateTime = new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1);
+    // Cộng thêm 1 tháng và trừ đi một ngày.
+    DateTime retDateTime = aDateTime.AddMonths(1).AddDays(-1);
+}
+
+@section HeadOfPage {
+
+
+    <style type="text/css">
+        .cell-center {
+            text-align: center;
+        }
+
+        .tr-bold {
+            font-weight: 700;
+        }
+
+        .ctl {
+            position: relative;
+            /*float: left;*/
+            margin-right: 3px;
+        }
+
+            .ctl .error {
+                position: absolute;
+                background: #de2a2a;
+                left: 0px;
+                top: 28px;
+                padding: 2px 5px;
+                color: #fff;
+                z-index: 999;
+            }
+
+                .ctl .error:before {
+                    border-bottom: 7px solid #de2a2a;
+                    border-left: 7px solid transparent;
+                    border-right: 7px solid transparent;
+                    left: 9px;
+                    top: -6px;
+                    content: "";
+                    display: inline-block;
+                    position: absolute;
+                }
+
+        .icon-add {
+            margin-top: 0px !important;
+        }
+
+        .combojax {
+            display: inline-block;
+            position: initial !important;
+            float: none !important;
+        }
+    </style>
+
+    <script type="text/javascript">
+        var exportThis = (function () {
+            var uri = 'data:application/vnd.ms-excel;base64,',
+                template = '<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel"  xmlns="http://www.w3.org/TR/REC-html40"><head> <!--[if gte mso 9]><xml><x:ExcelWorkbook><x:ExcelWorksheets> <x:ExcelWorksheet><x:Name>{worksheet}</x:Name> <x:WorksheetOptions><x:DisplayGridlines/></x:WorksheetOptions> </x:ExcelWorksheet></x:ExcelWorksheets></x:ExcelWorkbook> </xml><![endif]--></head><body> <table>{table}</table></body></html>',
+                base64 = function (s) {
+                    return window.btoa(unescape(encodeURIComponent(s)))
+                },
+                format = function (s, c) {
+                    return s.replace(/{(\w+)}/g, function (m, p) { return c[p]; })
+                }
+            return function () {
+                var ctx = { worksheet: '@ViewBag.Title' || 'Worksheet', table: document.getElementById("CTable").innerHTML }
+                window.location.href = uri + base64(format(template, ctx))
+            }
+        })()
+
+        var exportThisWithParameter = (function () {
+            var uri = 'data:application/vnd.ms-excel;base64,',
+                template = '<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel"  xmlns="http://www.w3.org/TR/REC-html40"><head> <!--[if gte mso 9]><xml><x:ExcelWorkbook><x:ExcelWorksheets> <x:ExcelWorksheet><x:Name>{worksheet}</x:Name> <x:WorksheetOptions><x:DisplayGridlines/></x:WorksheetOptions> </x:ExcelWorksheet></x:ExcelWorksheets></x:ExcelWorkbook> </xml><![endif]--></head><body> <table>{table}</table></body></html>',
+                base64 = function (s) {
+                    return window.btoa(unescape(encodeURIComponent(s)))
+                },
+                format = function (s, c) {
+                    return s.replace(/{(\w+)}/g, function (m, p) { return c[p]; })
+                }
+            return function (tableID, excelName) {
+                tableID = document.getElementById(tableID)
+                var ctx = { worksheet: excelName || 'Worksheet', table: tableID.innerHTML }
+                window.location.href = uri + base64(format(template, ctx))
+            }
+        })()
+    </script>
+
+}
+
+<div id="page_header" class="widget-box">
+    <div class="widget-header">
+        <h5 class="widget-title">
+            <i class="ace-icon fa fa-star orange"></i>
+            @ViewBag.Title
+        </h5>
+        <div class="widget-toolbar">
+            <a class="btn-search" href="#" data-action="collapse">
+                <i class="ace-icon fa fa-search blue"></i>
+            </a>
+            <a class="btn-setting"></a>
+        </div>
+    </div>
+
+    <div class="widget-body" style="display: block;">
+        <div class="widget-main">
+            <div class="search-view form-inline" id="SaleReport">
+                <p>
+                    <span class="inline">
+                        <span class="input-daterange input-group">
+                            @Html.TextBox("StartDate", Request["StartDate"] != null ? Request["StartDate"] : aDateTime.ToString("dd/MM/yyyy"), new { autocomplete = "off", placeholder = "Từ ngày" })
+                            <span class="input-group-addon">
+                                <i class="fa fa-exchange"></i>
+                            </span>
+                            @Html.TextBox("EndDate", Request["EndDate"] != null ? Request["EndDate"] : retDateTime.ToString("dd/MM/yyyy"), new { autocomplete = "off", placeholder = "Đến ngày" })
+                        </span>
+                    </span>
+                    <span class="ctl inline">
+                        @Html.DropDownList("BranchId", SelectListHelper.GetSelectList_DepartmentAllNew(Request["BranchId"], null), "Nhà thuốc", new Dictionary<string, object> { { "class", "" }, { "data-val-required", "Bắt buộc chọn." } })
+                    </span>
+                    <span class="ctl inline">
+                        @Html.DropDownList("SalerId", SelectListHelper.GetSelectList_User(Request["SalerId"], null), "Nhân viên", new Dictionary<string, object> { { "class", "" }, { "data-val-required", "Bắt buộc chọn." } })
+                    </span>
+                    @*<span class="ctl inline">
+                        @Html.TextBox("SalerId", Request["SalerId"], new { autocomplete = "off", placeholder = "Nhân viên..." })
+                    </span>*@
+                </p>
+                <p style="margin:0px;">
+                    <button class="btn btn-mini btn-primary" name="search" onclick="searchreact()" type="submit" value="Search">
+                        Xem báo cáo
+                    </button>
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row" style="padding-top: 5px;">
+    <div class="col-xs-12">
+        <div id="react_report" class="table-responsive">
+
+        </div>
+    </div>
+</div>
+
+@using (Html.BeginButtonContainer(pageSetting))
+{
+    <button class="btn btn-white btn-success btn-sm" type="button" value="Export" onclick="exportThis()">
+        <i class="ace-icon fa fa-file-excel-o"></i>
+        Xuất excel
+    </button>
+
+}
+
+@section Scripts {
+    @Html.ScriptBottom_ValidationMvc()
+    @Html.ScriptBottom_DatePicker("dd/MM/yyyy")
+
+    @*<script src="/Scripts/combojax.js"></script>
+    <link href="/assets/css/combojax.css" rel="stylesheet" />
+    <script src="~/Scripts/cmreactjs/Sale_BaoCaoCongNoTongHop.jsx"></script>*@
+    @*<script>
+        searchreact();
+        function searchreact() {
+            GetDatatable('@(Common.GetSetting("domainAPI"))Category/GetListSale_BaoCaoCongNoTongHop', '@Html.Raw(ViewBag.Title)');
+        }
+
+    </script>*@
+<script>
+    searchreact();
+    function searchreact() {
+        GetDatatable('/SaleReport/_GetListSale_BCCNTH', '@Html.Raw(ViewBag.Title)');
+    };
+    function GetDatatable(url, title) {
+        var StartDate = $('#StartDate').val();
+        var EndDate = $('#EndDate').val();
+        var BranchId = $('#BranchId').val();
+        var SalerId = $('#SalerId').val();
+        var formdata = {
+            StartDate: StartDate,
+            EndDate: EndDate,
+            BranchId: BranchId,
+            SalerId: SalerId
+        };
+        $("#react_report").html("");
+        ClickEventHandler(true, url, "#react_report", formdata, function () {
+        });
+    };
+</script>
+}

@@ -1,0 +1,558 @@
+﻿@using Erp.BackOffice.App_GlobalResources
+@using Erp.BackOffice.Helpers
+@using Erp.BackOffice.Staff.Models
+
+@model TimekeepingListViewModel
+
+@{
+
+    ViewBag.Title = Model.Name + ": ";
+    Layout = "~/Views/Shared/ACE_AdminLayout.cshtml";
+    Erp.BackOffice.Models.PageSetting pageSetting = new Erp.BackOffice.Models.PageSetting
+    {
+        ModuleName = "TimekeepingList",
+        ActionName = "Detail",
+        PageTitle = ViewBag.Title,
+        DisplaySearchPanel = false,
+        IsPopup = false,
+        DisplayBackButton = true,
+        Status = Common.GetCategoryByValueCodeOrId("value", Model.Status, "TimekeepingList_Status").Name,
+        Color = GridColumnStatus(Model.Status).ToString(),
+
+    };
+    DateTime aDateTime = new DateTime(Model.Year.Value, Model.Month.Value, 1);
+    // Cộng thêm 1 tháng và trừ đi một ngày.
+    DateTime retDateTime = aDateTime.AddMonths(1).AddDays(-1);
+    List<WorkSchedulesViewModel> ListBranch = (List<WorkSchedulesViewModel>)ViewBag.ListBranch;
+    int index_branch = 1;
+    int index_branch_total = 1;
+}
+@helper GridColumnStatus(string Status)
+{
+    switch (Status)
+    {
+        case "assign":
+            @("#428BCA")
+            break;
+        case "timekeeping":
+        @("#FFB752")
+            break;
+        case "success":
+        @("#82AF6F")
+            break;
+    }
+}
+<style>
+    .wizard-actions {
+        text-align: left !important;
+    }
+
+    .tab-content {
+        border: 0px solid #C5D0DC !important;
+        padding-left: 0px !important;
+        padding-right: 0px !important;
+    }
+
+    .table-fixed-middle-content {
+        border-top: 1px solid #ddd !important;
+    }
+
+
+    /*chỉnh hiển thị tooltip*/
+    .dropdown-hover {
+        width: 100%;
+    }
+
+    .label {
+        font-size: smaller;
+        width: 100%;
+    }
+
+    .center {
+        width: 100%;
+        text-align: left !important;
+        margin-left: 2px;
+    }
+
+    .external-event {
+        margin: 0px;
+    }
+
+    .dropdown-menu.dropdown-close {
+        top: 25%;
+    }
+
+        .dropdown-menu.dropdown-close.dropdown-menu-right {
+            margin-right: 15px;
+        }
+
+    /*a {
+            padding: 10px;
+        }*/
+    /*chỉnh shifts*/
+    .checkbox, .radio {
+        display: inline-block;
+    }
+
+    select {
+        height: 34px !important;
+    }
+
+    .btn.active {
+        background-color: #428BCA !important;
+        border-color: #428BCA !important;
+    }
+</style>
+<script type="text/javascript">
+    var exportThis = (function () {
+        var uri = 'data:application/vnd.ms-excel;base64,',
+            template = '<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel"  xmlns="http://www.w3.org/TR/REC-html40"><head> <!--[if gte mso 9]><xml><x:ExcelWorkbook><x:ExcelWorksheets> <x:ExcelWorksheet><x:Name>{worksheet}</x:Name> <x:WorksheetOptions><x:DisplayGridlines/></x:WorksheetOptions> </x:ExcelWorksheet></x:ExcelWorksheets></x:ExcelWorkbook> </xml><![endif]--></head><body> <table>{table}</table></body></html>',
+            base64 = function (s) {
+                return window.btoa(unescape(encodeURIComponent(s)))
+            },
+            format = function (s, c) {
+                return s.replace(/{(\w+)}/g, function (m, p) { return c[p]; })
+            }
+        return function () {
+            var ctx = { worksheet: '@ViewBag.Title' || 'Worksheet', table: document.getElementById("cTable").innerHTML }
+            window.location.href = uri + base64(format(template, ctx))
+        }
+    })()
+
+    var exportThisWithParameter = (function () {
+        var uri = 'data:application/vnd.ms-excel;base64,',
+            template = '<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel"  xmlns="http://www.w3.org/TR/REC-html40"><head> <!--[if gte mso 9]><xml><x:ExcelWorkbook><x:ExcelWorksheets> <x:ExcelWorksheet><x:Name>{worksheet}</x:Name> <x:WorksheetOptions><x:DisplayGridlines/></x:WorksheetOptions> </x:ExcelWorksheet></x:ExcelWorksheets></x:ExcelWorkbook> </xml><![endif]--></head><body> <table>{table}</table></body></html>',
+            base64 = function (s) {
+                return window.btoa(unescape(encodeURIComponent(s)))
+            },
+            format = function (s, c) {
+                return s.replace(/{(\w+)}/g, function (m, p) { return c[p]; })
+            }
+        return function (tableID, excelName) {
+            tableID = document.getElementById(tableID)
+            var ctx = { worksheet: excelName || 'Worksheet', table: tableID.innerHTML }
+            window.location.href = uri + base64(format(template, ctx))
+        }
+    })()
+</script>
+
+<link href="~/Scripts/fullcalendar-3.6.1/fullcalendar.min.css" rel="stylesheet" />
+<link href="~/Scripts/fullcalendar-3.6.1/fullcalendar.print.min.css" rel="stylesheet" media="print" />
+<link href="~/Scripts/fullcalendar-3.6.1/scheduler.min.css" rel="stylesheet" />
+<script src="~/Scripts/fullcalendar-3.6.1/lib/moment.min.js"></script>
+<script src="~/Scripts/fullcalendar-3.6.1/demos/fullcalendar.min.js"></script>
+<script src="~/Scripts/fullcalendar-3.6.1/scheduler.min.js"></script>
+<script src="~/Scripts/fullcalendar-3.6.1/locale/vi.js"></script>
+@section HeadOfPage {
+    @Html.ScriptTop_ChosenStyle()
+}
+@using (Html.BeginPageHeaderContainer(pageSetting))
+{
+
+}
+@if (ViewBag.SuccessMessage != null && ViewBag.SuccessMessage != "")
+{
+    <div class="alert alert-block alert-success">
+        <button class="close" data-dismiss="alert" type="button">
+            <i class="ace-icon fa fa-times"></i>
+        </button>
+        <i class="ace-icon fa fa-check green"></i>
+        @ViewBag.SuccessMessage
+    </div>
+}
+
+@if (ViewBag.FailedMessage != null && ViewBag.FailedMessage != "")
+{
+    <div class="alert alert-block alert-danger">
+        <button class="close" data-dismiss="alert" type="button">
+            <i class="ace-icon fa fa-times"></i>
+        </button>
+        <i class="ace-icon fa fa-warning red"></i>
+        @ViewBag.FailedMessage
+    </div>
+}
+<div class="modal" id="modalPayment" tabindex="-1" role="dialog" aria-labelledby="modalPaymentLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="modalPaymentLabel">Lấy dữ liệu chấm công</h4>
+            </div>
+            <div class="modal-body">
+                <div class="edit-view clearfix">
+                    <div id="" class="control-group form-group clearfix ">
+                        <label class="control-label col-lg-6 col-md-4 col-sm-4 control-label">Lấy dữ liệu từ ngày</label>
+                        <div class="control-value col-lg-6 col-md-8 col-sm-8">
+                            <span class="input-daterange input-group">
+                                @Html.TextBox("start_Day", Request["start_Day"] != null ? Request["start_Day"] : "", new { @class = "form-control", autocomplete = "off", placeholder = "Từ ngày..." })
+                                <span class="input-group-addon">
+                                    <i class="fa fa-exchange"></i>
+                                </span>
+                                @Html.TextBox("end_Day", Request["end_Day"] != null ? Request["end_Day"] : "", new { @class = "form-control", autocomplete = "off", placeholder = "đến..." })
+                            </span>
+                        </div>
+                    </div>
+                    <div class="control-group form-group clearfix">
+                        <label class="control-label col-lg-6 col-md-4 col-sm-4">Chi nhánh</label>
+                        <div class="control-value col-lg-6 col-md-8 col-sm-8">
+                            <div class="clearfix">
+                                <select class="col-xs-12 " id="Sale_BranchId" name="Sale_BranchId">
+                                    @foreach (var item in SelectListHelper.GetSelectList_BranchAll(null, Wording.Empty))
+                                    {
+                                        <option value="@item.Value" @(Request["Sale_BranchId"] == item.Value ? "selected" : "")>@item.Text</option>
+                                    }
+                                </select>
+                            </div>
+                        
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-mini btn-primary" onclick="SyncDatabase()">
+                    <i class="ace-icon fa fa-cloud-download"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+<input type="hidden" name="timekeepingId" id="timekeepingId" value="@Model.Id" />
+<input type="hidden" name="Status" id="Status" value="@Model.Status" />
+<input type="hidden" name="CheckSalary" id="CheckSalary" value="@Model.CheckSalary" />
+<div id="fuelux-wizard-container" class="no-steps-container">
+    <div id="winzardtitle">
+        <ul class="steps" style="margin-left: 0">
+            <li data-step="1" class="active" id="step1">
+                <span class="step">1</span>
+                <span class="title">Phân công</span>
+            </li>
+
+            <li data-step="2" class="" id="step2">
+                <span class="step">2</span>
+                <span class="title">Chấm công</span>
+            </li>
+
+            <li data-step="3" class="" id="step3">
+                <span class="step">3</span>
+                <span class="title">Thống kê</span>
+            </li>
+        </ul>
+    </div>
+    <div class="tab-content">
+        <div class="tab-pane active clearfix" id="content1">
+        </div>
+        <div class="tab-pane clearfix" id="content2">
+            <div class="pull-right" id="status">
+                <div data-toggle="buttons" class="btn-group">
+                    @for (int i = 0; i < ListBranch.Count(); i++)
+                    {
+                        <label class="btn btn-sm" id="label_@i" name="label_branch" data-toggle="tooltip" title="@ListBranch[i].BranchName" onclick="clickActive(@i)">
+                            <input type="radio" value="@ListBranch[i].Sale_BranchId" id="branch_id" name="checksss_@i">
+                            @(index_branch++)
+                        </label>
+                    }
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-12" id="timekeeping">
+                </div>
+            </div>
+        </div>
+
+        <div class="tab-pane" id="content3">
+            <div class="pull-right" id="status">
+                <div data-toggle="buttons" class="btn-group">
+                    @for (int i = 0; i < ListBranch.Count(); i++)
+                    {
+                        <label class="btn btn-sm" id="label_total_@i" name="label_branch_total" data-toggle="tooltip" title="@ListBranch[i].BranchName" onclick="clickActive_Total(@i)">
+                            <input type="radio" value="@ListBranch[i].Sale_BranchId" id="branch_id_total" name="checksss_total_@i">
+                            @(index_branch_total++)
+                        </label>
+                    }
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-12" id="total_timekeeping">
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@using (Html.BeginButtonContainer(pageSetting))
+{
+    if (Model.CheckSalary == false)
+    {
+        if (Erp.BackOffice.Filters.SecurityFilter.AccessRight("SyncDatabase", "TimekeepingList", "Staff"))
+        {
+
+            <a data-toggle="modal" href="#modalPayment" id="random" class="btn btn-white btn-primary btn-sm hidden">
+                <i class="ace-icon fa fa-cloud-download"></i>
+                Tính dữ liệu chấm công
+            </a>
+        }
+        if (Erp.BackOffice.Filters.SecurityFilter.AccessRight("Assign", "WorkSchedules", "Staff"))
+        {
+            <button class="btn btn-white btn-success btn-sm hidden" onclick="AssignPost();" id="AssignPost">
+                <i class="ace-icon fa fa-save"></i>
+                Lưu phân công
+            </button>
+        }
+
+        <button class="btn btn-white btn-primary btn-sm hidden" onclick="groupStep(1);" id="assigned">
+            <i class="ace-icon fa fa-edit"></i>
+            Chỉnh sửa phân công
+        </button>
+        if (Erp.BackOffice.Filters.SecurityFilter.AccessRight("LockTimekeeping", "TimekeepingList", "Staff"))
+        {
+            <a class="btn btn-white btn-success btn-sm hidden" id="LockTimekeeping" href="@Url.Action("LockTimekeeping", "TimekeepingList", new { Id = Model.Id })">
+                <i class="fa fa-save"></i>
+                Tổng hợp chấm công
+            </a>
+        }
+        if (Model.Status == "success")
+        {
+            <button class="btn btn-white btn-primary btn-sm hidden" onclick="groupStep(2);" id="timekeepingedit">
+                <i class="ace-icon fa fa-edit"></i>
+                Chỉnh sửa chấm công
+            </button>
+            <button class="btn btn-white btn-success btn-sm" type="button" value="Export" onclick="exportThis()">
+                <i class="ace-icon fa fa-file-excel-o"></i>
+                Xuất excel
+            </button>
+        }
+    }
+    else
+    {
+        if (Model.Status == "success")
+        {
+            <button class="btn btn-white btn-primary btn-sm hidden" onclick="groupStep(2);" id="watchTimekeeping">
+                <i class="ace-icon fa fa-search"></i>
+                Xem chi tiết chấm công
+            </button>
+            <button class="btn btn-white btn-primary btn-sm hidden" onclick="groupStep(3);" id="watchTotal">
+                <i class="ace-icon fa fa-search"></i>
+                Xem thống kê tổng hợp
+            </button>
+            <button class="btn btn-white btn-success btn-sm" type="button" value="Export" onclick="exportThis()">
+                <i class="ace-icon fa fa-file-excel-o"></i>
+                Xuất excel
+            </button>
+        }
+    }
+}
+
+@section Scripts {
+    <link href="/Scripts/TableFixedColumn/table.fixed.column.1.0.css" rel="stylesheet" />
+    <script src="/Scripts/TableFixedColumn/table.fixed.column.1.2.js"></script>
+    @*<script src="~/assets/js/fuelux.wizard.min.js"></script>*@
+    <script type="text/javascript">
+        function loadWorkSchedules() {
+            ShowLoading();
+            var h2 = $(window).height() - $('#page_header').height() - $('#winzardtitle').height() - 240;
+
+            var Id = $('input[name="timekeepingId"]').val();
+            $.get('/WorkSchedules/Assign', { Id: Id }, function (res) {
+                var $html_response = $('<div>' + res + '</div>');
+                $('#content1').html($html_response.find('.box').html());
+                $tr_template = $html_response.find('.box #Model tr:first-child');
+
+                $('.table-fixed-column').tableFixedColumn({
+                    leftTableWidth: '15%',
+                    rightTableWidth: '85%',
+                    leftTableColumnWidth: [100],
+                    rightTableColumnWidth: [50],
+                    columnHeight: 100,
+                    numberColumnFixedLeft: 1,
+                    contentHeight: h2 + 'px'
+                });
+                $(document).on('change', 'input[name="shifts_id"]', function () {
+                    $('#shifts_id_for_vaidate').next().html('');
+                    if ($('input[name="shifts_id"]:checked').length > 0)
+                        $('#shifts_id_for_vaidate').val('for-test');
+                    else
+                        $('#shifts_id_for_vaidate').val('pass');
+                });
+                function loadClassAssign() {
+                    ShowLoading();
+                    $('input[name="shifts_id"]').prop('checked', false);
+                    $.ajax({
+                        type: 'GET',
+                        url: '@Url.Action("FetchShifts", "WorkSchedules", new { area = "Staff" })',
+                        data: {},
+                        dataType: 'json',
+                        success: function (res) {
+                            for (var i = 0; i < res.length; i++) {
+                                var date = convertCSharpDateToJavaScriptDate(res[i].Day);
+                                var day = date.getDate();
+                                var month = date.getMonth() + 1;
+                                var dateStr = (day < 10 ? '0' + day : day) + '/' + (month < 10 ? '0' + month : month) + '/' + date.getFullYear();
+                                $('input[name="shifts_id"][value="' + res[i].StaffId + "-" + dateStr + "-" + res[i].ShiftsId + '"]').prop('checked', true);
+                            }
+                            HideLoading();
+                        }
+                    });
+                };
+                loadClassAssign();
+                $('[data-rel="tooltip"]').tooltip({ container: 'body' });
+
+            });
+        }
+
+        function loadTimekeeping(id) {
+            ShowLoading();
+            var h2 = $(window).height() - $('#page_header').height() - $('#winzardtitle').height() - 240;
+            var Id = $('input[name="timekeepingId"]').val();
+            $.get('@Url.Action("Calender", "Timekeeping", new { area = "Staff" })?TimekeepingListId=' + Id + '&BranchId=' + id, function (html) {
+                $("#timekeeping").html(html);
+            });
+
+        }
+        function loadToTal(branch_id) {
+
+            ShowLoading();
+            var Id = $('input[name="timekeepingId"]').val();
+            $.get('@Url.Action("Total", "Timekeeping", new { area = "Staff" })?Id=' + Id + '&BranchId=' + branch_id, function (html) {
+                $("#total_timekeeping").html(html);
+                HideLoading();
+            });
+
+        }
+        //var step = 1;
+        if ($('#Status').val() == 'assign') {
+            groupStep(1);
+        }
+        else if ($('#Status').val() == 'timekeeping') {
+            groupStep(2);
+        }
+        else if ($('#Status').val() == 'success') {
+            groupStep(3);
+        }
+        function groupStep(i) {
+            ShowLoading();
+            var n = i - 1;
+            var m = i + 1;
+            //remove prev
+            $('#step' + n).removeClass('active');
+            $('#content' + n).removeClass('active');
+            $('#step' + n).addClass('complete');
+            // active tab
+            $('#step' + i).addClass('active');
+            $('#content' + i).addClass('active');
+            //remove next
+            $('#step' + m).removeClass('active');
+            $('#content' + m).removeClass('active');
+            //$('#step' + m).addClass('complete');
+            if (i == 1) {
+
+                $('#AssignPost').removeClass('hidden');
+                $('#AssignPost').show();
+                loadWorkSchedules();
+                $('#assigned').addClass('hidden');
+                $('#LockTimekeeping').addClass('hidden');
+                $('#random').addClass('hidden');
+                $('#watchTotal').addClass('hidden');
+                $('#timekeepingedit').addClass('hidden');
+                $('#watchTimekeeping').addClass('hidden');
+            }
+            else if (i == 2) {
+                $('#step1').addClass('complete');
+                $('#assigned').removeClass('hidden');
+                $('#assigned').show();
+                $('#LockTimekeeping').removeClass('hidden');
+                $('#LockTimekeeping').show();
+                $('#random').removeClass('hidden');
+                $('#random').show();
+                $('#watchTotal').removeClass('hidden');
+                $('#watchTotal').show();
+                clickActive(0);
+                //loadTimekeeping();
+                $('#timekeepingedit').addClass('hidden');
+                $('#watchTimekeeping').addClass('hidden');
+                $('#AssignPost').addClass('hidden');
+            }
+            else {
+                $('#step1').addClass('complete');
+                $('#step2').addClass('complete');
+                //$('#step3').addClass('complete');
+                $('#timekeepingedit').removeClass('hidden');
+                $('#timekeepingedit').show();
+                $('#watchTimekeeping').removeClass('hidden');
+                $('#watchTimekeeping').show();
+                clickActive_Total(0);
+                //loadToTal();
+                $('#assigned').addClass('hidden');
+                $('#LockTimekeeping').addClass('hidden');
+                $('#random').addClass('hidden');
+                $('#watchTotal').addClass('hidden');
+                $('#AssignPost').addClass('hidden');
+            }
+            //HideLoading();
+        }
+        function AssignPost() {
+            $('#form-assign').submit();
+        };
+        function ClosePopupAndDoSomething() {
+            ShowLoading();
+            ClosePopup(true);
+        }
+        //load lại trang đã gọi trước đó
+        function ClosePopupAndRedirectToURL(url) {
+            ClosePopup(true);
+            location.href = url;
+        }
+
+        function ClosePopupAndAppendSelect() {
+            ShowLoading();
+            ClosePopup(true);
+        }
+        function SyncDatabase() {
+            ShowLoading();
+            var start = $("#start_Day").val();
+            var end = $("#end_Day").val();
+            var Id = $('input[name="timekeepingId"]').val();
+            var branchid = $("#Sale_BranchId selected").val();
+            $("#modalPayment").modal("hide");
+            $.ajax({
+                type: 'GET',
+                url: '@Url.Action("SyncDatabase", "TimekeepingList", new { area = "Staff" })',
+                data: { start: start, end: end, Id: Id, BranchId: branchid },
+                //dataType: 'json',
+                success: function (res) {
+                    HideLoading();
+                    alertPopup("Thông báo", "Lấy dữ liệu thành công", "success");
+                    setTimeout(do_alert, 2000);
+
+                }
+            });
+        }
+        var do_alert = function () {
+            window.location.reload();
+        }
+        //$(document).ready(function () {
+        //    clickActive(this, 0);
+        //});
+        function clickActive(id) {
+            $("input[id='branch_id']").prop('checked', false);
+            $("label[name='label_branch']").removeClass('active');
+            var $chekbox = $('input[name="checksss_' + id + '"]');
+            var $label = $('label[id="label_' + id + '"]');
+            $chekbox.prop('checked', true);
+            $label.addClass('active');
+            loadTimekeeping($chekbox.val());
+        }
+        function clickActive_Total(id) {
+            $("input[id='branch_id_total']").prop('checked', false);
+            $("label[name='label_branch_total']").removeClass('active');
+            var $chekbox = $('input[name="checksss_total_' + id + '"]');
+            var $label = $('label[id="label_total_' + id + '"]');
+            $chekbox.prop('checked', true);
+            $label.addClass('active');
+            loadToTal($chekbox.val());
+        }
+    </script>
+    @Html.ScriptBottom_ValidationMvc()
+    @Html.ScriptBottom_DatePicker("dd/mm/yyyy")
+    @Html.ScriptBottom_ChosenStyle()
+}

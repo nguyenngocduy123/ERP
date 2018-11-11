@@ -1,0 +1,289 @@
+﻿@using GridMvc.Html
+@using Erp.BackOffice.Helpers
+@using Erp.BackOffice.Administration.Models
+
+@{
+    ViewBag.Title = Resources.Wording.Pages;
+    Layout = "~/Views/Shared/ACE_AdminLayout.cshtml";
+
+    List<ActionControllerInfoModel> controllerActionScan = (List<ActionControllerInfoModel>)ViewBag.controllerActionScan;
+    List<ActionControllerInfoModel> listInDatabase = (List<ActionControllerInfoModel>)ViewBag.listInDatabase;
+
+    List<ActionControllerInfoModel> listToDelete = (List<ActionControllerInfoModel>)ViewBag.listToDelete;
+    List<ActionControllerInfoModel> listToAdd = (List<ActionControllerInfoModel>)ViewBag.listToAdd;
+
+    Erp.BackOffice.Models.PageSetting pageSetting = new Erp.BackOffice.Models.PageSetting
+    {
+        ModuleName = "Page",
+        ActionName = "Synch",
+        PageTitle = ViewBag.Title,
+        DisplaySearchPanel = false,
+        IsPopup = false,
+        DisplayBackButton = false
+    };
+}
+
+<style>
+    .list-controller-action table td {
+        font-size: 10px !important;
+    }
+</style>
+
+@using (Html.BeginPageHeaderContainer(pageSetting))
+{
+
+}
+
+<link href="~/Scripts/ExtraMenuTable/extraMenuTable.css" rel="stylesheet" />
+<script src="~/Scripts/ExtraMenuTable/extraMenuTable.js"></script>
+
+<div class="tabbable">
+    <ul class="nav nav-tabs" id="myTab">
+        <li class="active">
+            <a data-toggle="tab" href="#tab1">DS xóa</a>
+        </li>
+
+        <li>
+            <a data-toggle="tab" href="#tab2">DS thêm mới</a>
+        </li>
+        <li>
+            <a data-toggle="tab" href="#tab3">DS SCAN</a>
+        </li>
+        <li>
+            <a data-toggle="tab" href="#tab4">DS trong database</a>
+        </li>
+    </ul>
+
+    <div class="tab-content">
+        <div id="tab1" class="tab-pane in active">
+            <div class="extra-menu-table" data-table=".table-top-left">
+                <div class="navbar-buttons navbar-header pull-right" role="navigation">
+                    <ul class="nav ace-nav">
+                        <li class="grey"><a class="btn btn-sm sticky-header-table"><i class="fa fa-tags"></i></a></li>
+                        <li class="purple"><a class="btn btn-sm search-table"><i class="fa fa-search"></i></a></li>
+                        <li class="light-blue dropdown-modal">
+                            <a data-toggle="dropdown1" href="javascript:;" class="dropdown-toggle" aria-expanded="true">
+                                <i class="fa fa-eye dropdown-toggle-icon"></i> <i class="ace-icon fa fa-caret-down dropdown-toggle-icon"></i>
+                            </a>
+                            <ul class="dropdown-menu-right dropdown-menu dropdown-caret dropdown-close column-show"></ul>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <table class="table table-bordered table-top-left">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Area</th>
+                        <th>Controller</th>
+                        <th>Action</th>
+                        <th>ID</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in listToDelete)
+                    {
+                        int index = listToDelete.IndexOf(item);
+                        <tr>
+                            <td>@(index + 1)</td>
+                            <td>@item.Area</td>
+                            <td>@item.Controller</td>
+                            <td>@item.Action</td>
+                            <td>@item.ReturnType</td>
+                            <td>
+                                <a href="javascript:;" role="@item.ReturnType" class="btn btn-danger btn-mini btn-delete-ajax"><i class="fa fa-trash"></i></a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+
+        <div id="tab2" class="tab-pane">
+            <div class="extra-menu-table" data-table=".table-top-right">
+                <div class="navbar-buttons navbar-header pull-right" role="navigation">
+                    <ul class="nav ace-nav">
+                        <li class="grey"><a class="btn btn-sm sticky-header-table"><i class="fa fa-tags"></i></a></li>
+                        <li class="purple"><a class="btn btn-sm search-table"><i class="fa fa-search"></i></a></li>
+                        <li class="light-blue dropdown-modal">
+                            <a data-toggle="dropdown1" href="javascript:;" class="dropdown-toggle" aria-expanded="true">
+                                <i class="fa fa-eye dropdown-toggle-icon"></i> <i class="ace-icon fa fa-caret-down dropdown-toggle-icon"></i>
+                            </a>
+                            <ul class="dropdown-menu-right dropdown-menu dropdown-caret dropdown-close column-show"></ul>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <table class="table table-bordered table-right">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Area</th>
+                        <th>Controller</th>
+                        <th>Action</th>
+                        <th>Attibute</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in listToAdd)
+                    {
+                        int index = listToAdd.IndexOf(item);
+                        <tr>
+                            <td>@(index + 1)</td>
+                            <td class="area">@item.Area</td>
+                            <td class="controller">@item.Controller</td>
+                            <td class="action">@item.Action</td>
+                            <td>@item.Attributes</td>
+                            <td>
+                                <a href="javascript:;" class="btn btn-success btn-mini btn-add-ajax"><i class="fa fa-plus"></i></a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+
+        <div id="tab3" class="tab-pane">
+            @*<div class="extra-menu-table" data-table=".table-left">
+                <div class="navbar-buttons navbar-header pull-right" role="navigation">
+                    <ul class="nav ace-nav">
+                        <li class="grey"><a class="btn btn-sm sticky-header-table"><i class="fa fa-tags"></i></a></li>
+                        <li class="purple"><a class="btn btn-sm search-table"><i class="fa fa-search"></i></a></li>
+                        <li class="light-blue dropdown-modal">
+                            <a data-toggle="dropdown1" href="javascript:;" class="dropdown-toggle" aria-expanded="true">
+                                <i class="fa fa-eye dropdown-toggle-icon"></i> <i class="ace-icon fa fa-caret-down dropdown-toggle-icon"></i>
+                            </a>
+                            <ul class="dropdown-menu-right dropdown-menu dropdown-caret dropdown-close column-show"></ul>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <table class="table table-bordered table-left">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Controller</th>
+                        <th>Action</th>
+                        <th>Attibute</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in controllerActionScan)
+                    {
+                        int index = controllerActionScan.IndexOf(item);
+                        <tr>
+                            <td>@(index + 1)</td>
+                            <td>@item.Controller</td>
+                            <td>@item.Action</td>
+                            <td>@item.Attributes</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>*@
+        </div>
+
+        <div id="tab4" class="tab-pane">
+            @*<div class="extra-menu-table" data-table=".table-right">
+                <div class="navbar-buttons navbar-header pull-right" role="navigation">
+                    <ul class="nav ace-nav">
+                        <li class="grey"><a class="btn btn-sm sticky-header-table"><i class="fa fa-tags"></i></a></li>
+                        <li class="purple"><a class="btn btn-sm search-table"><i class="fa fa-search"></i></a></li>
+                        <li class="light-blue dropdown-modal">
+                            <a data-toggle="dropdown1" href="javascript:;" class="dropdown-toggle" aria-expanded="true">
+                                <i class="fa fa-eye dropdown-toggle-icon"></i> <i class="ace-icon fa fa-caret-down dropdown-toggle-icon"></i>
+                            </a>
+                            <ul class="dropdown-menu-right dropdown-menu dropdown-caret dropdown-close column-show"></ul>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <table class="table table-bordered table-right">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Controller</th>
+                        <th>Action</th>
+                        <th>Attibute</th>
+                        <th>ID</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in listInDatabase)
+                    {
+                        int index = listInDatabase.IndexOf(item);
+                        <tr>
+                            <td>@(index + 1)</td>
+                            <td>@item.Controller</td>
+                            <td>@item.Action</td>
+                            <td>@item.Attributes</td>
+                            <td>@item.ReturnType</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>*@
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script type="text/javascript">
+
+        $(document).ready(function () {
+            $('.btn-add-ajax').click(function () {
+                ShowLoading();
+                var $tr = $(this).closest('tr');
+                var area = $tr.find('.area').text();
+                var controller = $tr.find('.controller').text();
+                var action = $tr.find('.action').text();
+
+                $.post('/Page/AddPageAjax', { AreaName: area, ControllerName: controller, ActionName: action }, function (res) {
+                    if (res == 'success') {
+                        $tr.remove();
+                    } else {
+                        alert('Thêm không thành công.');                        
+                    }
+                    HideLoading();
+                });
+            });
+
+            $('.btn-delete-ajax').click(function () {
+                var $this = $(this);
+
+                $.post('/Page/Delete', { isAjax: true, pageId: $this.attr('role') }, function (res) {
+                    if (res == 'success') {
+                        $this.closest('tr').remove();
+                    } else {
+                        alert('Xóa không thành công.');
+                    }
+                });
+            });
+        });
+
+        $(function () {
+            $(".btn-group").click(function () {
+                var id = $(this).data("controller");
+                var on = $(this).hasClass("on");
+                if (on) {
+                    $(".item_of_" + id).hide();
+                    $(this).removeClass("on");
+                    $(this).removeClass("fa-minus-square-o");
+                    $(this).addClass("fa-plus-square-o");
+                }
+                else {
+                    $(".item_of_" + id).show();
+                    $(this).addClass("on");
+                    $(this).removeClass("fa-plus-square-o");
+                    $(this).addClass("fa-minus-square-o");
+                }
+            });
+
+            //$('.input-edit-inline').editInlineInput({ id: null, url: '/Page/EditInline', disabled: true, dataId: 'id' });
+        });
+    </script>
+}

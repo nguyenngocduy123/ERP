@@ -1,0 +1,94 @@
+﻿@using Erp.BackOffice.App_GlobalResources
+@using Erp.BackOffice.Helpers
+@using Erp.BackOffice.Staff.Models
+
+@model DayOffViewModel
+
+@{
+    ViewBag.Title = Wording.PageCreate_DayOff;
+
+    Layout = "~/Views/Shared/" + (Request["IsPopup"] == null ? "ACE_AdminLayout.cshtml" : "_PopupLayout.cshtml");
+    Erp.BackOffice.Models.PageSetting pageSetting = new Erp.BackOffice.Models.PageSetting
+    {
+        ModuleName = "DayOff",
+        ActionName = "Create",
+        PageTitle = ViewBag.Title,
+        DisplaySearchPanel = false,
+        IsPopup = false,
+        DisplayBackButton = false
+    };
+    IEnumerable<StaffsViewModel> staffList = (IEnumerable<StaffsViewModel>)ViewBag.staffList;
+} 
+
+@if (ViewBag.SuccessMessage != null && ViewBag.SuccessMessage != "")
+{
+    <div class="alert alert-block alert-success">
+        <button class="close" data-dismiss="alert" type="button">
+            <i class="icon-remove"></i>
+        </button>
+        <i class="ace-icon fa fa-check green"></i>
+        @ViewBag.SuccessMessage
+    </div>
+}
+
+@if (ViewBag.FailedMessage != null && ViewBag.FailedMessage != "")
+{
+    <div class="alert alert-danger">
+        <button type="button" class="close" data-dismiss="alert">
+            <i class="ace-icon fa fa-times"></i>
+        </button>
+        <i class="ace-icon fa fa-times"></i>
+        @ViewBag.FailedMessage
+    </div>
+}
+
+@section HeadOfPage {
+
+    @Html.ScriptTop_ChosenStyle()
+
+}
+@using (Html.BeginPageHeaderContainer(pageSetting))
+{
+
+}
+@using (Html.BeginForm_AceStyle((string)ViewBag.Title, "Create", "DayOff", null, FormMethod.Post, new { @class = "form-horizontal" }))
+{
+    @Html.ValidationSummary(true)
+    @Html.ModulePopupFor(m => m.StaffId, "Staffs", Model.NameStaff, false, false, false, null, null, "Search")
+    <input type="hidden" value="@Request["IsPopup"]" name="IsPopup" />
+    <input type="hidden" name="UrlReferrer" value="@Request.UrlReferrer" />
+    @Html.DatePicker(model => model.DayStart, "dd/MM/yyyy", "99/99/9999",true, true, "control-label col-lg-5 col-md-4 col-sm-4", "col-lg-7 col-md-8 col-sm-8", "col-xs-12")
+    @Html.DatePicker(model => model.DayEnd, "dd/MM/yyyy", "99/99/9999", true,true, "control-label col-lg-5 col-md-4 col-sm-4", "col-lg-7 col-md-8 col-sm-8", "col-xs-12")
+    @Html.CustomDropDownListFor(model => model.TypeDayOffId, SelectListHelper.GetSelectList_SymbolTimekeeping(null, Wording.Empty,true), WidthType.span12, true, null, DropdownListStyle.DropdownListStyleChosen)
+    using (Html.BeginButtonContainer(pageSetting))
+    {
+        <button class="btn btn-mini btn-primary" type="submit" name="Submit" value="Save">
+            <i class="ace-icon fa fa-save"></i>
+            @Wording.Save
+        </button>
+    }
+}
+
+@section Scripts {    
+   <script>
+   var urlRefer = '@ViewBag.urlRefer';
+        //truyền từ action create của controller qua khi thực hiện submit và return về lại view create, để nhận biết là được gọi theo dạng popup
+        var closePopup = '@ViewBag.closePopup';
+        $(document).ready(function () {
+            //nếu là được gọi theo dạng popup từ form khác thì chạy đoạn code bên dưới
+            if (closePopup != '') {
+                var option = '<option value="@Model.Id" >@Model.Code</option>';
+                //tên funtion có thể khác theo từng công việc riêng (đây chỉ là mẫu khi thêm mới sẽ gọi lại)
+                window.parent.ClosePopupAndDoSomething(option);
+            }
+
+            //nếu có url thì gọi hàm này để trang ngoài iframe nhảy trang
+            if (urlRefer != '') {
+                window.parent.ClosePopupAndRedirectToURL(urlRefer);
+            }
+        });
+</script>
+    @Html.ScriptBottom_ValidationMvc()  
+    @Html.ScriptBottom_DatePicker("dd/mm/yyyy")  
+    @Html.ScriptBottom_ChosenStyle()
+}

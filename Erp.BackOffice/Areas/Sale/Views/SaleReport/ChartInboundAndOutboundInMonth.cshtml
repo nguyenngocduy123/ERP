@@ -1,0 +1,224 @@
+﻿@using Erp.BackOffice.App_GlobalResources
+@using Erp.BackOffice.Sale.Models
+@using Erp.BackOffice.Helpers
+
+@model ChartInboundAndOutboundInMonthViewModel
+
+@if (Model.TongNhap > 0 || Model.TongXuat > 0)
+{
+    <div class="row">
+        <div class="col-sm-9">
+            <div class="widget-box">
+                <div class="widget-header">
+                    <h4 class="widget-title">
+                        Biểu đồ số lượng xuất/nhập kho
+                    </h4>
+                </div>
+
+                <div class="widget-body">
+                    <div class="widget-main">
+                        <canvas id="inbound-outbound-chart" width="400" height="400" style="max-width:1000px;"></canvas>
+                    </div><!-- /.widget-main -->
+                </div><!-- /.widget-body -->
+            </div>
+        </div>
+        <div class="col-sm-3">
+            <div class="widget-box">
+                <div class="widget-header">
+                    <h4 class="widget-title">
+                        Thống kê xuất/nhập kho
+                    </h4>
+                </div>
+
+                <div class="widget-body">
+                    <div class="widget-main">
+                        @ViewBag.DateRangeText
+                        <table class="table table-striped grid-table">
+                            <thead>
+                                <tr>
+                                    <th class="grid-header">Nhóm sản phẩm</th>
+                                    <th class="grid-header">Tổng nhập</th>
+                                    <th class="grid-header">Tổng xuất</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (System.Data.DataRow row in Model.GroupList.Rows)
+                                {
+                                    <tr>
+                                        <td>@row["GroupName"]</td>
+                                        <td>@Common.PhanCachHangNgan(row["NumberOfInbound"])</td>
+                                        <td>@Common.PhanCachHangNgan(row["NumberOfOutbound"])</td>
+                                    </tr>
+                                }
+                            </tbody>
+                            <tbody>
+                                <tr>
+                                    <td></td>
+                                    <td style="font-weight:bold; color:red">@Common.PhanCachHangNgan(Model.TongNhap)</td>
+                                    <td style="font-weight:bold; color:red">@Common.PhanCachHangNgan(Model.TongXuat)</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="/Scripts/Chartjs-master/Chartjs.bundle.min.js"></script>
+    <script src="/Scripts/Chartjs-master/globalConfig.js"></script>
+
+    <script type="text/javascript">
+        $(function(){
+            //Chuẩn bị dữ liệu
+            var responseDataInbound = @Html.Raw(Model.jsonInbound);
+            var responseDataOutbound = @Html.Raw(Model.jsonOutbound);
+            var responseDataCategory = @Html.Raw(Model.jsonCategory);
+
+            //Bắt đầu tạo chart
+            function createNewDataset(arrayData, label, backgroundColorValue, borderColorValue, borderWidth) {
+                var objectDataset = {
+                    label: label,
+                    backgroundColor: colorRender(backgroundColorValue).alpha(0.5).rgbString(),
+                    borderColor: borderColorValue,
+                    borderWidth: borderWidth,
+                    data: []
+                };
+
+                for (var i in arrayData) {
+                    objectDataset.data.push(arrayData[i]);
+                }
+
+                return objectDataset;
+            };
+
+            var colorRender = Chart.helpers.color;
+
+            //Tạo dữ liệu trục x
+            var arrayLabel = [];
+            for (var i in responseDataCategory) {
+                arrayLabel.push(responseDataCategory[i]);
+            }
+
+            //Tạo dữ liệu trục y
+            var dataInboundPushToDataset = [];
+            var dataOutboundPushToDataset = [];
+            for (var i in responseDataCategory) {
+                //console.log(responseDataCategory[i]);
+                var itemInbound = responseDataInbound.filter(function(obj){
+                    return obj.label.toString() ==  responseDataCategory[i];
+                });
+
+                var itemOutbound = responseDataOutbound.filter(function(obj){
+                    return obj.label.toString() ==  responseDataCategory[i];
+                });
+
+                //console.log(responseDataCategory[i], itemInbound, itemOutbound);
+
+                if (itemInbound.length != 0)
+                    dataInboundPushToDataset.push(itemInbound[0].data);
+                else
+                    dataInboundPushToDataset.push(0);
+
+                if(itemOutbound.length != 0)
+                    dataOutboundPushToDataset.push(itemOutbound[0].data);
+                else
+                    dataOutboundPushToDataset.push(0);
+
+                //responseDataCategory[i] = window.outerWidth < 992 ? window.MONTHS_VN[i].replace(/\D/g,'') : window.MONTHS_VN[i] ;
+                //responseDataCategory[i] = responseDataCategory[i].substring(0, 10);
+            }
+
+            //console.log(dataInboundPushToDataset);
+            //console.log(dataOutboundPushToDataset);
+
+            var arrayDataset = [];
+            var inboundDataset = createNewDataset(dataInboundPushToDataset, 'Nhập kho', window.chartColors.orange, window.chartColors.blue, 1);
+            arrayDataset.push(inboundDataset);
+
+            var outboundDataset = createNewDataset(dataOutboundPushToDataset, 'Xuất kho', window.chartColors.blue, window.chartColors.grey, 1);
+            arrayDataset.push(outboundDataset);
+
+            var barChartData = {
+                labels: responseDataCategory,
+                datasets: []
+            };
+
+            $(document).ready(function () {
+                var ctx = document.getElementById("inbound-outbound-chart").getContext("2d");
+
+                //legend: là các chú thích theo màu
+                var invoiceBar = new Chart(ctx, {
+                    type: 'horizontalBar',
+                    data: barChartData,
+                    options: {
+                        responsive: true,
+                        barThickness:40,
+                        legend: {
+                            position: 'top',
+                        },
+                        title: {
+                            display: false,
+                            text: 'Xuất/nhập kho theo tháng'
+                        },
+                        animation: {
+                            duration: 500,
+                            enabled: true,
+                        },
+                        scales: {
+                            yAxes:[
+                                {
+                                    ticks: {
+                                        fontSize : 10,
+                                        callback: function(label, index, labels) {
+                                            return (index + 1) + '. ' + label;
+                                        }
+                                    }
+                                }
+                            ],
+                            xAxes: [
+                                {
+                                    ticks: {
+                                        fontSize : 12,
+                                        callback: function(label, index, labels) {
+                                            return label;//Number(label/1000).toFixed(0).toString().replace(/\d(?=(?:\d{3})+(?!\d))/g,'$&.') + 'k';
+                                        }
+                                    },
+                                    scaleLabel: {
+                                        display: window.outerWidth < 992 ? false : true,
+                                        labelString: ''
+                                    }
+                                }
+                            ]
+                        },
+                        tooltips: {
+                            enabled: true,
+                            mode: 'single',
+                            callbacks: {
+                                title: function (tooltipItem, data) { return data.labels[tooltipItem[0].index]; },
+                                label: function(tooltipItems, data) {
+                                    //return data.datasets[tooltipItems.datasetIndex].label + ': ' + Number(tooltipItems.yLabel/1000).toFixed(0).toString().replace(/\d(?=(?:\d{3})+(?!\d))/g,'$&.') + 'k';
+                                    return tooltipItems.xLabel.toFixed(0);//Number(tooltipItems.yLabel/1000).toFixed(0).toString().replace(/\d(?=(?:\d{3})+(?!\d))/g,'$&.') + 'k';
+                                }
+                            }
+                        }
+                    }
+                });
+
+                setTimeout(function(){
+                    for(var i in arrayDataset){
+                        barChartData.datasets.push(arrayDataset[i]);
+                    }
+                    invoiceBar.update();
+                    //console.log('updated')
+                },500);
+            });
+
+            var colorNames = Object.keys(window.chartColors);
+        });
+    </script>
+}
+else
+{
+    <p class="red">Không có dữ liệu!</p>
+}

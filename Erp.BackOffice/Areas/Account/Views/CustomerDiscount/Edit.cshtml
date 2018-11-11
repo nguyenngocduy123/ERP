@@ -1,0 +1,74 @@
+@using Erp.BackOffice.App_GlobalResources
+@using Erp.BackOffice.Helpers
+@using Erp.BackOffice.Account.Models
+
+@model CustomerDiscountViewModel
+
+@{
+    ViewBag.Title = Wording.PageEdit_CustomerDiscount;
+
+    Layout = "~/Views/Shared/" + (Request["IsPopup"] == null ? "ACE_AdminLayout.cshtml" : "_PopupLayout.cshtml");
+    Erp.BackOffice.Models.PageSetting pageSetting = new Erp.BackOffice.Models.PageSetting
+    {
+        ModuleName = "CustomerDiscount",
+        ActionName = "Edit",
+        PageTitle = ViewBag.Title,
+        DisplaySearchPanel = false,
+        IsPopup = false,
+        DisplayBackButton = true
+    };
+}
+
+@section HeadOfPage {
+    @Html.ScriptTop_ChosenStyle()
+}
+@using (Html.BeginPageHeaderContainer(pageSetting))
+{
+
+}
+@using (Html.BeginForm_AceStyle((string)ViewBag.Title, "Edit", "CustomerDiscount", null, FormMethod.Post, new { @class = "form-horizontal" }))
+{
+    @Html.ValidationSummary(true)
+
+    <input type="hidden" value="@Request["IsPopup"]" name="IsPopup" />
+
+    @Html.HiddenFor(model => model.Id)
+    @Html.HiddenFor(model => model.CreatedUserId)
+    @Html.HiddenFor(model => model.AssignedUserId)
+    @Html.HiddenFor(model => model.CreatedDate)
+    @Html.HiddenFor(model => model.IsDeleted)
+    @Html.HiddenFor(model => model.CustomerId)
+
+    <div class="col-sm-6">
+        @Html.CustomTextboxFor(model => model.Name, null, null, WidthType.span12)
+        @Html.CustomTextboxFor(model => model.Code, null, null, WidthType.span12)
+        @Html.CustomTextboxFor(model => model.ValuePercent, null, null, WidthType.span12, true, new Dictionary<string, object> { { "class", "col-sm-12 text-right" } })
+    </div>
+    <div class="col-sm-6">
+        @*@Html.CustomTextboxFor(model => model.StartDate, null, null, WidthType.span12)*@
+        @*@Html.CustomTextboxFor(model => model.EndDate, null, null, WidthType.span12)*@
+        @Html.CustomTextAreaFor(model => model.Note, null, WidthType.span12)
+    </div>
+
+
+    @using (Html.BeginButtonContainer(pageSetting))
+    {
+        <button class="btn btn-mini btn-primary" type="submit" name="Submit" value="Save">
+            <i class="ace-icon fa fa-save"></i>
+            @Wording.Save
+        </button>
+    }
+}
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+
+            $('#ValuePercent').numberOnly();
+            //$("[name='StartDate']").mask('99/99/9999');
+            //$("[name='EndDate']").mask('99/99/9999');
+        });
+</script>
+    @Html.ScriptBottom_ValidationMvc()
+    @Html.ScriptBottom_ChosenStyle()
+}

@@ -1,0 +1,170 @@
+﻿@using Erp.BackOffice.App_GlobalResources
+@using Erp.BackOffice.Helpers
+@using Erp.BackOffice.Staff.Models
+@using GridMvc.Html
+
+@model IEnumerable<StaffFamilyViewModel>
+
+@{
+    ViewBag.Title = Wording.PageIndex_StaffFamily;
+
+    Layout = "~/Views/Shared/" + (Request["IsPopup"] == null ? "ACE_AdminLayout.cshtml" : "_PopupLayout.cshtml");
+    Erp.BackOffice.Models.PageSetting pageSetting = new Erp.BackOffice.Models.PageSetting
+    {
+        ModuleName = "StaffFamily",
+        ActionName = "DetailList",
+        PageTitle = ViewBag.Title,
+        DisplaySearchPanel = false,
+        IsPopup = false,
+        DisplayBackButton = false
+    };
+}
+
+<link href="@Url.Content("~/assets/css/Gridmvc.css")" rel="stylesheet" type="text/css" />
+<script src="@Url.Content("~/Scripts/gridmvc.min.js")" type="text/javascript"> </script>
+
+@section HeadOfPage {
+    @Html.ScriptTop_ChosenStyle()
+}
+
+@helper CheckDeleteColumns(int Id)
+{
+    <label>
+        <input class="ace class-delete-all" type="checkbox" name="DeleteId-checkbox" value="@Id">
+        <span class="lbl"></span>
+    </label>
+}
+
+@helper BuildCheckAll()
+{
+    <label>
+        <input class="ace" type="checkbox" name="checkAll" id="checkAll" />
+        <span class="lbl"></span>
+    </label>
+}
+
+
+
+
+@helper GridColumnCategoryValue(object value)
+{
+var attr = Erp.BackOffice.Helpers.Common.GetCategoryByValueOrId("value", value);
+    <span>@(attr != null ? attr.Name : "")</span>
+}
+@helper GridColumnGender(bool? gender)
+{
+if (gender == true || gender == null)
+{
+        @Wording.females
+}
+else
+{
+
+        @Wording.male
+}
+}
+
+@helper GridDependencies(bool? isDe)
+{
+    if (isDe!=null && isDe.Value == true)
+    {
+            <i class="ace-icon fa fa-check green"></i>
+    }
+    else
+    {
+            <i class="ace-icon fa fa-times red"></i>
+    }
+}
+
+@using (Html.BeginPageHeaderContainer(pageSetting))
+{
+}
+
+@using (Html.BeginForm_AceStyle((string)ViewBag.Title, "DeleteAll", "StaffFamily", null, FormMethod.Post, new { @class = "form-horizontal" }))
+{
+    if (Request["Delete"] == null)
+    {
+        <div class="table-responsive">
+            @Html.Grid(Model).Columns(columns =>
+       {
+           int index = 0;
+           columns.Add().Titled(Wording.OrderNo).SetWidth(30).RenderValueAs(n => (++index).ToString());
+           columns.Add(u => u.Name).Titled(Wording.Name);
+           columns.Add(u => u.Birthday).Format("{0:dd/MM/yyyy}").Titled(Wording.Birthday).SetWidth(100);
+           columns.Add().Titled(Wording.Gender).Sanitized(false).Encoded(false).RenderValueAs(n => GridColumnGender(n.Gender));
+           columns.Add().Titled(Wording.IsDependencies).Sanitized(false).Encoded(false).RenderValueAs(n => GridDependencies(n.IsDependencies)).Css("text-center");
+
+           columns.Add().Titled(Wording.Correlative).RenderValueAs(n => n.Correlative);
+           columns.Add().Titled(Wording.Phone).RenderValueAs(n => n.Phone);
+           columns.Add().Titled(Wording.Address).RenderValueAs(n => n.Address);
+           //columns.Add(u => u.CreatedDate).Titled(Wording.CreatedDate).SetWidth(100).Format("{0:dd/MM/yyyy}");
+           //columns.Add(u => u.ModifiedDate).Titled(Wording.ModifiedDate).SetWidth(100).Format("{0:dd/MM/yyyy}");
+
+       })
+        </div>
+    }
+    else
+    {
+        <div class="table-responsive">
+            @Html.Grid(Model).Columns(columns =>
+       {
+           columns.Add().Titled(BuildCheckAll().ToHtmlString()).SetWidth(20).Sanitized(false).Encoded(false).RenderValueAs(n => CheckDeleteColumns(n.Id));
+           columns.Add(u => u.Name).Titled(Wording.Name);
+           columns.Add(u => u.Birthday).Format("{0:dd/MM/yyyy}").Titled(Wording.Birthday).SetWidth(100);
+           columns.Add().Titled(Wording.Gender).Sanitized(false).Encoded(false).RenderValueAs(n => GridColumnGender(n.Gender));
+           columns.Add().Titled(Wording.IsDependencies).Sanitized(false).Encoded(false).RenderValueAs(n => GridDependencies(n.IsDependencies)).Css("text-center");
+
+           columns.Add().Titled(Wording.Correlative).RenderValueAs(n => n.Correlative);
+           columns.Add().Titled(Wording.Phone).RenderValueAs(n => n.Phone);
+           columns.Add().Titled(Wording.Address).RenderValueAs(n => n.Address);
+           //columns.Add(u => u.CreatedDate).Titled(Wording.CreatedDate).SetWidth(100).Format("{0:dd/MM/yyyy}");
+           //columns.Add(u => u.ModifiedDate).Titled(Wording.ModifiedDate).SetWidth(100).Format("{0:dd/MM/yyyy}");
+
+       })
+        </div>
+    }
+
+    using (Html.BeginButtonContainer(pageSetting))
+    {
+        if (Request["Delete"] != null)
+        {
+            <button name="DeleteAll" value="DeleteAll" type="submit" class="btn btn-mini btn-danger" onclick="return CheckIsval();">
+                <i class="ace-icon fa fa-trash bigger-120"></i>
+                @Wording.Delete
+            </button>
+        }
+    }
+}
+
+@section Scripts {
+    <script type="text/javascript">
+        //truyền từ action create của controller qua khi thực hiện submit và return về lại view create, để nhận biết là được gọi theo dạng popup
+        var closePopup = '@ViewBag.closePopup';
+        $(document).ready(function () {
+            if (closePopup != '') {
+                window.parent.ClosePopupAndReloadPageStaffDetail();
+                //window.parent.ClosePopupAndAppendSelect(option);
+            }
+        });
+
+        function CheckIsval() {
+            if ($('[name="DeleteId-checkbox"]').is(':checked') == false) {
+                alert("Phải chọn ít nhất 1 item.");
+                return false;
+            }
+            else {
+                if (confirm('Bạn có chắc muốn xóa các item đã chọn ?')) {
+                    return true;
+                }
+                else {
+                    return false;
+                }
+            }
+        }
+
+
+    </script>
+    @Html.ScriptBottom_ValidationMvc()
+    @Html.ScriptBottom_DatePicker("dd/mm/yyyy")
+    @Html.ScriptBottom_ChosenStyle()
+}

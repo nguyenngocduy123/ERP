@@ -1,0 +1,187 @@
+﻿@using Erp.BackOffice.App_GlobalResources
+@using Erp.BackOffice.Helpers
+@using Erp.BackOffice.Sale.Models
+
+@model WarehouseViewModel
+
+@{
+    ViewBag.Title = Wording.PageCreate_Warehouse;
+
+    Layout = "~/Views/Shared/" + (Request["IsPopup"] == null ? "ACE_AdminLayout.cshtml" : "_PopupLayout.cshtml");
+    Erp.BackOffice.Models.PageSetting pageSetting = new Erp.BackOffice.Models.PageSetting
+    {
+        ModuleName = "Warehouse",
+        ActionName = "Create",
+        PageTitle = ViewBag.Title,
+        DisplaySearchPanel = false,
+        IsPopup = false,
+        DisplayBackButton = true
+    };
+    IEnumerable<SelectListItem> branchList = Erp.BackOffice.Helpers.SelectListHelper.GetSelectList_DepartmentAllNew(null, Wording.Empty);
+
+    SelectList provinceList = Erp.BackOffice.Helpers.SelectListHelper.GetSelectList_Location("0", null, Wording.Empty);
+    ViewData["ListUser"] = "";
+}
+
+<style>
+    .container-user-list div label:nth-child(3n+1) {
+        padding-left: 0px;
+    }
+</style>
+
+@section HeadOfPage {
+    @Html.ScriptTop_ChosenStyle()
+}
+@using (Html.BeginPageHeaderContainer(pageSetting))
+{
+
+}
+@using (Html.BeginForm_AceStyle((string)ViewBag.Title, "Create", "Warehouse", null, FormMethod.Post, new { @class = "form-horizontal clearfix" }))
+{
+    @Html.ValidationSummary(true)
+
+    <input type="hidden" value="@Request["IsPopup"]" name="IsPopup" />
+    <div class="row">
+    <div class="col-sm-6">
+        @Html.CustomTextboxFor(model => model.Name, null, null, WidthType.span12)
+        @Html.CustomTextboxFor(model => model.Code, null, null, WidthType.span12)
+        @*@Html.CustomDropDownListFor(model => model.BranchId, branchList, WidthType.span12, true)*@
+        @Html.CustomDropDownListFor(model => model.BranchId, branchList, WidthType.span12, true, null, DropdownListStyle.DropdownListStyleDefault)
+        @Html.CustomSwitchesFor(model => model.IsSale, SwitchesStyle.CheckboxStyle, true)
+        @Html.CustomTextboxFor(model => model.Address, null, null, WidthType.span12)
+        @Html.CustomDropDownListFor(model => model.CityId, provinceList, WidthType.span12)
+        @Html.CustomDropDownListFor(model => model.DistrictId, new List<SelectListItem> { new SelectListItem { Text = "- chon tỉnh/thành -", Value = "" } }, WidthType.span12)
+        @Html.CustomDropDownListFor(model => model.WardId, new List<SelectListItem> { new SelectListItem { Text = "- chon quận/huyện -", Value = "" } }, WidthType.span12)
+        @Html.CustomTextAreaFor(model => model.Note, null, WidthType.span12)
+
+    </div>
+    <div class="col-sm-6">
+        <div class="widget-box">
+            <div class="widget-header">
+                <h5 class="widget-title">Loại kho</h5>
+            </div>
+            <div class="widget-body">
+                <div class="widget-main clearfix">
+                    @foreach (var item in Erp.BackOffice.Helpers.SelectListHelper.GetSelectList_Category("Categories_product", null, null))
+                    {
+                        <div class="control-group form-group">
+                            <label class="control-label col-lg-5 col-md-4 col-sm-4" for="">@item.Text</label>
+                            <div class="control-value col-lg-7 col-md-8 col-sm-8" style="line-height:0px!important">
+                                <label class="checkbox"><input type="checkbox" class="ace" value="@item.Value" name="Categories" /> <span class="lbl"></span></label>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+        <div class="widget-box top-5">
+            @*<div class="widget-header">
+                <h5 class="widget-title">Người giữ kho</h5>
+            </div>
+            <div class="widget-body">
+                <div class="widget-main clearfix">
+                    @foreach (var item in Erp.BackOffice.Helpers.SelectListHelper.GetSelectList_UserbyType(null,null, null))
+                    {
+                        <label class="col-md-6 col-sm-6 col-xs-6">
+                            <input type="checkbox" class="ace" id="KeeperId_@item.Value" name="KeeperId" value="@item.Value" />
+                            <span class="lbl">@item.Text</span>
+                        </label>
+                    }
+                </div>
+            </div>*@
+            @Html.Partial("_SearchUser", ViewData["ListUser"])
+        </div>
+
+
+
+
+    </div>
+        </div>
+    using (Html.BeginButtonContainer(pageSetting))
+    {
+        <button class="btn btn-mini btn-primary" type="submit" name="Submit" value="Save">
+            <i class="ace-icon fa fa-save"></i>
+            @Wording.Save
+        </button>
+    }
+}
+
+@section Scripts {
+
+    @Html.ScriptBottom_ValidationMvc()
+    @Html.ScriptBottom_ChosenStyle()
+
+    <script>
+    var closePopup = '@ViewBag.closePopup';
+    $(document).ready(function () {
+        //nếu là được gọi theo dạng popup từ form khác thì chạy đoạn code bên dưới
+        if (closePopup != '') {
+            var option = '<option value="@Model.Id" >@Model.Name</option>';
+            window.parent.ClosePopupAndAppendSelectWarehouse(option);
+        }
+
+        $('#BranchId').change(function () {
+            ShowLoading();
+            //$('.container-user-list').html('<h4>Người giữ kho:</h4><div></div>').show();
+
+            //////if ($(this).val() != '') {
+            //    $.getJSON('/Warehouse/GetListUserByBranchId', { branchId: $(this).val() }, function (res) {
+            //        if (res.length != 0) {
+            //            for (var i = 0 ; i < res.length; i++) {
+            //                var $user = $('<label class="col-md-4 col-sm-6 col-xs-6"><input type="checkbox" class="ace" id="KeeperId_' + res[i].a + '" name="KeeperId" value="' + res[i].a + '" /><span class="lbl">' + res[i].e + '</span></label>');
+            //                $('.container-user-list div').append($user);
+            //            }
+            //        } else {
+            //            $('.container-user-list').append('<p class="text-danger">Chi nhánh này không có nhân viên.</p>');
+            //        }
+            //        HideLoading();
+            //    });
+            //}
+          
+            SearchDrugStore();
+        });
+    });
+
+
+
+    $(function () {
+            var url = '/api/BackOfficeServiceAPI/FetchLocation';
+            var districts = $('#DistrictId'); // cache it
+            var ward = $('#WardId');
+
+            $("#CityId").change(function () {
+                var id = $(this).val(); // Use $(this) so you don't traverse the DOM again
+                $.getJSON(url, { parentId: id }, function (response) {
+                    districts.empty(); // remove any existing options
+                    ward.empty();
+                    $(document.createElement('option'))
+                            .attr('value', '')
+                            .text('- Rỗng -')
+                            .appendTo(ward);
+                    $(response).each(function () {
+                        $(document.createElement('option'))
+                            .attr('value', this.Id)
+                            .text(capitalizeFirstAllWords(this.Name.toLowerCase().replace('huyện', '').replace('quận', '')))
+                            .appendTo(districts);
+                    });
+
+                    districts.trigger("chosen:updated");
+                });
+            });
+
+            districts.change(function () {
+                var id = $(this).val(); // Use $(this) so you don't traverse the DOM again
+                $.getJSON(url, { parentId: id }, function (response) {
+                    ward.empty(); // remove any existing options
+                    $(response).each(function () {
+                        $(document.createElement('option'))
+                            .attr('value', this.Id)
+                            .text(capitalizeFirstAllWords(this.Name.toLowerCase()))
+                            .appendTo(ward);
+                    });
+                    ward.trigger("chosen:updated");
+                });
+            });
+        });
+    </script>
+}

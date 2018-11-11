@@ -1,0 +1,49 @@
+﻿@using Erp.BackOffice.App_GlobalResources
+@using Erp.BackOffice.Staff.Models
+@using Erp.BackOffice.Helpers
+@using GridMvc.Html
+
+@model IQueryable<KPIItemViewModel>
+
+@helper GridColumnCommand(int id)
+{
+    <button name="Delete" value="Delete" type="submit" class="btn btn-minier btn-danger">
+        <i class="ace-icon fa fa-trash"></i>
+    </button>
+}
+
+@helper GridColumnName(string name, int id)
+{
+    <a onclick="OpenPopup('@Url.Action("Edit", "KPIItem", new { area = "Staff", Id = id, IsPopup = true })', 'Cập nhật tiêu chí KPI', 500, 500)">@name</a>
+}
+
+@helper CheckDeleteColumns(int Id)
+{
+    <label>
+        <input class="ace class-delete-all" type="checkbox" name="DeleteAll-checkbox" value="@Id">
+        <span class="lbl"></span>
+    </label>
+}
+
+@helper BuildCheckAll()
+{
+    <label>
+        <input class="ace" type="checkbox" name="checkAll" id="checkAll" />
+        <span class="lbl"></span>
+    </label>
+}
+
+@using (Html.BeginForm("DeleteOnSubList", "KPIItem", FormMethod.Post))
+{
+    @Html.Grid(Model).Columns(columns =>
+    {
+        columns.Add().Titled(BuildCheckAll().ToHtmlString()).SetWidth(20).Sanitized(false).Encoded(false).RenderValueAs(n => CheckDeleteColumns(n.Id));
+        columns.Add().Titled(Html.DisplayNameFor(u => u.FirstOrDefault().Name).ToString()).Sortable(false).Sanitized(false).Encoded(false).RenderValueAs(u => GridColumnName(u.Name, u.Id)).SetWidth(300);
+        columns.Add(u => u.KPIWeight).Titled(Html.DisplayNameFor(u => u.FirstOrDefault().KPIWeight).ToString()).SetWidth(100);
+        columns.Add(u => u.Measure).Titled(Html.DisplayNameFor(u => u.FirstOrDefault().Measure).ToString()).SetWidth(100);
+        columns.Add(u => u.TargetScore_From).Titled(Wording.TargetScore_From).SetWidth(100);
+        columns.Add(u => u.TargetScore_To).Titled(Wording.TargetScore_To).SetWidth(100);
+        columns.Add(u => u.Description).Titled(Html.DisplayNameFor(u => u.FirstOrDefault().Description).ToString());
+        columns.Add(u => u.Id).Titled(Wording.Action).Sanitized(false).Encoded(false).RenderValueAs(u => GridColumnCommand(u.Id)).SetWidth(100);
+    }).WithPaging(10)
+}

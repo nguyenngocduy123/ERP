@@ -1,0 +1,169 @@
+﻿<error errorId="6c14d87b-edd3-4abf-b726-d0a86f17e888" application="/LM/W3SVC/2/ROOT" host="UTC2" type="System.NullReferenceException" message="Object reference not set to an instance of an object." source="Erp.BackOffice" detail="System.NullReferenceException: Object reference not set to an instance of an object.&#xD;&#xA;   at Erp.BackOffice.Filters.SecurityFilter.OnActionExecuting(ActionExecutingContext filterContext) in D:\Projects\LUTOS.Warehouse\4.Source\ERP_LOTUS\src\Erp.BackOffice\Filters\SecurityFilter.cs:line 61&#xD;&#xA;   at System.Web.Mvc.Async.AsyncControllerActionInvoker.InvokeActionMethodFilterAsynchronously(IActionFilter filter, ActionExecutingContext preContext, Func`1 nextInChain)&#xD;&#xA;   at System.Web.Mvc.Async.AsyncControllerActionInvoker.&lt;&gt;c__DisplayClass37.&lt;&gt;c__DisplayClass39.&lt;&gt;c__DisplayClass3b.&lt;BeginInvokeActionMethodWithFilters&gt;b__35()&#xD;&#xA;   at System.Web.Mvc.Async.AsyncControllerActionInvoker.InvokeActionMethodFilterAsynchronously(IActionFilter filter, ActionExecutingContext preContext, Func`1 nextInChain)&#xD;&#xA;   at System.Web.Mvc.Async.AsyncControllerActionInvoker.&lt;&gt;c__DisplayClass37.&lt;&gt;c__DisplayClass39.&lt;&gt;c__DisplayClass3b.&lt;BeginInvokeActionMethodWithFilters&gt;b__35()&#xD;&#xA;   at System.Web.Mvc.Async.AsyncControllerActionInvoker.&lt;&gt;c__DisplayClass37.&lt;BeginInvokeActionMethodWithFilters&gt;b__31(AsyncCallback asyncCallback, Object asyncState)&#xD;&#xA;   at System.Web.Mvc.Async.AsyncResultWrapper.WrappedAsyncResult`1.Begin(AsyncCallback callback, Object state, Int32 timeout)&#xD;&#xA;   at System.Web.Mvc.Async.AsyncControllerActionInvoker.BeginInvokeActionMethodWithFilters(ControllerContext controllerContext, IList`1 filters, ActionDescriptor actionDescriptor, IDictionary`2 parameters, AsyncCallback callback, Object state)&#xD;&#xA;   at System.Web.Mvc.Async.AsyncControllerActionInvoker.&lt;&gt;c__DisplayClass25.&lt;BeginInvokeAction&gt;b__1e(AsyncCallback asyncCallback, Object asyncState)&#xD;&#xA;   at System.Web.Mvc.Async.AsyncResultWrapper.WrappedAsyncResult`1.Begin(AsyncCallback callback, Object state, Int32 timeout)&#xD;&#xA;   at System.Web.Mvc.Async.AsyncControllerActionInvoker.BeginInvokeAction(ControllerContext controllerContext, String actionName, AsyncCallback callback, Object state)&#xD;&#xA;   at System.Web.Mvc.Controller.&lt;&gt;c__DisplayClass1d.&lt;BeginExecuteCore&gt;b__17(AsyncCallback asyncCallback, Object asyncState)&#xD;&#xA;   at System.Web.Mvc.Async.AsyncResultWrapper.WrappedAsyncResult`1.Begin(AsyncCallback callback, Object state, Int32 timeout)&#xD;&#xA;   at System.Web.Mvc.Controller.BeginExecuteCore(AsyncCallback callback, Object state)&#xD;&#xA;   at System.Web.Mvc.Async.AsyncResultWrapper.WrappedAsyncResult`1.Begin(AsyncCallback callback, Object state, Int32 timeout)&#xD;&#xA;   at System.Web.Mvc.Controller.BeginExecute(RequestContext requestContext, AsyncCallback callback, Object state)&#xD;&#xA;   at System.Web.Mvc.Controller.System.Web.Mvc.Async.IAsyncController.BeginExecute(RequestContext requestContext, AsyncCallback callback, Object state)&#xD;&#xA;   at System.Web.Mvc.MvcHandler.&lt;&gt;c__DisplayClass8.&lt;BeginProcessRequest&gt;b__2(AsyncCallback asyncCallback, Object asyncState)&#xD;&#xA;   at System.Web.Mvc.Async.AsyncResultWrapper.WrappedAsyncResult`1.Begin(AsyncCallback callback, Object state, Int32 timeout)&#xD;&#xA;   at System.Web.Mvc.MvcHandler.BeginProcessRequest(HttpContextBase httpContext, AsyncCallback callback, Object state)&#xD;&#xA;   at System.Web.Mvc.MvcHandler.BeginProcessRequest(HttpContext httpContext, AsyncCallback callback, Object state)&#xD;&#xA;   at System.Web.Mvc.MvcHandler.System.Web.IHttpAsyncHandler.BeginProcessRequest(HttpContext context, AsyncCallback cb, Object extraData)&#xD;&#xA;   at System.Web.HttpApplication.CallHandlerExecutionStep.System.Web.HttpApplication.IExecutionStep.Execute()&#xD;&#xA;   at System.Web.HttpApplication.ExecuteStep(IExecutionStep step, Boolean&amp; completedSynchronously)" user="vantruong90" time="2018-06-14T22:59:51.5332446Z">
+  <serverVariables>
+    <item name="ALL_HTTP">
+      <value string="HTTP_CONNECTION:keep-alive&#xD;&#xA;HTTP_ACCEPT:text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8&#xD;&#xA;HTTP_ACCEPT_ENCODING:gzip, deflate, br&#xD;&#xA;HTTP_ACCEPT_LANGUAGE:en-US,en;q=0.9&#xD;&#xA;HTTP_COOKIE:ASP.NET_SessionId=h52eizmfdsleoa15dc4wgww5; __RequestVerificationToken=28j03e2xiqSX3V-A26Ac4Ka0DxUq7cMUC6d36LV5rRrddmoXgLSwAk_OX-Cyw2DesNzE2bKZSUG9P24UKDFc9zGqBbHtik0rG-0Lk1dEIzg1; BO=9F83B6D0CA1EE17292DA70D26879422C37838FD6E2A7CB2E412BAD7696C8194FCD6D1BABF45EFA82C833D1259DFC11291B10192B33399F1E896848CA42127CB7DE0FA37D33EE808DB52CA207ADD1D56642DC4063C796E8901EE9B01BB7DF87488348E2DCBAED7F28AE6C9BAC966F8F9D&#xD;&#xA;HTTP_HOST:localhost:53200&#xD;&#xA;HTTP_USER_AGENT:Mozilla/5.0 (Windows NT 6.3; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/66.0.3359.181 Safari/537.36&#xD;&#xA;HTTP_UPGRADE_INSECURE_REQUESTS:1&#xD;&#xA;" />
+    </item>
+    <item name="ALL_RAW">
+      <value string="Connection: keep-alive&#xD;&#xA;Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8&#xD;&#xA;Accept-Encoding: gzip, deflate, br&#xD;&#xA;Accept-Language: en-US,en;q=0.9&#xD;&#xA;Cookie: ASP.NET_SessionId=h52eizmfdsleoa15dc4wgww5; __RequestVerificationToken=28j03e2xiqSX3V-A26Ac4Ka0DxUq7cMUC6d36LV5rRrddmoXgLSwAk_OX-Cyw2DesNzE2bKZSUG9P24UKDFc9zGqBbHtik0rG-0Lk1dEIzg1; BO=9F83B6D0CA1EE17292DA70D26879422C37838FD6E2A7CB2E412BAD7696C8194FCD6D1BABF45EFA82C833D1259DFC11291B10192B33399F1E896848CA42127CB7DE0FA37D33EE808DB52CA207ADD1D56642DC4063C796E8901EE9B01BB7DF87488348E2DCBAED7F28AE6C9BAC966F8F9D&#xD;&#xA;Host: localhost:53200&#xD;&#xA;User-Agent: Mozilla/5.0 (Windows NT 6.3; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/66.0.3359.181 Safari/537.36&#xD;&#xA;Upgrade-Insecure-Requests: 1&#xD;&#xA;" />
+    </item>
+    <item name="APPL_MD_PATH">
+      <value string="/LM/W3SVC/2/ROOT" />
+    </item>
+    <item name="APPL_PHYSICAL_PATH">
+      <value string="D:\Projects\LUTOS.Warehouse\4.Source\ERP_LOTUS\src\Erp.BackOffice\" />
+    </item>
+    <item name="AUTH_TYPE">
+      <value string="Forms" />
+    </item>
+    <item name="AUTH_USER">
+      <value string="vantruong90" />
+    </item>
+    <item name="AUTH_PASSWORD">
+      <value string="*****" />
+    </item>
+    <item name="LOGON_USER">
+      <value string="vantruong90" />
+    </item>
+    <item name="REMOTE_USER">
+      <value string="vantruong90" />
+    </item>
+    <item name="CERT_COOKIE">
+      <value string="" />
+    </item>
+    <item name="CERT_FLAGS">
+      <value string="" />
+    </item>
+    <item name="CERT_ISSUER">
+      <value string="" />
+    </item>
+    <item name="CERT_KEYSIZE">
+      <value string="" />
+    </item>
+    <item name="CERT_SECRETKEYSIZE">
+      <value string="" />
+    </item>
+    <item name="CERT_SERIALNUMBER">
+      <value string="" />
+    </item>
+    <item name="CERT_SERVER_ISSUER">
+      <value string="" />
+    </item>
+    <item name="CERT_SERVER_SUBJECT">
+      <value string="" />
+    </item>
+    <item name="CERT_SUBJECT">
+      <value string="" />
+    </item>
+    <item name="CONTENT_LENGTH">
+      <value string="0" />
+    </item>
+    <item name="CONTENT_TYPE">
+      <value string="" />
+    </item>
+    <item name="GATEWAY_INTERFACE">
+      <value string="CGI/1.1" />
+    </item>
+    <item name="HTTPS">
+      <value string="off" />
+    </item>
+    <item name="HTTPS_KEYSIZE">
+      <value string="" />
+    </item>
+    <item name="HTTPS_SECRETKEYSIZE">
+      <value string="" />
+    </item>
+    <item name="HTTPS_SERVER_ISSUER">
+      <value string="" />
+    </item>
+    <item name="HTTPS_SERVER_SUBJECT">
+      <value string="" />
+    </item>
+    <item name="INSTANCE_ID">
+      <value string="2" />
+    </item>
+    <item name="INSTANCE_META_PATH">
+      <value string="/LM/W3SVC/2" />
+    </item>
+    <item name="LOCAL_ADDR">
+      <value string="::1" />
+    </item>
+    <item name="PATH_INFO">
+      <value string="/" />
+    </item>
+    <item name="PATH_TRANSLATED">
+      <value string="D:\Projects\LUTOS.Warehouse\4.Source\ERP_LOTUS\src\Erp.BackOffice" />
+    </item>
+    <item name="QUERY_STRING">
+      <value string="" />
+    </item>
+    <item name="REMOTE_ADDR">
+      <value string="::1" />
+    </item>
+    <item name="REMOTE_HOST">
+      <value string="::1" />
+    </item>
+    <item name="REMOTE_PORT">
+      <value string="62808" />
+    </item>
+    <item name="REQUEST_METHOD">
+      <value string="GET" />
+    </item>
+    <item name="SCRIPT_NAME">
+      <value string="/" />
+    </item>
+    <item name="SERVER_NAME">
+      <value string="localhost" />
+    </item>
+    <item name="SERVER_PORT">
+      <value string="53200" />
+    </item>
+    <item name="SERVER_PORT_SECURE">
+      <value string="0" />
+    </item>
+    <item name="SERVER_PROTOCOL">
+      <value string="HTTP/1.1" />
+    </item>
+    <item name="SERVER_SOFTWARE">
+      <value string="Microsoft-IIS/10.0" />
+    </item>
+    <item name="URL">
+      <value string="/" />
+    </item>
+    <item name="HTTP_CONNECTION">
+      <value string="keep-alive" />
+    </item>
+    <item name="HTTP_ACCEPT">
+      <value string="text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8" />
+    </item>
+    <item name="HTTP_ACCEPT_ENCODING">
+      <value string="gzip, deflate, br" />
+    </item>
+    <item name="HTTP_ACCEPT_LANGUAGE">
+      <value string="en-US,en;q=0.9" />
+    </item>
+    <item name="HTTP_COOKIE">
+      <value string="ASP.NET_SessionId=h52eizmfdsleoa15dc4wgww5; __RequestVerificationToken=28j03e2xiqSX3V-A26Ac4Ka0DxUq7cMUC6d36LV5rRrddmoXgLSwAk_OX-Cyw2DesNzE2bKZSUG9P24UKDFc9zGqBbHtik0rG-0Lk1dEIzg1; BO=9F83B6D0CA1EE17292DA70D26879422C37838FD6E2A7CB2E412BAD7696C8194FCD6D1BABF45EFA82C833D1259DFC11291B10192B33399F1E896848CA42127CB7DE0FA37D33EE808DB52CA207ADD1D56642DC4063C796E8901EE9B01BB7DF87488348E2DCBAED7F28AE6C9BAC966F8F9D" />
+    </item>
+    <item name="HTTP_HOST">
+      <value string="localhost:53200" />
+    </item>
+    <item name="HTTP_USER_AGENT">
+      <value string="Mozilla/5.0 (Windows NT 6.3; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/66.0.3359.181 Safari/537.36" />
+    </item>
+    <item name="HTTP_UPGRADE_INSECURE_REQUESTS">
+      <value string="1" />
+    </item>
+  </serverVariables>
+  <cookies>
+    <item name="ASP.NET_SessionId">
+      <value string="h52eizmfdsleoa15dc4wgww5" />
+    </item>
+    <item name="__RequestVerificationToken">
+      <value string="28j03e2xiqSX3V-A26Ac4Ka0DxUq7cMUC6d36LV5rRrddmoXgLSwAk_OX-Cyw2DesNzE2bKZSUG9P24UKDFc9zGqBbHtik0rG-0Lk1dEIzg1" />
+    </item>
+    <item name="BO">
+      <value string="9F83B6D0CA1EE17292DA70D26879422C37838FD6E2A7CB2E412BAD7696C8194FCD6D1BABF45EFA82C833D1259DFC11291B10192B33399F1E896848CA42127CB7DE0FA37D33EE808DB52CA207ADD1D56642DC4063C796E8901EE9B01BB7DF87488348E2DCBAED7F28AE6C9BAC966F8F9D" />
+      <value string="51A10F3C86FF216A271CB52F3CEA9FC1771CB95510F44C97E8B302C473F37EB6D79A1169D8F5611B4EE9C0BFEE8A8F92E0EBBA0ADDB3FDF42AE2B7F9F0EFA950CD6DEB9D1BE3EB380BF51971BC16DCFECF19A148B4E5BEE587C2317FAE35FAE51D7775CF5DD588EAE9A04514E65655DF" />
+    </item>
+  </cookies>
+</error>

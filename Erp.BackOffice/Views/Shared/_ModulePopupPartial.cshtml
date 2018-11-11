@@ -1,0 +1,48 @@
+﻿@{
+    var inputUI = ViewData["inputUI"];
+    var inputName = ViewData["inputName"];
+    var moduleName = ViewData["moduleName"];
+    var displayText = ViewData["displayText"];
+    var readOnly = ViewData["readOnly"];
+    var showAddButton = (bool)ViewData["showAddButton"];
+    var IsCheckValidation = (bool)ViewData["IsCheckValidation"];
+    var actionName = ViewData["actionName"];
+    var module_list = ViewData["module_list"];
+}
+
+<div class="input-group">
+    @inputUI
+    @if (IsCheckValidation)
+    {
+        @Html.TextBox(inputName + "_DisplayText", displayText, new { @readonly = true, data_val = "true", data_val_required = "Bắt buộc nhập" })
+    }
+    else
+    {
+        @Html.TextBox(inputName + "_DisplayText", displayText, new { @readonly = true })
+    }
+    @if (actionName==null)
+    {
+        actionName = "Index";
+    }
+    <span class="input-group-addon" onclick="OpenPopup('/@moduleName/@actionName?IsPopup=true&module_list=@module_list&jsCallback=selectItem_@(inputName)', 'Tìm kiếm dữ liệu', 800, 600)" style="cursor:pointer">
+        <i class="ace-icon fa fa-search"></i>
+    </span>
+    @if (showAddButton)
+    {
+        <span class="input-group-addon" onclick="OpenPopup('/@moduleName/Create?IsPopup=true', 'Thêm mới', 800, 600)" style="cursor: pointer; background: #428BCA; color: #fff; border-color: #428BCA;">
+            <i class="ace-icon fa fa-plus"></i>
+        </span>
+    }
+</div>
+@if (IsCheckValidation)
+{
+    @Html.ValidationMessage(inputName + "_DisplayText")
+}
+<script type="text/javascript">
+    function selectItem_@(inputName)(id, name) {
+        $("#@inputName").val(id).trigger('change');
+        $("#@(inputName)_DisplayText").val(name).trigger('change');
+        $("#@(inputName)_DisplayText").focus().blur();
+        ClosePopup();
+    }
+</script>

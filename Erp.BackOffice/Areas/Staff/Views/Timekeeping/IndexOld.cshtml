@@ -1,0 +1,379 @@
+﻿@model  vwTimekeepingViewModel
+
+@using Erp.BackOffice.App_GlobalResources
+@using Erp.BackOffice.Staff.Models
+@using Erp.BackOffice.Helpers
+@using GridMvc.Html
+
+@{
+    ViewBag.Title = Wording.PageIndex_Timekeeping;
+    Layout = "~/Views/Shared/ACE_AdminLayout.cshtml";
+}
+@if (ViewBag.SuccessMessage != null && ViewBag.SuccessMessage != "")
+{
+<div class="alert alert-block alert-success">
+    <button class="close" data-dismiss="alert" type="button">
+        <i class="ace-icon fa fa-times"></i>
+    </button>
+    <i class="ace-icon fa fa-check green"></i>
+    @ViewBag.SuccessMessage
+</div>
+}
+
+@if (ViewBag.FailedMessage != null && ViewBag.FailedMessage != "")
+{
+<div class="alert alert-block alert-danger">
+    <button class="close" data-dismiss="alert" type="button">
+        <i class="ace-icon fa fa-times"></i>
+    </button>
+    <i class="ace-icon fa fa-warning red"></i>
+    @ViewBag.FailedMessage
+</div>
+}
+<script src="~/assets/js/moment.min.js"></script>
+<link href="@Url.Content("~/assets/css/bootstrap-datetimepicker.min.css")" rel="stylesheet" type="text/css" />
+<script src="~/assets/js/bootstrap-datetimepicker.min.js"></script>
+@helper GridColumnProfileImage(string ProfileImage, string code)
+{
+    if (!string.IsNullOrEmpty(ProfileImage))
+    {
+<a data-toggle="tooltip" title='
+            <img src="/Data/HinhSV/@(ProfileImage)" width="248" />'>
+            <img class="profile-picture" src="/Data/HinhSV/@(ProfileImage)" width="135" height="165" alt="@code" />
+        </a>
+<span class="label label-info label-white middle" style="width: 135px; font-size: 15px; line-height: 1; height: 20px;">
+    <b>@(!string.IsNullOrEmpty(code) ? code.ToString() : "")</b>
+</span>
+    }
+    else
+    {
+<span class="profile-picture" style="height:165px; width:135px"><img style="max-width:100%; margin-top:5px" src="/assets/img/no-avatar.png" alt="@code" /></span>
+<span class="label label-info label-white middle" style="width: 135px; font-size: 15px; line-height: 1; height: 25px;">
+    <b>@(!string.IsNullOrEmpty(code) ? code.ToString() : "")</b>
+</span>
+    }
+}
+@helper GridColumnName(string name, int id)
+{
+    if (string.IsNullOrEmpty(name))
+    {
+<a href="@Url.Action(" detail", "Staffs" , new { area="Staff" , Id= id })" target="_blank"><b><i class="fa fa-user-circle-o"></i>  No Title</b></a>
+    }
+    else
+    {
+<a href="@Url.Action(" detail", "Staffs" , new { area="Staff" , Id= id })" target="_blank">
+    <i class="fa fa-user"></i>
+    @name
+</a>
+    }
+}
+@helper GridColumnEdit(string name, int? id)
+{
+<a onclick="OpenPopup('@Url.Action("Edit", "Timekeeping" , new { area="Staff" , Id=id})', '@Wording.EditTimekeeping' , 500, 500)">@name</a>
+}
+@helper GridColumnCommand(int id)
+{
+    <button name="Delete" value="Delete" type="submit" id="btn_delete_timekeeping_@id" class="btn btn-mini btn-danger" onclick="return TimekeepingDelete(@id)">
+        <i class="ace-icon fa fa-trash bigger-120"></i>
+    </button>
+}
+
+<div class="page-header">
+    <h1>
+        @ViewBag.Title
+        @*<small><i class="ace-icon fa fa-angle-double-right"></i>...</small>*@
+    </h1>
+</div>
+@section HeadOfPage {
+    @Html.ScriptTop_ChosenStyle()
+    <style type="text/css">
+        .chosen-search:after {
+            content: none !important;
+        }
+
+        .chosen-onthispage {
+            margin-right: 2px;
+        }
+
+            .chosen-onthispage label {
+                display: none;
+            }
+
+            .chosen-onthispage .control-group {
+                margin: 0px;
+                display: inline-block;
+            }
+
+        .chosen-single {
+            border-radius: 0px !important;
+            height: 34px !important;
+            line-height: 34px !important;
+            margin-top: -5px !important;
+        }
+
+        .form-search input {
+            padding: 0px 4px;
+            height: 34px;
+            line-height: 26px;
+        }
+
+        .chosen-container {
+            width: 300px !important;
+            max-width: 100%;
+        }
+
+        #ItemType_chosen {
+            width: 150px !important;
+        }
+
+        .radio {
+            margin-right: 5px;
+        }
+    </style>
+}
+<style>
+    .form-group select {
+        height: 34px;
+        text-align: center;
+        padding: 0px;
+    }
+</style>
+@using (Html.BeginForm("Index", "Timekeeping", FormMethod.Get, new { @class = "form-inline form-search" }))
+{
+<div class="col-sm-12" style="padding:0px">
+    <div class="widget-box collapsed">
+        <div class="widget-header" style=" padding-top: 4px;">
+            <span class="control-group">
+                <input class="form-control date-picker" style="margin-right:1px;" readonly="true" data-date-format="dd/mm/yyyy" placeholder="@Wording.FromDate" value="@Request[" start_date"]" name="start_date" />
+            </span>
+            <span class="control-group">
+                <input class="form-control date-picker" style="margin-right:1px;" readonly="true" data-date-format="dd/mm/yyyy" placeholder="@Wording.ToDate" value="@Request[" end_date"]" name="end_date" />
+            </span>
+            <span class="form-group">
+                @Html.TextBox("CodeName", Request["CodeName"], new { placeholder = Wording.CodeNameStaff })
+            </span>
+            <span class="form-group">
+                @*@Html.CustomDropDownList("", "branchId", Request["branchId"], SelectListHelper.GetSelectList_Branch(null), WidthType.span6, DropdownListStyle.DropdownListStyleChosen, null, false, false)*@
+                @Html.DropDownList("branchId", SelectListHelper.GetSelectList_Branch(Request["branchId"],"- Chi nhánh -"), new Dictionary<string, object> { { "class", "form-group" }, { "data-val-required", "Bắt buộc chọn." } })
+            </span>
+            <span class="form-group">
+                @*@Html.CustomDropDownList("", "DepartmentId", Request["DepartmentId"], new List<SelectListItem> { new SelectListItem { Text = "- Rỗng -", Value = "" } }, WidthType.span6, DropdownListStyle.DropdownListStyleChosen, null, false, false)*@
+                @Html.DropDownList("DepartmentId", new List<SelectListItem> { new SelectListItem { Text = "- Phòng ban -", Value = "" } }, new Dictionary<string, object> { { "class", "form-group" }, { "data-val-required", "Bắt buộc chọn." } })
+            </span>
+            <span class="form-group top-5">
+                <button onclick="return true;" class="btn btn-primary btn-sm">
+                    @Wording.Search
+                    <i class="ace-icon fa fa-search icon-on-right bigger-110"></i>
+                </button>
+            </span>
+            <span class="form-group top-5">
+                <a href="@Url.Action("Index", "Timekeeping" , new { area="Staff" })" class="btn btn-black btn-sm">
+                    @Wording.Reset
+                    <i class="ace-icon fa fa-refresh icon-on-right bigger-110"></i>
+                </a>
+            </span>
+        </div>
+    </div>
+</div>
+<div class="col-sm-12" style="padding:0px">
+    <p class="top-10">@Html.Button(Wording.PageCreate_Timekeeping, ButtonType.aTag, ButtonColor.Success, ButtonSize.Mini, true, IconType.Plus, IconSize.Default, false, new { @onclick = "OpenPopup('" + Url.Action("Create", "Timekeeping", new { area="Staff"}) + "', '" + Wording.PageCreate_Timekeeping + "', 700, 650)" })</p>
+    @if (ViewBag.Search)
+    {
+    foreach (var item in Model.StaffList)
+    {
+    <div class="widget-box">
+        <div class="widget-header clearfix">
+            <h5 class="widget-title"> @GridColumnName(item.Name, item.StaffId.Value)</h5>
+            <div class="widget-toolbar">
+                <a href="#" data-action="collapse">
+                    <i class="ace-icon fa fa-chevron-up"></i>
+                </a>
+            </div>
+        </div>
+        <div class="widget-body">
+            <div class="widget-main clearfix">
+                <div class="col-sm-2">
+                    @GridColumnProfileImage(item.ProfileImage, item.Code)
+                </div>
+                <div class="col-sm-10">
+                    <table class="table table-striped grid-table">
+                        <thead>
+                            <tr>
+                                <th class="grid-header">
+                                    <div class="grid-header-title"><span>@Wording.DayWork</span></div>
+                                </th>
+                                <th class="grid-header">
+                                    <div class="grid-header-title"><span>@Wording.ShiftsName</span></div>
+                                </th>
+                                <th class="grid-header">
+                                    <div class="grid-header-title"><span>@Wording.HoursIn</span></div>
+                                </th>
+                                <th class="grid-header">
+                                    <div class="grid-header-title"><span>@Wording.HoursOut</span></div>
+                                </th>
+                                <th class="grid-header">
+                                    <div class="grid-header-title"><span>@Wording.TypeDayOffName</span></div>
+                                </th>
+                                <th class="grid-header">
+                                    <div class="grid-header-title"><span>@Wording.CentPay</span></div>
+                                </th>
+                                <th class="grid-header">
+                                    <div class="grid-header-title"><span>Hoạt động</span></div>
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var i in Model.DayWorkList.Where(x => x.StaffId == item.StaffId))
+                            {
+                            <tr class="grid-row">
+                                <td class="grid-cell" data-name="">@(i.DayWork.HasValue ? i.DayWork.Value.ToString("dd/MM/yyyy") : "")</td>
+                                <td class="grid-cell" data-name="">
+                                    @foreach (var q in Model.timekeepingList.Where(x => x.StaffId == i.StaffId && x.DayWork == i.DayWork))
+                                    {
+                                    if(q.TimekeepingId>0&&q.TimekeepingId!=null)
+                                    {
+                                    <p> @GridColumnEdit(q.NameShifts, q.TimekeepingId)</p>
+                                    }
+                                    else
+                                    {
+                                    <p>
+                                        @q.NameShifts
+                                    </p>
+                                    }
+                                    }
+                                </td>
+                                <td class="grid-cell" data-name="">
+                                    @foreach (var q in Model.timekeepingList.Where(x => x.StaffId == i.StaffId && x.DayWork == i.DayWork))
+                                    {
+                                    <p>
+                                        @(q.HoursIn.HasValue ? q.HoursIn.Value.ToString("HH:mm:ss") : "")
+                                    </p>
+                                    }
+                                </td>
+                                <td class="grid-cell" data-name="">
+                                    @foreach (var q in Model.timekeepingList.Where(x => x.StaffId == i.StaffId && x.DayWork == i.DayWork))
+                                    {
+                                    <p>@(q.HoursOut.HasValue ? q.HoursOut.Value.ToString("HH:mm:ss") : "")</p>
+                                    }
+                                </td>
+                                <td class="grid-cell" data-name="">@i.DayOff</td>
+                                <td class="grid-cell" data-name="">
+                                    @if (i.Pay > 0 && !string.IsNullOrEmpty(i.DayOff))
+                                    {
+                                    <p>@(i.Pay.HasValue ? i.Pay : 0) %</p>
+                                    }
+                                    else
+                                    {
+                                    foreach (var q in Model.timekeepingList.Where(x => x.StaffId == i.StaffId && x.DayWork == i.DayWork))
+                                    {
+                                    <p>@(q.Pay.HasValue ? q.Pay : 0) %</p>
+                                    }
+                                    }
+                                </td>
+                                <td class="grid-cell" data-name="">
+                                    @foreach (var q in Model.timekeepingList.Where(x => x.StaffId == i.StaffId && x.DayWork == i.DayWork))
+                                    {
+                                        if(q.TimekeepingId!=null&&q.TimekeepingId.Value>0)
+                                        { 
+                                        <p>
+                                            @GridColumnCommand(q.TimekeepingId.Value)
+                                        </p>
+                                        }
+                                    }
+                                </td>
+                            </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    }
+    }
+</div>
+}
+@section Scripts {
+<script type="text/javascript">
+    //Fetch Department of University
+    var urDepartmentl = '/api/BackOfficeServiceAPI/FetchBranchDepartment';
+    var department = $('[name="DepartmentId"]'); // cache it
+
+    $('[name="branchId"]').change(function () {
+        ShowLoading();
+        department.empty(); // remove any existing options
+        $(document.createElement('option'))
+                    .attr('value', '')
+                    .text('- Rỗng -')
+                    .appendTo(department).trigger('chosen:updated');
+        var id = $(this).val(); // Use $(this) so you don't traverse the DOM again
+        $.getJSON(urDepartmentl, { BranchId: id }, function (response) {
+            department.empty(); // remove any existing options
+            $(response).each(function () {
+                $(document.createElement('option'))
+                    .attr('value', this.Id)
+                    .text(this.Staff_DepartmentId)
+                    .appendTo(department).trigger('chosen:updated');
+                HideLoading();
+            });
+        });
+    });
+    function ClosePopupAndDoSomething() {
+        ShowLoading();
+        ClosePopup(true);
+    }
+
+    $('#date-timepicker1').datetimepicker({
+        //format: 'MM/DD/YYYY h:mm:ss A',//use this option to display seconds
+        icons: {
+            time: 'fa fa-clock-o',
+            date: 'fa fa-calendar',
+            up: 'fa fa-chevron-up',
+            down: 'fa fa-chevron-down',
+            previous: 'fa fa-chevron-left',
+            next: 'fa fa-chevron-right',
+            today: 'fa fa-arrows ',
+            clear: 'fa fa-trash',
+            close: 'fa fa-times'
+        }
+
+    }).next().on(ace.click_event, function () {
+        $(this).prev().focus();
+    });
+    $('#date-timepicker2').datetimepicker({
+        //format: 'MM/DD/YYYY h:mm:ss A',//use this option to display seconds
+        icons: {
+            time: 'fa fa-clock-o',
+            date: 'fa fa-calendar',
+            up: 'fa fa-chevron-up',
+            down: 'fa fa-chevron-down',
+            previous: 'fa fa-chevron-left',
+            next: 'fa fa-chevron-right',
+            today: 'fa fa-arrows ',
+            clear: 'fa fa-trash',
+            close: 'fa fa-times'
+        }
+
+    }).next().on(ace.click_event, function () {
+        $(this).prev().focus();
+    });
+    //    1.4 Xóa thân nhân
+    function TimekeepingDelete(id) {
+        if (confirm('Bạn có chắc muốn xóa các item đã chọn ?')) {
+            ShowLoading();
+            $.post("@Url.Action("Delete","Timekeeping", new { area = "Staff" })", { id: id })
+        .done(function (data) {
+            $("#btn_delete_timekeeping_" + id).closest('tr').remove();
+            HideLoading();
+        });
+        return false;
+    }
+    else {
+                return false;
+    }
+    };
+</script>
+    @Html.ScriptBottom_ValidationMvc()
+    @Html.ScriptBottom_DatePicker("dd/mm/yyyy")
+    @Html.ScriptBottom_ChosenStyle()
+}

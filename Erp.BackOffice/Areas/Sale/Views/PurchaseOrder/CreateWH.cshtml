@@ -1,0 +1,436 @@
+﻿@using Erp.BackOffice.App_GlobalResources
+@using Erp.BackOffice.Helpers
+@using Erp.BackOffice.Sale.Models
+
+@model PurchaseOrderViewModel
+
+@{
+    ViewBag.Title = Wording.PageCreateWH_PurchaseOrder;
+
+    Layout = "~/Views/Shared/ACE_AdminLayout.cshtml";
+
+    IEnumerable<SelectListItem> warehouseList = (IEnumerable<SelectListItem>)ViewBag.warehouseList;
+
+    IEnumerable<ProductViewModel> productList = (IEnumerable<ProductViewModel>)ViewBag.productList;
+    IEnumerable<SelectListItem> productCategoryList = Erp.BackOffice.Helpers.Common.GetSelectList_Category("product", null, "value");
+    
+}
+
+@section HeadOfPage {
+    @Html.ScriptTop_ChosenStyle()
+}
+
+<style type="text/css">
+    .has-error .field-validation-error, .has-error .field-validation-valid{
+        color:#de2a2a;
+    }
+</style>
+
+@using (Html.BeginForm_AceStyle((string)ViewBag.Title, "Create", "PurchaseOrder", null, FormMethod.Post, new { id = "PurchaseOrder", @class = "form-horizontal clearfix" }))
+{
+    @Html.ValidationSummary(true)
+
+    <div class="col-sm-6">
+        @*@Html.CustomTextboxFor(model => model.Code, null, null, WidthType.span12)*@
+        @Html.CustomTextboxFor(model => model.CreatedUserName, null, null, WidthType.span12, true, new Dictionary<string, object> { { "class", "col-sm-12" }, { "disabled", "disabled" } })
+
+        <div class="control-group form-group">
+            <label class="control-label no-padding-right col-sm-3" for="WarehouseDestinationId">Kho đích đến</label>
+            <div class="control-value col-sm-9">
+                <div class="clearfix">
+                    <select name="WarehouseDestinationId" id="WarehouseDestinationId" class="col-sm-12" data-val="true" data-val-required="Chưa chọn kho đích đến">
+                        <option value="">- chọn -</option>
+                        @foreach (var item in warehouseList)
+                        {
+                            <option value="@item.Value">@item.Text</option>
+                        }
+                    </select>
+                </div>
+                <div class="clearfix">
+                    <span class="field-validation-valid help-inline" data-valmsg-for="WarehouseDestinationId" data-valmsg-replace="true"></span>
+                </div>
+                <div class="clearfix">
+                    <a style="padding-top:5px" onclick="OpenPopup('/Warehouse/Create?IsPopup=true', 'Tạo mới kho', 1000, 500)">Tạo mới kho</a>
+                </div>
+            </div>
+        </div>
+
+    </div>
+    <div class="col-sm-6">
+        @*<div class="control-group form-group">
+            <label class="control-label no-padding-right col-sm-3" for="WarehouseSourceId">Kho nguồn</label>
+            <div class="control-value col-sm-9">
+                <div class="clearfix">
+                    <select name="WarehouseSourceId" id="WarehouseSourceId" class="col-sm-12" data-val="true" data-val-required="Chưa chọn kho nguồn">
+                        <option value="">- chọn -</option>
+                        @foreach (var item in warehouseList)
+                        {
+                            <option value="@item.Value">@item.Text</option>
+                        }
+                    </select>
+                </div>
+                <div class="clearfix">
+                    <span class="field-validation-valid help-inline" data-valmsg-for="WarehouseSourceId" data-valmsg-replace="true"></span>
+                </div>
+            </div>
+        </div>*@
+        @Html.DateTimePicker(model => model.CreatedDate, "dd/MM/yyyy H:mm", "00/00/0000 00:00:00", true, false)
+
+        @*@Html.CustomTextboxFor(model => model.CreatedDate, null, null, WidthType.span12, true, new Dictionary<string, object> { { "class", "col-sm-12" }, { "disabled", "disabled" } })*@
+
+        @Html.CustomTextAreaFor(model => model.Note, null, WidthType.span12)
+        
+    </div>
+
+    <div class="col-sm-12 box">
+        <div class="wait-mask"></div>
+
+        <p>Các sản phẩm trong đơn hàng</p>
+        <a class="btn btn-xs btn-primary btn-add-detail-item">Thêm sản phẩm</a>
+        <input id="product_barcode" placeholder="Product barcode..."/>
+        <div class="clearfix top-15"></div>
+        <input data-val="true" data-val-required="Chưa chọn sản phẩm" id="numOfdetailItem" name="numOfdetailItem" type="text" value="1" style="">
+        <span class="field-validation-valid help-inline" style="color:#F44336" data-valmsg-for="numOfdetailItem" data-valmsg-replace="true"></span>
+        <div class="box-body">
+            <div class="table-responsive">
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th style="width:5%">STT</th>
+                            <th style="width:20%">Danh mục</th>
+                            <th>Tên sản phẩm</th>
+                            <th style="width:15%">Số lượng</th>
+                            <th style="width:15%">Đơn giá</th>
+                            <th style="width:15%">Thành tiền</th>
+                            <th style="width:50px;"></th>
+                        </tr>
+                    </thead>
+                    <tbody id="detailList">
+                        <tr role="0">
+                            <td>1</td>
+                            <td>
+                                <select class="detail_item_category_type" style="width:100%">
+                                    @foreach (var item in productCategoryList.OrderBy(x => x.Text))
+                                    {
+                                        <option value="@item.Value">@item.Text</option>
+                                    }
+                                </select>
+                            </td>
+                            <td class="has-error">
+                                <select id="DetailList[0]_ProductId" name="DetailList[0].ProductId" data-val="true" data-val-required="Chưa chọn sản phẩm" class="detail_item_id" style="width:100%">
+                                    <option value="">- chọn -</option>
+                                    @foreach (var item in productList.OrderBy(x => x.Name))
+                                    {
+                                        <option value="@item.Id" data-code="@item.Code" data-barcode="@item.Barcode" data-product-type="@item.CategoryCode" data-price="@item.PriceInbound" data-unit="@item.Unit">@item.Name</option>
+                                    }
+                                </select>
+                                <span class="field-validation-valid help-inline" data-valmsg-for="DetailList[0].ProductId" data-valmsg-replace="true"></span>
+                            </td>
+                            
+                            <td class="has-error">
+                                <input type="hidden" name="DetailList[0].Unit" value="" class="detail_item_unit" />
+                                <input type="number" style="width:100%" min="1" value="1" data-val-range="Số lượng phải lớn hơn 1" name="DetailList[0].Quantity" id="DetailList[0]_Quantity" class="detail_item_qty" />
+                                <span class="field-validation-valid help-inline" data-valmsg-for="DetailList[0].Quantity" data-valmsg-replace="false"></span>
+                            </td>
+                            <td class="has-error detail-product-price">
+                                <input class="detail_item_price" type="text" id="DetailList[0]_Price" name="DetailList[0].Price" value="" role="price" style="width:100%" data-val="true" data-val-required="Chưa nhập giá" />
+                                <span class="field-validation-valid help-inline" data-valmsg-for="DetailList[0]_Price" data-valmsg-replace="false"></span>
+                            </td>
+                            <td class="detail_item_total"></td>
+                            <td class="text-center"><a class="btn btn-xs btn-danger">X</a></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-sm-6 col-sm-offset-6" style="margin-top:20px;">
+        @Html.CustomTextboxFor(model => model.TotalAmount, null, null, WidthType.span12, true, new Dictionary<string, object> { { "class", "col-sm-12" }, { "disabled", "disabled" } })
+    </div>
+    
+    <div class="col-sm-12">
+        <button style="margin-top:10px" type="submit" class="btn btn-info" name="Submit" value="Save">
+            <i class="ace-icon fa fa-save bigger-110"></i>
+            @Wording.Save
+        </button>
+    </div>
+}
+
+@section Scripts {    
+
+    @Html.ScriptBottom_ValidationMvc()    
+    @Html.ScriptBottom_ChosenStyle()
+    @Html.ScriptBottom_DatePicker("dd/MM/yyyy H:mm")
+
+    <script>
+        var $tr_template = $('#detailList tr:first-child');
+
+        $(document).ready(function () {
+
+            $('#TotalAmount').numberFormat();
+            $('.detail_item_price').numberFormat('before');
+
+            var $WarehouseDestinationId = $('#WarehouseDestinationId');
+            @*$('#WarehouseSourceId').change(function () {
+                $WarehouseDestinationId.find('option').removeAttr('disabled');
+
+                if ($(this).val() != '') {
+                    $WarehouseDestinationId.find('option[value="' + $(this).val() + '"]').attr('disabled', 'disabled');
+                    if ($WarehouseDestinationId.val() == $(this).val() || $WarehouseDestinationId.val() == null)
+                        $WarehouseDestinationId.val('');
+                }
+                //hiện loading
+                $('.box .wait-mask').show();
+                $.getJSON('@Url.Action("GetListProductJsonByWarehouseId", "Inventory")', { warehouseId: $(this).val() }, function (res) {
+                    $('.detail_item_id').html('<option value="">- chọn -</option');
+                    for (var i in res) {
+                        if (res[i].Quantity != 0)
+                            $('.detail_item_id').append($('<option value="' + res[i].ProductId + '" data-price="' + res[i].ProductPrice + '" data-quantity="' + res[i].Quantity + '">' + res[i].ProductName + '</option>'));
+                    }
+                    //ẩn loading
+                    $('.box .wait-mask').hide();
+                });
+            });*@
+
+            $('#detailList').on('change', '.detail_item_category_type', function () {
+                var $this = $(this);
+                var $item = $this.closest('tr').find('.detail_item_id');
+                var $option = $item.find('option:not([value=""])');
+                $option.css('display', 'block');
+                $item.val('').trigger('change');
+                if ($this.val() != '') {
+                    $.each($option, function (index, elem) {
+                        if ($(elem).data('product-type') != $this.val()) {
+                            $(elem).css('display', 'none');
+                        }
+                    });
+                }
+            });
+
+            // hiển thị giá và tính thành tiền khi chọn sản phẩm
+            $('#detailList').on('change', '.detail_item_id', function () {
+                var $this = $(this);
+
+                $this.next('span').text('');
+                //disabled sản phẩm này ở các danh sách chọn khác
+                var optionsSeletedValue = ',';
+                $('#detailList select').each(function (index, elem) {
+                    if ($(elem).val() != '')
+                        optionsSeletedValue += $(elem).val() + ",";
+                });
+                $('#detailList select option').removeAttr('disabled');
+                $('#detailList select').each(function (index, elem) {
+                    $(elem).find('option:not([value="' + $(elem).val() + '"])').each(function (index2, option) {
+                        var value = ',' + $(option).attr('value') + ',';
+                        if (optionsSeletedValue.indexOf(value) != -1)
+                            $(option).attr('disabled', 'disabled');
+                    });
+                });
+
+                if ($this.val() == '') {
+                    $this.closest('tr').find('.detail_item_qty').val(1);
+                    $this.closest('tr').find('.detail_item_price').val(0).trigger('change');
+                    $this.closest('tr').find('.detail_item_total').text(0);
+                } else {
+                    var unit = $this.find('option:selected').data('unit');
+                    $this.closest('tr').find('.detail_item_unit').val(unit);
+                    calcAmountItem($this, 'item select');
+                }
+            });
+
+            // tính thành tiền và tổng cộng
+            $('#detailList').on('change', '.detail_item_qty', function () {
+                var $this = $(this);
+                var $detail_item_id = $this.closest('tr').find('.detail_item_id');
+                calcAmountItem($detail_item_id, 'price');
+                calcTotalAmount();
+            });
+
+            $('#detailList').on('change', '.detail-product-price .detail_item_price:last-of-type', function () {
+                var $this = $(this);
+                var $detail_item_id = $this.closest('tr').find('.detail_item_id');
+                calcAmountItem($detail_item_id, 'price');
+                calcTotalAmount();
+            });
+
+
+            //khi nhập barcode
+            $('#product_barcode').change(function () {
+                var $this = $(this);
+                if ($this.val() != '') {
+                    var $hasSelect = $('.detail_item_id').filter(function () {
+                        return $.trim($(this).find('option:selected').data('barcode')) == $this.val();
+                    });
+                    console.log($hasSelect);
+                    if ($hasSelect.length != 0) {
+                        $('[data-valmsg-for="numOfdetailItem"]').text('Đã chọn sản phẩm với mã code trên!');
+                        return;
+                    }
+
+                    var $emptySelect = $('.detail_item_id').filter(function () {
+                        return $.trim($(this).val()) == '';
+                    });
+                    var $item = $emptySelect.first();
+
+                    if ($item.length != 0) { // các dòng đã chọn sản phẩm
+                        var $option = $item.find('option[data-barcode="' + $this.val() + '"]');
+                        if ($option.length != 0) {
+                            $item.val($option.attr('value')).trigger('change');
+                            $('.btn-add-detail-item').trigger('click');
+                            $this.val('');
+                        }
+                    } else { // thêm dòng mới
+                        $('.btn-add-detail-item').trigger('click');
+                        var $item_new = $('#detailList tr:last-child .detail_item_id');
+                        var $option = $item_new.find('option[data-barcode="' + $this.val() + '"]');
+                        if ($option.length != 0) {
+                            $item_new.val($option.attr('value')).trigger('change');
+                            $('.btn-add-detail-item').trigger('click');
+                            $this.val('');
+                        }
+                    }
+                }
+            });
+
+            //thêm mới sản phẩm
+            $('.btn-add-detail-item').click(function () {
+                //var reg = new RegExp('DetailList[0].Quantity', 'g');
+
+                var len = $('#detailList tr').length;
+                var tr_new = $tr_template.clone()[0].outerHTML;
+                tr_new = tr_new.replace(/\[0\]/g, "[" + len +"]");
+                var $tr_new = $(tr_new);
+                $tr_new.attr('role', len);
+                $tr_new.find('td:first-child').text(len + 1);
+                $tr_new.find('.detail_item_price:first-of-type').remove(); //input định dạng tiền tệ của mẫu
+                $tr_new.find('.detail_item_price').val(0);
+                $tr_new.find('.detail_item_total').text('');
+                //đưa về tùy chọn cho sản phẩm
+                $tr_new.find('select').val('');
+
+                var optionsSeletedValue = ',';
+                $('#detailList select').each(function (index, elem) {
+                    if ($(elem).val() != '')
+                        optionsSeletedValue += $(elem).val() + ",";
+                });
+                $tr_new.find('select option').each(function (index, elem) {
+                    var value = ',' + $(elem).attr('value') + ',';
+                    if (optionsSeletedValue.indexOf(value) != -1) {
+                        $(elem).attr('disabled', 'disabled');
+                    }
+                });
+
+                $('#detailList').append($tr_new);
+                var $tr_after_append = $('tr[role="' + len + '"]');
+                $tr_after_append.find('.detail_item_price').numberFormat('before');
+
+                $('#numOfdetailItem').next('span').text('');
+                $('#numOfdetailItem').val(len);
+
+                calcTotalAmount();
+            });
+
+            // xóa sản phẩm
+            $('#detailList').on('click', '.btn-danger', function () {
+                var selected_item_val = $(this).closest('tr').find('select').val();
+
+                $(this).closest('tr').remove();
+                if ($('#detailList tr').length == 0) {
+                    $('#numOfdetailItem').val('');
+                }
+                calcTotalAmount();
+
+                $('#detailList select option[value="' + selected_item_val + '"]').removeAttr('disabled');
+
+                $('#detailList tr').each(function (index, tr) {
+                    $(tr).attr('role', index);
+                    $(tr).find('td:first-child').text(index + 1);
+
+                    $(tr).find('.detail_item_id').attr('name', 'DetailList[' + index + '].ProductId').attr('id', 'DetailList_' + index + '_ProductId');
+                    $(tr).find('.detail_item_qty').attr('name', 'DetailList[' + index + '].Quantity').attr('id', 'DetailList_' + index + '_Quantity');
+                    $(tr).find('.detail_item_price').filter(':not(.mask-format-currency)').attr('name', 'DetailList[' + index + '].Price').attr('id', 'DetailList_' + index + '_Price');
+                    $(tr).find('.detail_item_unit').attr('name', 'DetailList[' + index + '].Unit');
+                });
+
+            });
+
+            resetLableRequired('#PurchaseOrder');
+            $('#PurchaseOrder').submit(function () {
+                ShowLoading();
+                if ($(this).valid()) {
+                    if (checkFieldLiveRequired($(this)) == true) {
+                        if (checkChosenProductOnTable() == true)
+                            return true;
+                    }
+                }
+
+                HideLoading(); return false;
+            });
+
+        }); // end document ready
+
+        function calcAmountItem($detail_item_id, priceFrom) {
+            var $option = $detail_item_id.find('option:selected');
+
+            var price = 0;
+            var $priceElem = $detail_item_id.closest('tr').find('.detail_item_price');
+            if (priceFrom == 'item select') {
+                $priceElem.val($option.data('price')).trigger('change');
+                price = parseFloat($option.data('price'));
+            } else {
+                price = parseFloat($priceElem.last().val().replace(/[^0-9\.]/g, ''));
+            }
+
+
+            var $qty = $detail_item_id.closest('tr').find('.detail_item_qty');
+            var qty = 1;
+            if ($qty.val() == '') {
+                $qty.val(1);
+            } else {
+                qty = parseInt($qty.val()) < 0 ? parseInt($qty.val()) * -1 : parseInt($qty.val());
+            }
+            var total = price * qty;
+            $detail_item_id.closest('tr').find('.detail_item_total').text(currencyFormat(total));
+
+            calcTotalAmount();
+        };
+
+        function calcTotalAmount() {
+            var total = 0;
+            $('#detailList tr').each(function (index, elem) {
+                var amount = $(elem).find('.detail_item_total').text();
+                if (amount != '') { // là số thì mới tính
+                    total += parseInt(amount.replace(/\./g, ''));
+                }
+            });
+
+            if ($('#TaxFee').val() != '' && $('#TaxFee').length > 0)
+                total += parseInt($('#TaxFee').val());
+
+            if ($('#Discount').val() != '' && $('#Discount').length > 0) {
+                var discount = parseInt($('#Discount').val());
+                total = total - Math.round((discount * total) / 100);
+            }
+            $('#mask-TotalAmount').val(currencyFormat(total));
+            $('#TotalAmount').val(total);
+        };
+
+        function checkChosenProductOnTable() {
+            var flag = true;
+            $('#detailList select').each(function (index, elem) {
+                if ($(elem).val() == '') {
+                    var message = $(elem).data('val-required') != undefined ? $(elem).data('val-required') : 'Chưa chọn sản phẩm!';
+                    $(elem).next('span').text(message);
+                    flag = false;
+                }
+            });
+            return flag;
+        };
+
+        function ClosePopupAndAppendSelectWarehouse(optionSelect) {
+            ClosePopup(false);
+            $('#WarehouseDestinationId').append($(optionSelect)).trigger("chosen:updated");
+        }
+    </script>
+}

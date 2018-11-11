@@ -1,0 +1,98 @@
+﻿@using Erp.BackOffice.App_GlobalResources
+@using Erp.BackOffice.Areas.Administration.Models
+@using Erp.BackOffice.Helpers
+
+@model CreatePageModel
+@{
+    ViewBag.Title = Wording.CreatePage;
+    Layout = "~/Views/Shared/" + (Request["IsPopup"] == null ? "ACE_AdminLayout.cshtml" : "_PopupLayout.cshtml");
+    //var ListPageMenuParent = TempData["ListPageMenuParent"] == null ? new List<PageMenuParentModel>() : TempData["ListPageMenuParent"] as List<PageMenuParentModel>;
+    //TempData.Keep("ListPageMenuParent");
+
+    WidthType widthType = WidthType.span6;
+
+    Erp.BackOffice.Models.PageSetting pageSetting = new Erp.BackOffice.Models.PageSetting
+    {
+        ModuleName = "Page",
+        ActionName = "Create",
+        PageTitle = ViewBag.Title,
+        DisplaySearchPanel = false,
+        IsPopup = true,
+        DisplayBackButton = false
+    };
+}
+
+@section HeadOfPage {
+    @Html.ScriptTop_ChosenStyle()
+}
+
+@using (Html.BeginPageHeaderContainer(pageSetting))
+{
+
+}
+
+@using (Html.BeginForm_AceStyle((string)ViewBag.Title, "Create", "Page", null, FormMethod.Post, new { @class = "form-horizontal" }))
+{
+    //@Html.ValidationSummary(true)
+
+    @Html.HiddenFor(model => model.Page.Id)
+
+    <input type="hidden" value="@Request["IsPopup"]" name="IsPopup" />
+
+    if (!Model.IsTranslate)
+    {
+        @Html.CustomDropDownListFor(model => model.Page.AreaName, SelectListHelper.GetSelectList_Category("pageArea", null, "- Chọn Area -"), WidthType.span4, true, null, DropdownListStyle.DropdownListStyleChosen)
+        @Html.CustomTextboxFor(model => model.Page.ControllerName, null, null, widthType, true)
+        @Html.CustomTextboxFor(model => model.Page.ActionName, null, null, widthType, true)
+        @Html.CustomSwitchesFor(model => model.Page.Status, SwitchesStyle.CheckboxStyle, true)
+
+        <div class="control-group" style="display:none">
+            <label class="control-label" for="">@Wording.Function</label>
+            <div class="controls">
+                <span class="">
+                    <label>
+                        <input type="checkbox" id="IsView" name="IsView" value="@Model.Page.IsView">
+                        <span class="lbl">@Wording.View</span>
+                    </label>
+                    <label>
+                        <input type="checkbox" id="IsAdd" name="IsAdd" value="@Model.Page.IsAdd">
+                        <span class="lbl">@Wording.Add</span>
+                    </label>
+                    <label>
+                        <input type="checkbox" id="IsEdit" name="IsEdit" value="@Model.Page.IsEdit">
+                        <span class="lbl">@Wording.Edit</span>
+                    </label>
+                    <label>
+                        <input type="checkbox" id="IsDelete" name="IsDelete" value="@Model.Page.IsDelete">
+                        <span class="lbl">@Wording.Delete</span>
+                    </label>
+                    <label>
+                        <input type="checkbox" id="IsImport" name="IsImport" value="@Model.Page.IsImport">
+                        <span class="lbl">@Wording.Import</span>
+                    </label>
+                    <label>
+                        <input type="checkbox" id="IsExport" name="IsExport" value="@Model.Page.IsExport">
+                        <span class="lbl">@Wording.Export</span>
+                    </label>
+                    <label>
+                        <input type="checkbox" id="IsPrint" name="IsPrint" value="@Model.Page.IsPrint">
+                        <span class="lbl">@Wording.Print</span>
+                    </label>
+                </span>
+            </div>
+        </div>
+    }
+
+    using (Html.BeginButtonContainer(pageSetting))
+    {
+        <button class="btn btn-mini btn-primary" type="submit" name="Submit" value="Save">
+            <i class="ace-icon fa fa-save"></i>
+            @Wording.Save
+        </button>
+    }
+}
+
+@section Scripts {
+    @Html.ScriptBottom_ValidationMvc()
+    @Html.ScriptBottom_ChosenStyle()
+}

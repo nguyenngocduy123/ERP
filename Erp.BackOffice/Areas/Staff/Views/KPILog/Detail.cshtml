@@ -1,0 +1,104 @@
+﻿@using Erp.BackOffice.App_GlobalResources
+@using Erp.BackOffice.Helpers
+@using Erp.BackOffice.Staff.Models
+
+@model KPILogViewModel
+
+@{
+    ViewBag.Title = Wording.PageDetail_KPILog;
+
+    Layout = "~/Views/Shared/ACE_AdminLayout.cshtml";
+
+    Erp.BackOffice.Models.PageSetting pageSetting = new Erp.BackOffice.Models.PageSetting
+    {
+        ModuleName = "KPILog",
+        ActionName = "Edit",
+        PageTitle = ViewBag.Title,
+        DisplaySearchPanel = false,
+        IsPopup = false,
+        DisplayBackButton = true
+    };
+}
+
+@using (Html.BeginPageHeaderContainer(pageSetting))
+{
+
+}
+
+<div class="detail-view">
+    <div class="row control-group">
+        @Html.DetailViewItemFor2(model => model.Name)
+    </div>
+    <div class="row control-group">
+        @Html.DetailViewItemFor2(model => model.ExpectScore)
+    </div>
+    <div class="row control-group">
+        @Html.DetailViewItemFor2(model => model.Description)
+    </div>
+</div>
+
+<div class="widget-box top-10">
+    <div class="widget-header">
+        <h5 class="widget-title">Danh sách nhân sự</h5>
+        <div class="widget-toolbar">
+            <a href="#" data-action="collapse">
+                <i class="ace-icon fa fa-chevron-up"></i>
+            </a>
+        </div>
+    </div>
+    <div class="widget-body">
+        <div class="widget-main">
+            @{Html.RenderAction("Index", "KPILogDetail", new { KPILogId = Model.Id, KPICatalogId = Model.KPICatalogId });}
+        </div>
+    </div>
+</div>
+
+@using (Html.BeginButtonContainer(pageSetting))
+{
+    <a class="btn btn-mini btn-primary" href="@Url.Action("Edit", pageSetting.ModuleName, new { Id = Model.Id })">
+        <i class="ace-icon fa fa-edit"></i>
+        @Wording.Edit
+    </a>
+}
+
+@section Scripts {
+    <script type="text/javascript">
+        function selectLocationItem(id, code, name, orderNo) {
+            ShowLoading();
+            $.post("@Url.Action("Create", "KPILogDetail")", { KPILogId: @Model.Id, StaffId: id, KPICatalogId: @Model.KPICatalogId })
+            .done(function (data) {
+                location.reload();
+            });
+            ClosePopup();
+        }
+
+        function CheckIsval() {
+            if ($('[name="DeleteAll-checkbox"]').is(':checked') == false) {
+                alert("Phải chọn ít nhất 1 item.");
+                return false;
+            }
+            else {
+                if (confirm('Bạn có chắc muốn xóa các item đã chọn ?')) {
+                    return true;
+                }
+                else {
+                    return false;
+                }
+            }
+        }
+
+        $('[name="Delete"]').click(function () {
+            if (confirm('Bạn có chắc muốn xóa item ?')) {
+                $(this).closest('tr').children('td').each(function (i, e) {
+                    $(this).find("input.class-delete-all").prop("checked", true);
+                    return true;
+                })
+            }
+            else {
+                return false;
+            }
+
+        })
+
+    </script>
+}

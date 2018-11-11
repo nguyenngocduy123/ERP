@@ -1,0 +1,45 @@
+﻿@using Erp.BackOffice.Staff.Models;
+@using Erp.Domain.Staff.Entities;
+
+@model List<TreeNode>
+
+@{
+    bool clicked = ViewBag.CL == null ? true : false;
+}
+
+@if (Model != null && Model.Count > 0)
+{
+    <ul>
+        @foreach (TreeNode node in Model)
+        {
+            var bran = node.Tag as BranchViewModel ;
+            string icon = "";
+            string style = "jstree-clicked";
+            if (!clicked) {
+                style = "";
+            }
+           
+
+            if (node.Id == -1)
+            {
+                icon = "../Scripts/vakata-jstree/src/themes/default/folder_home16.png";
+            }
+            else if (node.TypeName == "Branch")
+            {
+                icon = "../Scripts/vakata-jstree/src/themes/default/home16.png";
+            }
+            else if (node.TypeName == "DrugStore")
+            {
+                icon = "../Scripts/vakata-jstree/src/themes/default/home-16.png";
+            }
+
+            <li id="@node.Id" data-jstree='{"icon":"@icon"}' data-typename="@node.TypeName" data-id="@node.Id" data-parentid="@node.ParentId">
+                <a href="#" class="@style"> @node.Name</a>
+                @Html.Partial("~/Areas/Staff/Views/Shared/TreeNodeChild.cshtml", node.ChildNode, new ViewDataDictionary { {"CL", clicked}})
+              
+            </li>
+            clicked = false;
+        }
+    </ul>
+}
+

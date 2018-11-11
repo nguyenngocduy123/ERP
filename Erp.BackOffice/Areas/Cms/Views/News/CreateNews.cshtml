@@ -1,0 +1,108 @@
+﻿@model Erp.BackOffice.Areas.Cms.Models.NewsViewModel
+@using Erp.BackOffice.App_GlobalResources
+@using Erp.BackOffice.Helpers;
+
+@{
+    ViewBag.Title = Wording.CreateNews;
+    Layout = "~/Views/Shared/ACE_AdminLayout.cshtml";
+}
+
+@section HeadOfPage {
+
+    @Html.ScriptTop_CkEditor()
+    @Html.ScriptTop_ChosenStyle()
+    @Html.ScriptTop_DatePicker()
+}
+
+@using (Html.BeginForm_AceStyle((string)ViewBag.Title, "CreateNews", "News", new { @area = "News" }, FormMethod.Post, new { @class = "form-horizontal", enctype = "multipart/form-data" }))
+{
+    // Detect browser
+    var browser = Request.Browser;
+    var browserName = browser.Browser;
+    @Html.ValidationSummary(true)
+    @Html.HiddenFor(m => m.Id)
+    @Html.HiddenFor(m => m.CreatedUser)
+    @Html.HiddenFor(m => m.CreatedDate)
+    @Html.HiddenFor(m => m.ModifiedDate)
+    @Html.HiddenFor(m => m.UpdateUser)
+    @Html.HiddenFor(m => m.OrderNo)
+    @Html.CustomTextboxFor(n => n.Title, null, null, WidthType.span4, true)
+    @Html.CustomDropDownListFor(model => model.CategoryId, Model.CategoryList, WidthType.span3)
+    @*<input type="hidden" id="browserName" name="browserName" value="@browserName"/>*@
+    @*if (browserName == "IE" || browserName == "Safari")
+    {
+        // For Thumbnail Image
+        <div class="control-group"> 
+            <label for="Name" class="control-label">Thumbnail</label>
+            <div class="controls"> 
+                <div class="item"> 
+                    <span style="-moz-box-sizing: border-box; background-color: #FFFFFF; border: 1px solid #CCCCCC; box-shadow: 1px 1px 1px rgba(0, 0, 0, 0.15); display: inline-block; max-width: 100%; padding: 4px;">  
+                        <img src= "@(string.IsNullOrEmpty(Model.ThumbnailPath) ? (string.Format("{0}?w=200&h=200", Url.Content("~/Images/NoImage.jpg"))) : (string.Format("{0}?w=200&h=200", Url.Content(Model.ThumbnailPath))))" alt=""/>
+                    </span>
+                </div> 
+            </div>
+        </div>
+
+        <div>
+            <div class="control-group">
+                <label class="control-label" for="file">@Wording.Source</label>
+                <div class="controls">
+                    <span class="span6">
+                        @Html.TextBoxFor(model => model.SourceFileThumbnailImage, new { @type = "file", id = "SourceFileThumbnailImage", @name = "SourceFileThumbnailImage" })
+                    </span>
+                    <span class="field-validation-valid help-inline" data-valmsg-replace="true" data-valmsg-for="SourceFileThumbnailImage"></span>
+                </div>
+            </div>
+        </div>
+    
+    // For normal image
+    
+        <div class="control-group"> 
+            <label for="Name" class="control-label">@Wording.Image</label>
+            <div class="controls"> 
+                <div class="item"> 
+                    <span style="-moz-box-sizing: border-box; background-color: #FFFFFF; border: 1px solid #CCCCCC; box-shadow: 1px 1px 1px rgba(0, 0, 0, 0.15); display: inline-block; max-width: 100%; padding: 4px;">  
+                        <img src= "@(string.IsNullOrEmpty(Model.ImagePath) ? (string.Format("{0}?w=200&h=200", Url.Content("~/Images/NoImage.jpg"))) : (string.Format("{0}?w=200&h=200", Url.Content(Model.ImagePath))))" alt=""/>
+                    </span>
+                </div> 
+            </div>
+        </div>
+
+        <div>
+            <div class="control-group">
+                <label class="control-label" for="file">@Wording.Source</label>
+                <div class="controls">
+                    <span class="span6">
+                       @Html.TextBoxFor(model => model.SourceFileImage, new { @type = "file", id = "SourceFileImage", @name = "SourceFileImage" })
+                    </span>
+                    <span class="field-validation-valid help-inline" data-valmsg-replace="true" data-valmsg-for="SourceFileImage"></span>
+                </div>
+            </div>
+        </div>
+    }
+    else
+    {
+        @Html.ImagePickerFor(m => m.ThumbnailPath, m => m.ThumbnailPath64String)
+        @Html.ImagePickerFor(m => m.ImagePath, m => m.ImagePath64String)
+    }*@
+                                
+    @Html.CustomTextAreaFor(n => n.ShortContent, null, WidthType.span12, true)     
+    @Html.CkEditorFor(n => n.Content, null, true)
+    @*@Html.CustomTextboxFor(n => n.Url, null, null, WidthType.span4, true)
+    @Html.DatePicker(m => m.PublishedDate, "dd/MM/yyyy", "99/99/9999", true)
+    @Html.CustomSwitchesFor(n => n.IsPublished, SwitchesStyle.CheckboxStyle, true)*@
+    using (Html.BeginButtonContainer())
+    {
+        @Html.Button(Wording.Save, ButtonType.buttonTag, ButtonColor.Info, ButtonSize.Default, true, IconType.Ok, IconSize.Default, false, null)
+    }
+
+}
+
+@section Scripts {
+    @Html.ScriptBottom_ValidationMvc()
+    @Html.ScriptBottom_CkEditor()
+    @Html.ScriptBottom_ChosenStyle()
+    @Html.ScriptBottom_DatePicker("dd/mm/yyyy")
+    @Html.ScriptBottom_RequireEitherInput()
+    <script src="@Url.Content("~/Scripts/uploadFile.js")"></script>
+}

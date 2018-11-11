@@ -1,0 +1,335 @@
+@using Erp.BackOffice.App_GlobalResources
+@using Erp.BackOffice.Sale.Models
+@using Erp.BackOffice.Helpers
+@using Erp.BackOffice.Staff.Models
+@model List<TotalDiscountMoneyNTViewModel>
+@{
+    ViewBag.Title = "Báo cáo chiết khấu của nhà thuốc";
+    if (Request["IsPopup"] == "true")
+    {
+        Layout = "~/Views/Shared/_PopupLayout.cshtml";
+    }
+    else
+    {
+        if (Request["IsPopup"] == "null")
+        {
+            Layout = null;
+        }
+        else
+        {
+            Layout = "~/Views/Shared/ACE_AdminLayout.cshtml";
+        }
+    }
+    bool IsDisplaySearchPanel = Request["IsPopup"] != null && Request["IsPopup"].ToString().ToLower() == "true" ? false : true;
+    Erp.BackOffice.Models.PageSetting pageSetting = new Erp.BackOffice.Models.PageSetting
+    {
+        ModuleName = "TotalDiscountMoneyNT",
+        ActionName = "Index",
+        PageTitle = ViewBag.Title,
+        DisplaySearchPanel = IsDisplaySearchPanel,
+        IsPopup = false,
+        DisplayBackButton = false
+    };
+    string BranchId = Request["BranchId"];
+    string StaffId = Request["StaffId"];
+    string month = Request["month"] != null ? Request["month"] : DateTime.Now.Month.ToString();
+    string year = Request["year"] != null ? Request["year"] : DateTime.Now.Year.ToString();
+    int index = 1;
+    IEnumerable<SelectListItem> BranchList = Erp.BackOffice.Helpers.SelectListHelper.GetSelectList_BranchAllNew(null, null).Where(x=>string.IsNullOrEmpty(BranchId)||(!string.IsNullOrEmpty(BranchId)&&x.Value==BranchId));
+    List<BranchViewModel> departmentList = (List<BranchViewModel>)ViewBag.departmentList;
+}
+
+<style type="text/css">
+    .mini-popup {
+        position: relative;
+        display: inline;
+    }
+
+    #popup_archive {
+        position: absolute;
+        bottom: 45px;
+        left: 0px;
+        /*width: 410px;*/
+        height: 175px;
+        min-width: 160px;
+        top: inherit;
+    }
+
+    .popover {
+        max-width: 650px !important;
+    }
+
+      
+</style>
+
+@using (Html.BeginPageHeaderContainer(pageSetting))
+{
+    <p>
+        @Html.DropDownList("BranchId", SelectListHelper.GetSelectList_BranchAllNew(BranchId, "Tất cả chi nhánh"))
+        <select id="year" name="year">
+            @for (int i = 2016; i <= DateTime.Now.Year; i++)
+            {
+                <option @(year == i.ToString() ? "Selected" : "") value="@i">Năm @i</option>
+            }
+        </select>
+    </p>
+
+}
+@if (Request["IsPopup"] == "true")
+{
+    @*<div class="table-responsive" id="BCCommisionStaff">
+            <div class="grid-mvc" data-lang="en" data-gridname="" data-selectable="true" data-multiplefilters="false">
+                <div class="grid-wrap">
+                    <table id="CTable" class="table table-bordered">
+                        <thead>
+                            <tr class="">
+                                <th class="" colspan="6" style="display:none;text-align:center"><h4>BÁO CÁO CHIẾT KHẤU CỦA NHÀ THUỐC @ViewBag.DrugStore THÁNG @month NĂM @year</h4></th>
+                            </tr>
+                            <tr>
+                                <th style="width:40px;text-align:center">STT</th>
+                                <th style="width:200px;text-align:center">Ngày tính hoa hồng</th>
+                                <th style="width:150px;text-align:center">Mã đơn hàng</th>
+                                <th style="text-align:center">Tên sản phẩm/Dịch vụ</th>
+                                <th style="width:100px;text-align:center">% Chiết khấu</th>
+                                <th style="width:150px;text-align:center">Số tiền</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model)
+                            {
+                                <tr>
+                                    <td>
+                                        <span>@(index++)</span>
+                                    </td>
+                                    <td>@(item.CreatedDate.Value.ToString("dd/MM/yyyy HH:mm"))</td>
+                                    <td>
+                                        @item.ProductInvoiceCode
+                                    </td>
+                                    <td>
+                                        @item.ProductCode -@item.ProductName
+                                    </td>
+                                    <td class="text-right">
+                                        @Common.PhanCachHangNgan(item.PercentOfCommision)
+                                    </td>
+                                    <td class="text-right">
+                                        @Common.PhanCachHangNgan(item.AmountOfCommision)
+                                    </td>
+                                </tr>
+                            }
+
+                            <tr>
+                                <td colspan="5" style="text-align:right"><b>Tổng</b></td>
+                                <td style="width:100px;text-align:right;color:red"><b>@(Common.PhanCachHangNgan(Model.Sum(x => x.AmountOfCommision)))</b></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>*@
+}
+else
+{
+    <div  id="BCCommisionStaff">
+        <table id="cTable" class="table table-bordered">
+            <thead>
+                @*<tr class="" style="display:none;">
+                    <th class="" colspan="15" style="text-align:center"><h4>BÁO CÁO CHIẾT KHẤU CỦA NHÀ THUỐC NĂM @year</h4></th>
+                </tr>*@
+                <tr>
+                    <th style="width:40px;text-align:center">STT</th>
+                    <th style="min-width:200px;text-align:center">Nhà thuốc</th>
+                    @for (int i = 1; i <= 12; i++)
+                    {
+                        <th style="width:100px;text-align:center">Tháng @i</th>
+                    }
+                    <th style="width:100px;text-align:center">@Wording.Total</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in BranchList)
+                {
+                    <tr class="alert-info">
+                        <td colspan="2"><b>@item.Text</b></td>
+                        @for (int i = 1; i <= 12; i++)
+                        {
+                            var sum = Model.Where(x => x.BranchId.ToString() == item.Value && x.Month == i).Sum(x => x.RemainingAmount);
+                            <td style="width:100px;text-align:right">
+                                <span>@CommonSatic.ToCurrencyStr(sum == null ? 0 : sum,null)</span>
+                            </td>
+                        }
+                        <td style="width:100px;text-align:right">@(CommonSatic.ToCurrencyStr(Model.Where(x => x.BranchId.ToString() == item.Value).Sum(x => x.RemainingAmount),null))</td>
+                    </tr>
+                    foreach (var nt in departmentList.Where(x => x.ParentId.Value.ToString() == item.Value))
+                    {
+                        <tr class="@(index%2==0?"alert-warning":"")">
+                            <td>
+                                <span>@(index++)</span>
+                            </td>
+                            <td style="width:300px;">@nt.Code - @nt.Name</td>
+                            @for (int i = 1; i <= 12; i++)
+                            {
+                                var _list=Model.Where(x => x.DrugStoreId == nt.Id && x.Month == i);
+                                var sum = _list.Sum(x => x.RemainingAmount);
+                                <td style="width:100px;text-align:right">
+                                    @if (sum > 0)
+                                    {
+                                         <a onclick="OpenPopup('@Url.Action("Detail", "TotalDiscountMoneyNT", new { area = "Sale", Id = _list.FirstOrDefault().Id, IsPopup = "true" })', 'Trang danh sách chi tiết chiết khấu', 0, 500)">
+                                        @CommonSatic.ToCurrencyStr(sum,null)
+                                        </a>
+                                    }
+                                    else
+                                    {
+                                        <span>0</span>
+                                    }
+                                </td>
+                            }
+                            <td style="width:100px;text-align:right">@(CommonSatic.ToCurrencyStr(Model.Where(x => x.DrugStoreId == nt.Id).Sum(x => x.RemainingAmount),null))</td>
+                        </tr>
+                    }
+                }
+            </tbody>
+            <thead>
+                <tr>
+                    <th colspan="2" style="text-align:right"><b>Tổng</b></th>
+                    @for (int i = 1; i <= 12; i++)
+                    {
+                        <th style="width:100px;text-align:right"><b>@(CommonSatic.ToCurrencyStr(Model.Where(x => x.Month == i).Sum(x => x.RemainingAmount),null))</b></th>
+                    }
+                    <th style="width:100px;text-align:right"><b>@(CommonSatic.ToCurrencyStr(Model.Sum(x => x.RemainingAmount),null))</b></th>
+                </tr>
+
+            </thead>
+        </table>
+
+    </div>
+}
+@using (Html.BeginButtonContainer(pageSetting))
+{
+    <button onclick="tableToExcel('CTable', 'BCCommisionStaff')" class=" btn btn-primary btn-sm btn-white btn-success">
+        <i class="ace-icon fa fa-download"></i>
+        Xuất Excel
+    </button>
+    if (Erp.BackOffice.Filters.SecurityFilter.AccessRight("Sync", "TotalDiscountMoneyNT", "Sale"))
+    {
+        <div class="mini-popup">
+
+            <a class="btn btn-mini btn-success" data-toggle="collapse" data-target="#popup_archive">
+                <i class="ace-icon fa fa-refresh"></i>
+               Tính chiết khấu
+            </a>
+
+            <div id="popup_archive" class="popover fade top">
+                <div class="arrow" style="left: 50%;"></div>
+                <h3 class="popover-title"><i class="ace-icon fa fa-refresh"></i> Đồng bộ</h3>
+                <div class="popover-content">
+                        <select id="months" name="months">
+                            @for (int i = 1; i <= 12; i++)
+                            {
+                                <option @(month == i.ToString() ? "Selected" : "") value="@i">Tháng @i</option>
+                            }
+                        </select>
+                        <p class="top-10">
+                        </p>
+                        <select id="years" name="years">
+                            @for (int i = 2016; i <= DateTime.Now.Year; i++)
+                            {
+                                <option @(year == i.ToString() ? "Selected" : "") value="@i">Năm @i</option>
+                            }
+                        </select>
+                        <p class="top-10">
+                            <button class="btn btn-mini btn-primary" id="btnSync">
+                                Đồng ý
+                            </button>
+                            <a class="btn btn-white btn-sm no-border" data-toggle="collapse" data-target="#popup_archive">Đóng</a>
+                        </p>
+                </div>
+            </div>
+        </div>
+    }
+}
+
+@section Scripts {
+    <script type="text/javascript">
+
+        var tableToExcel = (function () {
+            var uri = 'data:application/vnd.ms-excel;base64,'
+              , template = '<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40"><head><!--[if gte mso 9]><xml><x:ExcelWorkbook><x:ExcelWorksheets><x:ExcelWorksheet><x:Name>{worksheet}</x:Name><x:WorksheetOptions><x:DisplayGridlines/></x:WorksheetOptions></x:ExcelWorksheet></x:ExcelWorksheets></x:ExcelWorkbook></xml><![endif]--></head><body><table>{table}</table></body></html>'
+              , base64 = function (s) { return window.btoa(unescape(encodeURIComponent(s))) }
+              , format = function (s, c) { return s.replace(/{(\w+)}/g, function (m, p) { return c[p]; }) }
+            return function (table, name) {
+                if (!table.nodeType) table = document.getElementById(table)
+                var ctx = { worksheet: name || 'Worksheet', table: table.innerHTML }
+                window.location.href = uri + base64(format(template, ctx))
+            }
+        })()
+        $('.popover-dismiss').popover({
+            trigger: 'focus'
+        })
+        $("#btnSync").click(function (e) {
+            e.preventDefault();
+            ShowLoading();
+            var month = $("#months option:selected").val();
+            var year = $("#years option:selected").val();
+            if (month == '' || year == '') {
+                alertPopup("Lỗi", "Bạn chưa chọn tháng/năm cần đồng bộ!!", "danger");
+                return false;
+            }
+            $.ajax({
+                type: "POST",
+                datatype: 'json',
+                url: '@Url.Action("Sync", "TotalDiscountMoneyNT")',
+                data: { month: month, year: year },
+                success: function (data) {
+                    HideLoading();
+                    if (data.Result == 'success') {
+                        alertPopup("Thông báo", data.Message, "success");
+                        window.location.reload();
+                    }
+                    else {
+                        alertPopup("Lỗi", data.Message, "danger");
+                    }
+                    $('.NextPaymentDate-container').hide();
+                }
+            });
+            return true;
+        });
+    </script>
+    @Html.ScriptBottom_ValidationMvc()
+    @Html.ScriptBottom_DatePicker("dd/MM/yyyy")
+<style>
+    #cTable table tbody, #CTable table thead {
+        display: block !important;
+    }
+
+    #cTable table tbody {
+        overflow: auto;
+        height: calc(100vh - 360px) !important;
+    }
+
+    #cTable table {
+        width: 1520px !important; /* can be dynamic */
+    }
+
+    #cTable th {
+        width: 100px;
+    }
+
+    #cTable td {
+        width: 100px;
+    }
+
+    #cTable > thead > tr > th {
+        vertical-align: middle;
+        text-align: center;
+    }
+
+
+    #cTable > tbody > tr > td {
+        vertical-align: middle;
+        text-align: center;
+    }
+</style>
+
+}
+
+

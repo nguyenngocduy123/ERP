@@ -1,0 +1,229 @@
+﻿@model IEnumerable<InternalNotificationsViewModel>
+
+@using Erp.BackOffice.App_GlobalResources
+@using Erp.BackOffice.Staff.Models
+@using Erp.BackOffice.Helpers
+@using GridMvc.Html
+
+@{
+    ViewBag.Title = Wording.PageIndex_InternalNotifications;
+    Layout = "~/Views/Shared/ACE_AdminLayout.cshtml";
+    Erp.BackOffice.Models.PageSetting pageSetting = new Erp.BackOffice.Models.PageSetting
+    {
+        ModuleName = "InternalNotifications",
+        ActionName = "Index",
+        PageTitle = ViewBag.Title,
+        DisplaySearchPanel = true,
+        IsPopup = false,
+        DisplayBackButton = false
+
+    };
+}
+
+@if (ViewBag.SuccessMessage != null && ViewBag.SuccessMessage != "")
+{
+    <div class="alert alert-block alert-success">
+        <button class="close" data-dismiss="alert" type="button">
+            <i class="ace-icon fa fa-times"></i>
+        </button>
+        <i class="ace-icon fa fa-check green"></i>
+        @ViewBag.SuccessMessage
+    </div>
+}
+
+@if (ViewBag.FailedMessage != null && ViewBag.FailedMessage != "")
+{
+    <div class="alert alert-block alert-danger">
+        <button class="close" data-dismiss="alert" type="button">
+            <i class="ace-icon fa fa-times"></i>
+        </button>
+        <i class="ace-icon fa fa-warning red"></i>
+        @ViewBag.FailedMessage
+    </div>
+}
+@section HeadOfPage {
+    <style type="text/css">
+        .label-black.arrowed-in-right:after {
+            border-color: #666 transparent #666 #666;
+        }
+
+        .label-black.arrowed-in:before {
+            border-color: #666 #666 #666 transparent;
+        }
+    </style>
+}
+<link href="@Url.Content("~/assets/css/Gridmvc.css")" rel="stylesheet" type="text/css" />
+<script src="@Url.Content("~/Scripts/gridmvc.min.js")" type="text/javascript"> </script>
+
+@helper GridColumnNameStaff(string name, int id, string code, bool gender, string ProfileImage)
+{
+    <span class="col-sm-3">
+        @if (!string.IsNullOrEmpty(ProfileImage))
+        {
+            <a data-toggle="tooltip" title='
+            <img src="/Data/HinhSV/@(ProfileImage)" width="248" />'>
+            <img class="profile-picture" src="/Data/HinhSV/@(ProfileImage)" width="35" height="44" alt="@name" />
+        </a>
+        }
+        else
+        {
+            <span class="profile-picture" style="height:44px; width:35px"><img style="max-width:100%; margin-top:5px" src="/assets/img/no-avatar.png" alt="@name" /></span>
+        }
+
+    </span>
+    <span class="col-sm-9">
+        @if (string.IsNullOrEmpty(name))
+        {
+            <p> <a href="@Url.Action("Detail", "Staffs", new { area = "Staff", Id = id })" target="_blank"><b><i class="fa fa-user-circle-o"></i>  No Title</b></a></p>
+        }
+        else
+        {
+            <p>
+                <a href="@Url.Action("Detail", "Staffs", new { area = "Staff", Id = id })" target="_blank">
+                    <b>
+                        @if (gender == true)
+                        {
+                            <i style="color:#ff00dc" class="fa fa-female" data-rel="tooltip" title="" data-placement="bottom" data-original-title="Giới tính: Nữ"></i>
+                        }
+                        else
+                        {
+                            <i class="fa fa-male" data-rel="tooltip" title="" data-placement="bottom" data-original-title="Giới tính: Nam"></i>
+                        }
+                        @name
+                    </b>
+                </a>
+            </p>
+            <p><i class="fa fa-barcode" data-rel="tooltip" title="" data-placement="bottom" data-original-title="Mã nhân viên hiện tại"></i> @code</p>
+        }
+    </span>
+}
+@helper GridColumnCommand(int id)
+        {
+    @*<div class="hidden-phone visible-desktop action-buttons" style="display: inline-block; float: left;">*@
+        <p>
+            <a class="btn btn-mini btn-success" href="@Url.Action("Edit", "InternalNotifications", new { Id = id })">
+                <i class="fa fa-edit bigger-120"></i>
+            </a>
+            <button name="Delete" value="Delete" type="submit" class="btn btn-mini btn-danger">
+                <i class="ace-icon fa fa-trash bigger-120"></i>
+            </button>
+        </p>
+    @*</div>*@
+}
+
+@helper GridColumnName(string name, int id)
+        {
+            if (string.IsNullOrEmpty(name))
+            {
+                <a href="@Url.Action("NotificationsDetail", "InternalNotifications", new { NotificationsId = id })">NoTitle</a>
+            }
+            else
+            {
+        <a href="@Url.Action("NotificationsDetail", "InternalNotifications", new { NotificationsId = id })">@name</a>
+}
+}
+
+@helper GridColumnCategoryValue(object value)
+        {
+var attr = Common.GetCategoryByValueOrId("value", value);
+    <span>@(attr != null ? attr.Name : "")</span>
+}
+
+@helper CheckDeleteColumns(int Id)
+        {
+    <label>
+        <input class="ace class-delete-all" type="checkbox" name="DeleteId-checkbox" value="@Id">
+        <span class="lbl"></span>
+    </label>
+}
+
+@helper BuildCheckAll()
+        {
+    <label>
+        <input class="ace" type="checkbox" name="checkAll" id="checkAll" />
+        <span class="lbl"></span>
+    </label>
+}
+
+@helper GridColumnDate(DateTime? CreateDate,string FullName)
+{
+
+    <p class="sum"><i class="fa fa-user" data-rel="tooltip" title="" data-placement="bottom" data-original-title="Người thông báo"></i>  @FullName</p>
+    <p class="sum"><i class="fa fa-calendar-plus-o" data-rel="tooltip" title="" data-placement="bottom" data-original-title="Ngày thông báo"></i> @CreateDate.Value.ToString("HH:mm dd/MM/yyyy")</p>
+
+}
+@using (Html.BeginPageHeaderContainer(pageSetting))
+{
+        <p>
+            @Html.TextBox("titles", Request["titles"], new { @class = "form-control", autocomplete = "off", placeholder = "Tiêu đề thông báo..." })
+            <span class="input-daterange input-group">
+                @Html.TextBox("start_date", Request["start_date"] != null ? Request["start_date"] : "", new { @class = "form-control", autocomplete = "off", placeholder = "Ngày thông báo từ..." })
+                <span class="input-group-addon">
+                    <i class="fa fa-exchange"></i>
+                </span>
+                @Html.TextBox("end_date", Request["end_date"] != null ? Request["end_date"] : "", new { @class = "form-control", autocomplete = "off", placeholder = "đến..." })
+            </span>
+            @Html.DropDownList("UserId", SelectListHelper.GetSelectList_UserbyCreateModuel(Request["UserId"], "Create", "InternalNotifications", null), "- Người thông báo-", new Dictionary<string, object> { { "class", "form-control" } })
+        </p>
+}
+@using (Html.BeginForm("Delete", "InternalNotifications", FormMethod.Post))
+{
+    @Html.Grid(Model).Columns(columns =>
+{
+    columns.Add().Titled(BuildCheckAll().ToHtmlString()).SetWidth(20).Sanitized(false).Encoded(false).RenderValueAs(n => CheckDeleteColumns(n.Id));
+    columns.Add().Titled(Wording.Title).Sortable(false).Sanitized(false).Encoded(false).RenderValueAs(u => GridColumnName(u.Titles, u.Id));
+  //  columns.Add(u => u.Describe).Titled(Wording.Describe);
+    columns.Add().Titled("Thông tin").Sortable(false).SetWidth(200).Sanitized(false).Encoded(false).RenderValueAs(u => GridColumnDate(u.CreatedDate, u.FullName));
+    //columns.Add(u => u.ModifiedUserId).Titled(Html.DisplayNameFor(u => u.FirstOrDefault().ModifiedUserId).ToString()).SetWidth(100).RenderValueAs(u => u.ModifiedUserName);
+    //columns.Add(u => u.ModifiedDate).Titled(Wording.ModifiedDate).SetWidth(100).Sortable(true);
+    columns.Add(u => u.Id).Titled(Wording.Action).Sanitized(false).Encoded(false).RenderValueAs(u => GridColumnCommand(u.Id)).SetWidth(20);
+}).WithPaging(10)
+    using (Html.BeginButtonContainer(pageSetting))
+    {
+        <a class="btn btn-mini btn-primary" href="@Url.Action("Create", pageSetting.ModuleName)">
+            <i class="ace-icon fa fa-plus"></i>
+            @Wording.CreateNew
+        </a>
+        <button class="btn btn-mini btn-danger" type="submit" name="DeleteAll" value="DeleteAll" onclick="return CheckIsval();">
+            <i class="ace-icon fa fa-trash"></i>
+            @Wording.Delete
+        </button>
+    }
+}
+
+@section Scripts {
+    <script type="text/javascript">
+        function CheckIsval() {
+            if ($('[name="DeleteId-checkbox"]').is(':checked') == false) {
+                alert("Phải chọn ít nhất 1 item.");
+                return false;
+            }
+            else {
+                if (confirm('Bạn có chắc muốn xóa các item đã chọn ?')) {
+                    return true;
+                }
+                else {
+                    return false;
+                }
+            }
+        }
+
+        $('[name="Delete"]').click(function () {
+            if (confirm('Bạn có chắc muốn xóa item ?')) {
+                $(this).closest('tr').children('td').each(function (i, e) {
+                    $(this).find("input.class-delete-all").prop("checked", true);
+                    return true;
+                })
+            }
+            else {
+                return false;
+            }
+
+        })
+        $(document).ready(function () {
+            $('[data-rel="tooltip"]').tooltip({ container: 'body' });
+        });
+    </script>
+    @Html.ScriptBottom_ValidationMvc()
+    @Html.ScriptBottom_DatePicker("dd/mm/yyyy")
+}

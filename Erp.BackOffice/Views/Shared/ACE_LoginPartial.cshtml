@@ -1,0 +1,91 @@
+﻿@using Erp.BackOffice.App_GlobalResources
+@using Erp.BackOffice.Helpers
+
+@*@model Dictionary<string, object>*@
+
+<a data-toggle="dropdown" href="#" class="dropdown-toggle">
+    <i class="fa fa-user"></i>
+    @Common.CurrentUser.FullName
+    <i class="ace-icon fa fa-caret-down"></i>
+</a>
+
+<ul class="user-menu dropdown-menu-right dropdown-menu dropdown-yellow dropdown-caret dropdown-close">
+    @*<li>
+            <a href="#">
+                <i class="ace-icon fa fa-cog"></i>
+                Settings
+            </a>
+        </li>*@
+    @if (Erp.BackOffice.Filters.SecurityFilter.AccessRight("UserSetting", "User", "Administration"))
+    {
+    <li>
+       
+        <a href='@Url.Action("UserSetting", "User", new { area = "Administration"})'>
+            <i class="ace-icon fa fa-user"></i>
+            @Wording.ProfileSetting
+        </a>
+    </li>
+    }
+    @if (Erp.BackOffice.Filters.SecurityFilter.AccessRight("EditUser", "User", "Administration"))
+    {
+    <li>
+        <a href='@Url.Action("EditUser", "User", new { area = "Administration", userId = Erp.BackOffice.Helpers.Common.CurrentUser.Id})'>
+            <i class="ace-icon fa fa-edit"></i>
+            @Wording.UpdateUser
+        </a>
+    </li>
+    }
+    @if (Erp.BackOffice.Filters.SecurityFilter.AccessRight("ChangePassword", "User", "Administration"))
+    {
+    <li>
+        <a href='@Url.Action("ChangePassword", "User", new { area = "Administration" })'><i class="ace-icon fa fa-key"></i> @Wording.ChangePassword</a>
+    </li>
+    }
+    <li class="divider"></li>
+
+    <li>
+        <a href='@Url.Action("LogOff", "User", new { area = "Administration" })'>
+            <i class="ace-icon fa fa-power-off"></i>
+            @Wording.Logout
+        </a>
+    </li>
+</ul>
+
+@*<ul class="nav-top">
+        @if (Request.IsAuthenticated)
+        {
+            <li>
+                @Wording.Welcome, <a href="@Url.Action("Manage", "User", new { area = "Administration" })" title="@User.Identity.Name">
+                @{
+                    string Currentname = string.Empty;
+                    if (User.Identity.Name.Length > 10)
+                    {
+                        Currentname = User.Identity.Name.Substring(0, 10) + "...";
+                    }
+                    else
+                    {
+                        Currentname = User.Identity.Name;
+                    }
+                }
+                    @Currentname
+                    </a>
+            </li>
+            <li>
+                <a href='@Url.Action("Manage", "User", new { area = "Administration" })'>@Wording.Profile</a>
+            </li>
+
+            <li>
+                <a href='@Url.Action("Manage", "User", new { area = "Administration" })'>@Wording.ChangePassword</a>
+            </li>
+
+            <li style="width:35px;">
+                <a href='@Url.Action("LogOff", "User", new { area = "Administration" })'>@Wording.Logout</a>
+            </li>
+        }
+        else
+        {
+            <li>
+                <a href='@Url.Action("Login", "User", new { area = "Administration" })'>@Wording.Login</a>
+            </li>
+        }
+    </ul>*@

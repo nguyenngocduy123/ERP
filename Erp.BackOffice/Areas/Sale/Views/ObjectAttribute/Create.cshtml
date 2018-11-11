@@ -1,0 +1,81 @@
+﻿@using Erp.BackOffice.App_GlobalResources
+@using Erp.BackOffice.Helpers
+@using Erp.BackOffice.Sale.Models
+
+@model ObjectAttributeViewModel
+
+@{
+    ViewBag.Title = Wording.PageCreate_ObjectAttribute;
+
+    Layout = "~/Views/Shared/ACE_AdminLayout.cshtml";
+
+    IEnumerable<SelectListItem> dataTypeList = Erp.BackOffice.Helpers.Common.GetSelectList_Category("dataType", null, "value");
+
+    IEnumerable<SelectListItem> moduleList = Erp.BackOffice.Helpers.Common.GetSelectList_Category("module", null, "value");
+    IEnumerable<SelectListItem> moduleCategoryList  = new List<SelectListItem> { new SelectListItem { Text = "- chọn -", Value = "" } };
+    
+}
+
+@section HeadOfPage {
+    @Html.ScriptTop_ChosenStyle()
+}
+
+@using (Html.BeginForm_AceStyle((string)ViewBag.Title, "Create", "ObjectAttribute", null, FormMethod.Post, new { id = "ObjectAttribute", @class = "form-horizontal clearfix" }))
+{
+    @Html.ValidationSummary(true)
+
+    <div class="col-sm-6">
+        @Html.CustomTextboxFor(model => model.Name, null, null, WidthType.span12, true)
+        @Html.CustomDropDownListFor(model => model.DataType, dataTypeList, WidthType.span12)
+        @Html.CustomTextboxFor(model => model.OrderNo, null, null, WidthType.span12, true, new Dictionary<string, object>() { {"type", "number"}, {"class", "col-sm-12"}, {"data-val","remove"} })
+    </div>
+    
+    <div class="col-sm-6">
+        @Html.CustomDropDownListFor(model => model.ModuleType, moduleList, WidthType.span12)
+        @Html.CustomDropDownListFor(model => model.ModuleCategoryType, moduleCategoryList, WidthType.span12)
+        @Html.CustomSwitchesFor(model => model.IsSelected, SwitchesStyle.CheckboxStyle, false, WidthType.span12)
+    </div>
+    
+    <div class="col-sm-12">
+        <button style="margin-top:10px" type="submit" class="btn btn-info" name="Submit" value="Save">
+            <i class="ace-icon fa fa-save bigger-110"></i>
+            @Wording.Save
+        </button>
+    </div>
+    
+}
+
+@section Scripts {    
+
+    @Html.ScriptBottom_ValidationMvc()    
+    @Html.ScriptBottom_ChosenStyle()
+
+    <script>
+        $(document).ready(function () {
+            $('#ModuleType').change(function () {
+                var $this = $(this);
+                $('#ModuleCategoryType').html('<option>- Chọn -</option>');
+                $.getJSON('/Category/GetListJsonCategoryByCode', { code: $this.val() }, function (res) {
+                    for (var i in res) {
+                        $('#ModuleCategoryType').append($('<option value=' + res[i].Value + '>' + res[i].Name + '</option>'));
+                    }
+                    $('#ModuleCategoryType').trigger('chosen:updated');
+                });
+            });
+
+            resetLableRequired('#ObjectAttribute');
+            //parseValidatorForm('#ProductInBound');
+            $('#ObjectAttribute').submit(function () {
+                ShowLoading();
+                if ($(this).valid()) {
+                    if (checkFieldLiveRequired($(this)) == true) {
+                        return true;
+                    }
+                }
+                HideLoading(); return false;
+            });
+        });
+
+
+    </script>
+}

@@ -1,0 +1,81 @@
+@model ProcessApplyViewModel
+
+@using Erp.BackOffice.App_GlobalResources
+@using Erp.BackOffice.Crm.Models
+@using Erp.BackOffice.Helpers
+
+@{
+    Layout = null;
+}
+
+<style type="text/css">
+    .process-bar {
+        border-bottom: 2px #428bca solid;
+        padding-bottom: 1px;
+    }
+
+        .process-bar .label {
+            height: 26px;
+            text-align: left;
+            padding-left: 30px;
+            width: @((100 / Model.ListProcessStage.Count) - 3 )%;
+        }
+
+        .process-bar .label-xlg.arrowed-right:after {
+            border-width: 13px 7px;
+        }
+
+        .process-bar .label-xlg.arrowed-in:before {
+            left: -13px;
+            border-width: 13px 7px;
+        }
+
+        .process-bar .label.active {
+            padding-left: 40px;
+        }
+
+     .process-bar .label.active i {
+        background: #428bca;
+        border-radius: 50px;
+        padding: 5px;
+        border: 3px solid #fff;
+        position: absolute;
+        top: -17px;
+        left: 5px;
+    }
+</style>
+
+<p class="process-bar top-20">
+    @{
+        int step = 1;
+        int stepActive = 1;
+        foreach (var item in Model.ListProcessStage)
+        {
+            string arrowCss = "";
+            if (step == 1)
+            {
+                arrowCss = "arrowed-right";
+            }
+            else if (step == Model.ListProcessStage.Count)
+            {
+                arrowCss = "arrowed-in";
+            }
+            else
+            {
+                arrowCss = "arrowed-in arrowed-right";
+            }
+
+            <span class="label label-xlg label-@(step == stepActive ? "primary" : "grey") @arrowCss @(step == stepActive ? "active" : "")">
+                @if (step == stepActive)
+                {
+                    <i class="ace-icon fa fa-flag"></i>
+                }
+                @item.Name
+            </span>
+
+                step++;
+        }
+
+        <a class="btn btn-success btn-mini pull-right">Next Stage</a>
+    }
+</p>

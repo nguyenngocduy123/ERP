@@ -1,0 +1,235 @@
+﻿@using Erp.BackOffice.App_GlobalResources
+@using Erp.BackOffice.Helpers
+@using Erp.BackOffice.Sale.Models
+@using Erp.BackOffice.Staff.Models
+
+@model ProcessPayViewModel
+
+@{
+    ViewBag.Title = "";
+
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html>
+<head>
+
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+        }
+
+        .clearfix:before, .clearfix:after {
+            content: " ";
+            display: table;
+        }
+
+        .clearfix:after {
+            clear: both;
+        }
+
+        p {
+            margin-top: 0px;
+            margin-bottom: 5px;
+        }
+
+        .main {
+            margin: 0 auto;
+            background: #fff;
+            /*border: 1px solid #d3d3d3;*/
+        }
+
+        .page-a5 {
+            width: 794px; /* 794px */
+            /*height:490px;*/ /* 560px */
+            padding: 20px 20px 0px 30px;
+        }
+
+        .dotted-space {
+            white-space: nowrap;
+            position: relative;
+            overflow: hidden;
+        }
+
+            /*.dotted-space:after {
+                content: "....................................................................................................................................................................................................................";
+                letter-spacing: 3px;
+                font-size: 13px;
+                color: #b9b9b9;
+                display: inline-block;
+                vertical-align: 0px;
+                padding-left: 10px;
+            }*/
+
+        .text-center {
+            text-align: center;
+        }
+
+        .text-right {
+            text-align: right;
+        }
+
+        .top-20 {
+            margin-top: 20px;
+        }
+
+        .header .logo {
+            width: 100px;
+            float: left;
+            margin: 0 20px;
+            height: 100px;
+            line-height: 100px;
+        }
+
+            .header .logo img {
+                width: 100%;
+                vertical-align: middle;
+            }
+
+        .header .company-info {
+            float: left;
+        }
+
+            .header .company-info h2, .header .company-info h3, .header .company-info h4 {
+                margin-top: 0px;
+                margin-bottom: 5px;
+            }
+
+                .header .company-info h3 span {
+                    font-size: 15px;
+                    font-weight: normal;
+                }
+
+        .invoice-title {
+            text-align: center;
+            margin-bottom: 5px;
+            margin-top: 5px;
+        }
+
+        .invoice-date {
+            text-align: center;
+        }
+
+        .invoice-number {
+            text-align: right;
+            margin-top: -23px;
+            padding-right: 50px;
+        }
+
+        .customer-info {
+        }
+
+        .invoice-detail {
+            width: 100%;
+            margin-top: 10px;
+            border-spacing: 0px;
+        }
+
+            .invoice-detail th {
+                border: 1px solid #000;
+                border-right: none;
+                padding: 5px;
+            }
+
+            .invoice-detail tr th:last-child {
+                border-right: 1px solid #000;
+            }
+
+            .invoice-detail td {
+                padding: 5px 5px;
+                border-bottom: 1px solid #000;
+                border-left: 1px solid #000;
+                height: 15px;
+                font-size: 12px;
+            }
+
+            .invoice-detail tr td:last-child {
+                border-right: 1px solid #000;
+            }
+
+            .invoice-detail tbody tr:last-child td {
+                border-bottom: none #000;
+            }
+
+            .invoice-detail tfoot td {
+                font-weight: bold;
+                border-bottom: 1px solid #000;
+            }
+
+            .invoice-detail tfoot tr:first-child td {
+                border-top: 1px solid #000;
+            }
+
+        .sign-name {
+            width: 25%;
+            float: left;
+            text-align: center;
+        }
+
+            .sign-name p {
+                font-weight: bold;
+            }
+    </style>
+</head>
+<body>
+    <div class="main page-a5">
+        @*<div class="header">
+                <div class="company-info">
+                    <h3>Thẩm Mỹ Viện Ngọc Hường</h3>
+                    <h3>Địa chỉ: <span>199 Phan Đăng Lưu, P.1, Q.Phú Nhuận, Tp.HCM</span> </h3>
+                    <h3>Điện thoại: <span>(08)3 995 4456 - 3 995 4445</span></h3>
+                </div>
+                <div class="company-info">
+                    <h3>CỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM</h3>
+                    <h3 style="text-align: center">Độc lập - Tự do - Hạnh phúc</h3>
+                    <h3 style="text-align: center">-------------------</h3>
+                </div>
+            </div>
+
+            <div class="clearfix"></div>
+
+            <h1 class="invoice-title">@Model.Name.ToUpper()</h1>
+            <p class="invoice-date">Ngày @Model.SignedDay.Value.ToString("dd") tháng @Model.SignedDay.Value.ToString("MM") năm @Model.SignedDay.Value.ToString("yyyy")</p>
+            <p class="invoice-number">Số: @Model.Code</p>
+
+            <br />
+
+            <p class="customer-info dotted-space">Chúng tôi một bên là:</p>
+            <p class="customer-info dotted-space">Ông(bà): @Model.ApprovedUserName</p>
+            <p class="customer-info dotted-space">Chức vụ: @Model.ApprovedUserPositionName</p>
+            <p class="customer-info dotted-space">Đại diện cho công ty: Thẩm Mỹ Viện Ngọc Hường - @Model.ApprovedBranchName</p>
+            <p class="customer-info dotted-space">Điện thoại: @ViewBag.BranchPhone</p>
+            <p class="customer-info dotted-space">Địa chỉ: @ViewBag.BranchAddress</p>
+            <p class="customer-info dotted-space">Và một bên là:</p>
+            <p class="customer-info dotted-space">Ông(bà):@Model.StaffName</p>
+            <p class="customer-info dotted-space">Sinh ngày:@Model.StaffBirthday.Value.ToString("dd/MM/yyyy")</p>
+            <p class="customer-info dotted-space">Nghề nghiệp:</p>
+            <p class="customer-info dotted-space">Địa chỉ thường trú:@Model.StaffAddress - @Model.StaffWard - @Model.StaffDistrict - @Model.StaffProvince</p>
+            <p class="customer-info dotted-space">Số CMND:@Model.StaffIdCardNumber Cấp ngày: @Model.StaffIdCardDate.Value.ToString("dd/MM/yyyy") Tại: @Model.StaffCardIssuedName</p>
+            <p class="customer-info dotted-space">Thỏa thuận ký kết hợp đồng lao động và cam kết làm đúng những điều khoản sau đây:</p>
+            <p class="customer-info dotted-space">Điều 1: Ông(bà) @Model.StaffName làm cho Ông(bà) @Model.ApprovedUserName  theo loại hợp đồng lao động @Model.ContractTypeName với thời hạn xác</p>
+            <p class="customer-info dotted-space">định từ ngày @Model.EffectiveDate.Value.ToString("dd/MM/yyyy") đến ngày @Model.ExpiryDate.Value.ToString("dd/MM/yyyy") tại @Model.ApprovedBranchName - @ViewBag.BranchAddress, với các nhiệm vụ sau:</p>
+            <p class="customer-info dotted-space">Hình thức làm việc: @Model.FormWork</p>
+            <p class="customer-info dotted-space">Mức lương cơ bản: @Model.WageAgreement VND</p>
+            <p class="customer-info dotted-space">Chức vụ: @Model.StaffPositionName</p>*@
+        <p class="customer-info dotted-space">@Html.Raw(Model.Content)</p>
+        @*<div class="clearfix top-20">
+                <div class="sign-name">
+                    <p>Người sử dụng lao động</p>
+                    <i>(Ký và ghi rõ họ tên)</i>
+                </div>
+                <div class="sign-name">
+                    <p>Người lao động</p>
+                    <i>(Ký và ghi rõ họ tên)</i>
+                </div>
+            </div>*@
+    </div>
+
+    <script>
+        window.print();
+        //location.href = '@Url.Action("Index")';
+    </script>
+</body>
+</html>

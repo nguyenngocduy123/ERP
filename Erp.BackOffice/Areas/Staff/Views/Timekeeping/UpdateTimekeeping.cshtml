@@ -1,0 +1,36 @@
+﻿@using HierarchicalControls.Helpers
+@using Erp.BackOffice.Staff.Models
+@using Erp.BackOffice.Helpers
+@using Erp.BackOffice.App_GlobalResources
+@model  vwTimekeepingViewModel
+ 
+<div id="TK_@ViewBag.StaffId">
+    <div class="center">
+        - Ngày công: <b class="text-danger"> @Model.DayWorkList.Where(x => x.DayOff == null || x.DayOff == "P").Count()</b>
+        - Tổng ca đã làm: <b class="text-danger"> @Model.timekeepingList.Where(x => x.TimekeepingId > 0).Count()</b>
+    </div>
+    <div class="center">
+        - Nghỉ phép:  <b class="text-danger"> @Model.DayWorkList.Where(x => x.DayOff == "P").Count()</b>
+        - Không phép:  <b class="text-danger">@Model.DayWorkList.Where(x => x.DayOff == "KP").Count()</b>
+    </div>
+
+    <div class="center">
+        - Đi trễ: <b class="text-danger">
+            @Model.timekeepingList.Where(x => x.DiTre == 1 && x.VeSom <= 0).Count()
+        </b>
+        - Về sớm: <b class="text-danger"> @Model.timekeepingList.Where(x => x.DiTre <= 0 && x.VeSom == 1).Count()</b>
+        - Đi trễ, về sớm: <b class="text-danger"> @Model.timekeepingList.Where(x => x.DiTre == 1 && x.VeSom == 1).Count() </b>
+    </div>
+    <div class="center">
+        - Làm thêm giờ: <b class="text-danger">
+            @Model.timekeepingList.Where(x => x.TangCa == 1).Count()
+        </b>
+        - Tăng ca: <b class="text-danger"> @Model.timekeepingList.Where(x => x.WorkSchedulesId == null && x.TimekeepingId > 0).Count() </b>
+    </div>
+    <div class="center">
+        - Tổng ca phân công: <b class="text-danger"> @Model.timekeepingList.Where(x => x.WorkSchedulesId > 0).Count() </b>
+    </div>
+    <div class="center">
+        - Tổng ca chưa làm: <b class="text-danger"> @Model.timekeepingList.Where(x => x.WorkSchedulesId > 0 && x.DayWork > DateTime.Now).Count() </b>
+    </div>
+</div>

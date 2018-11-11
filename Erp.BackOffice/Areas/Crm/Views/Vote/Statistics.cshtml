@@ -1,0 +1,38 @@
+@model List<VoteQuestionViewModel>
+
+@using Erp.BackOffice.App_GlobalResources
+@using Erp.BackOffice.Crm.Models
+@using Erp.BackOffice.Helpers
+@using GridMvc.Html
+
+@{
+    int QuestionOrderNo = 0;
+}
+
+<style>
+    .progress[data-percent]:after{
+        display:none
+    }
+</style>
+
+@foreach (var question in Model)
+{
+    QuestionOrderNo++;
+    <div class="question">
+        <p><b>@(QuestionOrderNo). @question.Name</b></p>
+        <div class="answer top-5">
+            @foreach (var answer in question.ListVoteAnswer)
+            {
+                <div class="row">
+                    <div class="col-sm-3 text-right">@answer.Name <span class="label label-warning">@(answer.PercentOfVote) %</span></div>
+                    <div class="col-sm-9">
+                        <div class="progress pos-rel" data-percent="@answer.PercentOfVote%">
+                            <div class="progress-bar" style="width: @answer.PercentOfVote%;"></div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+    <p></p>
+}

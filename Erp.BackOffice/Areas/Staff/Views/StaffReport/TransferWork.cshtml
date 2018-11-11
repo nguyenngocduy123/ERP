@@ -1,0 +1,124 @@
+﻿@model IEnumerable<TransferWorkViewModel>
+
+@using Erp.BackOffice.App_GlobalResources
+@using Erp.BackOffice.Staff.Models
+@using Erp.BackOffice.Helpers
+@using GridMvc.Html
+
+@{
+    Layout = null;
+}
+<style>
+    .label-black.arrowed-in-right:after {
+        border-color: #666 transparent #666 #666;
+    }
+
+    .label-black.arrowed-in:before {
+        border-color: #666 #666 #666 transparent;
+    }
+       .itemdiv > .body > .text {
+        padding-bottom: 0px !important;
+        /* padding-left: 7px; */
+        /* font-size: 13px; */
+    }
+
+    .itemdiv {
+        padding-right: 3px;
+        min-height: 10px;
+    }
+</style>
+@helper GridColumnContact(string Code, string BranchNameNew,int id)
+{
+    <p data-toggle="tooltip" title="Mã quyết định">
+        <i class="fa fa-barcode"></i>  <a onclick="OpenPopup('@Url.Action("Detail", "TransferWork", new { Id = id,IsPopup=true })', '@Wording.PageDetail_TransferWork', 400, 700)"> @Code</a>
+    </p>
+    <span data-toggle="tooltip" title="Chi nhánh chuyển đến">
+        <i class="glyphicon glyphicon-home"></i> <b class="red">@BranchNameNew</b>
+    </span>
+
+}
+@helper GridColumnNameStaff(string name, string Status, int id, string Image)
+{
+    <div class="itemdiv commentdiv">
+        <div class="user">
+            <div class="ace-thumbnails">
+                <a href="@(Erp.BackOffice.Helpers.Common.KiemTraTonTaiHinhAnh(Image,"Staff","user"))" title="@name" data-rel="colorbox" class="cboxElement">
+                    <img id="myImg" alt="@name" src="@(Erp.BackOffice.Helpers.Common.KiemTraTonTaiHinhAnh(Image,"Staff", "user"))">
+                </a>
+            </div>
+        </div>
+        <div class="body">
+            <div class="name" data-toggle="tooltip" title="Tên nhân viên">
+                @if (string.IsNullOrEmpty(name))
+            {
+                <span>NoTile</span>
+        }
+        else
+        {
+            <a href="@Url.Action("Detail", "Staffs", new { area = "Staff", Id = id })" target="_blank"><b>@name</b></a>
+    }
+            </div>
+            <div class="text" data-toggle="tooltip" title="Trạng thái">
+                @GridColumnStatus(Status)
+            </div>
+        </div>
+    </div>
+}
+@helper GridColumnDateName(DateTime? CreateDate, DateTime? DateOfIssue)
+{
+    <p data-toggle="tooltip" title="Ngày quyết định">
+        <i class="fa fa-calendar-plus-o"></i> @CreateDate.Value.ToString("dd/MM/yyyy HH:mm")
+    </p>
+    <span data-toggle="tooltip" title="Ngày hiệu lực"><i class="fa fa-calendar-check-o"></i> @(DateOfIssue.HasValue ? DateOfIssue.Value.ToString("dd/MM/yyyy HH:mm") : "chưa có")</span>
+}
+
+
+@helper GridColumnStatus(string Status)
+{
+    switch (Status)
+    {
+        case "Chờ duyệt":
+            <label class="label label-info  arrowed-in-right">@Status</label>
+            break;
+        case "Hủy":
+        <label class="label label-black arrowed-in-right">@Status</label>
+            break;
+        case "Đã duyệt":
+        <label class="label label-warning arrowed-in-right">@Status</label>
+            break;
+        case "Đã chuyển":
+        <label class="label label-success arrowed-in-right">@Status</label>
+            break;
+        case "Từ chối":
+        <label class="label label-danger arrowed-in-right">@Status</label>
+            break;
+    }
+}
+<div class="widget-box">
+    <div class="widget-header">
+        <h4 class="widget-title">
+            <i class="ace-icon fa fa-refresh"></i>
+            Danh sách điều chuyển mới nhất
+        </h4>
+    </div>
+    <div class="widget-body">
+        <div class="widget-main clearfix">
+            <div class="table-responsive">
+                @Html.Grid(Model).Columns(columns =>
+               {
+
+                   columns.Add().Titled(Wording.InfoStaff).Sortable(false).Sanitized(false).Encoded(false).RenderValueAs(u => GridColumnNameStaff(u.NameStaff, u.Status, u.StaffId.Value, u.ProfileImage));
+                   columns.Add().Titled("Thông tin quyết định").Sortable(false).Sanitized(false).Encoded(false).SetWidth(150).RenderValueAs(u => GridColumnContact(u.Code, u.BranchNameNew,u.Id));
+                   columns.Add().Titled("Thời gian").Sortable(false).Sanitized(false).Encoded(false).RenderValueAs(u => GridColumnDateName(u.DayDecision, u.DayEffective));
+               }).WithPaging(10)
+            </div>
+
+        </div>
+    </div>
+</div>
+@section Scripts {
+    <script type="text/javascript">
+
+    </script>
+
+}

@@ -1,0 +1,302 @@
+﻿@model Erp.BackOffice.Staff.Models.FormulaEditorViewModel
+@using Erp.BackOffice.App_GlobalResources
+@using Erp.BackOffice.Helpers
+
+@{
+    //var ModuleName = "SalarySetting";
+    //var ActionName = "Edit";
+    ViewBag.Title = "Soạn thảo công thức";
+    Layout = "~/Views/Shared/_PopupLayout.cshtml";
+    Erp.BackOffice.Models.PageSetting pageSetting = new Erp.BackOffice.Models.PageSetting
+    {
+        ModuleName = "SalarySetting",
+        ActionName = "Edit",
+        PageTitle = ViewBag.Title,
+        DisplaySearchPanel = false,
+        IsPopup = false,
+        DisplayBackButton = false,
+        //AdvancedSearch = true,
+        //SearchOjectAttr = ViewBag.ListOjectAttrSearch
+    };
+}
+@using (Html.BeginPageHeaderContainer(pageSetting))
+{
+
+}
+@Html.HiddenFor(m => m.TargetId)
+
+<p>
+    <button class="btn btn-mini btn-inverse" style="width:30px">+</button>
+    <button class="btn btn-mini btn-inverse" style="width:30px">-</button>
+    <button class="btn btn-mini btn-inverse" style="width:30px">x</button>
+    <button class="btn btn-mini btn-inverse" style="width:30px">/</button>
+</p>
+
+@Html.TextAreaFor(m => m.FormulaEditor_Value, new { style = "width:100%; height: 100px" })
+
+<div id="alert_error" class="alert alert-block alert-danger" style="display:none">
+    <p id="alert_message">Công thức không hợp lệ!</p>
+</div>
+
+<div id="alert_success" class="alert alert-block alert-success" style="display:none">
+    <p>Công thức hợp lệ</p>
+</div>
+<div class="tabbable">
+    <ul class="nav nav-tabs padding-12 tab-color-blue background-blue" id="formula_tab">
+        <li class="active">
+            <a data-toggle="tab" href="#formula_tab1" aria-expanded="false">Dữ liệu bảng tính</a>
+        </li>
+
+        <li>
+            <a data-toggle="tab" href="#formula_tab2" aria-expanded="true">Dữ liệu chấm công</a>
+        </li>
+
+        <li>
+            <a data-toggle="tab" href="#formula_tab3" aria-expanded="true">Dữ liệu của nhân viên</a>
+        </li>
+
+        <li>
+            <a data-toggle="tab" href="#formula_tab4" aria-expanded="false">Dữ liệu hệ thống</a>
+        </li>
+
+        @*<li>
+            <a data-toggle="tab" href="#formula_tab5" aria-expanded="false">Dữ liệu từ bảng lương</a>
+        </li>*@
+    </ul>
+
+    <div class="tab-content">
+        <div id="formula_tab1" class="tab-pane active">
+            <div class="row">
+                <div class="col-sm-3">
+                    <h4><b>Chưa phân nhóm</b></h4>
+                    @foreach (var item in Model.ListAllColumns.Where(i => i.ParentId == null && i.IsGroup == false).OrderBy(i => i.OrderNo))
+                    {
+                        <p><a onclick="selectSalarySettingDetail(@item.Id, '@item.Name')">@item.Name</a></p>
+                    }
+                </div>
+                @{
+                    var groupList = Model.ListAllColumns.Where(g => g.IsGroup).OrderBy(g => g.OrderNo);
+                }
+
+                @foreach (var group in groupList)
+                {
+                    <div class="col-sm-3">
+                        <h4><b>@group.Name</b></h4>
+                        @foreach (var item in Model.ListAllColumns.Where(i => i.ParentId == group.Id).OrderBy(i => i.OrderNo))
+                        {
+                            <p><a onclick="selectSalarySettingDetail(@item.Id, '@item.Name')">@item.Name</a></p>
+                        }
+                    </div>
+                }
+            </div>
+        </div>
+
+        <div id="formula_tab2" class="tab-pane">
+            @Html.Partial("~/Areas/Staff/Views/SalarySettingDetail/_ListColumsData.cshtml", Model.ListColumnsTimekeepingSynthesis)
+        </div>
+
+        <div id="formula_tab3" class="tab-pane clearfix">
+
+            <!--Group nhân viên-->
+            <div class="tabbable tabs-left">
+                <ul class="nav nav-tabs" id="formula_staff">
+                    <li class="">
+                        <a data-toggle="tab" href="#formula_staff_tab1" aria-expanded="true">Dữ liệu các khoản lương</a>
+                    </li>
+                    <li>
+                        <a data-toggle="tab" href="#formula_staff_tab3" aria-expanded="false">Dữ liệu ngân hàng</a>
+                    </li>
+                    <li>
+                        <a data-toggle="tab" href="#formula_staff_tab2" aria-expanded="false">Dữ liệu Khen thưởng - Phạt</a>
+                    </li>
+                    <li class="">
+                        <a data-toggle="tab" href="#formula_staff_tab4" aria-expanded="true">Phụ cấp - Lương giữ theo HĐ</a>
+                    </li>
+                    <li class="active">
+                        <a data-toggle="tab" href="#formula_staff_tab0" aria-expanded="false">Dữ liệu nhân viên</a>
+                    </li>
+
+
+                </ul>
+
+                <div class="tab-content">
+                    <div id="formula_staff_tab1" class="tab-pane">
+                        @Html.Partial("~/Areas/Staff/Views/SalarySettingDetail/_ListColumsData.cshtml", Model.ListColumnsProcessPay)
+                        @Html.Partial("~/Areas/Staff/Views/SalarySettingDetail/_ListColumsData.cshtml", Model.ListColumnsSalaryAdvance)
+                    </div>
+                    <div id="formula_staff_tab3" class="tab-pane">
+                        @Html.Partial("~/Areas/Staff/Views/SalarySettingDetail/_ListColumsData.cshtml", Model.ListColumnsBank)
+                    </div>
+                    <div id="formula_staff_tab2" class="tab-pane">
+                        @Html.Partial("~/Areas/Staff/Views/SalarySettingDetail/_ListColumsData.cshtml", Model.ListAllColumnsPhat)
+                        @Html.Partial("~/Areas/Staff/Views/SalarySettingDetail/_ListColumsData.cshtml", Model.ListAllColumnsKhenThuong)
+                    </div>
+                    <div id="formula_staff_tab4" class=" tab-pane ">
+                        @Html.Partial("~/Areas/Staff/Views/SalarySettingDetail/_ListColumsData.cshtml", Model.ListAllColumnsPhuCap)
+                        @Html.Partial("~/Areas/Staff/Views/SalarySettingDetail/_ListColumsData.cshtml", Model.ListAllColumnsGiuLuongTheoHopDong)
+                    </div>
+
+                    <div id="formula_staff_tab0" class=" tab-pane active">
+                        @Html.Partial("~/Areas/Staff/Views/SalarySettingDetail/_ListColumsData.cshtml", Model.ListColumnsStaff)
+                    </div>
+                </div>
+            </div>
+            <!--End group nhân viên-->
+
+        </div>
+
+        <div id="formula_tab4" class="tab-pane">
+            @foreach (var item in Model.ListColumnsSetting)
+            {
+                <p><a onclick="selectSalarySettingDetail(0, '@item.Note')">@item.Note</a></p>
+            }
+        </div>
+
+        @*<div id="formula_tab5" class="tab-pane clearfix">
+            <!--Group Lương-->
+            <div class="tabbable tabs-left">
+                <ul class="nav nav-tabs" id="salary_table">
+                    @foreach (var item in Model.ListSalarySetting)
+                    {
+                        string _class = "";
+                        if (Model.ListSalarySetting.IndexOf(item) == 0)
+                        {
+                            _class = "active";
+                        }
+                        <li class="@_class">
+                            <a data-toggle="tab" href="#salary_table_tab_@item.Id" aria-expanded="false">@item.Name</a>
+                        </li>
+                    }
+                   
+                </ul>
+
+                <div class="tab-content">
+                    @foreach (var item in Model.ListSalarySetting)
+                    {
+                        string _class = "";
+                        if (Model.ListSalarySetting.IndexOf(item) == 0)
+                        {
+                            _class = "active";
+                        }
+                        <div id="salary_table_tab_@item.Id" class="tab-pane @_class">
+                            @Html.Partial("~/Areas/Staff/Views/SalarySettingDetail/_AccordionData.cshtml", Model.ListSalaryTable.Where(n => n.SalarySettingId == item.Id), new ViewDataDictionary { { "AccordionDataID", "AccordionDataID_"+item.Id } })
+                        </div>
+                    }
+                </div>
+
+            </div>
+            <!--End Group Lương-->
+        </div>*@
+
+    </div>
+</div>
+@using (Html.BeginButtonContainer(pageSetting))
+{
+    <button type="button" class="btn btn-mini btn-primary" onclick="applyFormula()">
+        <i class="fa fa-save"></i>
+        Áp dụng
+    </button>
+    <button type="button" class="btn btn-success btn-mini" onclick="checkFormula()">
+        <i class="fa fa-check"></i>
+        Kiểm tra
+    </button>
+    <a class="btn btn-white btn-sm" onclick="clearFormula()">
+        Xóa
+    </a>
+    <a class="btn btn-white btn-sm" onclick="parent.ClosePopup()">
+        Đóng
+    </a>
+}
+
+<script type="text/javascript">
+    var TargetId = $("#TargetId");
+    var FormulaEditor_Value = $("#FormulaEditor_Value");
+    $(function () {
+        FormulaEditor_Value.focus();
+    });
+
+    function checkFormula(isApply) {
+        if(FormulaEditor_Value.val() == '')
+        {
+            $("#alert_error").hide();
+            $("#alert_success").hide();
+        }
+        else
+        {
+            var url = "/SalarySetting/Calculate";
+
+            $.post(url, {
+                id: @Model.SalarySettingId,
+                input: FormulaEditor_Value.val()
+            },
+            function (res) {
+                if (res == 'success') {
+                    $("#alert_error").hide();
+                    $("#alert_success").show();
+
+                    if(isApply)
+                    {
+                        parent.applyFormula(TargetId.val(), FormulaEditor_Value.val());
+                    }
+                } else {
+                    $("#alert_message").text("Công thức không hợp lệ: " + res);
+                    $("#alert_error").show();
+                    $("#alert_success").hide();
+                    FormulaEditor_Value.focus();
+                }
+            });
+        }
+    }
+
+    function clearFormula()
+    {
+        FormulaEditor_Value.val('');
+        FormulaEditor_Value.focus();
+    }
+
+    function applyFormula() {
+        checkFormula(true);
+    }
+
+    function selectSalarySettingDetail(id, name) {
+        var text = '[' + name + ']';
+        insertAtCaret(text);
+    }
+
+    function insertAtCaret(text) {
+        var txtarea = document.getElementById("FormulaEditor_Value");
+        //if (!txtarea) { return; }
+
+        var scrollPos = txtarea.scrollTop;
+        var strPos = 0;
+        var br = ((txtarea.selectionStart || txtarea.selectionStart == '0') ?
+            "ff" : (document.selection ? "ie" : false));
+        if (br == "ie") {
+            txtarea.focus();
+            var range = document.selection.createRange();
+            range.moveStart('character', -txtarea.value.length);
+            strPos = range.text.length;
+        } else if (br == "ff") {
+            strPos = txtarea.selectionStart;
+        }
+
+        var front = (txtarea.value).substring(0, strPos);
+        var back = (txtarea.value).substring(strPos, txtarea.value.length);
+        txtarea.value = front + text + back;
+        strPos = strPos + text.length;
+        if (br == "ie") {
+            txtarea.focus();
+            var ieRange = document.selection.createRange();
+            ieRange.moveStart('character', -txtarea.value.length);
+            ieRange.moveStart('character', strPos);
+            ieRange.moveEnd('character', 0);
+            ieRange.select();
+        } else if (br == "ff") {
+            txtarea.selectionStart = strPos;
+            txtarea.selectionEnd = strPos;
+            txtarea.focus();
+        }
+
+        txtarea.scrollTop = scrollPos;
+    }
+</script>

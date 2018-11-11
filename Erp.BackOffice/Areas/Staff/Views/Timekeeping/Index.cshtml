@@ -1,0 +1,278 @@
+﻿@model  vwTimekeepingViewModel
+
+@using Erp.BackOffice.App_GlobalResources
+@using Erp.BackOffice.Staff.Models
+@using Erp.BackOffice.Helpers
+@using GridMvc.Html
+@using Erp.Domain.Entities
+@using Erp.Domain.Staff.Entities
+@{
+    ViewBag.Title = "Bảng tổng hợp chấm công";
+    Layout = "~/Views/Shared/ACE_AdminLayout.cshtml";
+    List<DateTime> dates = (List<DateTime>)ViewBag.dates;
+    List<Category> DayOff = (List<Category>)ViewBag.DayOff;
+    int index = 0;
+    Erp.BackOffice.Models.PageSetting pageSetting = new Erp.BackOffice.Models.PageSetting
+    {
+        ModuleName = "Timekeeping",
+        ActionName = "Index",
+        PageTitle = ViewBag.Title,
+        DisplaySearchPanel = true,
+        IsPopup = false,
+        DisplayBackButton = false
+    };
+}
+@if (ViewBag.SuccessMessage != null && ViewBag.SuccessMessage != "")
+{
+    <div class="alert alert-block alert-success">
+        <button class="close" data-dismiss="alert" type="button">
+            <i class="ace-icon fa fa-times"></i>
+        </button>
+        <i class="ace-icon fa fa-check green"></i>
+        @ViewBag.SuccessMessage
+    </div>
+}
+
+@if (ViewBag.FailedMessage != null && ViewBag.FailedMessage != "")
+{
+    <div class="alert alert-block alert-danger">
+        <button class="close" data-dismiss="alert" type="button">
+            <i class="ace-icon fa fa-times"></i>
+        </button>
+        <i class="ace-icon fa fa-warning red"></i>
+        @ViewBag.FailedMessage
+    </div>
+}
+<script src="~/assets/js/moment.min.js"></script>
+<link href="@Url.Content("~/assets/css/bootstrap-datetimepicker.min.css")" rel="stylesheet" type="text/css" />
+<script src="~/assets/js/bootstrap-datetimepicker.min.js"></script>
+
+@helper GridColumnName(string name, int id)
+{
+    if (string.IsNullOrEmpty(name))
+    {
+        <a href="@Url.Action(" detail", "Staffs" , new { area="Staff" , Id= id })" target="_blank"><b>No Title</b></a>
+    }
+    else
+    {
+        <a href="@Url.Action(" detail", "Staffs" , new { area="Staff" , Id= id })" target="_blank">
+            <b>  @name</b>
+        </a>
+    }
+}
+
+
+
+@section HeadOfPage {
+    @Html.ScriptTop_ChosenStyle()
+    <style type="text/css">
+        select {
+            height: 34px !important;
+        }
+
+        .table-fixed-middle-content {
+            border-top: 1px solid #ddd !important;
+        }
+    </style>
+
+}
+@helper GridColumnDayWorks(DateTime date, int StaffId, IEnumerable<vwTimekeepingViewModel> DayWorkList)
+{
+    foreach (var q in DayWorkList.Where(x => x.DayWork.Value.ToString("dd/MM/yyyy") == date.ToString("dd/MM/yyyy") && x.StaffId == StaffId))
+    {
+        if (q.TimekeepingId != null)
+        {
+            <p>@Erp.BackOffice.Helpers.Common.GetSetting("Timekeeping_gotowork")</p>
+        }
+        else
+        {
+            if (string.IsNullOrEmpty(q.DayOff))
+            {
+                <p>@Erp.BackOffice.Helpers.Common.GetSetting("Timekeeping_UnexcusedLeave")</p>
+            }
+            else
+            {
+                <p>@q.DayOff</p>
+            }
+        }
+    }
+}
+@using (Html.BeginPageHeaderContainer(pageSetting))
+{
+    <select name="year">
+        <option value="">- Chọn năm -</option>
+        @for (int i = 2016; i <= DateTime.Now.Year; i++)
+        {
+            <option @(i.ToString() == (Request["year"]) || (DateTime.Now.ToString("yyyy") == i.ToString()) ? "Selected" : "") value="@i">Năm @i</option>
+        }
+    </select>
+    <select name="month">
+        <option value="">- Chọn tháng -</option>
+        @for (int i = 1; i <= 12; i++)
+        {
+            <option @( i.ToString() == Request["month"] || (DateTime.Now.ToString("MM").Contains(i.ToString())) ? "Selected='Selected'" : "") value="@i">Tháng @i</option>
+        }
+    </select>
+
+    @Html.DropDownList("branchId", SelectListHelper.GetSelectList_Branch(Request["branchId"], "- Chi nhánh -"), new Dictionary<string, object> { { "class", "form-group" }, { "data-val-required", "Bắt buộc chọn." } })
+
+    @Html.DropDownList("DepartmentId", new List<SelectListItem> { new SelectListItem { Text = "- Phòng ban -", Value = "" } }, new Dictionary<string, object> { { "class", "form-group" }, { "data-val-required", "Bắt buộc chọn." } })
+    <button onclick="return true;" class="btn btn-primary btn-sm" name="random">
+        @Wording.Upload
+        <i class="ace-icon fa fa-cloud-upload icon-on-right bigger-110"></i>
+    </button>
+}
+}
+<div class="col-sm-12" style="padding:0px">
+    <div class="table-responsive" style="padding:10px 0 40px;width:100%">
+        <div class="col-sm-12 table-fixed-column" style="padding:0px;">
+            <table id="cTable" class="table">
+                <thead>
+                    <tr>
+                        <th>
+                            <span>STT</span>
+                        </th>
+                        <th>
+                            <span>Tên nhân viên</span>
+                        </th>
+                        @foreach (var i in dates)
+                        {
+                            //nếu ngày nghỉ thì đổi màu ô ngày đó ngược lại giữ nguyên
+                            if (DayOff.Where(x => Convert.ToInt32(x.OrderNo) == (int)i.DayOfWeek && x.Value == "true").Count() > 0)
+                            {
+                                <th class="label-success label-white">
+                                    <span data-rel="tooltip" title="" data-placement="bottom" data-original-title="@i.ToString("dddd") - @i.ToString("dd/MM/yyyy")">@i.ToString("dd")</span>
+                                </th>
+                            }
+                            else
+                            {
+                                <th>
+                                    <span data-rel="tooltip" title="" data-placement="bottom" data-original-title="@i.ToString("dddd") - @i.ToString("dd/MM/yyyy")">@i.ToString("dd")</span>
+                                </th>
+                            }
+                        }
+
+                    </tr>
+                </thead>
+
+                <tbody>
+
+                    @foreach (var item in Model.StaffList)
+                    {
+                        <tr>
+                            <td style="text-align:center">
+                                @(index++)
+                            </td>
+                            <td data-name="">
+                                <p>@GridColumnName(item.Name, item.StaffId.Value)</p>
+                            </td>
+                            @foreach (var i in dates)
+                            {
+                                //nếu ngày nghỉ thì đổi màu ô ngày đó ngược lại giữ nguyên
+                                if (DayOff.Where(x => Convert.ToInt32(x.OrderNo) == (int)i.DayOfWeek && x.Value == "true").Count() > 0)
+                                {
+                                    <td class="label-success label-white" style="text-align:center">
+                                        @GridColumnDayWorks(i, item.StaffId.Value, Model.DayWorkList)
+                                    </td>
+                                }
+                                else
+                                {
+                                    <td style="text-align:center">
+                                        @GridColumnDayWorks(i, item.StaffId.Value, Model.DayWorkList)
+                                    </td>
+                                }
+                            }
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<div class="col-sm-12 alert alert-info clearfix top-10 bottom-40">
+    <button type="button" class="close" data-dismiss="alert">
+        <i class="ace-icon fa fa-times"></i>
+    </button>
+    <h4> Lưu ý</h4>
+    <span style="margin-left:20px">@Erp.BackOffice.Helpers.Common.GetSetting("Timekeeping_gotowork") - ngày công</span>
+    <span style="margin-left:20px">@Erp.BackOffice.Helpers.Common.GetSetting("Timekeeping_UnexcusedLeave") - ngày nghỉ không phép</span>
+    @foreach (var item in SelectListHelper.GetSelectList_SymbolTimekeeping(null, null, false))
+    {
+        <span style="margin-left:20px">@item.Text</span>
+    }
+</div>
+<input type="hidden" name="UrlReferrer" value="@Request.UrlReferrer" />
+@section Scripts {
+
+    <link href="/Scripts/TableFixedColumn/table.fixed.column.1.0.css" rel="stylesheet" />
+    <script src="/Scripts/TableFixedColumn/table.fixed.column.1.2.js"></script>
+
+    <script>
+        $(document).ready(function () {
+            $('.table-fixed-column').tableFixedColumn({
+                leftTableWidth: '20%',
+                rightTableWidth: '80%',
+                leftTableColumnWidth: [19, 81],
+                rightTableColumnWidth: [32],
+                columnHeight: 32,
+                numberColumnFixedLeft: 2,
+                contentHeight: '500px'
+            });
+        });
+
+    </script>
+
+    <script type="text/javascript">
+        //Fetch Department
+        var urDepartmentl = '/api/BackOfficeServiceAPI/FetchBranchDepartment';
+        var department = $('[name="DepartmentId"]'); // cache it
+
+        $('[name="branchId"]').change(function () {
+            ShowLoading();
+            department.empty(); // remove any existing options
+            $(document.createElement('option'))
+                        .attr('value', '')
+                        .text('- Rỗng -')
+                        .appendTo(department).trigger('chosen:updated');
+            var id = $(this).val(); // Use $(this) so you don't traverse the DOM again
+            $.getJSON(urDepartmentl, { BranchId: id }, function (response) {
+                department.empty(); // remove any existing options
+                $(response).each(function () {
+                    $(document.createElement('option'))
+                        .attr('value', this.Id)
+                        .text(this.Staff_DepartmentId)
+                        .appendTo(department).trigger('chosen:updated');
+                    HideLoading();
+                });
+            });
+        });
+        function ClosePopupAndDoSomething() {
+            ShowLoading();
+            ClosePopup(true);
+        }
+        $(document).ready(function () {
+            $('[data-rel="tooltip"]').tooltip({ container: 'body' });
+            $('[data-rel=popover]').popover({ html: true });
+        });
+        //load lại trang đã gọi trước đó
+        function ClosePopupAndRedirectToURL(url) {
+            ClosePopup(true);
+            location.href = url;
+        }
+
+        function ClosePopupAndAppendSelect() {
+            ShowLoading();
+            ClosePopup(true);
+        }
+
+        function ClosePopupAndRedirectToURL(url) {
+            ClosePopup(true);
+            location.href = url;
+        }
+    </script>
+
+    @Html.ScriptBottom_ValidationMvc()
+    @Html.ScriptBottom_DatePicker("dd/mm/yyyy")
+    @Html.ScriptBottom_ChosenStyle()
+}

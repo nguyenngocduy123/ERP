@@ -1,0 +1,305 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{5D300B7D-38A3-4E7B-945A-DC203689E322}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Erp.Domain.Sale</RootNamespace>
+    <AssemblyName>Erp.Domain.Sale</AssemblyName>
+    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="DotNetOpenAuth.OpenId">
+      <HintPath>..\packages\DotNetOpenAuth.OpenId.Core.4.0.3.12153\lib\net40-full\DotNetOpenAuth.OpenId.dll</HintPath>
+    </Reference>
+    <Reference Include="EntityFramework">
+      <HintPath>..\packages\EntityFramework.6.1.3\lib\net45\EntityFramework.dll</HintPath>
+    </Reference>
+    <Reference Include="EntityFramework.SqlServer">
+      <HintPath>..\packages\EntityFramework.6.1.3\lib\net45\EntityFramework.SqlServer.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
+    <Reference Include="System.Configuration" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Web" />
+    <Reference Include="System.Web.Extensions" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+    <Reference Include="WebMatrix.WebData, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Entities\CommisionCustomer.cs" />
+    <Compile Include="Entities\CommissionCus.cs" />
+    <Compile Include="Entities\LogLoyaltyPoint.cs" />
+    <Compile Include="Entities\LogServiceRemminder.cs" />
+    <Compile Include="Entities\LoyaltyPoint.cs" />
+    <Compile Include="Entities\Mapping\CommisionCustomerMap.cs" />
+    <Compile Include="Entities\Mapping\CommissionCusMap.cs" />
+    <Compile Include="Entities\Mapping\LogLoyaltyPointMap.cs" />
+    <Compile Include="Entities\Mapping\LogServiceRemminderMap.cs" />
+    <Compile Include="Entities\Mapping\LoyaltyPointMap.cs" />
+    <Compile Include="Entities\Mapping\ProductDamagedMap.cs" />
+    <Compile Include="Entities\Mapping\RequestInboundDetailMap.cs" />
+    <Compile Include="Entities\Mapping\RequestInboundMap.cs" />
+    <Compile Include="Entities\Mapping\SalesReturnsMap.cs" />
+    <Compile Include="Entities\Mapping\ServiceComboMap.cs" />
+    <Compile Include="Entities\Mapping\ServiceReminderGroupMap.cs" />
+    <Compile Include="Entities\Mapping\ServiceReminderMap.cs" />
+    <Compile Include="Entities\Mapping\ServiceScheduleMap.cs" />
+    <Compile Include="Entities\Mapping\TotalDiscountMoneyNTMap.cs" />
+    <Compile Include="Entities\Mapping\UsingServiceLogDetailMap.cs" />
+    <Compile Include="Entities\Mapping\UsingServiceLogMap.cs" />
+    <Compile Include="Entities\Mapping\vwCommisionCustomerMap.cs" />
+    <Compile Include="Entities\Mapping\vwCommisionMap.cs" />
+    <Compile Include="Entities\Commision.cs" />
+    <Compile Include="Entities\CommisionStaff.cs" />
+    <Compile Include="Entities\Inventory.cs" />
+    <Compile Include="Entities\InventoryByMonth.cs" />
+    <Compile Include="Entities\Mapping\CommisionMap.cs" />
+    <Compile Include="Entities\Mapping\CommisionStaffMap.cs" />
+    <Compile Include="Entities\Mapping\InventoryByMonthMap.cs" />
+    <Compile Include="Entities\Mapping\InventoryMap.cs" />
+    <Compile Include="Entities\Mapping\ObjectAttibuteMap.cs" />
+    <Compile Include="Entities\Mapping\ObjectAttributeValueMap.cs" />
+    <Compile Include="Entities\Mapping\vwLogLoyaltyPointMap.cs" />
+    <Compile Include="Entities\Mapping\vwLogServiceRemminderMap.cs" />
+    <Compile Include="Entities\Mapping\vwPhysicalInventoryDetailMap.cs" />
+    <Compile Include="Entities\Mapping\PhysicalInventoryDetailMap.cs" />
+    <Compile Include="Entities\Mapping\PhysicalInventoryMap.cs" />
+    <Compile Include="Entities\Mapping\ProductInBoundDetailMap.cs" />
+    <Compile Include="Entities\Mapping\ProductInboundMap.cs" />
+    <Compile Include="Entities\Mapping\ProductInvoiceDetailMap.cs" />
+    <Compile Include="Entities\Mapping\ProductInvoiceMap.cs" />
+    <Compile Include="Entities\Mapping\ProductMap.cs" />
+    <Compile Include="Entities\Mapping\ProductOutboundDetailMap.cs" />
+    <Compile Include="Entities\Mapping\ProductOutboundMap.cs" />
+    <Compile Include="Entities\Mapping\PromotionDetailMap.cs" />
+    <Compile Include="Entities\Mapping\PromotionMap.cs" />
+    <Compile Include="Entities\Mapping\PurchaseOrderDetailMap.cs" />
+    <Compile Include="Entities\Mapping\PurchaseOrderMap.cs" />
+    <Compile Include="Entities\Mapping\vwProductAndServiceMap.cs" />
+    <Compile Include="Entities\Mapping\vwProductDamagedMap.cs" />
+    <Compile Include="Entities\Mapping\vwPurchaseOrderDetailMap.cs" />
+    <Compile Include="Entities\Mapping\vwRequestInboundDetailMap.cs" />
+    <Compile Include="Entities\Mapping\vwRequestInboundMap.cs" />
+    <Compile Include="Entities\Mapping\vwSalesReturnsDetailMap.cs" />
+    <Compile Include="Entities\Mapping\SalesReturnsDetailMap.cs" />
+    <Compile Include="Entities\Mapping\SupplierMap.cs" />
+    <Compile Include="Entities\Mapping\TemplatePrintMap.cs" />
+    <Compile Include="Entities\Mapping\vwCommisionStaffMap.cs" />
+    <Compile Include="Entities\Mapping\vwInventoryMap.cs" />
+    <Compile Include="Entities\Mapping\vwPhysicalInventoryMap.cs" />
+    <Compile Include="Entities\Mapping\vwProductInboundDetailMap.cs" />
+    <Compile Include="Entities\Mapping\vwProductInboundMap.cs" />
+    <Compile Include="Entities\Mapping\vwProductInvoiceDetailMap.cs" />
+    <Compile Include="Entities\Mapping\vwProductInvoiceMap.cs" />
+    <Compile Include="Entities\Mapping\vwProductMap.cs" />
+    <Compile Include="Entities\Mapping\vwProductOutboundDetailMap.cs" />
+    <Compile Include="Entities\Mapping\vwProductOutboundMap.cs" />
+    <Compile Include="Entities\Mapping\vwPurchaseOrderMap.cs" />
+    <Compile Include="Entities\Mapping\vwReportCustomerMap.cs" />
+    <Compile Include="Entities\Mapping\vwReportProductMap.cs" />
+    <Compile Include="Entities\Mapping\vwSalesReturnsMap.cs" />
+    <Compile Include="Entities\Mapping\vwServiceComboMap.cs" />
+    <Compile Include="Entities\Mapping\vwServiceMap.cs" />
+    <Compile Include="Entities\Mapping\vwServiceReminderGroupMap.cs" />
+    <Compile Include="Entities\Mapping\vwServiceScheduleMap.cs" />
+    <Compile Include="Entities\Mapping\vwSupplierMap.cs" />
+    <Compile Include="Entities\Mapping\vwTotalDiscountMoneyNTMap.cs" />
+    <Compile Include="Entities\Mapping\vwUsingServiceLogDetailMap.cs" />
+    <Compile Include="Entities\Mapping\vwUsingServiceLogMap.cs" />
+    <Compile Include="Entities\Mapping\vwWarehouseLocationItemMap.cs" />
+    <Compile Include="Entities\Mapping\vwWarehouseMap.cs" />
+    <Compile Include="Entities\Mapping\WarehouseLocationItemMap.cs" />
+    <Compile Include="Entities\Mapping\WarehouseMap.cs" />
+    <Compile Include="Entities\ObjectAttibute.cs" />
+    <Compile Include="Entities\ObjectAttributeValue.cs" />
+    <Compile Include="Entities\PhysicalInventory.cs" />
+    <Compile Include="Entities\ProductDamaged.cs" />
+    <Compile Include="Entities\RequestInbound.cs" />
+    <Compile Include="Entities\RequestInboundDetail.cs" />
+    <Compile Include="Entities\SalesReturns.cs" />
+    <Compile Include="Entities\ServiceCombo.cs" />
+    <Compile Include="Entities\ServiceReminder.cs" />
+    <Compile Include="Entities\ServiceReminderGroup.cs" />
+    <Compile Include="Entities\ServiceSchedule.cs" />
+    <Compile Include="Entities\TotalDiscountMoneyNT.cs" />
+    <Compile Include="Entities\UsingServiceLog.cs" />
+    <Compile Include="Entities\UsingServiceLogDetail.cs" />
+    <Compile Include="Entities\vwCommisionCustomer.cs" />
+    <Compile Include="Entities\vwLogLoyaltyPoint.cs" />
+    <Compile Include="Entities\vwLogServiceRemminder.cs" />
+    <Compile Include="Entities\vwPhysicalInventoryDetail.cs" />
+    <Compile Include="Entities\PhysicalInventoryDetail.cs" />
+    <Compile Include="Entities\Product.cs" />
+    <Compile Include="Entities\ProductInbound.cs" />
+    <Compile Include="Entities\ProductInboundDetail.cs" />
+    <Compile Include="Entities\ProductInvoice.cs" />
+    <Compile Include="Entities\ProductInvoiceDetail.cs" />
+    <Compile Include="Entities\ProductOutbound.cs" />
+    <Compile Include="Entities\ProductOutboundDetail.cs" />
+    <Compile Include="Entities\Promotion.cs" />
+    <Compile Include="Entities\PromotionDetail.cs" />
+    <Compile Include="Entities\PurchaseOrder.cs" />
+    <Compile Include="Entities\PurchaseOrderDetail.cs" />
+    <Compile Include="Entities\vwProductAndService.cs" />
+    <Compile Include="Entities\vwProductDamaged.cs" />
+    <Compile Include="Entities\vwPurchaseOrderDetail.cs" />
+    <Compile Include="Entities\vwRequestInbound.cs" />
+    <Compile Include="Entities\vwRequestInboundDetail.cs" />
+    <Compile Include="Entities\vwSalesReturnsDetail.cs" />
+    <Compile Include="Entities\SalesReturnsDetail.cs" />
+    <Compile Include="Entities\spReportProductInbound.cs" />
+    <Compile Include="Entities\Supplier.cs" />
+    <Compile Include="Entities\TemplatePrint.cs" />
+    <Compile Include="Entities\vwCommisionStaff.cs" />
+    <Compile Include="Entities\vwCommision.cs" />
+    <Compile Include="Entities\vwInventory.cs" />
+    <Compile Include="Entities\vwPhysicalInventory.cs" />
+    <Compile Include="Entities\vwProduct.cs" />
+    <Compile Include="Entities\vwProductInbound.cs" />
+    <Compile Include="Entities\vwProductInboundDetail.cs" />
+    <Compile Include="Entities\vwProductInvoice.cs" />
+    <Compile Include="Entities\vwProductInvoiceDetail.cs" />
+    <Compile Include="Entities\vwProductOutbound.cs" />
+    <Compile Include="Entities\vwProductOutboundDetail.cs" />
+    <Compile Include="Entities\vwPurchaseOrder.cs" />
+    <Compile Include="Entities\vwReportCustomer.cs" />
+    <Compile Include="Entities\vwReportProduct.cs" />
+    <Compile Include="Entities\vwSalesReturns.cs" />
+    <Compile Include="Entities\vwService.cs" />
+    <Compile Include="Entities\vwServiceCombo.cs" />
+    <Compile Include="Entities\vwServiceReminderGroup.cs" />
+    <Compile Include="Entities\vwServiceSchedule.cs" />
+    <Compile Include="Entities\vwSupplier.cs" />
+    <Compile Include="Entities\vwTotalDiscountMoneyNT.cs" />
+    <Compile Include="Entities\vwUsingServiceLog.cs" />
+    <Compile Include="Entities\vwUsingServiceLogDetail.cs" />
+    <Compile Include="Entities\vwWarehouse.cs" />
+    <Compile Include="Entities\vwWarehouseLocationItem.cs" />
+    <Compile Include="Entities\Warehouse.cs" />
+    <Compile Include="Entities\WarehouseLocationItem.cs" />
+    <Compile Include="ErpSaleDbContext.cs" />
+    <Compile Include="F:\src\Erp.Domain.Sale\Entities\LogVip.cs" />
+    <Compile Include="F:\src\Erp.Domain.Sale\Entities\Mapping\LogVipMap.cs" />
+    <Compile Include="F:\src\Erp.Domain.Sale\Interfaces\ILogVipRepository.cs" />
+    <Compile Include="F:\src\Erp.Domain.Sale\Repositories\LogVipRepository.cs" />
+    <Compile Include="Interfaces\ICommisionCustomerRepository.cs" />
+    <Compile Include="Interfaces\ICommisionRepository.cs" />
+    <Compile Include="Interfaces\ICommisionStaffRepository.cs" />
+    <Compile Include="Interfaces\ICommissionCusRepository.cs" />
+    <Compile Include="Interfaces\IInventoryRepository.cs" />
+    <Compile Include="Interfaces\ILogLoyaltyPointRepository.cs" />
+    <Compile Include="Interfaces\ILogServiceRemminderRepository.cs" />
+    <Compile Include="Interfaces\ILoyaltyPointRepository.cs" />
+    <Compile Include="Interfaces\IObjectAttibuteRepository.cs" />
+    <Compile Include="Interfaces\IPhysicalInventoryRepository.cs" />
+    <Compile Include="Interfaces\IProductDamagedRepository.cs" />
+    <Compile Include="Interfaces\IProductInboundRepository.cs" />
+    <Compile Include="Interfaces\IProductInvoiceRepository.cs" />
+    <Compile Include="Interfaces\IProductOrServiceRepository.cs" />
+    <Compile Include="Interfaces\IProductOutboundRepository.cs" />
+    <Compile Include="Interfaces\IPromotionRepository.cs" />
+    <Compile Include="Interfaces\IPurchaseOrderRepository.cs" />
+    <Compile Include="Interfaces\IRequestInboundRepository.cs" />
+    <Compile Include="Interfaces\ISaleReportRepository.cs" />
+    <Compile Include="Interfaces\ISalesReturnsRepository.cs" />
+    <Compile Include="Interfaces\IServiceComboRepository.cs" />
+    <Compile Include="Interfaces\IServiceReminderGroupRepository.cs" />
+    <Compile Include="Interfaces\IServiceReminderRepository.cs" />
+    <Compile Include="Interfaces\IServiceScheduleRepository.cs" />
+    <Compile Include="Interfaces\ISupplierRepository.cs" />
+    <Compile Include="Interfaces\ITemplatePrintRepository.cs" />
+    <Compile Include="Interfaces\ITotalDiscountMoneyNTRepository.cs" />
+    <Compile Include="Interfaces\IUsingServiceLogDetailRepository.cs" />
+    <Compile Include="Interfaces\IUsingServiceLogRepository.cs" />
+    <Compile Include="Interfaces\IWarehouseLocationItemRepository.cs" />
+    <Compile Include="Interfaces\IWarehouseRepository.cs" />
+    <Compile Include="Interfaces\_IGenericRepository.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Repositories\CommisionCustomerRepository.cs" />
+    <Compile Include="Repositories\CommisionRepository.cs" />
+    <Compile Include="Repositories\CommisionStaffRepository.cs" />
+    <Compile Include="Repositories\CommissionCusRepository.cs" />
+    <Compile Include="Repositories\InventoryRepository.cs" />
+    <Compile Include="Repositories\LogLoyaltyPointRepository.cs" />
+    <Compile Include="Repositories\LogServiceRemminderRepository.cs" />
+    <Compile Include="Repositories\LoyaltyPointRepository.cs" />
+    <Compile Include="Repositories\ObjectAttibuteRepository.cs" />
+    <Compile Include="Repositories\PhysicalInventoryRepository.cs" />
+    <Compile Include="Repositories\ProductDamagedRepository.cs" />
+    <Compile Include="Repositories\ProductInboundRepository.cs" />
+    <Compile Include="Repositories\ProductInvoiceRepository.cs" />
+    <Compile Include="Repositories\ProductOrServiceRepository.cs" />
+    <Compile Include="Repositories\ProductOutboundRepository.cs" />
+    <Compile Include="Repositories\PromotionRepository.cs" />
+    <Compile Include="Repositories\PurchaseOrderRepository.cs" />
+    <Compile Include="Repositories\RequestInboundRepository.cs" />
+    <Compile Include="Repositories\SaleReportRepository.cs" />
+    <Compile Include="Repositories\SalesReturnsRepository.cs" />
+    <Compile Include="Repositories\ServiceComboRepository.cs" />
+    <Compile Include="Repositories\ServiceReminderGroupRepository.cs" />
+    <Compile Include="Repositories\ServiceReminderRepository.cs" />
+    <Compile Include="Repositories\ServiceScheduleRepository.cs" />
+    <Compile Include="Repositories\SupplierRepository.cs" />
+    <Compile Include="Repositories\TemplatePrintRepository.cs" />
+    <Compile Include="Repositories\TotalDiscountMoneyNTRepository.cs" />
+    <Compile Include="Repositories\UsingServiceLogDetailRepository.cs" />
+    <Compile Include="Repositories\UsingServiceLogRepository.cs" />
+    <Compile Include="Repositories\WarehouseLocationItemRepository.cs" />
+    <Compile Include="Repositories\WarehouseRepository.cs" />
+    <Compile Include="Repositories\_GenericRepository.cs" />
+    <Compile Include="SqlHelper.cs" />
+    <Compile Include="SqlMapper.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="App.config" />
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <WCFMetadata Include="Service References\" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Erp.Utilities\Erp.Utilities.csproj">
+      <Project>{e85f6ece-9181-4ad6-8775-10893358602b}</Project>
+      <Name>Erp.Utilities</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup />
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

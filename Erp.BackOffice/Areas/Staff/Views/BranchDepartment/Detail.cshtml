@@ -1,0 +1,133 @@
+﻿@using Erp.BackOffice.App_GlobalResources
+@using Erp.BackOffice.Helpers
+@using GridMvc.Html
+@model Erp.BackOffice.Staff.Models.BranchDepartmentViewModel
+@{
+    ViewBag.Title = "Thông tin phòng ban: " + Model.Staff_DepartmentId;
+    Erp.BackOffice.Models.PageSetting pageSetting = new Erp.BackOffice.Models.PageSetting
+    {
+        ModuleName = "BranchDepartment",
+        ActionName = "Detail",
+        PageTitle = ViewBag.Title,
+        DisplaySearchPanel = false,
+        IsPopup = false,
+        DisplayBackButton = false
+    };
+    var path = Erp.BackOffice.Helpers.Common.GetSetting("Staff");
+}
+<p>
+    @Html.Button(Model.BranchName, ButtonType.aTag, ButtonColor.Inverse, ButtonSize.Small, true, IconType.ArrowLeft, IconSize.Default, false, new { @class = "btn-back-to-branch-manager", @onclick = "BackToPanelBranchManager()" })
+    @Html.Button(Model.Staff_DepartmentId, ButtonType.aTag, ButtonColor.Inverse, ButtonSize.Small, true, IconType.None, IconSize.Default, false, new { @class = "btn-back-to-branch-manager", @disabled = "disabled" })
+</p>
+<link href="@Url.Content("~/assets/css/Gridmvc.css")" rel="stylesheet" type="text/css" />
+<script src="@Url.Content("~/Scripts/gridmvc.min.js")" type="text/javascript"> </script>
+@helper GridColumnName(string name, int id)
+{
+    if (string.IsNullOrEmpty(name))
+    {
+        <a href="@Url.Action("Detail", "Staffs", new { area = "Staff", Id = id })" target="_blank"><b>No Title</b></a>
+    }
+    else
+    {
+        <a href="@Url.Action("Detail", "Staffs", new { area = "Staff", Id = id })" target="_blank"><b>@name</b></a>
+    }
+}
+@helper GridColumnProfileImage(string ProfileImage, string name,string path)
+{
+    if (!string.IsNullOrEmpty(ProfileImage))
+    {
+        <a data-toggle="tooltip" title='
+            <img src="@(path+ProfileImage)" width="248" />'>
+            <img class="profile-picture" src="@(path+ProfileImage)" width="65" height="80" alt="@name" />
+        </a>
+    }
+    else
+    {
+        <span class="profile-picture" style="height:80px; width:65px"><img style="max-width:100%; margin-top:5px" src="/assets/img/no-avatar.png" alt="@name" /></span>
+    }
+}
+@helper GridColumnInfoStaff(string position)
+{
+    if (position == "Giám Đốc")
+    {
+        <p style="color:red" class="sum"> @position</p>
+    }
+    else
+        if (position == "Phó Giám Đốc")
+        {
+            <p style="color:#de6566" class="sum"> @position</p>
+        }
+        else if (position == "Trưởng Phòng")
+        {
+            <p style="color:#ff892a" class="sum"> @position</p>
+        }
+        else if (position == "Phó Trưởng Phòng")
+        {
+            <p style="color:orange" class="sum"> @position</p>
+        }
+        else
+        {
+            <p style="color:black" class="sum">  @position</p>
+        }
+}
+@helper GridColumnDate(object date)
+{
+    string sOut = date != null ? ((DateTime)date).ToString("dd/MM/yyyy") : "01/01/1900";
+    if (sOut != "01/01/1900")
+    {
+        <span>@sOut</span>
+    }
+}
+@helper GridColumnCommand(int id)
+{
+    <button name="Delete" value="Delete" type="submit" id="btn_delete_staff_@id" class="btn btn-mini btn-danger" onclick="return StaffDelete(@id)">
+        <i class="ace-icon fa fa-trash bigger-120"></i>
+        @Wording.Delete
+    </button>
+}
+<div id="PanelBranchManager">
+    @using (Html.BeginPageHeaderContainer(pageSetting))
+    {
+
+    }
+    <p id="label-none-assign" style="display:none">Hiện tại công ty chưa khởi tạo sơ đồ Chi nhánh/Phòng ban/Nhân viên!!!</p>
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="widget-box top-10">
+                <div class="widget-header">
+                    <h4 class="widget-title">@Wording.PageIndex_Staff</h4>
+                </div>
+                <div class="widget-body">
+                    <div class="widget-main">
+                        @if (ViewBag.AccessRightCreate)
+                        {
+                         <p> @Html.Button(Wording.AddStaffs, ButtonType.aTag, ButtonColor.Success, ButtonSize.Mini, true, IconType.Plus, IconSize.Default, false, new { @href = Url.Action("Create", "Staffs", new { area = "Staff", BranchDepartmentId = Model.Id }) }) </p>
+                            
+                             @*<p>@Html.Button(Wording.AddStaffs, ButtonType.aTag, ButtonColor.Success, ButtonSize.Mini, true, IconType.Plus, IconSize.Default, false, new { @class = "btn-StaffCreate", @onclick = "OpenPopup('" + Url.Action("Create", "Staffs", new { area = "Staff", BranchDepartmentId = Model.Id, IsPopup = "true" }) + "', '" + Wording.PageCreate_Staffs + "', 700, 650)" })</p>*@
+                        }
+                        <div class="table-responsive">
+                        @Html.Grid(Model.StaffList).Columns(columns =>
+                                {
+                                    columns.Add().Titled(Wording.Image).SetWidth(20).Sanitized(false).Encoded(false).RenderValueAs(n => GridColumnProfileImage(n.ProfileImage, n.Name,path));
+                                    columns.Add(u => u.Code).Titled(Wording.Code).SetWidth(100).RenderValueAs(u => u.Code);
+                                    columns.Add().Titled(Wording.Name).SetWidth(200).Sortable(false).Sanitized(false).Encoded(false).RenderValueAs(u => GridColumnName(u.Name, u.Id));
+                                    columns.Add().Titled(Wording.Birthday).SetWidth(100).Sanitized(false).Encoded(false).RenderValueAs(n => GridColumnDate(n.Birthday));
+                                    columns.Add().Titled(Wording.Position).SetWidth(150).Sortable(false).Sanitized(false).Encoded(false).RenderValueAs(u => GridColumnInfoStaff(u.PositionName));
+                                    columns.Add().Titled(Wording.Phone).SetWidth(150).RenderValueAs(n => n.Phone);
+                                    columns.Add().Titled(Wording.Email).SetWidth(200).RenderValueAs(n => n.Email);
+                                    columns.Add(u => u.Id).Titled(Wording.Action).Sanitized(false).Encoded(false).RenderValueAs(u => GridColumnCommand(u.Id)).SetWidth(20);
+                                }).WithPaging(10)
+                            </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+<script type="text/javascript">
+    function ClosePopupAndReloadPageStaffDetail() {
+        ClosePopup(true);
+        ShowLoading();
+    };
+</script>

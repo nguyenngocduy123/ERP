@@ -1,0 +1,183 @@
+﻿@using Erp.BackOffice.App_GlobalResources
+@using Erp.BackOffice.Helpers
+@using Erp.BackOffice.Account.Models
+
+@model PaymentViewModel
+
+@{
+    ViewBag.Title = Wording.PageCreate_Payment;
+
+    Layout = "~/Views/Shared/" + (Request["IsPopup"] == null ? "ACE_AdminLayout.cshtml" : "_PopupLayout.cshtml");
+    Erp.BackOffice.Models.PageSetting pageSetting = new Erp.BackOffice.Models.PageSetting
+    {
+        ModuleName = "Payment",
+        ActionName = "Create",
+        PageTitle = ViewBag.Title,
+        DisplaySearchPanel = false,
+        IsPopup = false,
+        DisplayBackButton = true
+    };
+}
+
+@section HeadOfPage {
+    @Html.ScriptTop_ChosenStyle()
+
+}
+@using (Html.BeginPageHeaderContainer(pageSetting))
+{
+
+}
+@using (Html.BeginForm_AceStyle((string)ViewBag.Title, "Create", "Payment", null, FormMethod.Post, new {id="CreatePayment", @class = "form-horizontal" }))
+{
+    @Html.ValidationSummary(true)
+    @Html.HiddenFor(model => model.TargetId)
+    <input type="hidden" value="@Request["IsPopup"]" name="IsPopup" />
+    @*@Html.CustomDropDownListFor(model => model.Name, SelectListHelper.GetSelectList_Category("payment_Category", null, "- Chọn loại phí -"), WidthType.span6, true, null, DropdownListStyle.DropdownListStyleChosen)*@
+    @Html.DateInput(model => model.VoucherDate, "dd/MM/yyyy", "99/99/9999", true, WidthType.span12)
+    <div class="control-group form-group">
+        <label class="control-label col-lg-5 col-md-4 col-sm-4" for="">Chi cho khách hàng</label>
+        <div class="control-value col-lg-7 col-md-8 col-sm-8" style="line-height:0px!important">
+            <label class="radio"><input type="radio" value="Customer" class="group_choice ace" data-target="#group_choice_wrap1" checked name="group_choice" />  <span class="lbl"></span></label>
+        </div>
+    </div>
+    <div class="control-group form-group">
+        <label class="control-label col-lg-5 col-md-4 col-sm-4" for="">Chi cho nhà cung cấp</label>
+        <div class="control-value col-lg-7 col-md-8 col-sm-8" style="line-height:0px!important">
+            <label class="radio"><input type="radio" value="Supplier" class="group_choice ace" data-target="#group_choice_wrap2" name="group_choice" /> <span class="lbl"></span></label>
+        </div>
+    </div>
+    <div id="group_choice_wrap1" class="group_choice_wrap clearfix">
+        <div class="control-group form-group">
+            <label class="control-label col-lg-5 col-md-4 col-sm-4" for="">Đối tượng</label>
+            <div class="control-value col-lg-7 col-md-8 col-sm-8" style="line-height:0px!important">
+                <div class="input-group">
+                    @Html.TextBox("TargetCustomer", Model.ReceiverUserName, new { style = "width:85%", @readonly = "readonly" })
+                    <a class="btn btn-mini btn-white" style="height:30px!important;margin-top:-2px;width:15%;line-height:27px" onclick="OpenPopup('/Customer/Index?IsPopup=true','Tìm kiếm dữ liệu',800, 600)"
+                       data-rel="tooltip" title="" data-placement="bottom" data-original-title="Tìm kiếm khách hàng">
+                        <i class="fa fa-search"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <div id="group_choice_wrap2" class="group_choice_wrap clearfix" style="height:0;overflow: hidden;">
+        <div class="control-group form-group">
+            <label class="control-label col-lg-5 col-md-4 col-sm-4" for="">Đối tượng</label>
+            <div class="control-value col-lg-7 col-md-8 col-sm-8" style="line-height:0px!important">
+                <div class="input-group">
+                    @Html.TextBox("TargetSupplier", Model.ReceiverUserName, new { style = "width:85%", @readonly = "readonly" })
+                    <a class="btn btn-mini btn-white" style="height:30px!important;margin-top:-2px;width:15%;line-height:27px" onclick="OpenPopup('/Supplier/Index?IsPopup=true', 'Tìm kiếm dữ liệu', 800, 600)"
+                       data-rel="tooltip" title="" data-placement="bottom" data-original-title="Tìm kiếm nhà cung cấp">
+                        <i class="fa fa-search"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @Html.CustomTextboxFor(model => model.Receiver, null, null, WidthType.span12)
+    @Html.CustomTextboxFor(model => model.Address, null, null, WidthType.span12)
+    @*@Html.CustomTextboxFor(model => model.Amount, null, null, WidthType.span12)*@
+    <div id="" class="control-group form-group">
+        <label class="control-label col-lg-5 col-md-4 col-sm-4">@Wording.Amount</label>
+        <div class="control-value col-lg-7 col-md-8 col-sm-8">
+            <div class="clearfix">
+                <input class="numberinput2 col-sm-12 text-right" id="Amount" name="Amount" type="text" value="@Model.Amount">
+            </div>
+        </div>
+    </div>
+    @Html.CustomDropDownListFor(model => model.PaymentMethod, SelectListHelper.GetSelectList_Category("FormPayment", null, "Name", null), WidthType.span4, true, null, DropdownListStyle.DropdownListStyleDefault)
+    @*<div class="bank-container" style="display:none">
+            @Html.CustomTextboxFor(model => model.BankAccountNo, null, null, WidthType.span6)
+            @Html.CustomTextboxFor(model => model.BankAccountName, null, null, WidthType.span6)
+            @Html.CustomTextboxFor(model => model.BankName, null, null, WidthType.span6)
+        </div>*@
+    @*@Html.CustomTextboxFor(model => model.Name, null, null, WidthType.span12)*@
+    @Html.CustomDropDownListFor(model => model.Name, SelectListHelper.GetSelectList_Category("payment_Category", null, "Name", null), WidthType.span12, true, null, DropdownListStyle.DropdownListStyleChosen)
+    @Html.CustomTextAreaFor(model => model.Note, null, WidthType.span12)
+    @*@Html.CustomDropDownListFor(model => model.SalerId, SelectListHelper.GetSelectList_FullUserName(null,Wording.Empty), WidthType.span6, true, null, DropdownListStyle.DropdownListStyleChosen)*@
+    @*<div class="input-group">
+            @Html.CustomTextboxFor(model => model.SalerName, null, null, WidthType.span4)
+            <span class="input-group-addon" onclick="OpenPopup('/User/Index?IsPopup=true', 'Tìm kiếm dữ liệu', 800, 600)" style="cursor:pointer">
+                <i class="ace-icon fa fa-search"></i>
+            </span>
+        </div>*@
+
+    using (Html.BeginButtonContainer(pageSetting))
+    {
+        <a class="btn btn-mini btn-primary" id="Save" name="Save" value="Save">
+            <i class="ace-icon fa fa-save"></i>
+            @Wording.Save
+        </a>
+    }
+}
+
+@section Scripts {
+    <script>
+        //truyền từ action create của controller qua khi thực hiện submit và return về lại view create, để nhận biết là được gọi theo dạng popup
+        var closePopup = '@ViewBag.closePopup';
+        $(document).ready(function () {
+            //nếu là được gọi theo dạng popup từ form khác thì chạy đoạn code bên dưới
+            if (closePopup != '') {
+                var option = '<option value="@Model.Id" >@Model.Name</option>';
+                //tên funtion có thể khác theo từng công việc riêng (đây chỉ là mẫu khi thêm mới sẽ gọi lại)
+                window.parent.ClosePopupAndAppendSelect(option);
+            }
+        });
+
+        $(function () {
+            LoadNumberInput();
+            $('#Save').click(function () {
+                ShowLoading();
+                ClearFormatBeforeSubmit($("#CreatePayment"));
+                $("#CreatePayment").submit();
+                HideLoading();
+            });
+            //$('#Amount').numberFormat();
+
+            //$('#PaymentMethod').change(function () {
+            //    if ($(this).val() == "Chuyển khoản") {
+            //        $('.bank-container').show();
+            //    }
+            //    else {
+            //        $('.bank-container').hide();
+            //        $('#BankAccountNo').val('');
+            //        $('#BankAccountName').val('');
+            //        $('#BankName').val('');
+            //    }
+            //});
+        });
+        //function selectLocationItem(id, userName) {
+        //    $("#SaleName").val(userName);
+        //    $("#SalerId").val(id);
+        //    ClosePopup();
+        //}
+        $(".group_choice").change(function () {
+            ShowLoading();
+            $(".group_choice_wrap").css('height', 'initial');
+            if ($(this).is(":checked")) {
+                $(".group_choice_wrap").hide();
+                $($(this).data("target")).show();
+            }
+            HideLoading();
+        });
+
+        function selectLocationItem(id, name, targetname) {
+            if (targetname == "Customer") {
+                $("#TargetCustomer").val(name);
+            }
+            else {
+                $("#TargetSupplier").val(name);
+            }
+            $("#TargetId").val(id);
+            ClosePopup();
+        }
+    </script>
+    @Html.ScriptBottom_ValidationMvc()
+    @Html.ScriptBottom_DatePicker("dd/mm/yyyy")
+    @Html.ScriptBottom_ChosenStyle()
+    @Html.ScriptBottom_RequireEitherInput()
+    @Html.ScriptBottom_InputMask()
+}

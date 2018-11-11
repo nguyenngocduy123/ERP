@@ -1,0 +1,207 @@
+﻿@using HierarchicalControls.Helpers
+@using Erp.BackOffice.Staff.Models
+@using Erp.BackOffice.Helpers
+@using Erp.BackOffice.App_GlobalResources
+@model  vwTimekeepingViewModel
+  
+@helper GridColumnGoToWork(string NameShifts, int? TotalMinuteWorkEarly, int? TotalMinuteWorkLate, int? TimekeepingId, DateTime? HoursIn, DateTime? HoursOut, int? WorkSchedulesId, int? TotalMinuteWorkOvertime, int? StaffId, DateTime? DayWork, int? ShiftsId)
+{
+
+    <div class="pull-right pos-rel dropdown-hover" id="label_@StaffId@DayWork.Value.ToString("ddMMyyyy")@ShiftsId">
+
+        @if (TotalMinuteWorkLate.Value > 0 && TotalMinuteWorkEarly > 0)
+        {
+            <label class="label label-danger">
+
+                @if (WorkSchedulesId == null)
+                {
+                    <i class="glyphicon glyphicon-calendar"></i>
+                }
+                @NameShifts
+                @*(@(HoursIn.HasValue ? HoursIn.Value.ToString("HH:mm") : "") - @(HoursOut.HasValue ? HoursOut.Value.ToString("HH:mm") : ""))*@
+            </label>
+        }
+        else if (TotalMinuteWorkLate.Value > 0)
+        {
+            <label class="label label-purple">
+
+                @if (WorkSchedulesId == null)
+                {
+                    <i class="glyphicon glyphicon-calendar"></i>
+                }
+                @NameShifts
+                @*(@(HoursIn.HasValue ? HoursIn.Value.ToString("HH:mm") : "") - @(HoursOut.HasValue ? HoursOut.Value.ToString("HH:mm") : ""))*@
+            </label>
+        }
+        else if (TotalMinuteWorkEarly > 0)
+        {
+            <label class="label label-pink">
+                @if (WorkSchedulesId == null)
+                {
+                    <i class="glyphicon glyphicon-calendar"></i>
+                }
+                @NameShifts
+                @*(@(HoursIn.HasValue ? HoursIn.Value.ToString("HH:mm") : "") - @(HoursOut.HasValue ? HoursOut.Value.ToString("HH:mm") : ""))*@
+            </label>
+        }
+        else
+        {
+            <label class="label label-success">
+                @if (TotalMinuteWorkOvertime > 0)
+                {
+                    <i class="glyphicon glyphicon-time"></i>
+                }
+                @if (WorkSchedulesId == null)
+                {
+                    <i class="glyphicon glyphicon-calendar"></i>
+                }
+                @NameShifts
+                @*(@(HoursIn.HasValue ? HoursIn.Value.ToString("HH:mm") : "") - @(HoursOut.HasValue ? HoursOut.Value.ToString("HH:mm") : ""))*@
+            </label>
+        }
+
+        <div class="dropdown-menu dropdown-only-icon dropdown-yellow dropdown-caret dropdown-close dropdown-menu-right">
+
+            <div>
+                <a onclick="OpenPopup('@Url.Action("Edit", "Timekeeping", new { area = "Staff", Id = TimekeepingId })', '@Wording.EditTimekeeping' , 500, 420)" class="tooltip-success" data-rel="tooltip" title="" data-original-title="Cập nhật chấm công">
+                    <span class="green">
+                        <i class="ace-icon fa fa-edit bigger-110"></i>
+                    </span>
+                </a>
+                <a onclick="return TimekeepingDelete(@TimekeepingId,@StaffId,'@DayWork.Value.ToString("dd/MM/yyyy")',@ShiftsId)" class="tooltip-error" data-rel="tooltip" title="" data-original-title="Xóa chấm công hiện tại">
+                    <span class="red">
+                        <i class="ace-icon fa fa-trash-o bigger-110"></i>
+                    </span>
+                </a>
+            </div>
+        </div>
+    </div>
+
+}
+@helper GridColumDayOff(string DayOff, string NameShifts, DateTime? StartTime, DateTime? EndTime, int? IdDayOff, int? StaffId, DateTime? DayWork, int? WorkSchedulesId, int? ShiftsId)
+{
+if (DayOff == "P")
+{
+        <div class="pull-right pos-rel dropdown-hover" id="label_@StaffId@DayWork.Value.ToString("ddMMyyyy")@ShiftsId">
+            <label class="label label-yellow">
+                @NameShifts
+                @*(@(StartTime.HasValue ? StartTime.Value.ToString("HH:mm") : "") - @(EndTime.HasValue ? EndTime.Value.ToString("HH:mm") : ""))*@
+            </label>
+            <div class="dropdown-menu dropdown-only-icon dropdown-yellow dropdown-caret dropdown-close dropdown-menu-right">
+                <div>
+                    <a onclick="OpenPopup('@Url.Action("Edit", "DayOff", new { area = "Staff", Id = IdDayOff, IsPopup = true })', '@Wording.PageEdit_DayOff' , 500, 390)" class="tooltip-success" data-rel="tooltip" title="" data-original-title="Cập nhật ngày nghỉ">
+                        <span class="green">
+                            <i class="ace-icon fa fa-edit bigger-110"></i>
+                        </span>
+                    </a>
+                    <a onclick="return DayOffDelete(@IdDayOff)" class="tooltip-error" data-rel="tooltip" title="" data-original-title="Xóa ngày nghỉ hiện tại">
+                        <span class="red">
+                            <i class="ace-icon fa fa-trash-o bigger-110"></i>
+                        </span>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+}
+else if (DayOff == "KP")
+{
+        <div class="pull-right pos-rel dropdown-hover" id="label_@StaffId@DayWork.Value.ToString("ddMMyyyy")@ShiftsId">
+            <label class="label label-black" id="label_@StaffId@DayWork.Value.ToString("ddMMyyyy")@ShiftsId">
+                @NameShifts
+                @*(@(StartTime.HasValue ? StartTsime.Value.ToString("HH:mm") : "") - @(EndTime.HasValue ? EndTime.Value.ToString("HH:mm") : ""))*@
+            </label>
+            <div class="dropdown-menu dropdown-only-icon dropdown-yellow dropdown-caret dropdown-close dropdown-menu-right">
+                <div>
+                    <a onclick="OpenPopup('@Url.Action("Create", "DayOff", new { area = "Staff", StaffId = StaffId, DayWork = DayWork, IsPopup = true })', '@Wording.PageCreate_DayOff' , 500, 490)" class="tooltip-success" data-rel="tooltip" title="" data-original-title="Thêm ngày nghỉ">
+                        <span class="green">
+                            <i class="ace-icon fa fa-plus bigger-110"></i>
+                        </span>
+                    </a>
+
+                    <a onclick="OpenPopup('@Url.Action("Create", "Timekeeping", new { area = "Staff", StaffId = StaffId, DayWork = DayWork })', '@Wording.PageCreate_Timekeeping' , 500, 500)" class="tooltip-success" data-rel="tooltip" title="" data-original-title="Thêm ngày công">
+                        <span class="blue">
+                            <i class="ace-icon fa fa-plus bigger-110"></i>
+                        </span>
+                    </a>
+
+                    <a onclick="return WorkSchedulesDelete(@WorkSchedulesId)" class="tooltip-error" data-rel="tooltip" title="" data-original-title="Xóa ngày làm việc hiện tại">
+                        <span class="red">
+                            <i class="ace-icon fa fa-trash-o bigger-110"></i>
+                        </span>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+}
+else if (DayOff == "CL")
+{
+
+        <div class="pull-right pos-rel dropdown-hover" id="label_@StaffId@DayWork.Value.ToString("ddMMyyyy")@ShiftsId">
+            <label class="label label-info">
+                @NameShifts
+                @*(@(StartTime.HasValue ? StartTime.Value.ToString("HH:mm") : "") - @(EndTime.HasValue ? EndTime.Value.ToString("HH:mm") : ""))*@
+            </label>
+            <div class="dropdown-menu dropdown-only-icon dropdown-yellow dropdown-caret dropdown-close dropdown-menu-right">
+                <div>
+                    <a onclick="OpenPopup('@Url.Action("Create", "DayOff", new { area = "Staff", StaffId = StaffId, DayWork = DayWork, IsPopup = true })', '@Wording.PageCreate_DayOff' , 500, 490)" class="tooltip-success" data-rel="tooltip" title="" data-original-title="Thêm ngày nghỉ">
+                        <span class="green">
+                            <i class="ace-icon fa fa-plus bigger-110"></i>
+                        </span>
+                    </a>
+                    <a onclick="return WorkSchedulesDelete(@WorkSchedulesId)" class="tooltip-error" data-rel="tooltip" title="" data-original-title="Xóa ngày làm việc hiện tại">
+                        <span class="red">
+                            <i class="ace-icon fa fa-trash-o bigger-110"></i>
+                        </span>
+                    </a>
+                </div>
+            </div>
+        </div>
+}
+else if (DayOff == "DL")
+{
+        <div class="pull-right pos-rel dropdown-hover" id="label_@StaffId@DayWork.Value.ToString("ddMMyyyy")@ShiftsId">
+            <label class="label label-warning">
+                @NameShifts
+                @*(@(StartTime.HasValue ? StartTime.Value.ToString("HH:mm") : "") - @(EndTime.HasValue ? EndTime.Value.ToString("HH:mm") : ""))*@
+            </label>
+            <div class="dropdown-menu dropdown-only-icon dropdown-yellow dropdown-caret dropdown-close dropdown-menu-right">
+                <div>
+                    <a onclick="OpenPopup('@Url.Action("Create", "DayOff", new { area = "Staff", StaffId = StaffId, DayWork = DayWork, IsPopup = true })', '@Wording.PageCreate_DayOff' , 500, 390)" class="tooltip-success" data-rel="tooltip" title="" data-original-title="Thêm ngày nghỉ">
+                        <span class="green">
+                            <i class="ace-icon fa fa-plus bigger-110"></i>
+                        </span>
+                    </a>
+                    <a onclick="OpenPopup('@Url.Action("Create", "Timekeeping", new { area = "Staff", StaffId = StaffId, DayWork = DayWork })', '@Wording.PageCreate_Timekeeping' , 500, 500)" class="tooltip-success" data-rel="tooltip" title="" data-original-title="Thêm ngày công">
+                        <span class="blue">
+                            <i class="ace-icon fa fa-plus bigger-110"></i>
+                        </span>
+                    </a>
+                    <a onclick="return WorkSchedulesDelete(@WorkSchedulesId)" class="tooltip-error" data-rel="tooltip" title="" data-original-title="Xóa ngày làm việc hiện tại">
+                        <span class="red">
+                            <i class="ace-icon fa fa-trash-o bigger-110"></i>
+                        </span>
+                    </a>
+                </div>
+            </div>
+        </div>
+}
+}
+
+@if (string.IsNullOrEmpty(Model.DayOff) && Model.TimekeepingId != null)
+{
+    @GridColumnGoToWork(Model.NameShifts, Model.TotalMinuteWorkEarly, Model.TotalMinuteWorkLate, Model.TimekeepingId, Model.HoursIn, Model.HoursOut,Model.WorkSchedulesId,Model.TotalMinuteWorkOvertime,Model.StaffId,Model.DayWork,Model.ShiftsId)
+}
+@if (!string.IsNullOrEmpty(Model.DayOff))
+{
+    @GridColumDayOff(Model.DayOff, Model.NameShifts, Model.StartTime, Model.EndTime, Model.IdDayOff, Model.StaffId, Model.DayWork, Model.WorkSchedulesId,Model.ShiftsId)
+}
+<script>
+
+    $(document).ready(function () {
+        $('[data-rel="tooltip"]').tooltip({ container: 'body' });
+
+    });
+  
+</script>

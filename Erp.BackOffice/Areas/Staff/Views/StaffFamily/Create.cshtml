@@ -1,0 +1,70 @@
+﻿@using Erp.BackOffice.App_GlobalResources
+@using Erp.BackOffice.Helpers
+@using Erp.BackOffice.Staff.Models
+
+@model StaffFamilyViewModel
+
+@{
+    ViewBag.Title = Wording.PageCreate_StaffFamily;
+
+    Layout = "~/Views/Shared/" + (Request["IsPopup"] == null ? "ACE_AdminLayout.cshtml" : "_PopupLayout.cshtml");
+    Erp.BackOffice.Models.PageSetting pageSetting = new Erp.BackOffice.Models.PageSetting
+    {
+        ModuleName = "StaffFamily",
+        ActionName = "Create",
+        PageTitle = ViewBag.Title,
+        DisplaySearchPanel = false,
+        IsPopup = false,
+        DisplayBackButton = true
+    };
+}
+
+@section HeadOfPage {
+    @Html.ScriptTop_ChosenStyle()
+}
+@using (Html.BeginPageHeaderContainer(pageSetting))
+{
+
+}
+@using (Html.BeginForm_AceStyle((string)ViewBag.Title, "Create", "StaffFamily", null, FormMethod.Post, new { @class = "form-horizontal" }))
+{
+    @Html.ValidationSummary(true)
+
+    <input type="hidden" name="IsPopup" value="@Request["IsPopup"]" />
+
+    @Html.HiddenFor(model => model.StaffId)
+    //    @Html.CustomDropDownListFor(model => model.StaffId, StaffIdList, WidthType.span12, true, null, DropdownListStyle.DropdownListStyleDefault)
+    @Html.CustomTextboxFor(model => model.Name, null, null, WidthType.span12)
+    @Html.CustomTextboxFor(model => model.Address, null, null, WidthType.span12)
+    @Html.CustomDropDownListFor(model => model.Gender, SelectListHelper.GetSelectList_Gender(null), WidthType.span12, true, null, DropdownListStyle.DropdownListStyleChosen)
+    @Html.CustomDropDownListFor(model => model.Correlative, SelectListHelper.GetSelectList_Category("Correlative", null, "Value", Wording.Empty), WidthType.span12, true, null, DropdownListStyle.DropdownListStyleChosen)
+    @Html.DatePicker(model => model.Birthday, "dd/MM/yyyy", "99/99/9999", true, false, "control-label col-lg-5 col-md-4 col-sm-4", "col-lg-7 col-md-8 col-sm-8", "col-xs-12")
+    @Html.CustomTextboxFor(model => model.Phone, null, null, WidthType.span12)
+    @Html.CustomSwitchesFor(model => model.IsDependencies, SwitchesStyle.CheckboxStyle, true)
+
+    using (Html.BeginButtonContainer(pageSetting))
+    {
+        <button class="btn btn-mini btn-primary" type="submit" name="Submit" value="Save">
+            <i class="ace-icon fa fa-save"></i>
+            @Wording.Save
+        </button>
+    }
+}
+
+@section Scripts {
+    <script type="text/javascript">
+        //truyền từ action create của controller qua khi thực hiện submit và return về lại view create, để nhận biết là được gọi theo dạng popup
+        var closePopup = '@ViewBag.closePopup';
+        $(document).ready(function () {
+            //nếu là được gọi theo dạng popup từ form khác thì chạy đoạn code bên dưới
+            if (closePopup != '') {
+                var option = '<option value="@Model.Id" >@Model.Name</option>';
+                window.parent.ClosePopupAndReloadPageStaffDetail();
+                window.parent.ClosePopupAndAppendSelect('@Model.StaffId');
+            }
+        });
+    </script>
+    @Html.ScriptBottom_ValidationMvc()
+    @Html.ScriptBottom_DatePicker("dd/mm/yyyy")
+    @Html.ScriptBottom_ChosenStyle()
+}

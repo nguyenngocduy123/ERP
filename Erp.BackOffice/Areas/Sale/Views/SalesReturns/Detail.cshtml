@@ -1,0 +1,242 @@
+﻿@using Erp.BackOffice.App_GlobalResources
+@using Erp.BackOffice.Helpers
+@using Erp.BackOffice.Sale.Models
+@using Erp.BackOffice.Account.Models
+
+@model SalesReturnsViewModel
+
+@{
+    ViewBag.Title = "Chi tiết đơn hàng bán trả lại";
+
+    Layout = "~/Views/Shared/ACE_AdminLayout.cshtml";
+
+    Erp.BackOffice.Models.PageSetting pageSetting = new Erp.BackOffice.Models.PageSetting
+    {
+        ModuleName = "SalesReturns",
+        ActionName = "Detail",
+        PageTitle = ViewBag.Title,
+        DisplaySearchPanel = false,
+        IsPopup = false,
+        DisplayBackButton = true
+    };
+}
+@section HeadOfPage {
+    @Html.ScriptTop_ChosenStyle()
+}
+
+@helper renderStatus(string status)
+{
+    switch (status)
+    {
+        case "pending":
+            <span class="label label-info pull-left" style="margin-right:5px">@Wording.OrderStatusDisplay_pending</span>
+            break;
+        case "inprogress":
+        <span class="label label-warning pull-left" style="margin-right:5px">@Wording.OrderStatusDisplay_inprogress</span>
+            break;
+        case "shipping":
+        <span class="label label-warning pull-left" style="margin-right:5px">@Wording.OrderStatusDisplay_shipping</span>
+            break;
+        case "complete":
+        <span class="label label-success pull-left" style="margin-right:5px">@Wording.OrderStatusDisplay_complete</span>
+            break;
+        case "cancel":
+        <span class="label label-danger pull-left" style="margin-right:5px">@Wording.OrderStatusDisplay_cancel</span>
+            break;
+    }
+}
+
+@using (Html.BeginPageHeaderContainer(pageSetting))
+{
+
+}
+
+@using (Html.BeginForm_AceStyle((string)ViewBag.Title, "Detail", "SalesReturn", null, FormMethod.Post, new { @class = "form-horizontal" }))
+{
+    @Html.ValidationSummary(true)
+
+    <div class="row">
+        <div class="col-sm-7">
+            <h4 class="green" style="margin-top:0px">
+                @renderStatus(Model.Status)
+                <span>Đơn hàng: @Model.Code (@Model.CreatedDate.Value.ToString("dd/MM/yyyy HH:mm"))</span>
+                <span class="pull-right red"><b>@Common.PhanCachHangNgan(Model.TotalAmount)</b></span>
+            </h4>
+            <div class="table-responsive">
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th class="detail-th-orderno">STT</th>
+                            <th class="detail-th-product-name">Tên sản phẩm</th>
+                            <th class="detail-th-quantity">Đơn hàng</th>
+                            <th class="detail-th-quantity">Số lượng</th>
+                            <th class="detail-th-price">Đơn giá</th>
+                            <th class="detail-th-discount">% CK</th>
+                            <th class="detail-th-discount-amount">Trị giá chiết khấu</th>
+                            @*<th class="detail-th-promotion">Khuyến mãi</th>*@
+                            <th class="detail-th-total">Thành tiền</th>
+                        </tr>
+                    </thead>
+                    <tbody class="detailList">
+                        @foreach (var i in Model.GroupProduct)
+                        {
+                            if (!string.IsNullOrEmpty(i.ProductGroup))
+                            {
+                                var count = Model.DetailList.Where(x => x.ProductGroup == i.ProductGroup).ToList();
+                                decimal? subTotal1 = count.Sum(x => (x.Quantity) * (x.Price));
+                                //      var discount = ((count.Sum(x=>x.DisCount.HasValue ? x.DisCount.Value : 0)/count.Count()) * subTotal1)/100;
+                                var chiet_khau1 = count.Sum(x => x.DisCountAmount.HasValue ? x.DisCountAmount.Value : 0);
+                                var thanh_tien1 = subTotal1 - chiet_khau1;
+                                if (i.PromotionValue.HasValue)
+                                {
+                                    thanh_tien1 = thanh_tien1 - Math.Round((Convert.ToDecimal(i.PromotionValue) * thanh_tien1.Value) / 100);
+                                }
+                                <tr data-type="" data-id="" style="background-color:#eee; font-weight:bold">
+                                    <td colspan="2">@i.ProductGroup : @i.ProductGroupName</td>
+                                    <td class="text-right">@Common.PhanCachHangNgan(count.Sum(x => x.Quantity))</td>
+                                    <td colspan="4"></td>
+                                    <td class="text-right">@Common.PhanCachHangNgan(thanh_tien1)</td>
+                                </tr>
+                            }
+
+                            int index = 1;
+                            foreach (var item in Model.DetailList.Where(x => x.ProductGroup == i.ProductGroup))
+                            {
+
+                                decimal? subTotal = (item.Quantity * item.Price.Value);
+                                decimal? subDiscountAmount = (item.Quantity * item.Price.Value) * item.DisCount / 100;
+                                //if (item.PromotionValue.HasValue)
+                                //{
+                                //    subTotal = subTotal - Math.Round((Convert.ToDecimal(item.PromotionValue) * subTotal.Value) / 100);
+                                //}
+                                if (item.DisCount.HasValue)
+                                {
+                                    subTotal = subTotal - item.DisCountAmount;
+                                }
+                                <tr data-type="" data-id="">
+                                    <td class="text-center">@(index++)</td>
+                                    <td class="has-error">
+                                        <p><b>@item.CategoryCode</b></p><p>
+                                            @(item.ProductCode) - @(item.ProductName)
+                                        </p>
+                                    </td>
+                                    <td class="text-center">@item.ProductInvoiceCode</td>
+                                    <td class="text-right">@item.Quantity</td>
+                                    <td class="text-right detail-product-price">@Common.PhanCachHangNgan(item.Price)</td>
+                                    <td class="detail_item_discount text-right">@(item.DisCount.HasValue ? item.DisCount.Value : 0)</td>
+                                    <td class="detail_item_discount_amount text-right">
+                                        <span class="display-value" title="">@Common.PhanCachHangNgan(item.DisCountAmount)</span>
+                                    </td>
+                                    <td class="detail_item_total text-right">@Common.PhanCachHangNgan(subTotal)</td>
+                                </tr>
+                            }
+                        }
+
+
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="col-sm-5">
+            <div class="tabbable">
+                <ul class="nav nav-tabs padding-12 tab-color-blue background-blue" id="myTab">
+                    <li id="li-tab1" class="active"><a data-target="#tab1" data-toggle="tab" aria-expanded="true">Thông tin chi tiết</a></li>
+                </ul>
+                <div class="tab-content">
+                    <div class="tab-pane active clearfix" id="tab1">
+                        <div class="detail-view">
+                            @*<div class="row control-group">
+                                    <div class="col-xs-4 control-label"><label for="ProductInvoiceCode">Mã đơn hàng</label></div><div class="col-xs-8 control-value" style=""><a href="/ProductInvoice/Detail/?TransactionCode=@Model.ProductInvoiceCode">@Model.ProductInvoiceCode</a></div>
+                                </div>*@
+                            <div class="row control-group">
+                                @Html.DetailViewItemFor2(model => model.CustomerName, null, null, "col-xs-4", "col-xs-8")
+                            </div>
+                            <div class="row control-group">
+                                @Html.DetailViewItemFor2(model => model.SalerFullName, null, null, "col-xs-4", "col-xs-8")
+                            </div>
+                            <div class="row control-group">
+                                @Html.DetailViewItemFor2(model => model.PaymentMethod, null, null, "col-xs-4", "col-xs-8")
+                            </div>
+                        </div>
+                        @Html.CustomTextAreaFor(model => model.Note, Wording.Note, WidthType.span12, true, new Dictionary<string, object> { { "readonly", "readonly" } }, "hide", "full-w")
+
+                    </div>
+                </div>
+            </div>
+            <p></p>
+            <div class="widget-box">
+                <div class="widget-header">
+                    <h5 class="widget-title">Nhập kho</h5>
+                </div>
+
+                <div class="widget-body">
+                    <div class="widget-main">
+                        @if (Model.ProductInboundViewModel != null)
+                        {
+                            <p>@Model.ProductInboundViewModel.CreatedDate.Value.ToString("dd/MM/yyyy HH:mm") - <a href="/ProductInbound/Detail/@Model.ProductInboundViewModel.Id" target="_blank">@Model.ProductInboundViewModel.Code</a></p>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@using (Html.BeginButtonContainer(pageSetting))
+{
+    if (Erp.BackOffice.Filters.SecurityFilter.AccessRight("Print", "SalesReturns", "Sale"))
+    {
+        <a href="@Url.Action("Print", "SalesReturns" , new { id = Model.Id })" target="_blank" class="btn btn-white btn-success btn-sm">
+            <i class="ace-icon fa fa-print"></i>
+            In phiếu
+        </a>
+
+        <a class="btn btn-white btn-success btn-sm" href="@Url.Action("Print", "SalesReturns", new { id = Model.Id, ExportExcel = true })">
+            <i class="ace-icon fa fa-file-excel-o"></i>
+            Xuất excel
+        </a>
+    }
+}
+
+@section Scripts {
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('#ReceiptViewModel_Amount').numberFormat();
+            $('.create_payment').show();
+            var modelNextDayPayment = '@DateTime.Now.AddDays(30).ToString("dd/MM/yyyy")';
+            $('#NextPaymentDate').val(modelNextDayPayment);
+            $('#AmountRemain').val('0');
+
+            $('#mask-ReceiptViewModel_Amount').focus(function(){
+                $(this).select();
+            });
+
+            $('#mask-ReceiptViewModel_Amount').blur(function () {
+
+                var totalAmount = @Model.TotalAmount;
+                var amount = parseFloat($('#ReceiptViewModel_Amount').val());
+                if (amount < totalAmount) {
+                    $('.NextPaymentDate-container').show();
+                    $('#AmountRemain').val(currencyFormat(totalAmount - amount));
+                }
+                else
+                    $('.NextPaymentDate-container').hide();
+            });
+        });
+
+        //mở, đóng trang chọn ca làm việc
+        function addShifts() {
+            //var materialSelected = $("#MaterialId").find("option:selected");
+            $("#PanelShifts").removeClass("hidden");
+            $("#PanelShifts").show();
+            $('[name="WorkSchedules_Shifts"]').removeClass("hidden");
+            $('[name="WorkSchedules_Shifts"]').show();
+            $('.create_payment').hide();
+        }
+        function AllowClose() {
+            $("#PanelShifts").addClass("hidden");
+            $('[name="WorkSchedules_Shifts"]').addClass("hidden");
+            $('.create_payment').show();
+        }
+    </script>
+}

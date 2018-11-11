@@ -1,0 +1,21 @@
+﻿@model Erp.BackOffice.Sale.Models.ServiceComboViewModel
+
+<tr role="@Model.OrderNo.Value" id="service_item_@Model.OrderNo" data-id="@Model.OrderNo">
+    <td class="text-center">
+        @(Model.OrderNo+1)
+    </td>
+    <td class="detail_item_id">
+
+        @Html.Hidden("DetailList[" + Model.OrderNo + "].ServiceId", Model.ServiceId)
+        @Model.Code - @Model.Name
+    </td>
+    <td>
+        @Html.TextBox("DetailList[" + Model.OrderNo + "].Quantity", Model.Quantity, new { style = "width:50px", @class = "detail_item_qty", autocomplete = "off" })
+    </td>
+
+    <td class="text-center">
+        <a class="btn-delete-item">
+            <i class="ace-icon fa fa-trash red bigger-120" style="cursor:pointer"></i>
+        </a>
+    </td>
+</tr>

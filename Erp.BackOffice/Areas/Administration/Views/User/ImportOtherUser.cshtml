@@ -1,0 +1,196 @@
+﻿@model Erp.BackOffice.Areas.Administration.Models.ImportOtherUserViewModel
+
+@using Erp.BackOffice.Helpers;
+@using Erp.BackOffice.App_GlobalResources;
+
+@using GridMvc.Html
+
+@{
+    ViewBag.Title = "Import Other User";
+    Layout = "~/Views/Shared/ACE_AdminLayout.cshtml";
+}
+
+@section HeadOfPage {
+    @Html.ScriptTop_ChosenStyle()
+}
+
+@using (Html.BeginForm_AceStyle((string)ViewBag.Title, "ImportOtherUser", "User", null, FormMethod.Post, new { enctype = "multipart/form-data", @class = "form-horizontal" }))
+{
+    @Html.ValidationSummary(true)
+
+    <div class="control-group">
+        <label class="control-label" for="file">@Resources.Wording.Source</label>
+        <div class="controls">
+            <span class="span6">
+                @Html.TextBoxFor(m => m.SourceFile, new
+           {
+               @type = "file",
+               id = "SourceFile",
+               @name = "SourceFile"
+           })
+                <button type="submit" class="btn btn-mini btn-info cancel span3" name="Show" value="Show">
+                    <i class="ace-icon fa fa-check bigger-110"></i>
+                    Hiển Thị				
+                </button>
+            </span>
+            
+            <span class="field-validation-valid help-inline" data-valmsg-replace="true" data-valmsg-for="SourceFile"></span>
+        </div>
+    </div>
+    
+    @helper SexColumns(bool? sex)
+    {
+        string SexName = sex == true ? "Nam" : "Nữ";
+        <span>@SexName</span>
+    }
+    @helper StatusColumns(Erp.BackOffice.Areas.Administration.Models.AddOtherUserImportViewModel.Status checkStatus)
+    {
+        if ((int)checkStatus == 1)
+        {
+            <span class="green"><i class="ace-icon fa fa-check green"></i></span>
+        }
+        else
+        {
+            <span class="red"><i class="icon-exclamation-sign red"></i></span>
+        }
+    }
+    
+    if (Model.ListUserImport != null)
+    {
+        <div id="ListRoaster" class="control-group">
+            @Html.Grid(Model.ListUserImport).Columns(columns =>
+       {
+           columns.Add(u => u.CheckStatus).Titled("Trạng thái").SetWidth(30).Sanitized(false).Encoded(false).RenderValueAs(u => StatusColumns(u.CheckStatus));
+           columns.Add(u => u.UserName).Titled("Username").SetWidth(50);
+           columns.Add(u => u.Sex).Titled("Giới tính").SetWidth(50).Sanitized(false).Encoded(false).RenderValueAs(u => SexColumns(u.Sex));
+           columns.Add(u => u.UserCode).Titled("Mã NV").SetWidth(50);
+           columns.Add(u => u.Email).Titled("Email").SetWidth(100);
+           columns.Add(u => u.UserTypeName).Titled("Loại User").SetWidth(50);
+           columns.Add(u => u.CategoryName).Titled("Ngành hàng").SetWidth(50);
+           columns.Add(u => u.PositionName).Titled("Chức vụ").SetWidth(50);
+           columns.Add(u => u.Level).Titled("Cấp bậc").SetWidth(50);
+           columns.Add(u => u.GroupName).Titled("Cửa hàng").SetWidth(150);
+           columns.Add(u => u.TeamLeader).Titled("Team Leader").SetWidth(50);
+       })
+        </div>
+    }
+    
+    
+    
+    <div class="row-fluid wizard-actions span4">
+        
+        &nbsp; &nbsp; &nbsp;
+        @if (Model.ListUserImport != null)
+        {
+            <button type="submit" class="btn btn-info" name="Submit" value="Save">
+                <i class="ace-icon fa fa-check bigger-110"></i>
+                @Resources.Wording.Save
+            </button>
+        }
+
+    </div>
+    
+}
+
+<div>
+    @Html.ActionLink(@Resources.Wording.BackToList, "ListUsers")
+</div>
+
+@section Scripts {
+    @Html.ScriptBottom_ValidationMvc()
+    @Html.ScriptBottom_ChosenStyle()
+
+    <script>
+        $(function () {
+
+            $('#SourceFile').ace_file_input({
+                no_file: 'Chọn File ...',
+                btn_choose: 'Chọn File',
+                btn_change: 'File Khác',
+                droppable: true,
+                onchange: null,
+                thumbnail: true, //| true | large
+                whitelist: 'xls|xlsx',
+                //blacklist:'exe|php'
+                //onchange:''
+
+                before_change: function (files, dropped) {
+
+                    var fileUpload = $(this).val();
+                    var extension = fileUpload.substring(fileUpload.lastIndexOf('.'));//Get extension of file
+                    var ValidFileType = ".xls , .xlsx"; // Define file type allowed
+                    var reg = null;
+                    var regTypeFile = null;
+
+                    //Validate file type. Files upladed must be .xls or .xlsx
+                    if (fileUpload.length > 0) {
+                        if (ValidFileType.toLowerCase().indexOf(extension) < 0) {
+                            alert("Bạn đã chọn File (" + extension + ") không đúng định dạng qui định!\nPhần mở rộng cho phép là:\n .xls, .xlsx");
+                            return false;
+                        } else {
+                            reg = /\.(xls|xlsx)$/i;
+                            regTypeFile = /^application\/(vnd.ms-excel|vnd.openxmlformats-officedocument.spreadsheetml.sheet)$/i;
+                            var allowed_files = [];
+                            for (var i = 0; i < files.length; i++) {
+                                var file = files[i];
+                                if (typeof file === "string") {
+                                    //IE8 and browsers that don't support File Object
+                                    if (!reg.test(file)) return false; //|png|gif|bmp
+                                } else {
+                                    var type = $.trim(file.type);
+                                    if ((type.length > 0 && !regTypeFile.test(type)) || (type.length == 0 && !reg.test(file.name)))
+                                        continue; //not an image so don't keep this file
+                                    //for android's default browser which gives an empty string for file.type
+                                }
+                                allowed_files.push(file);
+                            }
+                            if (allowed_files.length == 0) return false;
+                            return allowed_files;
+                        }
+                    }
+                }
+            });
+        });
+        
+        $(function () {
+
+            //$('#SourceFile').ace_file_input({
+            //    no_file: 'Chọn File ...',
+            //    btn_choose: 'Chọn File',
+            //    btn_change: 'File Khác',
+            //    droppable: true,
+            //    onchange: null,
+            //    thumbnail: true, //| true | large
+            //    whitelist: 'xls|xlsx',
+            //    //blacklist:'exe|php'
+            //    //onchange:''
+            //    //
+            //    before_change: function (files, dropped) {
+            //        var reg = /\.(xls|xlsx)$/i;
+            //        var regTypeFile = /^application\/(excel|vnd.ms-excel|vnd.openxmlformats-officedocument.spreadsheetml.sheet)$/i;
+            //        var allowed_files = [];
+            //        for (var i = 0 ; i < files.length; i++) {
+            //            var file = files[i];
+            //            if (typeof file === "string") {
+            //                //IE8 and browsers that don't support File Object
+            //                if (!reg.test(file)) return false;//|png|gif|bmp
+            //            }
+            //            else {
+            //                var type = $.trim(file.type);
+            //                if ((type.length > 0 && !regTypeFile.test(type)) || (type.length == 0 && !reg.test(file.name)))
+            //                    continue;//not an image so don't keep this file
+            //                //for android's default browser which gives an empty string for file.type
+            //            }
+
+            //            allowed_files.push(file);
+            //        }
+            //        if (allowed_files.length == 0) {
+            //            return false;
+            //        }
+            //        return allowed_files;
+            //    }
+            //});
+        });
+
+    </script>
+}

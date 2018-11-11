@@ -1,0 +1,629 @@
+﻿@using Erp.BackOffice.App_GlobalResources
+@using Erp.BackOffice.Helpers
+@using Erp.BackOffice.Sale.Models
+@using Erp.BackOffice.Account.Models
+
+@model ProductInvoiceViewModel
+
+@{
+    ViewBag.Title = "Chi tiết đơn hàng";
+
+    bool IsPopup = Request["IsPopup"] == null || Convert.ToBoolean(Request["IsPopup"]) == false ? false : true;
+    Layout = "~/Views/Shared/" + (IsPopup == false ? "ACE_AdminLayout.cshtml" : "_PopupLayout.cshtml");
+
+    IEnumerable<SelectListItem> staffList = (IEnumerable<SelectListItem>)ViewBag.staffList;
+
+    IEnumerable<ProductViewModel> productList = (IEnumerable<ProductViewModel>)ViewBag.productList;
+
+    SelectList provinceList = SelectListHelper.GetSelectList_Location("0", null, "- Tỉnh/Thành phố -");
+    SelectList districtList = SelectListHelper.GetSelectList_Location(Model.ShipCityId, null, "- Quận/Huyện -");
+    SelectList wardList = SelectListHelper.GetSelectList_Location(Model.ShipDistrictId, null, "- Xã/Phường -");
+
+    Erp.BackOffice.Models.PageSetting pageSetting = new Erp.BackOffice.Models.PageSetting
+    {
+        ModuleName = "ProductInvoice",
+        ActionName = "Detail",
+        PageTitle = ViewBag.Title,
+        DisplaySearchPanel = false,
+        IsPopup = IsPopup,
+        DisplayBackButton = true
+    };
+    int index = 1;
+    var setting = Erp.BackOffice.Helpers.Common.GetSetting("hide_discount_product_invoice");
+    var user_type_onl = Erp.BackOffice.Helpers.Common.CurrentUser.UserTypeCode;
+}
+@*<link href="~/assets/css/jquery-ui.custom.min.css" rel="stylesheet" />*@
+@section HeadOfPage {
+    @Html.ScriptTop_ChosenStyle()
+    <style type="text/css">
+        .mini-popup {
+            position: relative;
+            display: inline;
+        }
+
+        #popup_huy {
+            position: absolute;
+            bottom: 45px;
+            left: 0px;
+            width: 410px;
+            height: 160px;
+            max-width: inherit;
+            top: inherit;
+        }
+
+        #popup_archive {
+            position: absolute;
+            bottom: 45px;
+            left: 0px;
+            width: 410px;
+            height: 235px;
+            max-width: inherit;
+            top: inherit;
+        }
+
+        .popover {
+            max-width: 650px !important;
+        }
+
+        .widget-body .table thead:first-child tr {
+            background: repeat-x #F2F2F2;
+        }
+    </style>
+    <style>
+        .ui-ribbon {
+            position: relative;
+            display: block;
+            text-align: center;
+            font-size: 15px;
+            font-weight: 600;
+            color: #fff;
+            transform: rotate(43deg);
+            padding: 7px 0;
+            left: -2px;
+            top: 19px;
+            width: 140px;
+            line-height: 20px;
+            /*background-color: rgba(183, 51, 51, 0.94);*/
+            box-shadow: 0 0 3px rgba(0,0,0,.3);
+        }
+
+        .ui-ribbon-wrapper {
+            position: absolute;
+            overflow: hidden;
+            width: 108px;
+            height: 103px;
+            top: 0px;
+            right: 12px;
+            z-index: 1;
+        }
+    </style>
+}
+
+@helper renderStatus(string status)
+{
+    switch (status)
+    {
+        case "pending":
+            <span class="label label-info pull-left" style="margin-right:5px">@Wording.OrderStatusDisplay_pending</span>
+            break;
+        case "inprogress":
+        <span class="label label-warning pull-left" style="margin-right:5px">@Wording.OrderStatusDisplay_inprogress</span>
+            break;
+        case "shipping":
+        <span class="label label-warning pull-left" style="margin-right:5px">@Wording.OrderStatusDisplay_shipping</span>
+            break;
+        case "complete":
+        <span class="label label-success pull-left" style="margin-right:5px">@Wording.OrderStatusDisplay_complete</span>
+            break;
+        case "cancel":
+        <span class="label label-danger pull-left" style="margin-right:5px">@Wording.OrderStatusDisplay_cancel</span>
+            break;
+    }
+}
+@helper renderCusstomer(int CustomerId, string CustomerName)
+{
+    <a onclick="OpenPopup('@Url.Action("Detail", "Customer", new { area = "Account", Id = CustomerId, IsPopup = true })', '', 0, 0)">
+        @CustomerName
+    </a>
+}
+@helper renderStaff(int StaffId, string StaffName)
+{
+    <a onclick="OpenPopup('@Url.Action("DetailBasicFull", "Staffs", new { area = "Staff", Id = StaffId, IsLayout = false })', '', 0, 0)">
+        @StaffName
+    </a>
+}
+@using (Html.BeginPageHeaderContainer(pageSetting))
+{
+
+}
+
+<div class="row">
+    <div class="col-sm-7">
+        <h4 class="green" style="margin-top:0px">
+            @renderStatus(Model.Status)
+            <span>Đơn hàng: @Model.Code (@Model.CreatedDate.Value.ToString("dd/MM/yyyy HH:mm"))</span>
+            <span class="pull-right red"><b>@CommonSatic.ToCurrencyStr(Model.TotalAmount, null)</b></span>
+        </h4>
+        <div id="home" class="tab-pane active">
+            @if (ViewBag.SuccessMessage != null && ViewBag.SuccessMessage != "")
+            {
+                <div class="alert alert-block alert-success">
+                    <button class="close" data-dismiss="alert" type="button">
+                        <i class="ace-icon fa fa-times"></i>
+                    </button>
+                    <i class="ace-icon fa fa-check green"></i>
+                    @Html.Raw(ViewBag.SuccessMessage)
+                </div>
+            }
+
+            @if (ViewBag.FailedMessage != null && ViewBag.FailedMessage != "")
+            {
+                <div class="alert alert-block alert-danger">
+                    <button class="close" data-dismiss="alert" type="button">
+                        <i class="ace-icon fa fa-times"></i>
+                    </button>
+                    <i class="ace-icon fa fa-warning red"></i>
+                    @Html.Raw(ViewBag.FailedMessage)
+                </div>
+            }
+
+            @if (!string.IsNullOrEmpty(Model.Note))
+            {
+                <div class="alert alert-warning">@Model.Note</div>
+            }
+
+            @if (Model.IsDeleted == true)
+            {
+                <div class="alert alert-danger">
+                    <p><i class="ace-icon fa fa-warning red"></i> @Model.ModifiedUserName đã hủy bỏ chứng từ lúc @Model.ModifiedDate.Value.ToString("HH:mm dd/MM/yyyy").</p>
+                    <p>Lý do hủy: @Model.CancelReason</p>
+                </div>
+            }
+
+            <div class="table-responsive">
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th class="">STT</th>
+                            <th class="">Tên sản phẩm</th>
+                            <th>Lô</th>
+                            <th>Hạn SD</th>
+                            <th class="">Số lượng</th>
+                            <th class="">Đơn giá</th>
+                            @if (("," + setting + ",").Contains("," + user_type_onl + ",") == false)
+                            {
+                                <th class="">% CKCD</th>
+                                <th class="">Trị giá CKCD</th>
+                                <th class="">% CKDX</th>
+                                <th class="">Trị giá CKDX</th>
+                            }
+                            <th class="detail-th-total">Thành tiền</th>
+                        </tr>
+                    </thead>
+                    <tbody class="detailList">
+                        @foreach (var qq in Model.DetailList.GroupBy(x => x.CategoryCode))
+                        {
+                            <tr style="background:#D9D9D9;font-weight:bold">
+                                <td colspan="@(("," + setting + ",").Contains("," + user_type_onl + ",") == false?"11":"7")">
+                                    @(qq.Key == null ? "Sản phẩm/Dịch vụ khác" : qq.Key)
+                                </td>
+                            </tr>
+
+                            foreach (var item in Model.DetailList.Where(x => x.CategoryCode == qq.Key))
+                            {
+
+                                <tr data-type="" data-id="">
+                                    <td class="text-center">@(index++)</td>
+                                    <td class="has-error">
+                                        @*<p><b>@item.CategoryCode</b></p><p>*@
+                                        @(item.ProductCode) - @(item.ProductName)
+
+                                    </td>
+                                    <td>
+                                        @item.LoCode
+                                    </td>
+                                    <td>
+                                        @(item.ExpiryDate == null ? "" : item.ExpiryDate.Value.ToString("dd/MM/yyyy"))
+                                    </td>
+                                    <td class="text-right">@Common.PhanCachHangNgan(item.Quantity)</td>
+                                    <td class="text-right detail-product-price">@CommonSatic.ToCurrencyStr(item.Price,null)</td>
+                                    @if (("," + setting + ",").Contains("," + user_type_onl + ",") == false)
+                                    {
+                                        <td class="detail_item_discount text-right">@(item.FixedDiscount.HasValue ? item.FixedDiscount.Value : 0)</td>
+                                        <td class="detail_item_discount_amount text-right">
+                                            <span class="display-value" title="">@CommonSatic.ToCurrencyStr(item.FixedDiscountAmount.HasValue ? item.FixedDiscountAmount : 0, null)</span>
+                                        </td>
+                                        <td class="detail_item_discount text-right">@(CommonSatic.ToCurrencyStr(item.IrregularDiscount.HasValue ? item.IrregularDiscount.Value : 0, null))</td>
+                                        <td class="detail_item_discount_amount text-right">
+                                            <span class="display-value" title="">@CommonSatic.ToCurrencyStr(item.IrregularDiscountAmount.HasValue ? item.IrregularDiscountAmount : 0, null)</span>
+                                        </td>
+                                    }
+                                    <td class="detail_item_total text-right">
+                                        @if (item.IsReturn)
+                                        {
+                                            <i class="ace-icon fa fa-exclamation-triangle orange" title="Hàng bán trả lại"></i>
+                                        }
+                                        @CommonSatic.ToCurrencyStr(item.Amount, null)
+                                    </td>
+                                </tr>
+                            }
+                        }
+                    </tbody>
+                </table>
+            </div>
+
+        </div>
+
+    </div>
+    <div class="col-sm-5">
+        <div class="widget-box">
+            <div class="widget-header">
+                <h5 class="widget-title">Tổng quan</h5>
+            </div>
+
+            <div class="widget-body">
+                <div class="widget-main">
+
+                    <a class="btn btn-white btn-success btn-sm bottom-5" onclick="OpenPopup('@Url.Action("Edit", "ProductInvoice", new { IsPopup = true,Id=Model.Id })', 'Cập nhật hóa đơn', 500, 500)">
+                        <i class=" ace-icon fa fa-edit">
+                        </i>
+                        @Wording.Edit
+                    </a>
+                    <div class="detail-view">
+                        <div class="row control-group">
+                            @Html.DetailViewItemFor2(model => model.BranchName, null, null, "col-xs-4", "col-xs-8")
+                        </div>
+                        <div class="row control-group">
+                            @Html.DetailViewItem(renderCusstomer(Model.CustomerId.Value, Model.CustomerName), "CustomerName", Wording.Customer, null, null, "col-xs-4", "col-xs-8")
+                        </div>
+                        <div class="row control-group">
+                            @Html.DetailViewItemFor2(model => model.CustomerPhone, null, null, "col-xs-4", "col-xs-8")
+                        </div>
+                        <div class="row control-group">
+                            @Html.DetailViewItemFor2(model => model.CreatedUserName, null, null, "col-xs-4", "col-xs-8")
+                        </div>
+                        <div class="row control-group">
+                            @Html.DetailViewItemFor2(model => model.CodeInvoiceRed, null, null, "col-xs-4", "col-xs-8")
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+        <p></p>
+        @if (("," + setting + ",").Contains("," + user_type_onl + ",") == false)
+        {
+            <div class="widget-box">
+                <div class="widget-header">
+                    <h5 class="widget-title">Thông tin chiết khấu cho nhà thuốc</h5>
+                </div>
+
+                <div class="widget-body">
+                    <div class="widget-main">
+                        <div class="detail-view">
+                            <div class="row control-group">
+                                @Html.DetailViewItem(Model.FixedDiscount.ToCurrencyStr(null), "FixedDiscount", Wording.TotalFixedDiscount, null, "font-weight:bold;", "col-xs-4", "col-xs-8")
+                                @*@Html.DetailViewItemFor2(model => model.FixedDiscount, true, null, "font-weight:bold;", "col-xs-4", "col-xs-8")*@
+                            </div>
+                            <div class="row control-group">
+                                @Html.DetailViewItem(Model.IrregularDiscount.ToCurrencyStr(null), "IrregularDiscount", Wording.TotalIrregularDiscount, null, "font-weight:bold;", "col-xs-4", "col-xs-8")
+                                @*@Html.DetailViewItemFor2(model => model.IrregularDiscount, true, null, "font-weight:bold;", "col-xs-4", "col-xs-8")*@
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <p></p>
+        }
+        <div class="widget-box">
+            <div class="widget-header">
+                <h5 class="widget-title">Thông tin thanh toán</h5>
+            </div>
+
+            <div class="widget-body">
+                <div class="widget-main">
+                    <div class="detail-view">
+                        <div class="row control-group">
+                            @Html.DetailViewItem(CommonSatic.ToCurrencyStr(Model.TotalAmount, null), "TotalAmount", Wording.TotalAmount, null, "font-weight:bold;color:red", "col-xs-4", "col-xs-8")
+                        
+                        </div>
+                        <div class="row control-group">
+                            @Html.DetailViewItemFor2(model => model.NextPaymentDate, true, null, "font-weight:bold;", "col-xs-4", "col-xs-8")
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <p></p>
+        <div class="widget-box">
+            <div class="widget-header">
+                <h5 class="widget-title">Lịch sử thanh toán</h5>
+            </div>
+            <div class="widget-body">
+                <div class="widget-main">
+                    <table class="table table-striped grid-table">
+                        <thead>
+                            <tr>
+                                <th class="grid-header" style="width:130px">Ngày giao dịch</th>
+                                <th class="grid-header" style="width:200px">Loại giao dịch</th>
+                                <th class="grid-header">Mã giao dịch</th>
+                                <th class="grid-header" style="width: 100px; text-align: right;">Nợ</th>
+                                <th class="grid-header" style="width: 100px; text-align: right;">Có</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if (Model.ListTransactionLiabilities.Count > 0)
+                            {
+                                foreach (var item in Model.ListTransactionLiabilities)
+                                {
+                                    <tr class="grid-row">
+                                        <td>@item.CreatedDate.Value.ToString("dd/MM/yyyy HH:mm")</td>
+                                        <td>@item.TransactionName</td>
+                                        <td>
+                                            @switch (item.TransactionModule)
+                                            {
+                                                case "ProductInvoice":
+                                                    {
+                                                        @item.TransactionCode
+                                                        break;
+                                                    }
+                                                case "Receipt":
+                                                    {
+                                                        <a onclick="OpenPopup('/@(item.TransactionModule)/Detail/?TransactionCode=@(item.TransactionCode)&IsPopup=true', 'Thông tin chứng từ', 500, 500)">@item.TransactionCode</a>
+                                                        break;
+                                                    }
+                                                default:
+                                                    {
+                                                        <a onclick="OpenPopup('/@(item.TransactionModule)/Detail/?TransactionCode=@(item.TransactionCode)&IsPopup=true', 'Thông tin chứng từ', 0, 0)">@item.TransactionCode</a>
+                                                        break;
+                                                    }
+
+                                            }
+                                        </td>
+                                        <td style="text-align: right; font-weight: bold">@(CommonSatic.ToCurrencyStr(item.Debit, null))</td>
+                                        <td style="text-align: right; font-weight: bold">@(CommonSatic.ToCurrencyStr(item.Credit, null))</td>
+                                    </tr>
+                                }
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <p></p>
+        <div class="widget-box">
+            <div class="widget-header">
+                <h5 class="widget-title">Chứng từ</h5>
+            </div>
+            <div class="widget-body">
+                <div class="widget-main">
+                    @{Html.RenderAction("Relationship", "Transaction", new { area = "Account", TransactionCode = Model.Code });}
+                </div>
+            </div>
+        </div>
+        <p></p>
+    </div>
+</div>
+
+@using (Html.BeginButtonContainer(pageSetting))
+{
+    if (Model.IsDeleted != null && Model.IsDeleted == false)
+    {
+        if (Erp.BackOffice.Filters.SecurityFilter.AccessRight("Print", "ProductInvoice", "Sale"))
+        {
+            <a href="@Url.Action("Print", "ProductInvoice", new { id = Model.Id })" target="_blank" class="btn btn-white btn-success btn-sm">
+                <i class="ace-icon fa fa-print"></i>
+                In phiếu
+            </a>
+
+            <a class="btn btn-white btn-success btn-sm" href="@Url.Action("Print", "ProductInvoice", new { id = Model.Id, ExportExcel = true })">
+                <i class="ace-icon fa fa-file-excel-o"></i>
+                Xuất excel
+            </a>
+        }
+
+        if (Model.AllowEdit.Value)
+        {
+            if (!Model.IsArchive)
+            {
+                if (Erp.BackOffice.Filters.SecurityFilter.AccessRight("CreateNT", "ProductInvoice", "Sale"))
+                {
+                    <a class="btn btn-primary btn-mini" href="@Url.Action("CreateNT", "ProductInvoice", new { Id = Model.Id })">
+                        <i class="ace-icon fa fa-edit "></i>
+                        Chỉnh sửa
+                    </a>
+                }
+                if (Erp.BackOffice.Filters.SecurityFilter.AccessRight("Success", "ProductInvoice", "Sale"))
+                {
+                    using (Html.BeginForm("Success", "ProductInvoice", FormMethod.Post, new { id = "SuccessInvoice", @class = "inline" }))
+                    {
+                        @Html.HiddenFor(m => m.Id)
+                        @Html.Hidden("IsPopup", IsPopup)
+                        <a class="btn btn-mini btn-success" id="Success" name="Success" value="Save">
+                            <i class="ace-icon fa fa-save"></i>
+                            Ghi sổ
+                        </a>
+                    }
+                }
+                if (Erp.BackOffice.Filters.SecurityFilter.AccessRight("Delete", "ProductInvoice", "Sale"))
+                {
+                    <div class="mini-popup">
+                        <a class="btn btn-white btn-sm no-border" data-toggle="collapse" data-target="#popup_huy" style="color: red !important;">
+                            <i class="ace-icon fa fa-trash"></i>
+                            Hủy đơn hàng
+                        </a>
+                        <div id="popup_huy" class="popover fade top">
+                            <div class="arrow" style="left: 50%;"></div>
+                            <h3 class="popover-title"><i class="ace-icon fa fa-bolt red"></i> Hủy đơn hàng</h3>
+                            <div class="popover-content">
+                                @using (Html.BeginForm_AceStyle((string)ViewBag.Title, "Delete", "ProductInvoice", null, FormMethod.Post, new { id = "ProductInvoice_Delete", @class = "form-horizontal clearfix" }))
+                                {
+                                    @Html.HiddenFor(m => m.Id)
+                                    @Html.CustomTextAreaFor(model => model.CancelReason, null, WidthType.span12)
+
+                                    <p class="top-10">
+                                        <button id="btnDelete" class="btn btn-mini btn-primary" type="submit" name="Submit" value="Save" onclick="return submitDelete();">
+                                            Đồng ý
+                                        </button>
+                                        <a class="btn btn-white btn-sm no-border" data-toggle="collapse" data-target="#popup_huy">Đóng</a>
+                                    </p>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                }
+            }
+            else
+            {
+
+                if (Erp.BackOffice.Filters.SecurityFilter.AccessRight("UnArchive", "ProductInvoice", "Sale"))
+                {
+                    using (Html.BeginForm("UnArchive", pageSetting.ModuleName, FormMethod.Post, new { @class = "inline" }))
+                    {
+                        @Html.HiddenFor(m => m.Id)
+                        @Html.Hidden("IsPopup", IsPopup)
+
+                        <button class="btn btn-white btn-danger btn-sm no-border" type="submit" name="Submit" value="Save" onclick="return confirm('Bạn chắc chắn muốn thực hiện thao tác này?')">
+                            Bỏ ghi sổ
+                        </button>
+                    }
+                }
+            }
+
+        }
+
+    }
+}
+
+@section Scripts {
+@Html.ScriptBottom_ValidationMvc()
+@Html.ScriptBottom_ChosenStyle()
+@Html.ScriptBottom_DatePicker("dd/MM/yyyy")
+    @*<script src="~/assets/js/jquery-ui.custom.min.js"></script>*@
+    <script type="text/javascript">
+        $(document).ready(function () {
+            LoadNumberInput();
+            $('#Success').click(function () {
+                ShowLoading();
+                ClearFormatBeforeSubmit($("#SuccessInvoice"));
+                $("#SuccessInvoice").submit();
+              //  HideLoading();
+            });
+            //$('#ReceiptViewModel_Amount').numberFormat();
+            $('.create_payment').show();
+            var modelNextDayPayment = '@DateTime.Now.AddDays(30).ToString("dd/MM/yyyy")';
+            $('#NextPaymentDate').val(modelNextDayPayment);
+            $('#AmountRemain').val('0');
+
+            $('#ReceiptViewModel_Amount').focus(function () {
+                $(this).select();
+            });
+
+            $('#ReceiptViewModel_Amount').blur(function () {
+
+                var Amount = '@Model.TotalAmount';
+                var totalAmount = parseFloat(removeComma(Amount));
+                var amount = parseFloat(removeComma($('#ReceiptViewModel_Amount').val()));
+                if (amount < totalAmount) {
+                    $('.NextPaymentDate-container').show();
+                    $('#AmountRemain').val(numeral(totalAmount - amount).format('0,0'));
+                }
+                else {
+                    $('#ReceiptViewModel_Amount').val(numeral(totalAmount).format('0,0'));
+                    $('.NextPaymentDate-container').hide();
+                }
+            });
+        });
+
+        function UpdateNote(Id) {
+            ShowLoading();
+            var status = $("#status_" + Id).val();
+            $.ajax({
+                url: '/Service/UpdateUsingServiceLogDetail',
+                type: 'GET',
+                data: { Id: Id, status: status },
+                success: function (res) {
+                    if (res == "success") {
+                        alertPopup("Thông báo", "Cập nhật ghi chú thành công!", "success");
+                        $("#status__" + Id).text(status);
+                        $("#status_" + Id).val(status);
+                        $("#status_" + Id).text(status);
+                        //$('[data-rel=popover]').popover('hide');
+                        //setInterval(function () {
+                        //    window.location.reload();
+                        //}, 2000);
+                        $("#myModal_" + Id).modal("hide");
+                    } else {
+                        alertPopup("Lỗi", "Cập nhật ghi chú thất bại!", "danger");
+                    }
+                    HideLoading();
+                }
+            });
+
+        };
+        function EditNote() {
+            $('[data-rel=popover]').popover('hide');
+        }
+        $('.popover-dismiss').popover({
+            trigger: 'focus'
+        })
+
+
+        function selectLocationItem(id, code, name, orderNo) {
+
+            $("#SalerName").val(name);
+            $("#StaffId").val(id);
+            ClosePopup();
+        }
+
+        function CreateSetting() {
+            $("#panel_create_service").show();
+            $('#create_service').addClass("hidden");
+        }
+        function CloseSetting() {
+            $("#panel_create_service").hide();
+            $('#create_service').removeClass("hidden");
+            $('#create_service').show();
+        }
+        $(document).ready(function () {
+            $('[data-rel=popover]').popover({ html: true });
+
+        });
+
+        function ClosePopupAndDoSomething() {
+            ClosePopup(true);
+            ShowLoading();
+        }
+
+        function clickActive(elem, id) {
+            //  console.log(1111);
+            var $this = $(elem);
+
+            var $chekbox = $this.find('input[type="checkbox"]');
+            var $label = $this.find('label[name="label_' + id + '"]');
+            if ($chekbox.is(':checked')) {
+                $chekbox.prop('checked', false);
+                $label.removeClass('active');
+            } else {
+                $chekbox.prop('checked', true);
+                $label.addClass('active');
+            }
+            //$('span[id="count_check_' + id + '"]').text($this.parent().find(' > label.active').length);
+        }
+
+    </script>
+    <script type="text/javascript">
+
+        function submitDelete() {
+            var note = $("#CancelReason").val();
+            if (note == '') {
+                alertPopup('Bạn chưa nhập lý do hủy. Không thể hủy hóa đơn này!', 'Xin hãy kiểm tra lại.', 'error');
+                return false;
+            }
+            else {
+                alertPopup('Hủy thành công!', '', 'success');
+                return true;
+            }
+        }
+    </script>
+}

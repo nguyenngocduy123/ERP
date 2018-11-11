@@ -1,0 +1,197 @@
+﻿@model IEnumerable<SupplierViewModel>
+
+@using Erp.BackOffice.App_GlobalResources
+@using Erp.BackOffice.Sale.Models
+@using Erp.BackOffice.Helpers
+@using GridMvc.Html
+
+@{
+    ViewBag.Title = Wording.PageIndex_Supplier;
+    bool isPopup = Request["IsPopup"] != null && Request["IsPopup"].ToString().ToLower() == "true" ? true : false;
+    if (isPopup)
+    {
+        Layout = "~/Views/Shared/_PopupLayout.cshtml";
+    }
+    else
+    {
+        Layout = "~/Views/Shared/ACE_AdminLayout.cshtml";
+    }
+    Erp.BackOffice.Models.PageSetting pageSetting = new Erp.BackOffice.Models.PageSetting
+    {
+        ModuleName = "Supplier",
+        ActionName = "Index",
+        PageTitle = ViewBag.Title,
+        DisplaySearchPanel = true,
+        IsPopup = false,
+        DisplayBackButton = false
+    };
+    var jsCallback = Request["jsCallback"] == null ? "" : Request["jsCallback"].ToString();
+}
+
+@if (ViewBag.SuccessMessage != null && ViewBag.SuccessMessage != "")
+{
+    <div class="alert alert-block alert-success">
+        <button class="close" data-dismiss="alert" type="button">
+            <i class="ace-icon fa fa-times"></i>
+        </button>
+        <i class="ace-icon fa fa-check green"></i>
+        @ViewBag.SuccessMessage
+    </div>
+}
+
+@if (ViewBag.FailedMessage != null && ViewBag.FailedMessage != "")
+{
+    <div class="alert alert-block alert-danger">
+        <button class="close" data-dismiss="alert" type="button">
+            <i class="ace-icon fa fa-times"></i>
+        </button>
+        <i class="ace-icon fa fa-warning red"></i>
+        @ViewBag.FailedMessage
+    </div>
+}
+
+<link href="@Url.Content("~/assets/css/Gridmvc.css")" rel="stylesheet" type="text/css" />
+<script src="@Url.Content("~/Scripts/gridmvc.min.js")" type="text/javascript"> </script>
+
+@helper GridColumnCommand(int id, string name)
+{
+    <div class="hidden-phone visible-desktop action-buttons" style="display: inline-block; float: left; margin-right:5px;">
+        @if (Erp.BackOffice.Filters.SecurityFilter.AccessRight("Delete", "Supplier", "Sale"))
+        {
+            <button name="Delete" value="Delete" type="submit" class="btn btn-mini btn-danger">
+                <i class="ace-icon fa fa-trash bigger-120"></i>
+            </button>
+        }
+    </div>
+
+    <div class="hidden-phone visible-desktop action-buttons" style="display: inline-block; float: left;">
+        @if (Erp.BackOffice.Filters.SecurityFilter.AccessRight("InboundList", "SaleReport", "Sale"))
+        {
+            <a class="btn btn-mini btn-info" href="javascript:;" onclick="OpenPopup('@Url.Action("InboundList", "SaleReport", new { supplierId = id, IsPopup = "true" })', 'Lịch sử giao dịch @name', 1000, 500)">Lịch sử giao dịch</a>
+        }
+    </div>
+}
+
+@helper GridColumnName(string name, int id, bool isPopup = false, string jsCallback = null)
+{
+    name = string.IsNullOrEmpty(name) ? ">No Title" : name;
+    if (!isPopup)
+    {
+        <a href="@Url.Action("Edit", "Supplier", new { Id = id })">@name</a>
+    }
+    else
+    {
+        if (!string.IsNullOrEmpty(jsCallback))
+        {
+            <a onclick="parent.@(jsCallback)(@id, '@name')">@name</a>
+        }
+        else
+        {
+            <a onclick="parent.selectLocationItem('@id', '@name','Supplier')">@name</a>
+        }
+    }
+}
+
+@helper CheckDeleteColumns(int Id)
+{
+    <label>
+        <input class="ace class-delete-all" type="checkbox" name="DeleteId-checkbox" value="@Id">
+        <span class="lbl"></span>
+    </label>
+}
+
+@helper BuildCheckAll()
+{
+    <label>
+        <input class="ace" type="checkbox" name="checkAll" id="checkAll" />
+        <span class="lbl"></span>
+    </label>
+}
+
+@using (Html.BeginPageHeaderContainer(pageSetting))
+{
+    <p>
+        @Html.TextBox("txtCode", Request["txtCode"], new { autocomplete = "off", placeholder = "Nhập mã NCC..." })
+        @Html.TextBox("txtSearch", Request["txtSearch"], new { autocomplete = "off", placeholder = "Nhập tên NCC..." })
+        @Html.TextBox("txtPhone", Request["txtPhone"], new { @class = "input-numberic", autocomplete = "off", placeholder = "Nhập số điện thoại..." })
+        @Html.TextBox("txtEmail", Request["txtEmail"], new { autocomplete = "off", placeholder = "Nhập email..." })
+    </p>
+}
+@if (!isPopup)
+{
+    using (Html.BeginForm("Delete", "Supplier", FormMethod.Post))
+    {
+        @Html.Grid(Model).Columns(columns =>
+           {
+               columns.Add().Titled(BuildCheckAll().ToHtmlString()).SetWidth(20).Sanitized(false).Encoded(false).RenderValueAs(n => CheckDeleteColumns(n.Id));
+               columns.Add(u => u.Code).Titled(Wording.Code).SetWidth(100);
+               columns.Add().Titled(Wording.Name).Sortable(false).Sanitized(false).Encoded(false).RenderValueAs(u => GridColumnName(u.Name, u.Id));
+               columns.Add(u => u.Phone).Titled(Wording.Phone).SetWidth(100);
+               columns.Add(u => u.Email).Titled(Wording.Email).SetWidth(100);
+               columns.Add(u => u.CreatedDate).Titled(Html.DisplayNameFor(u => u.FirstOrDefault().CreatedDate).ToString()).SetWidth(100);
+               //columns.Add(u => u.ModifiedUserId).Titled(Html.DisplayNameFor(u => u.FirstOrDefault().ModifiedUserId).ToString()).SetWidth(100).RenderValueAs(u => u.ModifiedUserName);
+               columns.Add(u => u.ModifiedDate).Titled(Html.DisplayNameFor(u => u.FirstOrDefault().ModifiedDate).ToString()).SetWidth(100).Sortable(true);
+               columns.Add(u => u.Id).Titled(Wording.Action).Sanitized(false).Encoded(false).RenderValueAs(u => GridColumnCommand(u.Id, u.Name)).SetWidth(170);
+           }).WithPaging(10)
+        using (Html.BeginButtonContainer(pageSetting))
+        {
+            if (Erp.BackOffice.Filters.SecurityFilter.AccessRight("Create", "Supplier", "Sale"))
+            {
+                <a class="btn btn-mini btn-primary" href="@Url.Action("Create", pageSetting.ModuleName)">
+                    <i class="ace-icon fa fa-plus"></i>
+                    @Wording.CreateNew
+                </a>
+            }
+            if (Erp.BackOffice.Filters.SecurityFilter.AccessRight("Delete", "Supplier", "Sale"))
+            {
+                <button class="btn btn-mini btn-danger" type="submit" name="DeleteAll" value="DeleteAll" onclick="return CheckIsval();">
+                    <i class="ace-icon fa fa-trash"></i>
+                    @Wording.Delete
+                </button>
+            }
+        }
+    }
+}
+else
+{
+    @Html.Grid(Model).Columns(columns =>
+    {
+        columns.Add(m => m.Code).Titled(Wording.Code).Sortable(false);
+        columns.Add().Titled(Wording.Name).Sortable(false).Sanitized(false).Encoded(false).RenderValueAs(u => GridColumnName(u.CompanyName, u.Id, true, jsCallback));
+    }).WithPaging(10)
+
+}
+
+
+@section Scripts {
+    <script type="text/javascript">
+        function CheckIsval() {
+            if ($('[name="DeleteId-checkbox"]').is(':checked') == false) {
+                alert("Phải chọn ít nhất 1 item.");
+                return false;
+            }
+            else {
+                if (confirm('Bạn có chắc muốn xóa các item đã chọn ?')) {
+                    return true;
+                }
+                else {
+                    return false;
+                }
+            }
+        }
+
+        $('[name="Delete"]').click(function () {
+            if (confirm('Bạn có chắc muốn xóa item ?')) {
+                $(this).closest('tr').children('td').each(function (i, e) {
+                    $(this).find("input.class-delete-all").prop("checked", true);
+                    return true;
+                })
+            }
+            else {
+                return false;
+            }
+
+        })
+
+    </script>
+}

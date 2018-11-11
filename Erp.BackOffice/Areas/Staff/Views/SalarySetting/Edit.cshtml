@@ -1,0 +1,75 @@
+﻿@using Erp.BackOffice.App_GlobalResources
+@using Erp.BackOffice.Helpers
+@using Erp.BackOffice.Staff.Models
+
+@model SalarySettingViewModel
+
+@{
+    ViewBag.Title = Wording.PageEdit_SalarySetting + ": " + Model.Name;
+    Layout = "~/Views/Shared/ACE_AdminLayout.cshtml";
+
+    Erp.BackOffice.Models.PageSetting pageSetting = new Erp.BackOffice.Models.PageSetting
+    {
+        ModuleName = "SalarySetting",
+        ActionName = "Edit",
+        PageTitle = ViewBag.Title,
+        DisplaySearchPanel = false,
+        IsPopup = false,
+        DisplayBackButton = true
+    };
+}
+
+@section HeadOfPage {
+    @Html.ScriptTop_ChosenStyle()
+}
+
+@using (Html.BeginPageHeaderContainer(pageSetting))
+{
+
+}
+
+<div class="alert alert-info">
+    <p><b>Hướng dẫn</b></p>
+    <p>+ <b><u>Phân loại dữ liệu cá nhân:</u></b> dùng để cài đặt dữ liệu lương cho mỗi nhân sự</p>
+</div>
+
+@{Html.RenderAction("Index", "SalarySettingDetail", new { SalarySettingId = Model.Id });}
+
+@using (Html.BeginForm("Update", "SalarySetting", FormMethod.Post))
+{
+    using (Html.BeginButtonContainer(pageSetting))
+    {
+        @Html.HiddenFor(m => m.Id)
+        <button class="btn btn-mini btn-primary" type="submit" name="Submit" value="Save" onclick="return confirm('Bạn có chắc muốn thực hiện thao tác này không?')">
+            <i class="ace-icon fa fa-check"></i>
+            Chọn làm mẫu
+        </button>
+        <button class="btn btn-mini btn-success duplicate-salarysetting" type="button" name="Duplicate" onclick="OpenPopup('@Url.Action("Duplicate", "SalarySetting", new { area = "Staff", Id= Model.Id, IsPopup = "true" })', '@Wording.PageDetail_SalarySetting', 500, 300)">
+            <i class="ace-icon fa fa-copy"></i>
+            Sao chép
+        </button>
+
+    }
+}
+
+@section Scripts {
+
+    @Html.ScriptBottom_ValidationMvc()
+    @Html.ScriptBottom_ChosenStyle()
+
+    <script>
+
+        //function ClosePopupAndAppendSelect() {
+        //    ShowLoading();
+        //    ClosePopup(true);
+        //}
+
+        function ClosePopupAndRedirectToURL(urlRefer) {
+            ShowLoading();
+            ClosePopup(true);
+            window.location.href = urlRefer;
+        }
+
+       
+    </script>
+}

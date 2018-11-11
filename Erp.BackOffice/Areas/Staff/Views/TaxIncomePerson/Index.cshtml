@@ -1,0 +1,200 @@
+@model IQueryable<TaxIncomePersonViewModel>
+
+@using Erp.BackOffice.App_GlobalResources
+@using Erp.BackOffice.Staff.Models
+@using Erp.BackOffice.Helpers
+@using GridMvc.Html
+
+@{
+    ViewBag.Title = Wording.PageIndex_TaxIncomePerson;
+    bool isPopup = Request["IsPopup"] != null && Request["IsPopup"].ToString().ToLower() == "true" ? true : false;
+    if (isPopup)
+    {
+        Layout = "~/Views/Shared/_PopupLayout.cshtml";
+    }
+    else
+    {
+        Layout = "~/Views/Shared/ACE_AdminLayout.cshtml";
+    }
+
+    Erp.BackOffice.Models.PageSetting pageSetting = new Erp.BackOffice.Models.PageSetting
+    {
+        ModuleName = "TaxIncomePerson",
+        ActionName = "Index",
+        PageTitle = ViewBag.Title,
+        DisplaySearchPanel = true,
+        IsPopup = false,
+        DisplayBackButton = false
+    };
+}
+
+<link href="@Url.Content("~/assets/css/Gridmvc.css")" rel="stylesheet" type="text/css" />
+<script src="@Url.Content("~/Scripts/gridmvc.min.js")" type="text/javascript"> </script>
+
+@helper GridColumnCommand(int id)
+{
+    <div class="hidden-phone visible-desktop action-buttons" style="display: inline-block; float: left;">
+        <p>
+            @if (Erp.BackOffice.Filters.SecurityFilter.AccessRight("Delete", "TaxIncomePerson", "Staff"))
+            {
+                <button name="Delete" value="Delete" type="submit" class="btn btn-mini btn-danger">
+                    <i class="ace-icon fa fa-trash bigger-120"></i>
+                </button>
+            }
+            @if (Erp.BackOffice.Filters.SecurityFilter.AccessRight("Edit", "TaxIncomePerson", "Staff"))
+            {
+                <button id="Edit" name="Edit" value="@id" type="button" class="btn btn-mini btn-primary">
+                    <i class="ace-icon fa fa-pencil bigger-120"></i>
+                </button>
+            }
+        </p>
+    </div>
+}
+
+@helper GridColumnName(string name, int id, bool isPopup)
+{
+    if (isPopup)
+    {
+        <a onclick="parent.selectBranchItem(@id)">@name</a>
+    }
+    else
+    {
+        name = string.IsNullOrEmpty(name) ? "No Title" : name;
+        <a onclick="OpenPopup('@Url.Action("Detail", "TaxIncomePerson" , new { Id= id, IsPopup= true })', 'Thông tin chi tiết', 800, 600)">@name</a>
+    }
+}
+
+@helper GridColumnCategoryValue(object value)
+{
+    var attr = Common.GetCategoryByValueOrId("value", value);
+    <span>@(attr != null ? attr.Name : "")</span>
+}
+
+@helper CheckDeleteColumns(int Id)
+{
+    <label>
+        <input class="ace class-delete-all" type="checkbox" name="DeleteId-checkbox" value="@Id">
+        <span class="lbl"></span>
+    </label>
+}
+
+@helper BuildCheckAll()
+{
+    <label>
+        <input class="ace" type="checkbox" name="checkAll" id="checkAll" />
+        <span class="lbl"></span>
+    </label>
+}
+
+@using (Html.BeginPageHeaderContainer(pageSetting))
+{
+    <p>
+        @Html.TextBox("Code", Request["Code"], new { @class = "form-control", autocomplete = "off", placeholder = Wording.CodeTax + "..." })
+
+    </p>
+}
+
+@if (ViewBag.SuccessMessage != null && ViewBag.SuccessMessage != "")
+{
+    <div class="alert alert-block alert-success">
+        <button class="close" data-dismiss="alert" type="button">
+            <i class="ace-icon fa fa-times"></i>
+        </button>
+        <i class="ace-icon fa fa-check green"></i>
+        @ViewBag.SuccessMessage
+    </div>
+}
+
+@if (ViewBag.FailedMessage != null && ViewBag.FailedMessage != "")
+{
+    <div class="alert alert-block alert-danger">
+        <button class="close" data-dismiss="alert" type="button">
+            <i class="ace-icon fa fa-times"></i>
+        </button>
+        <i class="ace-icon fa fa-warning red"></i>
+        @ViewBag.FailedMessage
+    </div>
+}
+
+@if (!isPopup)
+{
+    using (Html.BeginForm("Delete", pageSetting.ModuleName, FormMethod.Post))
+    {
+        @Html.Grid(Model).Columns(columns =>
+        {
+            columns.Add().Titled(BuildCheckAll().ToHtmlString()).SetWidth(20).Sanitized(false).Encoded(false).RenderValueAs(n => CheckDeleteColumns(n.Id));
+            columns.Add().Titled(Wording.CodeTax).Sortable(false).Sanitized(false).Encoded(false).RenderValueAs(u => GridColumnName(u.Code, u.Id, isPopup));
+            //columns.Add(u => u.CreatedUserId).Titled(Wording.CreatedUserId).SetWidth(100).RenderValueAs(u => u.CreatedUserName);
+            columns.Add(u => u.Name).Titled(Wording.NameOfThePayingAgency);
+            columns.Add(u => u.GeneralManageId).Titled(Wording.GeneralManageId);
+            columns.Add(u => u.CreatedDate).Titled(Wording.CreatedDate).SetWidth(100).Format("{0:dd/MM/yyyy}");
+
+            //columns.Add(u => u.ModifiedUserId).Titled(Html.DisplayNameFor(u => u.FirstOrDefault().ModifiedUserId).ToString()).SetWidth(100).RenderValueAs(u => u.ModifiedUserName);
+            columns.Add(u => u.ModifiedDate).Titled(Wording.ModifiedDate).SetWidth(100).Sortable(true).Format("{0:dd/MM/yyyy}");
+            columns.Add(u => u.Id).Titled(Wording.Action).Sanitized(false).Encoded(false).RenderValueAs(u => GridColumnCommand(u.Id)).SetWidth(80);
+        }).WithPaging(10)
+
+        using (Html.BeginButtonContainer(pageSetting))
+        {
+            if (Erp.BackOffice.Filters.SecurityFilter.AccessRight("Create", "TaxIncomePerson", "Staff"))
+            {
+                <a class="btn btn-primary btn-mini" href="@Url.Action("Create", pageSetting.ModuleName)">
+                    <i class="ace-icon fa fa-plus"></i>
+                    @Wording.CreateNew
+                </a>
+            }
+            if (Erp.BackOffice.Filters.SecurityFilter.AccessRight("Delete", "TaxIncomePerson", "Staff"))
+            {
+                <button name="DeleteAll" value="DeleteAll" type="submit" class="btn btn-mini btn-danger" onclick="return CheckIsval();">
+                    <i class="ace-icon fa fa-trash bigger-120"></i>
+                    @Wording.Delete
+                </button>
+            }
+        }
+    }
+}
+else
+{
+    @Html.Grid(Model).Columns(columns =>
+    {
+        //columns.Add().Titled(BuildCheckAll().ToHtmlString()).SetWidth(20).Sanitized(false).Encoded(false).RenderValueAs(n => CheckDeleteColumns(n.Id));
+        columns.Add().Titled(Html.DisplayNameFor(u => u.FirstOrDefault().Name).ToString()).Sortable(false).Sanitized(false).Encoded(false).RenderValueAs(u => GridColumnName(u.Name, u.Id, isPopup));
+    }).WithPaging(10)
+}
+
+@section Scripts {
+    <script type="text/javascript">
+        function CheckIsval() {
+            if ($('[name="DeleteId-checkbox"]').is(':checked') == false) {
+                alert("Phải chọn ít nhất 1 item.");
+                return false;
+            }
+            else {
+                if (confirm('Bạn có chắc muốn xóa các item đã chọn ?')) {
+                    return true;
+                }
+                else {
+                    return false;
+                }
+            }
+        }
+
+        $('#Edit').click(function () {
+            window.location = "/TaxIncomePerson/Edit?Id=" + $(this).val();
+        });
+
+        $('[name="Delete"]').click(function () {
+            if (confirm('Bạn có chắc muốn xóa item ?')) {
+                $(this).closest('tr').children('td').each(function (i, e) {
+                    $(this).find("input.class-delete-all").prop("checked", true);
+                    return true;
+                })
+            }
+            else {
+                return false;
+            }
+
+        })
+
+    </script>
+}

@@ -1,0 +1,260 @@
+﻿@using Erp.BackOffice.App_GlobalResources
+@using Erp.BackOffice.Helpers
+@using Erp.BackOffice.Staff.Models
+
+@model WelfareProgramsViewModel
+
+@{
+    ViewBag.Title = Wording.PageEdit_WelfarePrograms;
+
+    Layout = "~/Views/Shared/" + (Request["IsPopup"] == null ? "ACE_AdminLayout.cshtml" : "_PopupLayout.cshtml");
+    
+    Erp.BackOffice.Models.PageSetting pageSetting = new Erp.BackOffice.Models.PageSetting
+    {        
+        ModuleName = "WelfarePrograms",
+        ActionName = "Edit",
+        PageTitle = ViewBag.Title,
+        DisplaySearchPanel = false,
+        IsPopup = false,
+        DisplayBackButton = true
+    };
+}
+
+@section HeadOfPage {
+    @Html.ScriptTop_ChosenStyle()
+<style>
+    .edit-view .input-group .input-group-addon {
+        font-size: 11px !important;
+    }
+
+    .edit-view textarea {
+        width: 200px !important;
+    }
+</style>
+
+}
+
+@using(Html.BeginPageHeaderContainer(pageSetting))
+{
+
+}
+
+@using (Html.BeginForm_AceStyle((string)ViewBag.Title, pageSetting.ActionName, pageSetting.ModuleName, null, FormMethod.Post, new { @class = "form-horizontal" }))
+{
+    @Html.ValidationSummary(true)
+    @Html.HiddenFor(model => model.Id)
+    @Html.HiddenFor(model => model.CreatedUserId)
+    @Html.HiddenFor(model => model.AssignedUserId)
+    @Html.HiddenFor(model => model.CreatedDate)
+    @Html.HiddenFor(model => model.IsDeleted)
+    @Html.HiddenFor(model => model.Status)
+    @Html.HiddenFor(model => model.Code)
+    <input type="hidden" value="@Request["IsPopup"]" name="IsPopup" />
+    <div class="row">
+        <div class="col-sm-6">
+            <div class="widget-box">
+                <div class="widget-header">
+                    <h5 class="widget-title">Thông tin khởi tạo</h5>
+                </div>
+                <div class="widget-body">
+                    <div class="widget-main">
+                        @Html.CustomTextboxFor(model => model.Name, null, null, WidthType.span12)
+                        <div id="" class="control-group form-group ">
+                            <label class="control-label col-lg-5 col-md-4 col-sm-4" for="ProvideStartDate">Thời gian dự kiến</label>
+                            <div class="control-value col-lg-7 col-md-8 col-sm-8" style="width: 384px;">
+                                <div class="clearfix">
+                                    <span class="input-daterange input-group">
+                                        @Html.TextBox("ProvideStartDate", Model.ProvideStartDate != null ? Model.ProvideStartDate.Value.ToString() : "", new { autocomplete = "off", placeholder = "Từ ngày", style = "width:90px" })
+                                        <span class="input-group-addon">
+                                            <i class="fa fa-exchange"></i>
+                                        </span>
+                                        @Html.TextBox("ProvideEndDate", Model.ProvideEndDate != null ? Model.ProvideEndDate.Value.ToString() : "", new { autocomplete = "off", placeholder = "Đến ngày", style = "width:90px" })
+                                    </span>
+                                </div>
+                                <div class="clearfix">
+                                    <span class="field-validation-valid help-inline" data-valmsg-for="ProvideStartDate" data-valmsg-replace="true"></span>
+                                </div>
+                            </div>
+                        </div>
+                        @Html.CustomTextboxFor(model => model.Quantity, null, null, WidthType.span12, true, new Dictionary<string, object> { { "class", "text-right" } })
+                        @Html.CustomTextboxFor(model => model.TotalEstimatedCost, null, null, WidthType.span12, true, new Dictionary<string, object> { { "class", "text-right" } })
+                        @Html.CustomTextAreaFor(model => model.Note, null, WidthType.span12)
+                    </div>
+                </div>
+            </div>
+            <div class="widget-box top-10">
+                <div class="widget-header">
+                    <h5 class="widget-title">Thông tin kế hoạch</h5>
+                </div>
+                <div class="widget-body">
+                    <div class="widget-main">
+                        @Html.CustomDropDownListFor(model => model.Category, SelectListHelper.GetSelectList_Category("Category_WelfarePrograms", null, "Value", Wording.Empty), WidthType.span12, true, null, DropdownListStyle.DropdownListStyleChosen)
+                        <div id="" class="control-group form-group ">
+                            <label class="control-label col-lg-5 col-md-4 col-sm-4" for="RegistrationStartDate">Thời gian đăng ký</label>
+                            <div class="control-value col-lg-7 col-md-8 col-sm-8" style="width: 384px;">
+                                <div class="clearfix">
+                                    <span class="input-daterange input-group">
+                                        @Html.TextBox("RegistrationStartDate", Model.RegistrationStartDate != null ? Model.RegistrationStartDate.Value.ToString() : "", new { autocomplete = "off", placeholder = "Từ ngày", style = "width:90px" })
+                                        <span class="input-group-addon">
+                                            <i class="fa fa-exchange"></i>
+                                        </span>
+                                        @Html.TextBox("RegistrationEndDate", Model.RegistrationEndDate != null ? Model.RegistrationEndDate.Value.ToString() : "", new { autocomplete = "off", placeholder = "Đến ngày", style = "width:90px" })
+                                    </span>
+                                </div>
+                                <div class="clearfix">
+                                    <span class="field-validation-valid help-inline" data-valmsg-for="RegistrationStartDate" data-valmsg-replace="true"></span>
+                                </div>
+                            </div>
+                        </div>
+                        @Html.CustomTextAreaFor(model => model.ApplicationObject, null, WidthType.span12)
+                        @Html.CustomTextAreaFor(model => model.Purpose, null, WidthType.span12)
+                        @Html.CustomTextboxFor(model => model.Formality, null, null, WidthType.span12)
+                        @Html.CustomTextboxFor(model => model.Address, null, null, WidthType.span12)
+
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-6">
+            <div class="widget-box">
+                <div class="widget-header">
+                    <h5 class="widget-title">Chi phí dự kiến 1 nhân viên</h5>
+                </div>
+                <div class="widget-body">
+                    <div class="widget-main">
+                        @Html.CustomTextboxFor(model => model.MoneyStaff, null, null, WidthType.span12, true, new Dictionary<string, object> { { "class", "text-right" } })
+                        @Html.CustomTextboxFor(model => model.MoneyCompany, null, null, WidthType.span12, true, new Dictionary<string, object> { { "class", "text-right" } })
+                        @Html.CustomTextboxFor(model => model.TotalStaffCompany, null, null, WidthType.span12, true, new Dictionary<string, object> { { "class", "text-right" }, { "readonly", "readonly" } })
+                    </div>
+                </div>
+            </div>
+            <div class="widget-box top-10">
+                <div class="widget-header">
+                    <h5 class="widget-title">Tổng chi phí dự kiến</h5>
+                </div>
+                <div class="widget-body">
+                    <div class="widget-main">
+                        @Html.CustomTextboxFor(model => model.TotalMoneyStaff, null, null, WidthType.span12, true, new Dictionary<string, object> { { "class", "text-right" }, { "readonly", "readonly" } })
+                        @Html.CustomTextboxFor(model => model.TotalMoneyCompany, null, null, WidthType.span12, true, new Dictionary<string, object> { { "class", "text-right" }, { "readonly", "readonly" } })
+                        @Html.CustomTextboxFor(model => model.TotalStaffCompanyAll, null, null, WidthType.span12, true, new Dictionary<string, object> { { "class", "text-right" }, { "readonly", "readonly" } })
+                    </div>
+                </div>
+            </div>
+            <div class="widget-box">
+                    <div class="widget-header">
+                        <h5 class="widget-title">Hoàn thành kế hoạch</h5>
+                    </div>
+                    <div class="widget-body">
+                        <div class="widget-main">
+                            <div id="" class="control-group form-group ">
+                                <label class="control-label col-lg-5 col-md-4 col-sm-4" for="ImplementationStartDate">Thời gian thực hiện thực tế</label>
+                                <div class="control-value col-lg-7 col-md-8 col-sm-8" style="width: 384px;">
+                                    <div class="clearfix">
+                                        <span class="input-daterange input-group">
+                                            @Html.TextBox("ImplementationStartDate", Model.ImplementationStartDate != null ? Model.ImplementationStartDate.Value.ToString() : "", new { autocomplete = "off", placeholder = "Từ ngày", style = "width:150px" })
+                                            <span class="input-group-addon">
+                                                <i class="fa fa-exchange"></i>
+                                            </span>
+                                            @Html.TextBox("ImplementationEndDate", Model.ImplementationEndDate != null ? Model.ImplementationEndDate.Value.ToString() : "", new { autocomplete = "off", placeholder = "Đến ngày", style = "width:150px" })
+                                        </span>
+                                    </div>
+                                    <div class="clearfix">
+                                        <span class="field-validation-valid help-inline" data-valmsg-for="ImplementationStartDate" data-valmsg-replace="true"></span>
+                                    </div>
+                                </div>
+                            </div>
+                            @Html.CustomTextboxFor(model => model.TotalActualCosts, null, null, WidthType.span12, true, new Dictionary<string, object> { { "class", "text-right" } })
+                        </div>
+                    </div>
+                </div>
+          
+        </div>
+    </div>
+    using (Html.BeginButtonContainer(pageSetting))
+    {
+        <button class="btn btn-mini btn-primary" type="submit" name="Submit" value="Save">
+            <i class="ace-icon fa fa-save"></i>
+            @Wording.Save
+        </button>
+    }
+}
+
+@section Scripts {
+ <script>
+        //truyền từ action create của controller qua khi thực hiện submit và return về lại view create, để nhận biết là được gọi theo dạng popup
+        var closePopup = '@ViewBag.closePopup';
+        $(document).ready(function () {
+            $('#Quantity').numberFormat();
+            $('#TotalEstimatedCost').numberFormat();
+            $('#MoneyStaff').numberFormat();
+            $('#MoneyCompany').numberFormat();
+            $('#TotalStaffCompany').numberFormat();
+            $('#TotalMoneyStaff').numberFormat();
+            $('#TotalMoneyCompany').numberFormat();
+            $('#TotalStaffCompanyAll').numberFormat();
+            $('#TotalActualCosts').numberFormat();
+            //nếu là được gọi theo dạng popup từ form khác thì chạy đoạn code bên dưới
+            if (closePopup != '') {
+                var option = '<option value="@Model.Id" >@Model.Name</option>';
+                //tên funtion có thể khác theo từng công việc riêng (đây chỉ là mẫu khi thêm mới sẽ gọi lại)
+                window.parent.ClosePopupAndAppendSelect(option);
+            }
+            $('#MoneyStaff').change(function () {
+                total_one_staff();
+                total_staff();
+                total();
+            });
+            $('#MoneyCompany').change(function () {
+                total_one_staff();
+                total_company();
+                total();
+            });
+            $('#Quantity').change(function () {
+                total_company();
+                total_staff();
+                total();
+            });
+     });
+
+        function total_one_staff() {
+            var company = $('#MoneyCompany').val();
+            var staff = $("#MoneyStaff").val();
+            if (staff != '' && company != '') {
+                var total = parseInt(company) + parseInt(staff);
+                $("#TotalStaffCompany").val(Math.round(total));
+                $('#mask-TotalStaffCompany').val(currencyFormat(Math.round(total)));
+            }
+        }
+        function total_staff() {
+            var staff = $("#MoneyStaff").val();
+            var quantity_staff = $("#Quantity").val();
+            if (staff != '' && quantity_staff != '') {
+                var total = parseInt(staff) * parseInt(quantity_staff);
+                $("#TotalMoneyStaff").val(Math.round(total));
+                $("#mask-TotalMoneyStaff").val(currencyFormat(Math.round(total)))
+            }
+        }
+        function total_company() {
+            var company = $("#MoneyCompany").val();
+            var quantity_staff = $("#Quantity").val();
+            if (company != '' && quantity_staff != '') {
+                var total = parseInt(company) * parseInt(quantity_staff);
+                $("#TotalMoneyCompany").val(Math.round(total));
+                $("#mask-TotalMoneyCompany").val(currencyFormat(Math.round(total)))
+            }
+        }
+        function total() {
+            var staff_total = $("#TotalMoneyStaff").val();
+            var company_total = $("#TotalMoneyCompany").val();
+            if (company_total != '' && staff_total != '') {
+                var total = parseInt(company_total) + parseInt(staff_total);
+                $("#TotalStaffCompanyAll").val(Math.round(total));
+                $("#mask-TotalStaffCompanyAll").val(currencyFormat(Math.round(total)))
+            }
+        }
+
+</script>
+@Html.ScriptBottom_ValidationMvc()
+@Html.ScriptBottom_DatePicker("dd/mm/yyyy")
+@Html.ScriptBottom_ChosenStyle()
+}

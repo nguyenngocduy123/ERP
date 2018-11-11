@@ -1,0 +1,57 @@
+﻿@using Erp.BackOffice.Helpers
+@using Erp.BackOffice.App_GlobalResources
+
+<link href="~/Scripts/SearchStaff/SearchStaff.css" rel="stylesheet" />
+<link href="/Scripts/TableFixedColumn/table.fixed.column.1.0.css" rel="stylesheet" />
+
+<div class="widget-body" style="min-height:500px;" id="staff">
+    <div class="widget-main">
+        <div class="col-sm-4 box" style="min-height:450px">
+            <h5 class="header smaller lighter blue" style="padding:0px"><span>Danh sách nhân viên tìm kiếm</span></h5>
+            <p></p>
+            <div class="area-detail" style="min-height:376px;"></div>
+
+        </div>
+        <div class="col-sm-4">
+            <h5 class="header smaller lighter blue" style="padding:0px;padding-top:35px"><span>Tìm kiếm</span></h5>
+            <p style="padding:6px;"></p>
+            <p>
+                @Html.TextBox("CodeStaff", Request["CodeStaff"], new { placeholder = Wording.CodeStaff, style = "width:100%" })
+            </p>
+            <p>
+                @Html.TextBox("NameStaff", Request["NameStaff"], new { placeholder = Wording.NameStaff, style = "width:100%" })
+            </p>
+            <p>
+                @Html.CustomDropDownList("", "Position", Request["Position"], SelectListHelper.GetSelectList_Category("position", null, "Value", Wording.Position), WidthType.span12, DropdownListStyle.DropdownListStyleChosen, null, false, false, true)
+            </p>
+            <p>
+                @Html.CustomDropDownList("", "branchId", Request["branchId"], SelectListHelper.GetSelectList_Branch(null, Wording.BranchName), WidthType.span12, DropdownListStyle.DropdownListStyleChosen, null, false, false, true)
+            </p>
+            <p>
+                @Html.CustomDropDownList("", "DepartmentId", Request["DepartmentId"], SelectListHelper.GetSelectList_BranchDepartment(null, 0, Wording.Department), WidthType.span12, DropdownListStyle.DropdownListStyleChosen, null, false, false, true)
+            </p>
+            <p>
+                <a onclick="loadStaff()" name="search" class="btn btn-info btn-mini" style="margin-right:2%;padding-right:2%">
+                    <i class="ace-icon fa fa-search icon-on-right bigger-110"></i>
+                    @Wording.Search
+                </a>
+                <a onclick="ClearSearch()" class="btn btn-black btn-mini"style="margin-right:2%;padding-right:2%">
+                    <i class="ace-icon fa fa-refresh icon-on-right bigger-110"></i>
+                    @Wording.Reset
+                </a>
+                <a onclick="CheckIsval()" class="btn btn-success btn-mini"style="padding-right:2%">
+                    <i class="ace-icon fa fa-plus bigger-120"></i>
+                    @Wording.AddStaffs
+                </a>
+            </p>
+        </div>
+        <div class="col-sm-4 box" style="min-height:450px">
+            <h5 class="header smaller lighter blue" style="padding:0px"><span>Danh sách nhân viên đã chọn</span></h5>
+            <p></p>
+            <div id="ListCheckStaff" style="min-height:376px;"></div>
+        </div>
+    </div>
+</div>
+
+<script src="~/Scripts/SearchStaff/SearchStaff.js"></script>
+<script src="/Scripts/TableFixedColumn/table.fixed.column.1.2.js"></script>

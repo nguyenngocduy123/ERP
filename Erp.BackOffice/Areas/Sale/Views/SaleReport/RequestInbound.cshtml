@@ -1,0 +1,146 @@
+﻿@model Erp.BackOffice.Sale.Models.SaleReportRequestInboundViewModel
+<div class="widget-box">
+    <div class="widget-header">
+        <h4 class="widget-title">
+            <i class="ace-icon fa fa-line-chart"></i>
+            Tổng quan yêu cầu nhập kho
+        </h4>
+    </div>
+    <div class="widget-body">
+        <div class="widget-main">
+            <p><b>@ViewBag.DateRangeText (Yêu cầu có số liệu sai lệch chiếm @Erp.BackOffice.Helpers.Common.PhanCachHangNgan2(Model.NumberOfRequestInbound_Error)/@Erp.BackOffice.Helpers.Common.PhanCachHangNgan2(Model.NumberOfRequestInbound) yêu cầu đã gửi)</b></p>
+            <div class="row">
+                <div class="col-sm-7 clearfix">
+
+                    <div class="clearfix">
+
+                        <div class="infobox infobox-blue">
+                            <div class="infobox-icon">
+                                <i class="ace-icon fa fa-recycle"></i>
+                            </div>
+                            <div class="infobox-data">
+                                <span class="infobox-data-number ng-binding">@Erp.BackOffice.Helpers.Common.PhanCachHangNgan2(Model.NumberOfRequestInbound_new)</span>
+                                <div class="infobox-content">
+                                    <a href="@Url.Action("Index", "RequestInbound", new { area = "Sale", startDate = ViewBag.StartDate, endDate = ViewBag.EndDate, status ="new", branchId = ViewBag.branchId })">
+                                        Yêu cầu mới
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="infobox infobox-orange">
+                            <div class="infobox-icon">
+                                <i class="ace-icon fa fa-hourglass-end "></i>
+                            </div>
+                            <div class="infobox-data">
+                                <span class="infobox-data-number ng-binding">@Erp.BackOffice.Helpers.Common.PhanCachHangNgan2(Model.NumberOfRequestInbound_InProgress)</span>
+                                <div class="infobox-content">
+                                    <a href="@Url.Action("Index", "RequestInbound", new { area = "Sale", startDate = ViewBag.StartDate, endDate = ViewBag.EndDate, status = "ApprovedASM", branchId = ViewBag.branchId })">
+                                        ASM đã duyệt
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="infobox infobox-orange">
+                            <div class="infobox-icon">
+                                <i class="ace-icon fa fa-superpowers"></i>
+                            </div>
+                            <div class="infobox-data">
+                                <span class="infobox-data-number ng-binding">@Erp.BackOffice.Helpers.Common.PhanCachHangNgan2(Model.NumberOfRequestInbound_wait_shipping)</span>
+                                <div class="infobox-content">
+                                    <a href="@Url.Action("Index", "RequestInbound", new { area = "Sale", startDate = ViewBag.StartDate, endDate = ViewBag.EndDate, status = "ApprovedKT", branchId = ViewBag.branchId })">
+                                        Kế toán đã duyệt
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <div class="clearfix">
+
+                        <div class="infobox infobox-orange">
+                            <div class="infobox-icon">
+                                <i class="ace-icon fa fa-truck"></i>
+                            </div>
+                            <div class="infobox-data">
+                                <span class="infobox-data-number ng-binding">@Erp.BackOffice.Helpers.Common.PhanCachHangNgan2(Model.NumberOfRequestInbound_shipping)</span>
+                                <div class="infobox-content">
+                                    <a href="@Url.Action("Index", "RequestInbound", new { area = "Sale", startDate = ViewBag.StartDate, endDate = ViewBag.EndDate, status = "shipping", branchId = ViewBag.branchId })">
+                                        Đang giao hàng
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="infobox infobox-green">
+                            <div class="infobox-icon">
+                                <i class="ace-icon fa fa-university"></i>
+                            </div>
+                            <div class="infobox-data">
+                                <span class="infobox-data-number ng-binding">@Erp.BackOffice.Helpers.Common.PhanCachHangNgan2(Model.NumberOfRequestInbound_inbound_complete)</span>
+                                <div class="infobox-content">
+                                    <a href="@Url.Action("Index", "RequestInbound", new { area = "Sale", startDate = ViewBag.StartDate, endDate = ViewBag.EndDate, status = "inbound_complete", branchId = ViewBag.branchId })">
+                                        Đã nhập kho
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="infobox infobox-red">
+                            <div class="infobox-icon">
+                                <i class="ace-icon fa fa-ban"></i>
+                            </div>
+                            <div class="infobox-data">
+                                <span class="infobox-data-number ng-binding">@Erp.BackOffice.Helpers.Common.PhanCachHangNgan2(Model.NumberOfRequestInbound_refure)</span>
+                                <div class="infobox-content">
+                                    <a href="@Url.Action("Index", "RequestInbound", new { area = "Sale", startDate = ViewBag.StartDate, endDate = ViewBag.EndDate, status = "refure", branchId = ViewBag.branchId })">
+                                        Yêu cầu bị từ chối
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+
+                </div>
+                <div class="col-sm-5 clearfix" style="border-left: 1px solid #dedede !important;">
+
+                    <div class="infobox infobox-blue" style="width:300px;">
+                        <div class="infobox-icon">
+                            <i class="ace-icon fa fa-minus-square-o"></i>
+                        </div>
+                        <div class="infobox-data">
+                            <span class="infobox-data-number ng-binding">@Erp.BackOffice.Helpers.Common.PhanCachHangNgan2(Model.NumberOfRequestInbound_Error_no_success)</span>
+                            <div class="infobox-content" style="max-width:238px !important;">
+                                <a href="@Url.Action("Index", "RequestInbound", new { area = "Sale", startDate = ViewBag.StartDate, endDate = ViewBag.EndDate, branchId = ViewBag.branchId, Error = true, ErrorSuccess = false })">
+                                    Yêu cầu có số liệu sai lệch cần xử lý
+                                </a>
+                           </div>
+                        </div>
+                       
+                    </div>
+
+                    <div class="infobox infobox-green" style="width:300px;">
+                        <div class="infobox-icon">
+                            <i class="ace-icon fa fa-check-square-o"></i>
+                        </div>
+                        <div class="infobox-data">
+                            <span class="infobox-data-number ng-binding">@Erp.BackOffice.Helpers.Common.PhanCachHangNgan2(Model.NumberOfRequestInbound_Error_success)</span>
+                            <div class="infobox-content" style="max-width:238px !important;">
+                                <a href="@Url.Action("Index", "RequestInbound", new { area = "Sale", startDate = ViewBag.StartDate, endDate = ViewBag.EndDate, branchId = ViewBag.branchId, Error = true, ErrorSuccess = true })">
+                                    Yêu cầu có số liệu sai lệch đã xử lý
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+
+</script>

@@ -1,0 +1,61 @@
+﻿@using Erp.BackOffice.App_GlobalResources
+@using Erp.BackOffice.Helpers
+@using Erp.BackOffice.Sale.Models
+@using Erp.BackOffice.Account.Models
+
+@model ProductInvoiceViewModel
+
+@{
+    ViewBag.Title = Wording.PageEdit_ProductInvoice;
+    Layout = "~/Views/Shared/" + (Request["IsPopup"] == null ? "ACE_AdminLayout.cshtml" : "_PopupLayout.cshtml");
+    Erp.BackOffice.Models.PageSetting pageSetting = new Erp.BackOffice.Models.PageSetting
+    {
+        ModuleName = "ProductInvoice",
+        ActionName = "Edit",
+        PageTitle = ViewBag.Title,
+        DisplaySearchPanel = false,
+        IsPopup = false,
+        DisplayBackButton = true
+    };
+}
+
+@section HeadOfPage {
+    @Html.ScriptTop_ChosenStyle()
+}
+
+<style type="text/css">
+    .has-error .field-validation-error, .has-error .field-validation-valid {
+        color: #de2a2a;
+    }
+</style>
+
+@using (Html.BeginPageHeaderContainer(pageSetting))
+{
+
+}
+
+@using (Html.BeginForm_AceStyle((string)ViewBag.Title, "Edit", "ProductInvoice", null, FormMethod.Post, new { id = "Edit", @class = "form-horizontal clearfix" }))
+{
+    @Html.ValidationSummary(true)
+    <input type="hidden" value="@Request["IsPopup"]" name="IsPopup" />
+    @Html.HiddenFor(model => model.Id)
+    @Html.CustomTextboxFor(model => model.CodeInvoiceRed, null, null, WidthType.span12)
+    @Html.CustomTextAreaFor(model => model.Note,null,WidthType.span12,true,null)
+    using (Html.BeginButtonContainer(pageSetting))
+    {
+        <button class="btn btn-mini btn-primary" type="submit" name="Submit" value="Save">
+            <i class="ace-icon fa fa-save"></i>
+            @Wording.Save
+        </button>
+    }
+}
+
+@section Scripts {
+
+    @Html.ScriptBottom_ValidationMvc()
+    @Html.ScriptBottom_ChosenStyle()
+
+
+
+
+}

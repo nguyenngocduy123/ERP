@@ -1,0 +1,38 @@
+@using Erp.BackOffice.App_GlobalResources
+@using Erp.BackOffice.Helpers
+@using Erp.BackOffice.Staff.Models
+
+@model DocumentTypeViewModel
+
+@{
+    ViewBag.Title = Wording.PageEdit_DocumentType;
+
+    Layout = "~/Views/Shared/ACE_AdminLayout.cshtml";
+}
+
+@section HeadOfPage {
+    @Html.ScriptTop_ChosenStyle()
+}
+
+@using (Html.BeginForm_AceStyle((string)ViewBag.Title, "Edit", "DocumentType", null, FormMethod.Post, new { @class = "form-horizontal" }))
+{
+    @Html.ValidationSummary(true)
+    @Html.HiddenFor(model => model.Id)
+    @Html.HiddenFor(model => model.CreatedUserId)
+    @Html.HiddenFor(model => model.AssignedUserId)
+    @Html.HiddenFor(model => model.CreatedDate)
+    @Html.HiddenFor(model => model.IsDeleted)
+
+    @Html.CustomTextboxFor(model => model.Name, null, null, WidthType.span6)
+
+    <button style="margin-top:10px" type="submit" class="btn btn-info" name="Submit" value="Save">
+        <i class="ace-icon fa fa-save bigger-110"></i>
+        @Wording.Save
+    </button>
+}
+
+@section Scripts {
+    
+    @Html.ScriptBottom_ValidationMvc()
+    @Html.ScriptBottom_ChosenStyle()
+}

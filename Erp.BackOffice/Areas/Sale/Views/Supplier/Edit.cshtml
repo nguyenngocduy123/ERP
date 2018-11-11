@@ -1,0 +1,237 @@
+﻿@using Erp.BackOffice.App_GlobalResources
+@using Erp.BackOffice.Helpers
+@using Erp.BackOffice.Sale.Models
+
+@model SupplierViewModel
+
+@{
+    ViewBag.Title = Wording.PageEdit_Supplier;
+
+    Layout = "~/Views/Shared/" + (Request["IsPopup"] == null ? "ACE_AdminLayout.cshtml" : "_PopupLayout.cshtml");
+    Erp.BackOffice.Models.PageSetting pageSetting = new Erp.BackOffice.Models.PageSetting
+    {
+        ModuleName = "Supplier",
+        ActionName = "Edit",
+        PageTitle = ViewBag.Title,
+        DisplaySearchPanel = false,
+        IsPopup = false,
+        DisplayBackButton = true
+    };
+
+    SelectList provinceList = Erp.BackOffice.Helpers.SelectListHelper.GetSelectList_Location("0", null,Wording.Empty);
+    SelectList districtList = Erp.BackOffice.Helpers.SelectListHelper.GetSelectList_Location(Model.CityId, null, Wording.Empty);
+    SelectList wardList = Erp.BackOffice.Helpers.SelectListHelper.GetSelectList_Location(Model.DistrictId, null, Wording.Empty);
+
+    List<ProductViewModel> productList = (List<ProductViewModel>)ViewBag.productList;
+    IEnumerable<SelectListItem> CategoryList = Erp.BackOffice.Helpers.Common.GetSelectList_Category("product", null, "value");
+
+    IEnumerable<SelectListItem> fieldsList = Erp.BackOffice.Helpers.Common.GetSelectList_Category("fieldsSupplier", null, "value");
+    IEnumerable<SelectListItem> typeList = Erp.BackOffice.Helpers.Common.GetSelectList_Category("typeSupplier", null, "value");
+    
+}
+
+@section HeadOfPage {
+    @Html.ScriptTop_ChosenStyle()
+}
+@using (Html.BeginPageHeaderContainer(pageSetting))
+{
+
+}
+@using (Html.BeginForm_AceStyle((string)ViewBag.Title, "Edit", "Supplier", null, FormMethod.Post, new { id = "Supplier", @class = "form-horizontal clearfix" }))
+{
+    @Html.ValidationSummary(true)
+    <input type="hidden" value="@Request["IsPopup"]" name="IsPopup" />
+
+    @Html.HiddenFor(model => model.Id)
+    @Html.HiddenFor(model => model.CreatedUserId)
+    @Html.HiddenFor(model => model.CreatedDate)
+    @Html.HiddenFor(model => model.IsDeleted)
+
+    <div class="col-sm-6">
+        @Html.CustomTextboxFor(model => model.Name, null, null, WidthType.span12, true)
+        @Html.CustomTextboxFor(model => model.Code, null, null, WidthType.span12, true)
+
+        
+        @Html.CustomTextboxFor(model => model.CompanyName, null, null, WidthType.span12, true)
+        @Html.CustomTextboxFor(model => model.TaxCode, null, null, WidthType.span12, true)
+        @Html.CustomDropDownListFor(model => model.Type, typeList, WidthType.span12)
+        @Html.CustomDropDownListFor(model => model.Fields, fieldsList, WidthType.span12)
+        @Html.CustomTextboxFor(model => model.Email, null, null, WidthType.span12, true)
+        
+    </div>
+    <div class="col-sm-6">
+        @Html.CustomTextboxFor(model => model.Mobile, null, null, WidthType.span12, true)
+        @Html.CustomTextboxFor(model => model.Phone, null, null, WidthType.span12, true)
+        @Html.CustomTextboxFor(model => model.Address, null, null, WidthType.span12, true)
+        @Html.CustomDropDownListFor(model => model.CityId, provinceList, WidthType.span12)
+        @Html.CustomDropDownListFor(model => model.DistrictId, districtList, WidthType.span12)
+        @Html.CustomDropDownListFor(model => model.WardId, wardList, WidthType.span12)
+        @Html.CustomTextAreaFor(model => model.Note, null, WidthType.span12)
+    </div>
+
+    <div class="col-sm-12 box box-height-max">
+        <h4><span>Chọn sản phẩm cung cấp:</span></h4>
+        <div class="product-cate">
+            <div class="category-content">
+                <label>Danh mục sản phẩm</label>
+                <select id="productCategory">
+                    <option value="">- Chọn -</option>
+                    @foreach (var cate in CategoryList)
+                    {
+                        <option value="@cate.Value">@cate.Text</option>
+                    }
+                </select>
+            </div>
+            <div class="products-by-cate clearfix">
+                @{ var listProductNoneChoice = productList.Where(x => ("," + Model.ProductIdOfSupplier + ",").Contains("," + x.Id + ",") == false ).OrderBy(x => x.CategoryCode).ToList(); }
+                @for (int i = 0; i < listProductNoneChoice.Count; i++)
+                {
+                    <label class="product-item" data-category="@listProductNoneChoice[i].CategoryCode" style="display:none">
+                        <i class="fa fa-plus"></i>
+                        <input type="checkbox" name="ProductIdOfSupplier" class="" value="@listProductNoneChoice[i].Id" />
+                        <span class="">@listProductNoneChoice[i].Name</span>
+                    </label>
+                }
+            </div>
+        </div>
+        
+    </div>
+
+    <div class="col-sm-12 box box-height-max" style="margin-top:20px">
+        <h4><span>Sản phẩm cung cấp:</span></h4>
+        <div class="product-chosen">
+            @{ var listProductChosen = productList.Where(x => ("," + Model.ProductIdOfSupplier + ",").Contains("," + x.Id + ",") == true).OrderBy(x => x.CategoryCode).ToList(); }
+            @for (int i = 0; i < listProductChosen.Count; i++)
+            {
+                <label class="product-item" data-category="@listProductChosen[i].CategoryCode">
+                    <i class="fa fa-minus"></i>
+                    <input checked type="checkbox" name="ProductIdOfSupplier" class="" value="@listProductChosen[i].Id" />
+                    <span class="">@listProductChosen[i].Name</span>
+                </label>
+            }
+        </div>
+    </div>
+    using (Html.BeginButtonContainer(pageSetting))
+    {
+        <button class="btn btn-mini btn-primary" type="submit" name="Submit" value="Save">
+            <i class="ace-icon fa fa-save"></i>
+            @Wording.Save
+        </button>
+    }
+}
+
+<div class="widget-box top-15 bottom-30">
+    <div class="widget-header widget-header-blue widget-header-flat">
+        <h5 class="widget-title">Thông tin liên hệ</h5>
+    </div>
+    <div class="widget-body">
+        <div class="widget-main clearfix">
+            @{Html.RenderAction("ContactList", "Contact", new { area = "Account", SupplierId = Model.Id });}
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    
+    @Html.ScriptBottom_ValidationMvc()
+    @Html.ScriptBottom_ChosenStyle()
+
+
+<script>
+    //accordion menu
+    $(document).ready(function () {
+        $('#productCategory').change(function () {
+            var $this = $(this);
+            $('.products-by-cate > label').hide();
+            $('.products-by-cate > label[data-category="' + $this.val() + '"]').show();
+        });
+
+        $('#Supplier .product-item input').change(function () {
+            var $this = $(this);
+            $parent = $this.closest('label');
+
+            if ($parent.find('i.fa-plus').length > 0) { //thêm
+                $parent.find('input').prop('checked', true);
+                $parent.find('i').removeClass('fa-plus').addClass('fa-minus');
+
+                $parent.prependTo('.product-chosen');
+                console.log('.product-chosen');
+            } else { // xóa
+                $parent.find('input').prop('checked', false);
+                $parent.find('i').removeClass('fa-minus').addClass('fa-plus');
+
+                if ($('#productCategory').val() != $parent.data('category'))
+                    $parent.hide();
+
+                $parent.prependTo('.products-by-cate');
+                console.log('.products-by-cate');
+            }
+        });
+
+        //$('.accordion-section-content').hide();
+        $('.accordion-section-title').click(function () {
+            var $i = $(this).find('i');
+            if ($i.hasClass('fa-angle-double-right')) {
+                $i.removeClass('fa-angle-double-right').addClass('fa-angle-double-down');
+            } else {
+                $i.removeClass('fa-angle-double-down').addClass('fa-angle-double-right');
+            }
+
+            var $nextDiv = $(this).next();
+            var $visibleSiblings = $nextDiv.siblings('div:visible');
+
+            if ($visibleSiblings.length) {
+                $visibleSiblings.slideUp('fast', function () {
+                    $nextDiv.slideToggle('fast');
+                });
+            } else {
+                $nextDiv.slideToggle('fast');
+            }
+        });
+
+        setTimeout(function () {
+            //$('.accordion-section:first-child .accordion-section-title').trigger('click');
+        }, 500);
+    });
+
+        $(function () {
+            var url = '/api/BackOfficeServiceAPI/FetchLocation';
+            var districts = $('#DistrictId'); // cache it
+            var ward = $('#WardId');
+
+            $("#CityId").change(function () {
+                var id = $(this).val(); // Use $(this) so you don't traverse the DOM again
+                $.getJSON(url, { parentId: id }, function (response) {
+                    districts.empty(); // remove any existing options
+                    ward.empty();
+                    $(document.createElement('option'))
+                            .attr('value', '')
+                            .text('- Rỗng -')
+                            .appendTo(ward);
+                    $(response).each(function () {
+                        $(document.createElement('option'))
+                            .attr('value', this.Id)
+                            .text(capitalizeFirstAllWords(this.Name.toLowerCase().replace('huyện', '').replace('quận', '')))
+                            .appendTo(districts);
+                    });
+
+                    districts.trigger("chosen:updated");
+                });
+            });
+
+            districts.change(function () {
+                var id = $(this).val(); // Use $(this) so you don't traverse the DOM again
+                $.getJSON(url, { parentId: id }, function (response) {
+                    ward.empty(); // remove any existing options
+                    $(response).each(function () {
+                        $(document.createElement('option'))
+                            .attr('value', this.Id)
+                            .text(capitalizeFirstAllWords(this.Name.toLowerCase()))
+                            .appendTo(ward);
+                    });
+                    ward.trigger("chosen:updated");
+                });
+            });
+        });
+</script>
+}

@@ -1,0 +1,68 @@
+﻿@model IQueryable<ProductInvoiceViewModel>
+
+    @using Erp.BackOffice.App_GlobalResources
+    @using Erp.BackOffice.Sale.Models
+    @using Erp.BackOffice.Helpers
+    @using Erp.Domain.Account.Entities
+    @using Erp.Domain.Sale.Entities
+    @using GridMvc.Html
+
+    @{
+        Layout = "~/Views/Shared/ACE_ClientLayout.cshtml";
+        Erp.BackOffice.Models.PageSetting pageSetting = new Erp.BackOffice.Models.PageSetting
+        {
+            ModuleName = "Customer",
+            ActionName = "Client",
+            PageTitle = ViewBag.Title,
+            DisplaySearchPanel = false,
+            IsPopup = false,
+            DisplayBackButton = true,
+            AdvancedSearch = false,
+        };
+        int userId = Erp.BackOffice.Helpers.Common.CurrentUser.Id;
+    }
+@section HeadOfPage {
+<style>
+            .fa-150 {
+    font-size: 1.5em;
+}
+    </style>
+}
+
+<div class="row">
+        <img src="~/assets/images/web_636390076579128412.png" style="width:100%" />
+</div>
+    <div class="row">
+        <footer class="btn-default">
+            <div class="pull-left">
+                <a title="@Wording.BillList" class="btn btn-white btn-primary btn-sm" href="@Url.Action("ClientListProductInvoice", pageSetting.ModuleName)" style="height:37px;line-height:2.5!important">
+                    <i class="ace-icon fa-150 fa fa-cart-plus"></i>
+                    @Wording.BillList
+                </a>
+                <a title="@Wording.ListOfCusUsingTheService" class="btn btn-white btn-primary btn-sm" href="@Url.Action("ClientListUsingService", pageSetting.ModuleName)" style="height:37px;line-height:2.5!important">
+                    <i class="ace-icon fa-150 fa fa-universal-access"></i>
+                    <span class="hiden-phone">@Wording.ListOfCusUsingTheService</span>
+                </a>
+            </div>
+        </footer>
+    </div>
+    @section Scripts {
+        <script src="~/Scripts/jquery.signalR-2.2.1.min.js" type="text/javascript"></script>
+        <script src="~/signalr/hubs"></script>
+
+        <script type="text/javascript">
+            $(function () {
+                var erpHub = $.connection.erpHub;
+
+                erpHub.client.loadUrl = function (url) {
+                    window.location = url;
+                };
+
+                //Start the connection.
+                $.connection.hub.start().done(function () {
+                });
+
+              
+            });
+        </script>
+    }

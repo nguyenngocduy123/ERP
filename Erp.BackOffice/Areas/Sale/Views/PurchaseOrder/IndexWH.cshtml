@@ -1,0 +1,222 @@
+﻿@model IEnumerable<PurchaseOrderViewModel>
+
+@using Erp.BackOffice.App_GlobalResources
+@using Erp.BackOffice.Sale.Models
+@using Erp.BackOffice.Helpers
+@using GridMvc.Html
+
+@{
+    ViewBag.Title = Wording.PageIndexWH_PurchaseOrder;
+    Layout = "~/Views/Shared/ACE_AdminLayout.cshtml";
+    Erp.BackOffice.Models.PageSetting pageSetting = new Erp.BackOffice.Models.PageSetting
+    {
+        ModuleName = "PurchaseOrder",
+        ActionName = "IndexWH",
+        PageTitle = ViewBag.Title,
+        DisplaySearchPanel = true,
+        IsPopup = false,
+        DisplayBackButton = false
+    };
+    IEnumerable<SelectListItem> warehouseList = (IEnumerable<SelectListItem>)ViewBag.warehouseList;
+    
+}
+
+@if (ViewBag.SuccessMessage != null && ViewBag.SuccessMessage != "")
+{
+    <div class="alert alert-block alert-success">
+        <button class="close" data-dismiss="alert" type="button">
+            <i class="ace-icon fa fa-times"></i>
+        </button>
+        <i class="ace-icon fa fa-check green"></i>
+        @ViewBag.SuccessMessage
+    </div>
+}
+
+@if (ViewBag.FailedMessage != null && ViewBag.FailedMessage != "")
+{
+    <div class="alert alert-block alert-danger">
+        <button class="close" data-dismiss="alert" type="button">
+            <i class="ace-icon fa fa-times"></i>
+        </button>
+        <i class="ace-icon fa fa-warning red"></i>
+        @ViewBag.FailedMessage
+    </div>
+}
+
+<link href="@Url.Content("~/assets/css/Gridmvc.css")" rel="stylesheet" type="text/css" />
+<script src="@Url.Content("~/Scripts/gridmvc.min.js")" type="text/javascript"> </script>
+
+@helper GridColumnCommand(int id)
+{
+    <div class="hidden-phone visible-desktop action-buttons" style="display: inline-block; float: left;">
+        <p>
+            <button name="Delete" value="Delete" type="submit" class="btn btn-mini btn-danger">
+                <i class="ace-icon fa fa-trash bigger-120"></i>
+            </button>
+        </p>
+    </div>
+}
+
+@helper GridColumnName(string name, int id)
+{
+    name = string.IsNullOrEmpty(name) ? "No Title" : name;
+    <a href="@Url.Action("View", "PurchaseOrder", new { Id = id })">@name</a>
+    @*<a href="javascript:;" onclick="OpenPopup('@Url.Action("View", "PurchaseOrder", new { Id = id, IsPopup = "true" })', 'Xem chi tiết đơn đặt hàng', 1000, 500)">@name</a>*@
+}
+
+@helper GridColumnSaleName(int? userId)
+{
+    var Sale = Common.GetSaleByUserId(userId.Value);
+    <span>@(Sale != null ? Sale.Name : "-")</span>
+}
+
+@helper GridColumnStatus(string status)
+{
+    switch(status)
+    {
+        case "pending":
+            status = Wording.OrderStatusDisplay_pending;
+            break;
+        case "outbound pending":
+            status = Wording.OrderStatusDisplay_outbound_pending;
+            break;
+        case "outbound done":
+            status = Wording.OrderStatusDisplay_outbound_done;
+            break;
+        case "shipping":
+            status = Wording.OrderStatusDisplay_shipping;
+            break;
+        case "complete":
+            status = Wording.OrderStatusDisplay_complete;
+            break;
+        default:
+            status = Wording.OrderStatusDisplay_cancel;
+            break;
+    }
+    <span>@status</span>
+}
+
+@helper CheckDeleteColumns(int Id)
+{
+    <label>
+        <input class="ace class-delete-all" type="checkbox" name="DeleteId-checkbox" value="@Id">
+        <span class="lbl"></span>
+    </label>
+}
+
+@helper BuildCheckAll()
+{
+    <label>
+        <input class="ace" type="checkbox" name="checkAll" id="checkAll" />
+        <span class="lbl"></span>
+    </label>
+}
+@using (Html.BeginPageHeaderContainer(pageSetting))
+{
+    using (Html.BeginForm(pageSetting.ActionName, pageSetting.ModuleName, FormMethod.Post, new { id = pageSetting.ModuleName, @class = "search-view form-inline" }))
+    {
+        <p>
+            @Html.TextBox("txtCode", Request["txtCode"], new { @class = "form-control", autocomplete = "off", placeholder = "Nhập mã..." })
+            <span class="input-daterange input-group">
+                @Html.TextBox("startDate", Request["startDate"] != null ? Request["startDate"] : "", new { @class = "form-control", autocomplete = "off", placeholder = "Ngày xuất từ..." })
+                <span class="input-group-addon">
+                    <i class="fa fa-exchange"></i>
+                </span>
+                @Html.TextBox("endDate", Request["endDate"] != null ? Request["endDate"] : "", new { @class = "form-control", autocomplete = "off", placeholder = "đến..." })
+            </span>
+            <span class="input-numberic input-group">
+                @Html.TextBox("txtMinAmount", Request["txtMinAmount"] != null ? Request["txtMinAmount"] : "", new { @class = "form-control input-numberic", autocomplete = "off", placeholder = "Tổng tiền từ..." })
+                <span class="input-group-addon">
+                    <i class="fa fa-exchange"></i>
+                </span>
+                @Html.TextBox("txtMaxAmount", Request["txtMaxAmount"] != null ? Request["txtMaxAmount"] : "", new { @class = "form-control input-numberic", autocomplete = "off", placeholder = "đến..." })
+            </span>
+            <select class="form-control" name="warehouseDestinationId">
+                <option value="">- Kho đích đến -</option>
+                @foreach (var item in warehouseList)
+                {
+                    <option @(Request["warehouseDestinationId"] == item.Value ? "Selected" : "") value="@item.Value">@item.Text</option>
+                }
+            </select>
+            <select class="form-control" name="warehouseSourceId">
+                <option value="">- Kho nguồn -</option>
+                @foreach (var item in warehouseList)
+                {
+                    <option @(Request["warehouseSourceId"] == item.Value ? "Selected" : "") value="@item.Value">@item.Text</option>
+                }
+            </select>
+        </p>
+    }
+}
+
+<div class="col-sm-12">
+    <div class="row">
+        @using (Html.BeginForm("Delete", "PurchaseOrder", FormMethod.Post))
+        {
+            <p>
+                @Html.Button(Wording.CreateNew, ButtonType.aTag, ButtonColor.Info, ButtonSize.Mini, true, IconType.Plus, IconSize.Default, false, new { @href = Url.Action("CreateWH", "PurchaseOrder") })
+                @*<button name="DeleteAll" value="DeleteAll" type="submit" class="btn btn-mini btn-danger" onclick="return CheckIsval();">
+                    <i class="ace-icon fa fa-trash bigger-120"></i>
+                    @Wording.Delete
+                </button>*@
+            </p>
+
+            @Html.Grid(Model).Columns(columns =>
+            {
+                int index = 0;
+                columns.Add().Titled(Wording.OrderNo).SetWidth(20).RenderValueAs(n => (++index).ToString());
+                //columns.Add().Titled(BuildCheckAll().ToHtmlString()).SetWidth(20).Sanitized(false).Encoded(false).RenderValueAs(n => CheckDeleteColumns(n.Id));
+                columns.Add().Titled(Wording.Code).Sortable(false).Sanitized(false).Encoded(false).RenderValueAs(u => GridColumnName(u.Code, u.Id));
+                columns.Add(u => u.TotalAmount).Titled(Wording.TotalAmount).SetWidth(120).Sortable(true).RenderValueAs(n => Common.PhanCachHangNgan(n.TotalAmount)).Css("text-right");
+                columns.Add(u => u.WarehouseSourceName).Titled(Wording.WarehouseSource).SetWidth(120);
+                columns.Add(u => u.WarehouseDestinationName).Titled(Wording.WarehouseDestination).SetWidth(120);
+                columns.Add().Titled(Wording.Status).SetWidth(100).Encoded(false).RenderValueAs(n => GridColumnStatus(n.Status));
+                columns.Add(u => u.CreatedDate).Titled(Wording.CreatedDate).SetWidth(100);
+                columns.Add().Titled(Wording.CreatedUser).SetWidth(130).Encoded(false).RenderValueAs(u => GridColumnSaleName(u.CreatedUserId));
+                columns.Add(u => u.ModifiedDate).Titled(Wording.ModifiedDate).SetWidth(100).Sortable(true);
+                //columns.Add(u => u.Id).Titled(Wording.Action).Sanitized(false).Encoded(false).RenderValueAs(u => GridColumnCommand(u.Id)).SetWidth(20);
+            }).WithPaging(20)
+        }
+    </div>
+</div>
+
+
+@section Scripts {
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('input[name="txtMinAmount"]').numberFormat();
+            $('input[name="txtMaxAmount"]').numberFormat();
+        });
+        function CheckIsval() {
+            if ($('[name="DeleteId-checkbox"]').is(':checked') == false) {
+                alert("Phải chọn ít nhất 1 item.");
+                return false;
+            }
+            else {
+                if (confirm('Bạn có chắc muốn xóa các item đã chọn ?')) {
+                    return true;
+                }
+                else {
+                    return false;
+                }
+            }
+        }
+
+        $('[name="Delete"]').click(function () {
+            if (confirm('Bạn có chắc muốn xóa item ?')) {
+                $(this).closest('tr').children('td').each(function (i, e) {
+                    $(this).find("input.class-delete-all").prop("checked", true);
+                    return true;
+                })
+            }
+            else {
+                return false;
+            }
+
+        })
+
+    </script>
+
+    @Html.ScriptBottom_ValidationMvc()
+    @Html.ScriptBottom_DatePicker("dd/MM/yyyy")
+}

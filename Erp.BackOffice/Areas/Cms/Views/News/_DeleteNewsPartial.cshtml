@@ -1,0 +1,13 @@
+﻿@{
+    int DeleteNewsId = Convert.ToInt32(ViewData["DeleteNewsId"]);
+}
+
+<div class="hidden-phone visible-desktop action-buttons">
+    @using (Html.BeginForm("DeleteNews", "News", FormMethod.Post))
+    {
+        <input type="hidden" value="@DeleteNewsId" name="DeleteNewsId"/>
+        <button type="submit" class="btn btn-mini btn-danger" onclick="return confirm('Bạn có muốn xóa dữ liệu không ?');">
+             <i class="ace-icon fa fa-trash bigger-120"></i>
+        </button> 
+    }
+</div>

@@ -1,0 +1,16 @@
+﻿
+@{
+    var resetUserId = Convert.ToInt32(ViewData["ResetUserId"]);
+}
+
+<div class="hidden-phone visible-desktop action-buttons">
+
+    @using (Html.BeginForm("ResetLoginFailed", "User", FormMethod.Post))
+    {
+        <input type="hidden" value="@resetUserId" name="deleteUserId"/>
+        <button type="submit" class="btn btn-mini btn-danger" name="reset">
+             <i class="ace-icon fa fa-trash bigger-120"></i>
+        </button>
+        }
+
+</div>

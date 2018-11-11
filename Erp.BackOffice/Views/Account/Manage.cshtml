@@ -1,0 +1,37 @@
+﻿@model Erp.BackOffice.Models.LocalPasswordModel
+@using Erp.BackOffice.Helpers
+@{
+    ViewBag.Title = "Manage User";
+    Layout = "~/Views/Shared/ACE_AdminLayout.cshtml";
+}
+
+@if (ViewBag.AlertMessage != null && ViewBag.AlertMessage != "")
+{
+    <div class="alert alert-block alert-success">
+        <button class="close" data-dismiss="alert" type="button">
+            <i class="icon-remove"></i>
+        </button>
+        <i class="ace-icon fa fa-check green"></i>
+        @ViewBag.AlertMessage
+    </div>
+}
+
+@if (ViewBag.HasLocalPassword)
+{
+    @Html.Partial("_ChangePasswordPartial")
+}
+else
+{ 
+    @Html.Partial("_SetPasswordPartial")
+}
+
+@*<section id="externalLogins">
+    @Html.Action("RemoveExternalLogins")
+
+    <h3>Add an external login</h3>
+    @Html.Action("ExternalLoginsList", new { ReturnUrl = ViewBag.ReturnUrl })
+</section>*@
+
+@section Scripts {
+    @Html.ScriptBottom_ValidationMvc()
+}

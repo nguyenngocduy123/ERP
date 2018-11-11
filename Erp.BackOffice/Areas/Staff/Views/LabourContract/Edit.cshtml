@@ -1,0 +1,197 @@
+﻿@using Erp.BackOffice.App_GlobalResources
+@using Erp.BackOffice.Helpers
+@using Erp.BackOffice.Staff.Models
+
+@model LabourContractViewModel
+
+@{
+    ViewBag.Title = Wording.PageEdit_LabourContract;
+
+    Layout = "~/Views/Shared/" + (Request["IsPopup"] == null ? "ACE_AdminLayout.cshtml" : "_PopupLayout.cshtml");
+    Erp.BackOffice.Models.PageSetting pageSetting = new Erp.BackOffice.Models.PageSetting
+    {
+        ModuleName = "LabourContract",
+        ActionName = "Edit",
+        PageTitle = ViewBag.Title,
+        DisplaySearchPanel = false,
+        IsPopup = false,
+        DisplayBackButton = true
+    };
+}
+
+@section HeadOfPage {
+    @Html.ScriptTop_ChosenStyle()
+}
+@using (Html.BeginPageHeaderContainer(pageSetting))
+{
+
+}
+@using (Html.BeginForm_AceStyle((string)ViewBag.Title, "", "Edit", "LabourContract", null, FormMethod.Post, new { @class = "form-horizontal clearfix" }))
+{
+    @Html.ValidationSummary(true)
+    <input type="hidden" value="@Request["IsPopup"]" name="IsPopup" />
+
+    @Html.HiddenFor(model => model.Id)
+    @Html.HiddenFor(model => model.CreatedUserId)
+    @Html.HiddenFor(model => model.AssignedUserId)
+    @Html.HiddenFor(model => model.CreatedDate)
+    @Html.HiddenFor(model => model.IsDeleted)
+    @*@Html.HiddenFor(model => model.Code)*@
+    @Html.HiddenFor(model => model.PositionStaff)
+    @Html.HiddenFor(model => model.DepartmentStaffId)
+    @Html.HiddenFor(model => model.DepartmentApprovedId)
+    @Html.HiddenFor(model => model.PositionApproved)
+    <div class="row">
+        <div class="col-sm-5">
+            <div class="widget-box">
+                <div class="widget-header">
+                    <h5 class="widget-title">Thông tin hợp đồng</h5>
+                </div>
+                <div class="widget-body">
+                    <div class="widget-main">
+                        @Html.CustomDropDownListFor(model => model.Name, SelectListHelper.GetSelectList_Category("LabourContract_Name", null, "Name", Wording.Empty), WidthType.span12, true, null, DropdownListStyle.DropdownListStyleChosen)
+                        @Html.DatePicker(model => model.SignedDay, "dd/MM/yyyy", "99/99/9999", true, true, "control-label col-lg-5 col-md-4 col-sm-4", "col-lg-7 col-md-8 col-sm-8", "col-xs-12")
+                        @Html.DatePicker(model => model.EffectiveDate, "dd/MM/yyyy", "99/99/9999", true, true, "control-label col-lg-5 col-md-4 col-sm-4", "col-lg-7 col-md-8 col-sm-8", "col-xs-12")
+                        @Html.ModulePopupFor(m => m.StaffId, "Staffs", Model.StaffName, false, false, false, null, null, "Search")
+                        @*@Html.CustomDropDownListFor(model => model.StaffId, SelectListHelper.GetSelectList_Staff(null, Wording.Empty), WidthType.span12, true, null, DropdownListStyle.DropdownListStyleChosen)*@
+                        @Html.CustomDropDownListFor(model => model.Type, SelectListHelper.GetSelectList_ContractType(null, Wording.Empty), WidthType.span12, true, null, DropdownListStyle.DropdownListStyleChosen)
+
+                        @Html.ModulePopupFor(m => m.ApprovedUserId, "Staffs", Model.ApprovedUserName, false, false, false, null, null, "Search")
+                        @*@Html.CustomDropDownListFor(model => model.ApprovedUserId, SelectListHelper.GetSelectList_Staff(null, Wording.Empty), WidthType.span12, true, null, DropdownListStyle.DropdownListStyleChosen)*@
+                        @*@Html.DatePicker(model => model.ExpiryDate, "dd/MM/yyyy", "99/99/9999", true)*@
+                        @*@Html.CustomTextboxFor(model => model.Status, null, null, WidthType.span12)*@
+                        @Html.CustomDropDownListFor(model => model.FormWork, SelectListHelper.GetSelectList_Category("LabourContract_FormWork", null, "Name", Wording.Empty), WidthType.span12, true, null, DropdownListStyle.DropdownListStyleChosen)
+                        @Html.CustomTextboxFor(model => model.WageAgreement, null, null, WidthType.span12, true, new Dictionary<string, object> { { "class", "col-sm-12 text-right" } })
+                        @*@Html.CustomDropDownListFor(model => model.WageAgreement, SelectListHelper.GetSelectList_CategoryValueTextName("Category_ProcessPay", null, "Value", Wording.Empty), WidthType.span12, true, null, DropdownListStyle.DropdownListStyleChosen)*@
+                    </div>
+                </div>
+            </div>
+
+            <div class="widget-box top-10">
+                <div class="widget-header">
+                    <h5 class="widget-title">Các đặc tính khác</h5>
+                </div>
+                <div class="widget-body">
+                    <div class="widget-main">
+                        <div class="clearfix list-attr-by-category">
+                            @Html.Action("GetListByModule", "ObjectAttribute", new { area = "Sale", module = "LabourContract", colum = "col-sm-6" })
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-sm-7">
+            <a class="btn btn-mini btn-primary Contract bottom-5">
+                Hiện hợp đồng
+            </a>
+            <textarea class="ckeditor" cols="30" id="Content" name="Content" placeholder="" rows="2">@Model.Content</textarea>
+        </div>
+    </div>
+    using (Html.BeginButtonContainer(pageSetting))
+    {
+        <button class="btn btn-mini btn-primary" type="submit" name="Submit" value="Save">
+            <i class="ace-icon fa fa-save"></i>
+            @Wording.Save
+        </button>
+    }
+}
+@Html.Partial("_UploadDocumentField")
+@section Scripts {
+    <link href="/Scripts/ckeditor/contents.css" rel="stylesheet" />
+    <script src="/Scripts/ckeditor/ckeditor.js"></script>
+    <script>
+        function initCkeditor() {
+            $('.ckeditor').ckeditor({
+                "extraPlugins": 'imagebrowser',
+                "imageBrowser_listUrl": "@Url.Action("ListJson","Images")",
+                // Define the toolbar groups as it is a more accessible solution.
+                toolbarGroups: [
+                    { "name": "document", "groups": ["mode", "document", "doctools"] },
+                    { "name": "editing", "groups": ["find", "selection", "spellchecker"] },
+                    { "name": "forms" },
+                    { "name": "tools" },
+                    { "name": "basicstyles", "groups": ["basicstyles", "cleanup"] },
+                    { "name": "clipboard", "groups": ["clipboar", "undo"] },
+                    { "name": "links", "groups": ["links"] },
+                    { "name": "paragraph", "groups": ["list", "blocks"] },
+                    { "name": "insert", "groups": ["insert"] },
+                    { "name": "styles", "groups": ["styles"] },
+                    //{ "name": "about", "groups": ["about"] },
+                    { "name": "styles" },
+                    { "name": "colors" },
+                    { "name": "align", "groups": ['JustifyLeft', 'JustifyCenter', 'JustifyRight', 'JustifyBlock'] }
+
+                ],
+            // Remove the redundant buttons from toolbar groups defined above.
+            removeButtons: 'Underline,Strike,Subscript,Superscript,Anchor,Styles,Specialchar'
+        });
+    }
+
+                //truyền từ action create của controller qua khi thực hiện submit và return về lại view create, để nhận biết là được gọi theo dạng popup
+                var closePopup = '@ViewBag.closePopup';
+                var urlRefer = '@ViewBag.urlRefer';
+                $(document).ready(function () {
+                    //nếu là được gọi theo dạng popup từ form khác thì chạy đoạn code bên dưới
+                    if (closePopup != '') {
+                        var option = '<option value="@Model.Id" >@Model.Name</option>';
+                        //tên funtion có thể khác theo từng công việc riêng (đây chỉ là mẫu khi thêm mới sẽ gọi lại)
+                        window.parent.ClosePopupAndAppendSelect(option);
+                    }
+
+                    //nếu có url thì gọi hàm này để trang ngoài iframe nhảy trang
+                    if (urlRefer != '') {
+                        window.parent.ClosePopupAndRedirectToURL(urlRefer);
+                    }
+
+                });
+                //$(document).ready(function () {
+
+                //    $('#WageAgreement').numberFormat();
+                //});
+
+        $('.Contract').click(function () {
+            ShowLoading();
+            var Name = $("#Name option:selected").val();
+            var SignedDay = $("#SignedDay").val();
+            var EffectiveDate = $("#EffectiveDate").val();
+            var StaffId = $("#StaffId").val();
+            var Type = $("#Type option:selected").val();
+            var ApprovedUserId = $("#ApprovedUserId").val()
+            var FormWork = $("#FormWork option:selected").val();
+            var WageAgreement = $("#WageAgreement").val();
+            if (Name == "" || SignedDay == "" || EffectiveDate == "" || StaffId == "" || Type == "" || ApprovedUserId == "" || FormWork == "" || WageAgreement=="") {
+                alert("Chưa chọn đủ thông tin");
+                //return false;
+                HideLoading();
+            } else
+            {
+                $.get("@Url.Action("Contract", "LabourContract")", { Name: Name, staffId: StaffId, Type: Type, ApprovedUserId: ApprovedUserId, FormWork: FormWork, WageAgreement: WageAgreement }, function (data) {
+                    //$("#Content").val(data);
+                    CKEDITOR.instances.Content.insertHtml(data);
+                    HideLoading();
+                });
+            }
+
+        });
+        function checkOnClick() {
+            var Name = $("#Name option:selected").val();
+            var SignedDay = $("#SignedDay").val();
+            var EffectiveDate = $("#EffectiveDate").val();
+            var StaffId = $("#StaffId").val();
+            var Type = $("#Type option:selected").val();
+            var ApprovedUserId = $("#ApprovedUserId").val()
+            var FormWork = $("#FormWork option:selected").val();
+            if (Name == "" || SignedDay == "" || EffectiveDate == "" || StaffId == "" || Type == "" || ApprovedUserId == "" || FormWork == "") {
+                alert("Chưa chọn đủ thông tin");
+                return false;
+            }
+            else {
+                return true;
+            }
+        }
+    </script>
+    @Html.ScriptBottom_ValidationMvc()
+    @Html.ScriptBottom_DatePicker("dd/mm/yyyy")
+    @Html.ScriptBottom_ChosenStyle()
+}

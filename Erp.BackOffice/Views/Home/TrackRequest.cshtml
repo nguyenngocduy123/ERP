@@ -1,0 +1,75 @@
+﻿@using Erp.BackOffice.App_GlobalResources
+@using Erp.BackOffice.Helpers
+@using GridMvc.Html
+
+@model List<RequestInfo>
+
+@{
+    ViewBag.Title = "Track request";
+    Layout = "~/Views/Shared/_PopupLayout.cshtml";
+}
+
+<link href="@Url.Content("~/assets/css/Gridmvc.css")" rel="stylesheet" type="text/css" />
+<script src="@Url.Content("~/Scripts/gridmvc.min.js")" type="text/javascript"> </script>
+
+@helper GridColumnName(RequestInfo r)
+{
+    <div class="widget-box collapsed" style="margin-bottom:5px">
+        <div class="widget-header">
+            <p class="widget-title bigger lighter">
+                <i class="ace-icon fa fa-table"></i>
+                <b>@r.IP</b>
+            </p>
+            <div class="widget-toolbar">
+                <a href="#" data-action="collapse">
+                    <i class="ace-icon fa fa-chevron-down"></i>
+                </a>
+            </div>
+        </div>
+        <div class="widget-body">
+            <div class="widget-main">
+                @if (r.UrlList != null && r.UrlList.Count > 0)
+                {
+                    foreach (var item in r.UrlList)
+                    {
+                        <p>[@item.Date.ToString("HH:mm:ss dd/MM/yyyy")] - @item.Url</p>
+                    }
+                }
+            </div>
+        </div>
+    </div>
+}
+
+@helper GridColumnUserName(RequestInfo r)
+{
+    if(r.User != null)
+    {
+        @r.User.UserName   
+    }
+}
+
+<div class="widget-box">
+    <div class="widget-header widget-header-flat widget-header-small">
+        <h5 class="widget-title">
+            <i class="ace-icon fa fa-street-view"></i>
+            Theo dõi truy cập
+        </h5>
+        <div class="widget-toolbar no-border">
+        </div>
+    </div>
+    <div class="widget-body">
+        <div class="widget-main clearfix">
+            @Html.Grid(Model).Columns(columns =>
+           {
+               columns.Add(u => u.FirstDate).Titled("Bắt đầu").Sortable(true).Sanitized(false).Encoded(false).Format("{0:HH:mm:ss dd/MM/yyyy}").SetWidth(150);
+               columns.Add(u => u.IP).Titled("IP").Sortable(true).Sanitized(false).Encoded(false).RenderValueAs(u => GridColumnName(u));
+               columns.Add().Titled("User").Sortable(true).Sanitized(false).Encoded(false).SetWidth(100).RenderValueAs(u => GridColumnUserName(u));
+               columns.Add(u => u.RequestCount).Titled("Số request").Sortable(true).Sanitized(false).Encoded(false).SetWidth(100);
+               columns.Add(u => u.LastDate).Titled("Cuối cùng").Sortable(true).Sanitized(false).Encoded(false).SetWidth(150).Format("{0:HH:mm:ss dd/MM/yyyy}");
+               columns.Add(u => u.IsLocked).Titled("IsLocked").Sortable(true).Sanitized(false).Encoded(false).SetWidth(100);
+           }).Selectable(false)
+        </div>
+        <!-- /.widget-main -->
+    </div>
+    <!-- /.widget-body -->
+</div>

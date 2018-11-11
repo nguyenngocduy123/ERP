@@ -1,0 +1,332 @@
+﻿@using Erp.BackOffice.App_GlobalResources
+@using Erp.BackOffice.Helpers
+@using Erp.BackOffice.Staff.Models
+@using GridMvc.Html
+@model SalaryTableViewModel
+
+@{
+    ViewBag.Title = Wording.PageCreate_SalaryTable;
+    List<Erp.Domain.Staff.Entities.vwStaffs> staff = (List<Erp.Domain.Staff.Entities.vwStaffs>)ViewBag.Staffs;
+
+    Layout = "~/Views/Shared/" + (Request["IsPopup"] == null ? "ACE_AdminLayout.cshtml" : "_PopupLayout.cshtml");
+    Erp.BackOffice.Models.PageSetting pageSetting = new Erp.BackOffice.Models.PageSetting
+    {
+        ModuleName = "SalaryTable",
+        ActionName = "Create",
+        PageTitle = ViewBag.Title,
+        DisplaySearchPanel = false,
+        IsPopup = false,
+        DisplayBackButton = true
+    };
+    IEnumerable<SelectListItem> SalarySetting = (IEnumerable<SelectListItem>)ViewBag.SalarySetting;
+    var currentUser = Erp.BackOffice.Helpers.Common.CurrentUser;
+    IEnumerable<SelectListItem> ContractType = SelectListHelper.GetSelectList_Category("LabourContract_Name", null, "Value", Wording.Empty);
+}
+
+@section HeadOfPage {
+    @Html.ScriptTop_ChosenStyle()
+}
+<style>
+    .form-control, select {
+        color: #444;
+    }
+
+    #SubjectsName {
+        width: 350px !important;
+    }
+
+    .display_none {
+        display:none !important;
+    }
+
+   
+</style>
+<link href="@Url.Content("~/assets/css/Gridmvc.css")" rel="stylesheet" type="text/css" />
+<script src="@Url.Content("~/Scripts/gridmvc.min.js")" type="text/javascript"> </script>
+@helper CheckDeleteColumns(int Id)
+{
+    <label>
+        <input class="ace class-delete-all" type="checkbox" name="StaffId-checkbox" value="@Id" disabled>
+        <span class="lbl"></span>
+    </label>
+}
+@helper BuildCheckAll()
+{
+    <label>
+        <input class="ace" type="checkbox" name="checkAll" id="checkAll" disabled />
+        <span class="lbl"></span>
+    </label>
+}
+@using (Html.BeginPageHeaderContainer(pageSetting))
+{
+
+}
+@using (Html.BeginForm_AceStyle((string)ViewBag.Title, "Create", "SalaryTable", null, FormMethod.Post, new { @class = "form-horizontal", showButton = true }))
+{
+    @Html.ValidationSummary(true)
+    @Html.HiddenFor(m => m.SubjectsName)
+    @Html.HiddenFor(m => m.SalarySettingId)
+
+    <input type="hidden" value="@Request["IsPopup"]" name="IsPopup" />
+    if ((bool)ViewBag.Hiden)
+    {
+        <style>
+            #TargetMonth {
+                display: none;
+            }
+        </style>
+    }
+
+    <div class="row">
+        <div class="col-sm-6">
+            @*@Html.CustomDropDownListFor(model => model.SalarySettingId, SalarySetting, WidthType.span12, true, "- chọn -")*@
+            @Html.CustomTextboxFor(model => model.Name, null, null, WidthType.span10, true, new Dictionary<string, object> { { "readonly", "readonly" } })
+            
+            @Html.MonthPicker(model => model.TargetMonth)
+            @Html.YearPicker(model => model.TargetYear)
+           
+            @*@Html.CustomTextboxFor(model => model.SubjectsName, null, null, WidthType.span10)*@
+        </div>
+        <div class="col-sm-6">
+            @*@if (currentUser.UserTypeId == 1 || currentUser.UserTypeId == 16)
+                {
+                    @Html.CustomDropDownListFor(model => model.BranchId, SelectListHelper.GetSelectList_Branch(null, Wording.Empty), WidthType.span12, true, null, DropdownListStyle.DropdownListStyleChosen)
+                    @Html.CustomDropDownListFor(model => model.BranchDepartmentId, SelectListHelper.GetSelectList_BranchDepartment(null, Model.BranchId.HasValue ? Model.BranchId.Value : 0, Wording.Empty), WidthType.span12, true, null, DropdownListStyle.DropdownListStyleChosen)
+                }
+                else
+                {
+                    @Html.CustomDropDownListFor(model => model.BranchDepartmentId, SelectListHelper.GetSelectList_BranchDepartment(null, currentUser.BranchId.Value, Wording.Empty), WidthType.span12, true, null, DropdownListStyle.DropdownListStyleChosen)
+                }*@
+            @*<div class="control-group form-group">
+                <label class="control-label no-padding-right col-lg-7 col-md-6 col-sm-6" for="Type">@Wording.ContactType</label>
+                <div class="control-value col-lg-7 col-md-8 col-sm-8" style="width: 384px;  ">
+                    @Html.DropDownList("Type", ContractType)
+                </div>
+            </div>*@
+
+            <div class="control-group form-group">
+                <label class="control-label no-padding-right col-lg-7 col-md-6 col-sm-6" for="Type">@Wording.BranchName</label>
+                <div class="control-value col-lg-7 col-md-8 col-sm-8" style="width: 384px;  ">
+                    @Html.DropDownList("BranchId", SelectListHelper.GetSelectList_Branch(null, "-Tất cả-"))
+                </div>
+            </div>
+
+
+            <div class="control-group form-group" hidden>
+                <label class="control-label no-padding-right col-lg-7 col-md-6 col-sm-6" for="Type">Có bảo hiểm</label>
+                <div class="control-value col-lg-7 col-md-8 col-sm-8" style="width: 384px;  ">
+                    <input type="checkbox" name="IsSeniority" id="IsSeniority" class="ace" />
+                </div>
+            </div>
+
+        </div>
+    </div>
+    <button class="btn btn-mini btn-primary" type="button" onclick="return editCheck(this);" style="margin-top:10px;"><i class="ace-icon fa fa-edit"></i> Chỉnh sửa</button>
+
+    <div class="table-responsive top-10">
+        @Html.Grid(staff).Columns(columns =>
+{
+    int index = 0;
+    columns.Add().Titled(BuildCheckAll().ToHtmlString()).SetWidth(20).Sanitized(false).Encoded(false).RenderValueAs(n => CheckDeleteColumns(n.Id));
+    columns.Add().Titled(Wording.OrderNo).SetWidth(30).RenderValueAs(n => (++index).ToString());
+    columns.Add().Titled(Wording.Name).Sanitized(false).Encoded(false).RenderValueAs(n => n.Name);
+    columns.Add().Titled(Wording.Position).Sortable(false).Sanitized(false).Encoded(false).RenderValueAs(n => n.PositionName).SetWidth(200);
+})
+
+    </div>
+
+    using (Html.BeginButtonContainer(pageSetting))
+    {
+        <button class="btn btn-mini btn-primary" type="submit" name="Submit" value="Save" onclick="return checkOnSubmit();">
+            <i class="ace-icon fa fa-save"></i>
+            @Wording.Save
+        </button>
+    }
+}
+
+
+
+@section Scripts {
+    <script>
+        //truyền từ action create của controller qua khi thực hiện submit và return về lại view create, để nhận biết là được gọi theo dạng popup
+        var closePopup = '@ViewBag.closePopup';
+        $(document).ready(function () {
+            //Get
+            setTextbox();
+
+
+            //nếu là được gọi theo dạng popup từ form khác thì chạy đoạn code bên dưới
+            if (closePopup != '') {
+                var option = '<option value="@Model.Id" >@Model.Name</option>';
+                //tên funtion có thể khác theo từng công việc riêng (đây chỉ là mẫu khi thêm mới sẽ gọi lại)
+                window.parent.ClosePopupAndAppendSelect(option);
+            }
+
+            $("input:checkbox[name='StaffId-checkbox']").prop('checked', true);
+
+        });
+
+    </script>
+    <script>
+        function ResetCheckBox() {
+            $("input:checkbox").prop('checked', false);
+
+            $("input:checkbox[name='StaffId-checkbox']").each(function () {
+                $(this).closest('tr').addClass('display_none');
+            });
+        };
+
+        function ShowCheckBoxSeleted() {
+            $("input:checkbox[name='StaffId-checkbox']:checked").each(function () {
+                $(this).closest('tr').removeClass('display_none');
+            });
+        };
+
+        function ShowAllCheckBoxStaff() {
+            $("input:checkbox[name='StaffId-checkbox']").each(function () {
+                $(this).closest('tr').removeClass('display_none');
+            });
+        };
+
+        function HideCheckBoxStaffNotChecked() {
+            $("input:checkbox[name='StaffId-checkbox']:not(:checked)").each(function () {
+                $(this).closest('tr').addClass('display_none');
+            });
+        };
+
+
+
+        function setTextbox() {
+            var a = $("#SalarySettingId option:selected").text();
+            $("#SubjectsName").val(a);
+            //var b = $("#TargetMonth option:selected").text();
+            //var c = $("#TargetYear option:selected").text();
+            //var d = $("#BranchId option:selected").text();
+
+            //var f = $("#Type option:selected").text();
+            //$("#SubjectsName").val(a+"-"+ b +"/"+ c +"-"+ d+ "-"+f);
+        }
+        //Fetch BranchDepartment of University
+        //var urDepartmentl = '/api/BackOfficeServiceAPI/FetchBranchDepartment';
+        //var department = $("#BranchDepartmentId"); // cache it
+        //var urBranch = '/api/BackOfficeServiceAPI/FetchListStaffBranch';
+        //var departmentId = $("#BranchDepartmentId").val(); // cache it
+        var Branch = $("#BranchId").val();
+        var urType = '/api/BackOfficeServiceAPI/FetchListStaffLabourContractType';
+        $("#SalarySettingId").change(function () {
+            setTextbox();
+        })
+        $("#TargetMonth").change(function () {
+            setTextbox();
+        })
+        $("#TargetYear").change(function () {
+            setTextbox();
+        })
+
+        //$("#BranchId").change(function () {
+        //    //console.log($(this).val());
+        //    ShowLoading();
+        //    department.empty(); // remove any existing options
+        //    $(document.createElement('option'))
+        //                .attr('value', '')
+        //                .text('- Rỗng -')
+        //                .appendTo(department).trigger('chosen:updated');
+        //    var id = $(this).val(); // Use $(this) so you don't traverse the DOM again
+        //    $.getJSON(urDepartmentl, { BranchId: id }, function (response) {
+        //        department.empty(); // remove any existing options
+        //        $(response).each(function () {
+        //            $(document.createElement('option'))
+        //                .attr('value', this.Id)
+        //                .text(this.Staff_DepartmentId)
+        //                .appendTo(department).trigger('chosen:updated');
+        //            //HideLoading();
+        //        });
+        //        //Load check
+        //        $.getJSON(urBranch, { BranchId: id, BranchDepartmentId: departmentId }, function (listcheck) {
+        //            $("input:checkbox").prop('checked', false);
+        //            $(listcheck).each(function (i, obj) {
+        //                $("input[value='" + obj + "']").prop('checked', true);
+        //            });
+        //            HideLoading();
+        //        });
+        //    });
+        //    setTextbox();
+        //});
+
+        var edit = false;
+        function editCheck(ele) {
+            if (!edit) {
+                $("input:checkbox").prop('disabled', false);
+                //set button
+                $(ele).html('<i class="ace-icon fa fa-lock"></i> Khóa chỉnh sửa');
+                edit = true;
+                ShowAllCheckBoxStaff();
+            }
+            else {
+                $("input:checkbox").prop('disabled', true);
+                //set button
+                $(ele).html('<i class="ace-icon fa fa-edit"></i> Chỉnh sửa');
+                edit = false;
+                //ẩn những check box không chọn của staff
+                HideCheckBoxStaffNotChecked();
+            }
+
+            $(ele).toggleClass('btn-primary btn-danger');
+        }
+
+        $('#IsSeniority').change(function () {
+            $('#Type').trigger('change');
+        })
+
+        $("#Type").change(function () {
+            var _IsSenority = $('#IsSeniority')[0].checked;
+            ShowLoading();
+            var labourContractName = $(this).val();
+            $.getJSON(urType, { LabourContractName: labourContractName, IsSeniority: _IsSenority }, function (listcheck) {
+                //hide and uncheck
+                ResetCheckBox();
+                $(listcheck).each(function (i, obj) {
+                    $("input[value='" + obj + "']").prop('checked', true);
+                });
+                $('#IsSeniority').prop('checked', _IsSenority);
+                ShowCheckBoxSeleted();
+
+                HideLoading();
+            });
+            setTextbox();
+        });
+
+        $("#BranchId").change(function () {
+            var _IsSenority = $('#IsSeniority')[0].checked;
+            ShowLoading();
+            var branchId = $(this).val();
+            $.getJSON(urType, { LabourContractName: '', IsSeniority: _IsSenority,BranchId: branchId }, function (listcheck) {
+                //hide and uncheck
+                ResetCheckBox();
+                $(listcheck).each(function (i, obj) {
+                    $("input[value='" + obj + "']").prop('checked', true);
+                });
+                $('#IsSeniority').prop('checked', _IsSenority);
+                ShowCheckBoxSeleted();
+
+                HideLoading();
+            });
+            setTextbox();
+        });
+
+        function checkOnSubmit() {
+            if ($('[name="StaffId-checkbox"]').is(':checked') == false) {
+                alert("Phải chọn ít nhất 1 item.");
+                return false;
+            }
+            else {
+                //show check
+                $('[name="StaffId-checkbox"]:checked').prop('disabled', false);
+                return true;
+            }
+        }
+    </script>
+    @Html.ScriptBottom_ValidationMvc()
+    @Html.ScriptBottom_DatePicker("dd/mm/yyyy")
+    @Html.ScriptBottom_ChosenStyle()
+}

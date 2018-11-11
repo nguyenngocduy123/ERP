@@ -1,0 +1,182 @@
+﻿@using Erp.BackOffice.App_GlobalResources
+@using Erp.BackOffice.Helpers
+@using Erp.BackOffice.Account.Models
+
+@model ContractViewModel
+
+@{
+    ViewBag.Title = Wording.PageEdit_Contract;
+
+    Layout = "~/Views/Shared/ACE_AdminLayout.cshtml";
+    IEnumerable<SelectListItem> customerList = (IEnumerable<SelectListItem>)ViewBag.customerList;
+    IEnumerable<SelectListItem> infoPartyAList = (IEnumerable<SelectListItem>)ViewBag.infoPartyAList;
+    // Model.Type = GridColumnCategoryValue(Model.Type, "ContractType").ToString();
+}
+
+@section HeadOfPage {
+    @Html.ScriptTop_ChosenStyle()
+}
+@helper GridColumnCategoryValue(object value, string code)
+{
+    var attr = Erp.BackOffice.Helpers.Common.GetCategoryByValueCodeOrId("value", value, code);
+    @(attr != null ? attr.Name : "");
+}
+
+
+@using (Html.BeginForm_AceStyle((string)ViewBag.Title, "Edit", "Contract", null, FormMethod.Post, new { @class = "form-horizontal clearfix" }))
+{
+    @Html.ValidationSummary(true)
+    @Html.HiddenFor(model => model.Id)
+    @Html.HiddenFor(model => model.CreatedUserId)
+    @Html.HiddenFor(model => model.AssignedUserId)
+    @Html.HiddenFor(model => model.CreatedDate)
+    @Html.HiddenFor(model => model.IsDeleted)
+    @Html.HiddenFor(model => model.Code)
+    @Html.HiddenFor(model => model.Type)
+    @Html.HiddenFor(model => model.IdTypeContract)
+    @Html.HiddenFor(model => model.Status)
+    @*@Html.CustomTextboxFor(model => GridColumnCategoryValue(model.Type, "ContractType"), null, null, WidthType.span4, true, new Dictionary<string, object> { { "disabled", "disabled" } })*@
+    @Html.CustomTextboxFor(model => model.Code, null, null, WidthType.span4, true, new Dictionary<string, object> { { "disabled", "disabled" } })
+    @Html.CustomTextboxFor(model => model.Type, null, null, WidthType.span4, true, new Dictionary<string, object> { { "disabled", "disabled" } })
+    @Html.CustomTextboxFor(model => model.Place, null, null, WidthType.span5)
+    @Html.DatePicker(model => model.EffectiveDate, "dd/MM/yyyy", "99/99/9999", true, true, "col-sm-3", "col-sm-9", "col-sm-4")
+    @Html.CustomTextboxFor(model => model.Quantity, null, null, WidthType.span2, true, new Dictionary<string, object> { { "class", "col-sm-3 text-right" } })
+    //thông tin bên A
+    <div class="control-group form-group">
+        <label class="control-label no-padding-right col-sm-3" for="InfoPartyAId">Bên A</label>
+        <div class="control-value col-sm-9">
+            <div class="clearfix">
+                <select name="InfoPartyAId" id="InfoPartyAId" class="col-sm-6 chzn-select" data-val="true" data-val-required="Chưa chọn bên A">
+                    <option value="">- chọn -</option>
+                    @foreach (var item in infoPartyAList)
+                    {
+                        <option @( Model.InfoPartyAId.Value.ToString() == item.Value ? "selected" : "") value="@item.Value">@item.Text</option>
+                    }
+                </select>
+            </div>
+            <div class="clearfix">
+                <span class="field-validation-valid help-inline" data-valmsg-for="InfoPartyAId" data-valmsg-replace="true"></span>
+            </div>
+
+            @if (Request["IsPopup"] == null)
+            {
+                <div class="clearfix create-popup">
+                    <a style="padding-top:5px" onclick="OpenPopup('/InfoPartyA/Create?IsPopup=true', 'Tạo mới thông tin bên A ', 1000, 500)">Tạo mới thông tin bên A</a>
+                </div>
+            }
+
+        </div>
+    </div>
+            //thông tin khách hàng
+            <div class="control-group form-group">
+                <label class="control-label no-padding-right col-sm-3" for="CustomerId">Khách hàng</label>
+                <div class="control-value col-sm-9">
+                    <div class="clearfix">
+                        <select name="CustomerId" id="CustomerId" class="col-sm-6 chzn-select" data-val="true" data-val-required="Chưa chọn khách hàng">
+                            <option value="">- chọn -</option>
+                            @foreach (var item in customerList)
+                            {
+                                <option @( Model.CustomerId.Value.ToString() == item.Value ? "selected" : "") value="@item.Value">@item.Text</option>
+                            }
+                        </select>
+                    </div>
+                    <div class="clearfix">
+                        <span class="field-validation-valid help-inline" data-valmsg-for="CustomerId" data-valmsg-replace="true"></span>
+                    </div>
+
+                    @if (Request["IsPopup"] == null)
+                    {
+                        <div class="clearfix create-popup">
+                            <a style="padding-top:5px" onclick="OpenPopup('/Customer/Create?IsPopup=true', 'Tạo mới khách hàng', 1000, 500)">Tạo mới khách hàng</a>
+                        </div>
+                    }
+
+                </div>
+            </div>
+
+                    //loại hợp đồng cho thuê
+
+                    if (ViewBag.Type == "ContractLease")
+                    {
+                        @Html.HiddenFor(model => model.ContractLeaseModel.Id)
+                        @Html.HiddenFor(model => model.ContractLeaseModel.CreatedUserId)
+                        @Html.HiddenFor(model => model.ContractLeaseModel.AssignedUserId)
+                        @Html.HiddenFor(model => model.ContractLeaseModel.CreatedDate)
+                        @Html.HiddenFor(model => model.ContractLeaseModel.IsDeleted)
+                        @Html.CustomDropDownListFor(model => model.ContractLeaseModel.CondosId, SelectListHelper.GetSelectList_Condos(Model.ContractLeaseModel.CondosId), WidthType.span6, true, null, DropdownListStyle.DropdownListStyleChosen)
+                        @Html.CustomTextboxFor(model => model.ContractLeaseModel.Quantity, null, null, WidthType.span2, true, new Dictionary<string, object> { { "class", "col-sm-3 text-right" } })
+                        @Html.CustomDropDownListFor(model => model.ContractLeaseModel.Unit, SelectListHelper.GetSelectList_Category("UnitContractLease", Model.ContractLeaseModel.Unit, "Value", Wording.Empty), WidthType.span3, true, null, DropdownListStyle.DropdownListStyleDefault)
+                        @Html.CustomTextboxFor(model => model.ContractLeaseModel.Price, null, null, WidthType.span3, true, new Dictionary<string, object> { { "class", "col-sm-3 text-right" } })
+                        @Html.CustomDropDownListFor(model => model.ContractLeaseModel.UnitMoney, SelectListHelper.GetSelectList_Category("UnitMoney", Model.ContractLeaseModel.UnitMoney, "Value", Wording.Empty), WidthType.span3, true, null, DropdownListStyle.DropdownListStyleDefault)
+                        @Html.DatePicker(model => model.ContractLeaseModel.DayHandOver, "dd/MM/yyyy", "99/99/9999", true, true, "col-sm-3", "col-sm-9", "col-sm-4")
+                        @Html.DatePicker(model => model.ContractLeaseModel.EffectiveDate, "dd/MM/yyyy", "99/99/9999", true, true, "col-sm-3", "col-sm-9", "col-sm-4")
+                        @Html.DatePicker(model => model.ContractLeaseModel.ExpiryDate, "dd/MM/yyyy", "99/99/9999", true, true, "col-sm-3", "col-sm-9", "col-sm-4")
+                        @Html.DatePicker(model => model.ContractLeaseModel.DayPay, "dd/MM/yyyy", "99/99/9999", true, true, "col-sm-3", "col-sm-9", "col-sm-4")
+                    }
+                    else if (ViewBag.Type == "ContractSell")
+                    {
+                        @Html.HiddenFor(model => model.ContractSellModel.Id)
+                        @Html.HiddenFor(model => model.ContractSellModel.CreatedUserId)
+                        @Html.HiddenFor(model => model.ContractSellModel.AssignedUserId)
+                        @Html.HiddenFor(model => model.ContractSellModel.CreatedDate)
+                        @Html.HiddenFor(model => model.ContractSellModel.IsDeleted)
+                        @Html.CustomDropDownListFor(model => model.ContractSellModel.CondosId, SelectListHelper.GetSelectList_Condos(Model.ContractSellModel.CondosId), WidthType.span6, true, null, DropdownListStyle.DropdownListStyleChosen)
+                        @Html.CustomTextboxFor(model => model.ContractSellModel.Quantity, null, null, WidthType.span2, true, new Dictionary<string, object> { { "class", "col-sm-3 text-right" } })
+                        @Html.CustomDropDownListFor(model => model.ContractSellModel.Unit, SelectListHelper.GetSelectList_Category("UnitContractSell", Model.ContractSellModel.Unit, "Value", Wording.Empty), WidthType.span3, true, null, DropdownListStyle.DropdownListStyleDefault)
+                        @Html.CustomTextboxFor(model => model.ContractSellModel.Price, null, null, WidthType.span3, true, new Dictionary<string, object> { { "class", "col-sm-3 text-right" } })
+                        @Html.CustomTextboxFor(model => model.ContractSellModel.VAT, null, null, WidthType.span3, true, new Dictionary<string, object> { { "class", "col-sm-3 text-right" } })
+                        @Html.CustomTextboxFor(model => model.ContractSellModel.MaintenanceCosts, null, null, WidthType.span3, true, new Dictionary<string, object> { { "class", "col-sm-3 text-right" } })
+                        @Html.CustomDropDownListFor(model => model.ContractSellModel.UnitMoney, SelectListHelper.GetSelectList_Category("UnitMoney", Model.ContractSellModel.UnitMoney, "Value", Wording.Empty), WidthType.span3, true, null, DropdownListStyle.DropdownListStyleDefault)
+                        @Html.DatePicker(model => model.ContractSellModel.DayHandOver, "dd/MM/yyyy", "99/99/9999", true, true, "col-sm-3", "col-sm-9", "col-sm-4")
+                        @Html.DatePicker(model => model.ContractSellModel.DayPay, "dd/MM/yyyy", "99/99/9999", true, true, "col-sm-3", "col-sm-9", "col-sm-4")
+                    }
+                    <div class="col-sm-12">
+                        <a href="@Url.Action("Index")" class="btn btn-primary">
+                            <i class="fa fa-arrow-left"></i>
+                            Quay về
+                        </a>
+
+                        <button style="margin-left:10px" type="submit" id="btnSave" class="btn btn-success" name="Submit" value="Save">
+                            <i class="fa fa-save"></i>
+                            @Wording.Save
+                        </button>
+                    </div>
+}
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+
+            $('#Quantity').numberFormat();
+            $('#ContractLeaseModel_Quantity').numberFormat();
+            $('#ContractSellModel_Quantity').numberFormat();
+            $('#ContractLeaseModel_Price').numberFormat();
+            $('#ContractSellModel_Price').numberFormat();
+            $('#ContractSellModel_VAT').numberFormat();
+            $('#ContractSellModel_MaintenanceCosts').numberFormat();
+        });
+        function ClosePopupAndDoSomethings(optionSelect) {
+            ClosePopup(false);
+            $('#CustomerId').append($(optionSelect)).trigger("chosen:updated");
+        }
+        function ClosePopupAndAppendSelectInfoPartyA(optionSelect) {
+            ClosePopup(false);
+            $('#InfoPartyAId').append($(optionSelect)).trigger("chosen:updated");
+        }
+
+        var url = '/api/BackOfficeServiceAPI/FetchPriceCondos';
+        var price = $('#ContractSellModel_Price'); // cache it
+
+        $("#ContractSellModel_CondosId").change(function () {
+            var id = $(this).val(); // Use $(this) so you don't traverse the DOM again
+            $.getJSON(url, { CondosId: id }, function (response) {
+                price.val(response).trigger('change');
+                $('#mask-ContractSellModel_Price').val(response).trigger('change');
+            });
+
+        });
+    </script>
+    @Html.ScriptBottom_ValidationMvc()
+    @Html.ScriptBottom_DatePicker("dd/mm/yyyy")
+    @Html.ScriptBottom_ChosenStyle()
+}

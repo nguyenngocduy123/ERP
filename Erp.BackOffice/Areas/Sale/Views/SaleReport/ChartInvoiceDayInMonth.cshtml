@@ -1,0 +1,155 @@
+﻿@using Erp.BackOffice.App_GlobalResources
+@using Erp.BackOffice.Sale.Models
+
+@using Erp.BackOffice.Helpers
+@using GridMvc.Html
+
+@model string
+
+<canvas id="canvas-chart"></canvas>
+
+<script>
+    (function () {
+        var colorRender = Chart.helpers.color;
+
+        var responseData = [];
+
+        @if(!string.IsNullOrEmpty(ViewBag.json))
+        {
+            @Html.Raw("responseData = " + ViewBag.json + ";");
+        }
+
+        //Tạo dữ liệu trục x
+        var arrayLabel = [];
+        for (var i in responseData) {
+            arrayLabel.push(responseData[i].label);
+        }
+
+        var dataPushToDataset = [];
+        for (var i in arrayLabel) {
+            var item = responseData.filter(function (obj) {
+                return obj.label.toString() == arrayLabel[i];
+            });
+            if (item.length != 0) {
+                dataPushToDataset.push(item[0].data);
+            } else {
+                dataPushToDataset.push(0);
+            }
+        }
+        var arrayDataset = [];
+        var newDataset = createNewDataset(dataPushToDataset, 'Doanh số', window.chartColors.blue, window.chartColors.blue, 1);
+        arrayDataset.push(newDataset);
+
+        var barChartData = {
+            labels: arrayLabel,
+            datasets: []
+        };
+
+        function createNewDataset(arrayData, label, backgroundColorValue, borderColorValue, borderWidth) {
+            var objectDataset = {
+                label: label,
+                backgroundColor: colorRender(backgroundColorValue).alpha(0.5).rgbString(),
+                borderColor: borderColorValue,
+                borderWidth: borderWidth,
+                data: []
+            };
+
+            for (var i in arrayData) {
+                objectDataset.data.push(arrayData[i]);
+            }
+
+            return objectDataset;
+        };
+
+        $(document).ready(function () {
+            //Chart.defaults.global.hover.mode = 'nearest';
+            var canvaschart = document.getElementById("canvas-chart");
+            var ctx = document.getElementById("canvas-chart").getContext("2d");
+
+            //legend: là các chú thích theo màu
+
+            var invoiceBar = new Chart(ctx, {
+                type: 'bar',
+                data: barChartData,
+                options: {
+                    responsive: true,
+                    legend: {
+                        position: 'top',
+                    },
+                    title: {
+                        display: false,
+                        text: 'Biểu đồ doanh số theo ngày'
+                    },
+                    animation: {
+                        duration: 500,
+                        enabled: true,
+                    },
+                    scales: {
+                        yAxes: [
+                            {
+                                ticks: {
+                                    fontSize: window.outerWidth < 992 ? 9 : 12,
+                                    callback: function (label, index, labels) {
+                                        return numeral(label).format('0,0');
+                                    }
+                                },
+                                scaleLabel: {
+                                    display: window.outerWidth < 992 ? false : true,
+                                    //labelString: '1k = 1000',
+                                }
+                            }
+                        ],
+                        xAxes: [{
+                            ticks: {
+                                fontSize: 10
+                            }
+                        }]
+                    },
+                    tooltips: {
+                        enabled: true,
+                        mode: 'single',
+                        callbacks: {
+                            title: function (tooltipItem, data) { return "Ngày " + data.labels[tooltipItem[0].index]; },
+                            label: function (tooltipItems, data) {
+                                //return data.datasets[tooltipItems.datasetIndex].label + ': ' + Number(tooltipItems.yLabel/1000).toFixed(0).toString().replace(/\d(?=(?:\d{3})+(?!\d))/g,'$&.') + 'k';
+                                return numeral(tooltipItems.yLabel).format('0,0');
+                            }
+                        }
+                    }
+                }
+            });
+
+            setTimeout(function () {
+                for (var i in arrayDataset) {
+                    console.log(arrayDataset[i]);
+                    barChartData.datasets.push(arrayDataset[i]);
+                }
+                invoiceBar.update();
+                //console.log('updated')
+            }, 500);
+
+            canvaschart.onclick = function (evt) {
+                var month = $("#month :selected").val();
+                var year = $("#year :selected").val();
+                var CityId = $("#CityId option:selected").val();
+                var DistrictId = $("#DistrictId option:selected").val();
+                var branchId = $("#branchId option:selected").val();
+                var activePoints = invoiceBar.getElementsAtEvent(evt);
+                if (activePoints[0]) {
+                    var chartData = activePoints[0]['_chart'].config.data;
+                    var idx = activePoints[0]['_index'];
+
+                    var label = chartData.labels[idx];
+                    var value = chartData.datasets[0].data[idx];
+                    var day = label.split('/')[0];
+                    OpenPopup('@Url.Action("DetailByChart", "ProductInvoice", new { area = "Sale" })?day=' + day + '&IsPopup=true&month=' + month + '&year=' + year + '&CityId=' + CityId + '&DistrictId=' + DistrictId + '&branchId' + branchId, 'Danh sách doanh thu ngày ' + label + '/' + year, 0, 500);
+
+                }
+            };
+        });
+
+        var colorNames = Object.keys(window.chartColors);
+
+    })();
+
+</script>

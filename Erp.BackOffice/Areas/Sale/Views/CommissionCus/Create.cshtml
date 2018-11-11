@@ -1,0 +1,283 @@
+@using Erp.BackOffice.App_GlobalResources
+@using Erp.BackOffice.Helpers
+@using Erp.BackOffice.Sale.Models
+@using Erp.BackOffice.Staff.Models
+@model CommissionCusViewModel
+
+@{
+    ViewBag.Title = Wording.PageIndex_CommisionDetail;
+
+    Layout = "~/Views/Shared/" + (Request["IsPopup"] == null ? "ACE_AdminLayout.cshtml" : "_PopupLayout.cshtml");
+
+    Erp.BackOffice.Models.PageSetting pageSetting = new Erp.BackOffice.Models.PageSetting
+    {
+        ModuleName = "CommissionCus",
+        ActionName = "Create",
+        PageTitle = ViewBag.Title,
+        DisplaySearchPanel = false,
+        IsPopup = false,
+        DisplayBackButton = true
+    };
+    //IEnumerable<SelectListItem> CategoryList = Erp.BackOffice.Helpers.Common.GetSelectList_Category("product", null, "value");
+    IEnumerable<SelectListItem> typeList = Erp.BackOffice.Helpers.SelectListHelper.GetSelectList_Category("TypeCommission", null,null);
+    IEnumerable<SelectListItem> BranchList = Erp.BackOffice.Helpers.SelectListHelper.GetSelectList_BranchAllNew(null, Wording.Empty);
+    List<BranchViewModel> departmentList = (List<BranchViewModel>)ViewBag.departmentList;
+}
+
+@section HeadOfPage {
+    @Html.ScriptTop_ChosenStyle()
+}
+<style>
+    .box {
+             padding-top: 0px !important;
+             padding-bottom:0px!important;
+             margin-top:0px!important; 
+    }
+</style>
+@using (Html.BeginPageHeaderContainer(pageSetting))
+{
+
+}
+
+@using (Html.BeginForm_AceStyle((string)ViewBag.Title, pageSetting.ActionName, pageSetting.ModuleName, null, FormMethod.Post, new { id = "CreateCommissionCus", @class = "form-horizontal" }))
+{
+    @Html.ValidationSummary(true)
+    <div class="row">
+        <div class="col-sm-7 ">
+            @*@Html.DropDownList("CategoryCode", Erp.BackOffice.Helpers.Common.GetSelectList_Category("product", Request["CategoryCode"], "value"))*@
+            <div id="detailList">
+            </div>
+        </div>
+        <div class="col-sm-5">
+            <div class="widget-box">
+                <div class="widget-header">
+                    <h5 class="widget-title">Thông tin chiết khấu</h5>
+                </div>
+                <div class="widget-body">
+                    <div class="widget-main">
+                        <input type="hidden" value="@Request["IsPopup"]" name="IsPopup" />
+                        <input type="hidden" name="UrlReferrer" value="@Request.UrlReferrer" />
+                        @Html.HiddenFor(model => model.Id)
+                        @*@Html.HiddenFor(model => model.ApplyFor)*@
+                        @Html.HiddenFor(model => model.CreatedUserId)
+                        @Html.HiddenFor(model => model.CreatedDate)
+                        @Html.HiddenFor(model => model.IsDeleted)
+
+                        @Html.CustomTextboxFor(model => model.Name, null, null, WidthType.span12)
+                        <div class="control-group form-group">
+                            <label class="control-label col-lg-5 col-md-4 col-sm-4" for="">Chiết khấu đột xuất</label>
+                            <div class="control-value col-lg-7 col-md-8 col-sm-8" style="line-height:0px!important">
+                                <label class="radio"><input type="radio" value="IrregularDiscount" class="group_choice ace" data-target="#group_choice_wrap1" @(Model.Type == "IrregularDiscount"?"checked":"") name="group_choice" />  <span class="lbl"></span></label>
+                            </div>
+                        </div>
+                        <div class="control-group form-group">
+                            <label class="control-label col-lg-5 col-md-4 col-sm-4" for="">Chiết khấu cố định</label>
+                            <div class="control-value col-lg-7 col-md-8 col-sm-8" style="line-height:0px!important">
+                                <label class="radio"><input type="radio" value="FixedDiscount" class="group_choice ace" data-target="#group_choice_wrap2" @(Model.Type == "FixedDiscount" ? "checked" : "") name="group_choice" /> <span class="lbl"></span></label>
+                            </div>
+                        </div>
+                        <div id="group_choice_wrap1" class="group_choice_wrap clearfix" style="@(Model.Type == "IrregularDiscount" ? "display:block" : "display:none")">
+                            @Html.DatePicker(model => model.StartDate, "dd/MM/yyyy", "99/99/9999", true, false, "control-label col-lg-5 col-md-4 col-sm-4", "col-lg-7 col-md-8 col-sm-8", "col-xs-12")
+                            @Html.DatePicker(model => model.EndDate, "dd/MM/yyyy", "99/99/9999", true, false, "control-label col-lg-5 col-md-4 col-sm-4", "col-lg-7 col-md-8 col-sm-8", "col-xs-12")
+                        </div>
+
+                        <div id="group_choice_wrap2" class="group_choice_wrap clearfix" style="height:0;overflow: hidden;@(Model.Type == "FixedDiscount" ? "display:block" : "display:none")">
+                        </div>
+                        @*@Html.CustomDropDownListFor(model => model.Type, typeList, WidthType.span12, true, null, DropdownListStyle.DropdownListStyleDefault)*@
+                        @*@Html.CustomTextboxFor(model => model.Type, null, null, WidthType.span12)*@
+
+                        @*@Html.CustomTextboxFor(model => model.ApplyFor, null, null, WidthType.span12)*@
+                        @Html.CustomTextAreaFor(model => model.Note, null, WidthType.span12)
+                    </div>
+                </div>
+            </div>
+            <p></p>
+            <div class="widget-box widget-color-blue" style="opacity: 1;">
+                <div class="widget-header">
+                    <h5 class="widget-title bigger lighter" style="color:white;">
+                        <i class="ace-icon fa fa-list"></i> Danh sách nhà thuốc
+                    </h5>
+
+                    <div class="widget-toolbar">
+                        <a href="#" data-action="collapse">
+                            <i class="ace-icon fa fa-chevron-up"></i>
+                        </a>
+                    </div>
+
+                </div>
+                <div class="widget-body">
+                    <div class="widget-main clearfix">
+                        <div class="box box-height-max">
+                            <h4><span>Chọn nhà thuốc được chiết khấu:</span></h4>
+                            <div class="product-cate">
+                                <div class="category-content">
+                                    <label>Danh mục chi nhánh</label>
+                                    <select id="productCategory">
+                                        @foreach (var cate in BranchList)
+                                        {
+                                            <option value="@cate.Value">@cate.Text</option>
+                                        }
+                                    </select>
+                                </div>
+                                <div class="products-by-cate clearfix">
+                                    @{ var listDepartmentNoneChoose = departmentList.Where(x => ("," + Model.ApplyFor + ",").Contains("," + x.Id + ",") == false).OrderBy(x => x.ParentId).ToList(); }
+                                    @for (int i = 0; i < listDepartmentNoneChoose.Count; i++)
+                                    {
+                                        <label class="product-item" data-category="@listDepartmentNoneChoose[i].ParentId" style="display:none">
+                                            <i class="fa fa-plus"></i>
+                                            <input type="checkbox" name="ApplyFor" class="" value="@listDepartmentNoneChoose[i].Id" />
+                                            <span class="">@listDepartmentNoneChoose[i].Name</span>
+                                        </label>
+                                    }
+                                </div>
+                            </div>
+
+                        </div>
+
+                        <div class="box box-height-max" style="margin-top:10px">
+                            <h4><span>Nhà thuốc được chiết khấu:</span></h4>
+                            <div class="product-chosen">
+                                @{ var listDepartmentChoose = departmentList.Where(x => ("," + Model.ApplyFor + ",").Contains("," + x.Id + ",") == true).OrderBy(x => x.ParentId).ToList(); }
+                                @for (int i = 0; i < listDepartmentChoose.Count; i++)
+                                {
+                                    <label class="product-item" data-category="@listDepartmentChoose[i].ParentId">
+                                        <i class="fa fa-minus"></i>
+                                        <input checked type="checkbox" name="ApplyFor" class="" value="@listDepartmentChoose[i].Id" />
+                                        <span class="">@listDepartmentChoose[i].Name</span>
+                                    </label>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    using (Html.BeginButtonContainer(pageSetting))
+    {
+        <a class="btn btn-mini btn-primary" id="Save" name="Save" value="Save">
+            <i class="ace-icon fa fa-save"></i>
+            @Wording.Save
+        </a>
+    }
+}
+
+@section Scripts {
+    @Html.ScriptBottom_ValidationMvc()
+    @Html.ScriptBottom_ChosenStyle()
+    @Html.ScriptBottom_DatePicker("dd/MM/yyyy")
+    <script>
+        var urlRefer = '@ViewBag.urlRefer';
+        //truyền từ action create của controller qua khi thực hiện submit và return về lại view create, để nhận biết là được gọi theo dạng popup
+        var closePopup = '@ViewBag.closePopup';
+        $(document).ready(function () {
+            $('#Save').click(function () {
+                ShowLoading();
+                ClearFormatBeforeSubmit($("#CreateCommissionCus"));
+                $("#CreateCommissionCus").submit();
+                HideLoading();
+            });
+            $(".group_choice").change(function () {
+                ShowLoading();
+                $(".group_choice_wrap").css('height', 'initial');
+                if ($(this).is(":checked")) {
+                    $(".group_choice_wrap").hide();
+                    $($(this).data("target")).show();
+                }
+                HideLoading();
+            });
+
+            var CommissionCusId = $("#Id").val();
+            var formdata = {
+                CommissionCusId: CommissionCusId
+            };
+            $('#detailList').html("");
+            //Thêm dòng mới
+            ClickEventHandler(true, "/CommissionCus/LoadProduct", "#detailList", formdata);
+
+            //nếu là được gọi theo dạng popup từ form khác thì chạy đoạn code bên dưới
+            if (closePopup != '') {
+                var option = '<option value="@Model.Id" >@Model.Name</option>';
+                //tên funtion có thể khác theo từng công việc riêng (đây chỉ là mẫu khi thêm mới sẽ gọi lại)
+                window.parent.ClosePopupAndAppendSelect(option);
+
+            }
+            //nếu có url thì gọi hàm này để trang ngoài iframe nhảy trang
+            if (urlRefer != '') {
+                window.parent.ClosePopupAndRedirectToURL(urlRefer);
+            }
+
+            //Hiển thị giá và tính thành tiền khi chọn sản phẩm
+            //$('#CategoryCode').on('change', function () {
+            //    var $this = $(this);
+            //    var selected = $this.find("option:selected");
+
+            //    if (selected.val() == '' || $('#product_item_' + selected.val()).length > 0)
+            //        return;
+
+            //    var CommissionCusId = $("#Id").val();
+
+            //    var formdata = {
+            //        CategoryCode: selected.val(),
+            //        CommissionCusId: CommissionCusId
+            //    };
+            //    $('#detailList').html("");
+            //    //Thêm dòng mới
+            //    ClickEventHandler(true, "/CommissionCus/LoadProduct", "#detailList", formdata);
+            //});
+            $('#productCategory').change(function () {
+                var $this = $(this);
+                $('.products-by-cate > label').hide();
+                $('.products-by-cate > label[data-category="' + $this.val() + '"]').show();
+            });
+           
+            $('#CreateCommissionCus .product-item input').change(function () {
+                var $this = $(this);
+                $parent = $this.closest('label');
+
+                if ($parent.find('i.fa-plus').length > 0) { //thêm
+                    $parent.find('input').prop('checked', true);
+                    $parent.find('i').removeClass('fa-plus').addClass('fa-minus');
+
+                    $parent.prependTo('.product-chosen');
+                    console.log('.product-chosen');
+                } else { // xóa
+                    $parent.find('input').prop('checked', false);
+                    $parent.find('i').removeClass('fa-minus').addClass('fa-plus');
+
+                    if ($('#productCategory').val() != $parent.data('category'))
+                        $parent.hide();
+
+                    $parent.prependTo('.products-by-cate');
+                    console.log('.products-by-cate');
+                }
+            });
+           
+            //$('.accordion-section-content').hide();
+            $('.accordion-section-title').click(function () {
+                var $i = $(this).find('i');
+                if ($i.hasClass('fa-angle-double-right')) {
+                    $i.removeClass('fa-angle-double-right').addClass('fa-angle-double-down');
+                } else {
+                    $i.removeClass('fa-angle-double-down').addClass('fa-angle-double-right');
+                }
+
+                var $nextDiv = $(this).next();
+                var $visibleSiblings = $nextDiv.siblings('div:visible');
+
+                if ($visibleSiblings.length) {
+                    $visibleSiblings.slideUp('fast', function () {
+                        $nextDiv.slideToggle('fast');
+                    });
+                } else {
+                    $nextDiv.slideToggle('fast');
+                }
+            });
+
+            setTimeout(function () {
+                //$('.accordion-section:first-child .accordion-section-title').trigger('click');
+            }, 500);
+        });
+    </script>
+}

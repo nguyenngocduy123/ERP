@@ -1,0 +1,12 @@
+﻿@using Erp.BackOffice.App_GlobalResources
+@using Erp.BackOffice.Helpers
+@using Erp.BackOffice.Crm.Models
+@model EmailTemplateViewModel
+
+@Html.CustomTextboxFor(model => model.From, null, null, WidthType.span6, true, new Dictionary<string, object>() { { "readonly", "true" } })
+@Html.CustomTextboxFor(model => model.To, null, null, WidthType.span6, true)
+@Html.CustomTextboxFor(model => model.Cc, null, null, WidthType.span6, true)
+@Html.CustomTextboxFor(model => model.Bcc, null, null, WidthType.span6, true)
+@Html.CustomTextboxFor(model => model.Subject, null, null, WidthType.span12, true)
+@Html.CkEditorFor(model => model.Body, null, true)
+@Html.CustomTextboxFor(model => model.Regarding, null, null, WidthType.span6, true)

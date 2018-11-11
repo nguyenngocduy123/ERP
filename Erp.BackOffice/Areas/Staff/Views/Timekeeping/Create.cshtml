@@ -1,0 +1,134 @@
+﻿@using Erp.BackOffice.App_GlobalResources
+@using Erp.BackOffice.Helpers
+@using Erp.BackOffice.Staff.Models
+
+@model  WorkSchedulesViewModel
+
+@{
+    ViewBag.Title = Wording.PageCreate_Timekeeping;
+    Layout = "~/Views/Shared/" + (Request["IsPopup"] == null ? "ACE_AdminLayout.cshtml" : "_PopupLayout.cshtml");
+    Erp.BackOffice.Models.PageSetting pageSetting = new Erp.BackOffice.Models.PageSetting
+    {
+        ModuleName = "Timekeeping",
+        ActionName = "Create",
+        PageTitle = ViewBag.Title,
+        DisplaySearchPanel = false,
+        IsPopup = false,
+        DisplayBackButton = false
+    };
+    IEnumerable<SymbolTimekeepingViewModel> symbolList = (IEnumerable<SymbolTimekeepingViewModel>)ViewBag.symbolList;
+}
+
+@section HeadOfPage {
+    @Html.ScriptTop_ChosenStyle()
+    <style type="text/css">
+     
+    </style>
+}
+
+@using (Html.BeginForm_AceStyle((string)ViewBag.Title,"Create","Timekeeping", null, FormMethod.Post, new { id = "FormCreate", @class = "form-horizontal clearfix" }))
+{
+    @Html.ValidationSummary(true)
+    @Html.HiddenFor(model => model.StaffId)
+    @Html.HiddenFor(model => model.Day)
+    <input type="hidden" value="@Request["IsPopup"]" name="IsPopup" />
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="widget-container-col ui-sortable" id="widget-container-col-10" style="min-height: 108px;">
+                <div class="widget-box ui-sortable-handle" id="widget-box-10" style="opacity: 1;">
+                    <div class="widget-header widget-header-small">
+                        <h5 class="widget-title smaller"><i class="fa fa-bars"></i> Ký hiệu chấm công</h5>
+
+                        <div class="widget-toolbar no-border">
+                            <ul class="nav nav-tabs" id="myTab">
+                                <li class="active">
+                                    <a data-toggle="tab" href="#di_lam" aria-expanded="true"><i class="fa fa-spinner"></i> Đi làm</a>
+                                </li>
+
+                                <li class="">
+                                    <a data-toggle="tab" href="#nghi_co_phep" aria-expanded="false"><i class="fa fa-tasks"></i> Nghỉ có phép</a>
+                                </li>
+                                <li class="">
+                                    <a data-toggle="tab" href="#nghi_ko_phep" aria-expanded="false"><i class="fa fa-tasks"></i> Nghỉ không phép</a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="widget-body">
+                        <div class="widget-main padding-6">
+                            <div class="tab-content">
+                                <div id="di_lam" class="tab-pane active clearfix">
+                                    @foreach (var item in symbolList.Where(x => x.Absent == false))
+                                    {
+                                        <label class="col-sm-6">
+                                            <input type="radio" value="@item.Id" id="group_choice" class="group_choice ace" data-target="#group_choice_wrap_@item.Absent" name="group_choice" @(Model.Symbol == item.Id ? "checked" : "")>
+                                            <span class="lbl">@item.Code - @item.Name</span>
+                                        </label>
+                                    }
+
+                                </div>
+
+                                <div id="nghi_co_phep" class="tab-pane clearfix">
+                                    @foreach (var item in symbolList.Where(x => x.Absent == true && x.Timekeeping == true))
+                                    {
+                                        <label class="col-sm-6">
+                                            <input type="radio" value="@item.Id" id="group_choice" class="group_choice ace" data-target="#group_choice_wrap_@item.Absent" name="group_choice" @(Model.Symbol == item.Id ? "checked" : "")>
+                                            <span class="lbl">@item.Code - @item.Name</span>
+                                        </label>
+                                    }
+
+                                </div>
+                                <div id="nghi_ko_phep" class="tab-pane clearfix">
+                                    @foreach (var item in symbolList.Where(x => x.Absent == true && x.Timekeeping == false))
+                                    {
+                                        <label class="col-sm-6">
+                                            <input type="radio" value="@item.Id" id="group_choice" class="group_choice ace" data-target="#group_choice_wrap_@item.Absent" name="group_choice" @(Model.Symbol == item.Id ? "checked" : "")>
+                                            <span class="lbl">@item.Code - @item.Name</span>
+                                        </label>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="group_choice_wrap_False" class="group_choice_wrap" style="display:none">
+        @Html.DateTimePicker(model => model.HoursIn, "dd/MM/yyyy H:mm", "00/00/0000:00:00", true, false)
+        @Html.DateTimePicker(model => model.HoursOut, "dd/MM/yyyy H:mm", "00/00/0000 00:00:00", true, false)
+    </div>
+
+    using (Html.BeginButtonContainer(pageSetting))
+    {
+        <button class="btn btn-mini btn-primary" type="submit" name="Submit" value="Save">
+            <i class="ace-icon fa fa-save"></i>
+            @Wording.Save <span id="count_check"></span>
+        </button>
+    }
+}
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            //$(".group_choice_wrap").css('height', 'initial');
+            if ($(".group_choice").is(":checked")) {
+                $(".group_choice_wrap").hide();
+                $($(".group_choice").data("target")).show();
+            }
+        });
+        $(".group_choice").change(function () {
+            ShowLoading();
+            $(".group_choice_wrap").css('height', 'initial');
+            if ($(this).is(":checked")) {
+                $(".group_choice_wrap").hide();
+                $($(this).data("target")).show();
+            }
+            HideLoading();
+        });
+    </script>
+    @Html.ScriptBottom_ValidationMvc()
+    @Html.ScriptBottom_DatePicker("dd/mm/yyyy")
+    @Html.ScriptBottom_ChosenStyle()
+}

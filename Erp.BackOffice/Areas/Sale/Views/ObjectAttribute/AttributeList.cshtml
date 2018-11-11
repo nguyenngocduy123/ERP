@@ -1,0 +1,52 @@
+﻿@using Erp.BackOffice.App_GlobalResources
+@using Erp.BackOffice.Helpers
+@using Erp.BackOffice.Sale.Models
+
+@model IEnumerable<ObjectAttributeValueViewModel>
+
+@{
+    Layout = null;
+
+    int index = 0;
+}
+@foreach (var attr in Model)
+{
+    <div class="">
+        @Html.Hidden("AttributeValueList[" + index + "].Id", attr.Id)
+        @Html.Hidden("AttributeValueList[" + index + "].ObjectId", attr.ObjectId)
+        @Html.Hidden("AttributeValueList[" + index + "].AttributeId", attr.AttributeId)
+        
+        <div id="" class="control-group form-group">
+            <label class="control-label" for="AttributeValueList[@index].Value">@attr.AttributeName</label>
+            <div class="control-value">
+                <div class="clearfix">
+                    @if(ViewBag.disabled == true)
+                    {
+                    <input class="col-sm-12" id="AttributeValueList[@index].Value" name="AttributeValueList[@index].Value" placeholder="" type="@attr.DataType" value="@attr.Value" readonly>
+                    }
+                    else
+                    {
+                        <input class="col-sm-12" id="AttributeValueList[@index].Value" name="AttributeValueList[@index].Value" placeholder="" type="@attr.DataType" value="@attr.Value">
+                    }
+                        </div>
+                <div class="clearfix">
+                    <span class="field-validation-valid help-inline" data-valmsg-for="AttributeValueList[@index].Value" data-valmsg-replace="true"></span>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    { index++; }
+}
+
+@helper SwitchDataType(string dataType)
+{
+    string type = string.Empty;
+    switch (dataType)
+    {
+        case "string":
+            type = "text";
+            break;
+    }
+    <text>@type</text>
+}

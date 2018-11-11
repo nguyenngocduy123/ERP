@@ -1,0 +1,105 @@
+﻿@using Erp.BackOffice.Helpers
+@using System.Collections
+@using System.Linq
+@using System.Collections.Generic
+@using System.Text.RegularExpressions;
+
+@{
+    var lableUI = ViewData["lableUI"];
+    var inputID = ViewData["inputID"];
+    var inputValue = ViewData["inputValue"] != null ? ViewData["inputValue"].ToString() : ViewData["inputValue"];
+    var inputAttr = (Dictionary<string, object>)ViewData["inputAttr"];
+    var emptyLabel = ViewData["emptyLabel"].ToString();
+    var validUI = ViewData["validUI"];
+    var validation = ViewData["validation"].ToString();
+    var groupAttr = ViewData["groupAttr"];
+    var controlClass = ViewData["controlClass"];
+
+    var optionList = (IEnumerable<Object>)ViewData["optionList"];
+    var valueField = ViewData["valueField"].ToString();
+    var textField = ViewData["textField"].ToString();
+    var dataValueField = ViewData["dataValueField"].ToString().Replace(" ", "");
+    
+    var colTitle = ViewData["colTitle"];
+    var colValue = ViewData["colValue"];
+    var colHide = ViewData["colHide"];
+    var colSize = ViewData["colSize"];
+    var colClass = ViewData["colClass"];
+    var width = ViewData["width"];
+    var height = ViewData["height"];
+    var boxSearch = ViewData["boxSearch"];
+    
+    
+    string options = string.Empty;
+    foreach(var item in optionList)
+    {
+        Type objectType = item.GetType();
+        string itemValue = objectType.GetProperty(valueField).GetValue(item, null).ToString();
+        string ItemText = objectType.GetProperty(textField).GetValue(item, null).ToString();
+
+        string itemDataValue = string.Empty;
+        foreach (var dataField in dataValueField.Split(','))
+        {
+            if (dataField == valueField || dataField == textField)
+            {
+                itemDataValue += (dataField == valueField ? itemValue : ItemText) + "|";
+            }
+            else
+            {
+                object itemDataField = objectType.GetProperty(dataField).GetValue(item, null);
+                itemDataValue += (itemDataField != null ? itemDataField.ToString() : "-") + "|";
+            }
+        }
+        itemDataValue = itemDataValue.TrimEnd('|');
+        options += "<option " + (itemValue.Equals(inputValue) ? "selected" : "") + " value='" + itemValue + "' data-value='" + itemDataValue + "'>" + ItemText + "</option>";
+    }
+
+    string inputUIAttr = string.Join(" ", inputAttr.Select(x => x.Key + "='" + x.Value + "'").ToArray());
+
+    string inputUI = "<select " + inputUIAttr + " id='" + inputID + "' name='" + inputID + "'>" + (emptyLabel != "" ? "<option value=''>" + emptyLabel + "</option>" : "") + options + "</select>";
+
+    string keyPass = "lableUI,inputUI,validUI,groupAttr,controlClass,inputID, optionList, valueField, textField, dataValueField";
+
+    List<string> keyViewData = ViewData.Keys.ToList();
+    
+    string type_to_lower = "System.Boolean";
+    string config = string.Empty;
+    foreach (var key in keyViewData.Where(x => keyPass.Contains(x) == false))
+    {
+        var value = ViewData[key];
+        string typeKey = value == null ? "null" : value.GetType().FullName;
+        config += key + ":" + (typeKey.Contains("String") 
+            ? "'" + value + "'" : (type_to_lower.Contains(typeKey) 
+            ? value.ToString().ToLower() : (value == null 
+            ? "null" : value ))) + ",";
+    }
+}
+
+<div @groupAttr>
+    @lableUI
+    <div class="control-value @controlClass">
+        <div class="clearfix">
+            @Html.Raw(inputUI)
+        </div>
+        <div class="clearfix">
+            @validUI
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        //khởi tạo bảng cho control
+        $('@("#" + inputID)').radComboBox({
+            @Html.Raw(config)
+        });
+        @*colTitle: '@colTitle',
+        colValue: @colValue,
+        colHide: '@colHide',
+        colSize: '@colSize',
+        colClass: '@colClass',
+        width: @width,
+        height: @height,
+        boxSearch: false*@
+    });
+</script>

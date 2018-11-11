@@ -1,0 +1,176 @@
+﻿
+@model Erp.BackOffice.Account.Models.CustomerNTViewModel
+@using Erp.BackOffice.App_GlobalResources
+@using Erp.BackOffice.Helpers
+
+
+@{
+    ViewBag.Title = Wording.PageDetailStaff + ": " + Model.CompanyName;
+    Layout = "~/Views/Shared/" + (Request["IsLayout"] == null ? "" : (Request["IsLayout"] == "True" ? "ACE_AdminLayout.cshtml" : "_PopupLayout.cshtml"));
+    Erp.BackOffice.Models.PageSetting pageSetting = new Erp.BackOffice.Models.PageSetting
+    {
+        ModuleName = "Customer",
+        ActionName = "DetailBasicFull",
+        PageTitle = ViewBag.Title,
+        DisplaySearchPanel = false,
+        IsPopup = false,
+        DisplayBackButton = true
+    };
+
+}
+<style type="text/css">
+    .ace-thumbnails > li {
+        border: 1px solid #aaa !important;
+        border-radius: 100%
+    }
+
+    #cboxClose {
+        top: 5px;
+        right:5px!important;
+    }
+</style>
+@if(Request["IsLayout"] != null)
+{ 
+    using (Html.BeginPageHeaderContainer(pageSetting))
+    {
+
+    }
+    using (Html.BeginButtonContainer(pageSetting))
+    {
+        @Html.Button(Wording.Edit, ButtonType.aTag, ButtonColor.Primary, ButtonSize.Mini, true, IconType.Edit, IconSize.Default, false, new { @class = "btn-StaffsEdit", @onclick = "OpenPopup('" + Url.Action("Edit", "Staffs", new { area = "Staff", Id = Model.Id }) + "', '" + Wording.PageEdit_Staff + "', 0, 650)" })
+
+    }
+}
+<div class="row" style="text-align:center">
+    <div class="col-xs-12">
+        <div class="widget-box">
+            <div class="widget-body">
+                <div class="widget-main" style="background: #f7f7f7;">
+                    <div class="row">
+                        <div class="col-sm-5">
+                            <img id="avatar" alt="@Model.CompanyName" src="@(Erp.BackOffice.Helpers.Common.KiemTraTonTaiHinhAnh(Model.Image, "Image_CustomerNT", "user"))" style="width:130px;height:130px;border-radius:100%;border:1px solid #ccc" />
+                        </div>
+                        <div class="col-sm-7">
+                            <div style="color:#337ab7;border-bottom:3px solid" class="top-20"><h3><b>@Model.CompanyName</b></h3></div>
+                            <div style="color:#337ab7">@Model.Code</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-xs-12 top-5">
+        <div class="widget-box widget-color-blue" style="opacity: 1;">
+            <div class="widget-header">
+                <h5 class="widget-title bigger lighter" style="color:white;">
+                    <i class="ace-icon fa fa-user"></i> Thông tin cá nhân
+                </h5>
+                <div class="widget-toolbar">
+                    <a href="#" data-action="collapse">
+                        <i class="ace-icon fa fa-chevron-up"></i>
+                    </a>
+                </div>
+            </div>
+            <div class="widget-body">
+                <div class="widget-main">
+                    <div class="detail-view">
+                        <div class="row control-group">
+                            @Html.DetailViewItemFor2(model => model.Birthday, null, null, "col-xs-4", "col-xs-8")
+                        </div>
+                        <div class="row control-group">
+                            @Html.DetailViewItemFor2(model => model.Gender, null, null, "col-xs-4", "col-xs-8")
+                        </div>
+                        <div class="row control-group">
+                            @Html.DetailViewItemFor2(model => model.IdCardNumber, null, null, "col-xs-4", "col-xs-8")
+                        </div>
+                        <div class="row control-group">
+                            @Html.DetailViewItemFor2(model => model.IdCardDate, null, null, "col-xs-4", "col-xs-8")
+                        </div>
+                        <div class="row control-group">
+                            @Html.DetailViewItemFor2(model => model.CardIssuedName, null, null, "col-xs-4", "col-xs-8")
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-xs-12 top-5">
+        <div class="widget-box widget-color-blue collapsed" style="opacity: 1;">
+            <div class="widget-header">
+                <h5 class="widget-title bigger lighter" style="color:white;">
+                    <i class="ace-icon fa fa-map-marker"></i> Thông tin liên hệ
+                </h5>
+                <div class="widget-toolbar">
+                    <a href="#" data-action="collapse">
+                        <i class="ace-icon fa fa-chevron-down"></i>
+                    </a>
+                </div>
+            </div>
+            <div class="widget-body">
+                <div class="widget-main">
+                    <div class="detail-view">
+                        <div class="row control-group">
+                            @Html.DetailViewItemFor2(model => model.Phone, null, null, "col-xs-4", "col-xs-8")
+                        </div>
+                        <div class="row control-group">
+                            @Html.DetailViewItemFor2(model => model.Email, null, null, "col-xs-4", "col-xs-8")
+                        </div>
+                        <div class="row control-group">
+                            @Html.DetailViewItemFor2(model => model.Address, null, null, "col-xs-4", "col-xs-8")
+                        </div>
+                        <div class="row control-group">
+                            @Html.DetailViewItemFor2(model => model.WardName, null, null, "col-xs-4", "col-xs-8")
+                        </div>
+                        <div class="row control-group">
+                            @Html.DetailViewItemFor2(model => model.DistrictName, null, null, "col-xs-4", "col-xs-8")
+                        </div>
+                        <div class="row control-group">
+                            @Html.DetailViewItemFor2(model => model.ProvinceName, null, null, "col-xs-4", "col-xs-8")
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-xs-12 top-5">
+        <div class="widget-box widget-color-blue collapsed" style="opacity: 1;">
+            <div class="widget-header">
+                <h5 class="widget-title bigger lighter" style="color:white;">
+                    <i class="ace-icon fa fa-table"></i> Thông tin nhân viên
+                </h5>
+                <div class="widget-toolbar">
+                    <a href="#" data-action="collapse">
+                        <i class="ace-icon fa fa-chevron-down"></i>
+                    </a>
+                </div>
+            </div>
+            <div class="widget-body">
+                <div class="widget-main">
+                    <div class="detail-view">
+                        <div class="row control-group">
+                            @Html.DetailViewItemFor2(model => model.UserName, null, null, "col-xs-4", "col-xs-8")
+                        </div>
+                        <div class="row control-group">
+                            @Html.DetailViewItemFor2(model => model.PositionCode, null, null, "col-xs-4", "col-xs-8")
+                        </div>
+                        <div class="row control-group">
+                            @Html.DetailViewItemFor2(model => model.BranchCode, null, null, "col-xs-4", "col-xs-8")
+                        </div>
+                        <div class="row control-group">
+                            @Html.DetailViewItemFor2(model => model.BranchName, null, null, "col-xs-4", "col-xs-8")
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+

@@ -1,0 +1,106 @@
+﻿@using Erp.BackOffice.App_GlobalResources
+@using Erp.BackOffice.Helpers
+@using Erp.BackOffice.Staff.Models
+
+@model SymbolTimekeepingViewModel
+
+@{
+    ViewBag.Title = Wording.PageEdit_SymbolTimekeeping;
+
+    Layout = "~/Views/Shared/" + (Request["IsPopup"] == null ? "ACE_AdminLayout.cshtml" : "_PopupLayout.cshtml");
+    Erp.BackOffice.Models.PageSetting pageSetting = new Erp.BackOffice.Models.PageSetting
+    {
+        ModuleName = "SymbolTimekeeping",
+        ActionName = "Edit",
+        PageTitle = ViewBag.Title,
+        DisplaySearchPanel = false,
+        IsPopup = true,
+        DisplayBackButton = false
+    };
+}
+
+@section HeadOfPage {
+    @Html.ScriptTop_ChosenStyle()
+}
+<link href="~/assets/css/bootstrap-colorpicker.min.css" rel="stylesheet" />
+@using (Html.BeginPageHeaderContainer(pageSetting))
+{
+
+}
+@using (Html.BeginForm_AceStyle((string)ViewBag.Title, "Edit", "SymbolTimekeeping", null, FormMethod.Post, new { @class = "form-horizontal" }))
+{
+    @Html.ValidationSummary(true)
+    <input type="hidden" value="@Request["IsPopup"]" name="IsPopup" />
+    @Html.HiddenFor(model => model.Id)
+    @Html.HiddenFor(model => model.CreatedUserId)
+    @Html.HiddenFor(model => model.CreatedDate)
+    @Html.HiddenFor(model => model.IsDeleted)
+    @Html.HiddenFor(model => model.CodeDefault)
+    @Html.CustomTextboxFor(model => model.Code, null, null, WidthType.span12)
+    @Html.CustomTextboxFor(model => model.Name, null, null, WidthType.span12)
+    @Html.CustomSwitchesFor(model => model.Absent, SwitchesStyle.CheckboxStyle, true)
+    @Html.CustomSwitchesFor(model => model.Timekeeping, SwitchesStyle.CheckboxStyle, true)
+    @Html.CustomSwitchesFor(model => model.DayOff, SwitchesStyle.CheckboxStyle, true)
+   
+    <div class="span12 Quantity" style="@(Model.DayOff != null && Model.DayOff.Value ? "" : "display:none")">
+        @Html.CustomTextboxFor(model => model.Quantity, null, null, WidthType.span12, true, new Dictionary<string, object> { { "class", "text-right" } })
+    </div>
+    <div class="col-sm-12 control-group form-group">
+    <label class="control-label no-padding-right control-label col-lg-5 col-md-4 col-sm-4" for="DayOff">Màu hiển thị</label>
+        <div class="control-value col-lg-7 col-md-8 col-sm-8">
+            <select id="simple-colorpicker-1" name="Color" class="hide">
+                <option selected="@Model.Color" data-class="" value="@Model.Color">@Model.Color</option>
+                <option data-class="info" value="#5090C1">#5090C1</option>
+                <option data-class="blue3" value="#6379AA">#6379AA</option>
+                <option data-class="success" value="#82AF6F">#82AF6F</option>
+                <option data-class="green2" value="#2E8965">#2E8965</option>
+                <option data-class="green3" value="#5FBC47">#5FBC47</option>
+                <option data-class="red" value="#E2755F">#E2755F</option>
+                <option data-class="red2" value="#E04141">#E04141</option>
+                <option data-class="red3" value="#D15B47">#D15B47</option>
+                <option data-class="orange" value="#FFC657">#FFC657</option>
+                <option data-class="purple" value="#7E6EB0">#7E6EB0</option>
+                <option data-class="pink" value="#CE6F9E">#CE6F9E</option>
+                <option data-class="black" value="#404040">#404040</option>
+                <option data-class="grey" value="#848484">#848484</option>
+                <option data-class="default" value="#EEE">#EEE</option>
+            </select>
+        </div>
+        </div>
+    using (Html.BeginButtonContainer(pageSetting))
+    {
+        <button class="btn btn-mini btn-primary" type="submit" name="Submit" value="Save">
+            <i class="ace-icon fa fa-save"></i>
+            @Wording.Save
+        </button>
+    }
+}
+
+@section Scripts {
+<script src="~/assets/js/bootstrap-colorpicker.min.js"></script>
+    <script>
+        $(document).ready(function () {
+           
+        $('#simple-colorpicker-1').ace_colorpicker();
+            $('#Quantity').numberFormat();
+        });
+        //truyền từ action create của controller qua khi thực hiện submit và return về lại view create, để nhận biết là được gọi theo dạng popup
+        var closePopup = '@ViewBag.closePopup';
+        $(document).ready(function () {
+            //nếu là được gọi theo dạng popup từ form khác thì chạy đoạn code bên dưới
+            if (closePopup != '') {
+                var option = '<option value="@Model.Id" >@Model.Name</option>';
+                //tên funtion có thể khác theo từng công việc riêng (đây chỉ là mẫu khi thêm mới sẽ gọi lại)
+                window.parent.ClosePopupAndAppendSelect(option);
+            }
+        });
+        $("#DayOff").change(function () {
+            if ($(this).is(":checked"))
+                $(".Quantity").show();
+            else
+                $(".Quantity").hide();
+        });
+</script>
+    @Html.ScriptBottom_ValidationMvc()
+    @Html.ScriptBottom_ChosenStyle()
+}

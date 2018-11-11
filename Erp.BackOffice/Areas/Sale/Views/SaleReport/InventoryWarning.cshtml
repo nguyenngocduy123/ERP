@@ -1,0 +1,180 @@
+﻿@using Erp.BackOffice.App_GlobalResources
+@using Erp.BackOffice.Sale.Models
+@using Erp.BackOffice.Helpers
+@using GridMvc.Html
+
+@model  IndexViewModel<ProductViewModel>
+
+@{
+    ViewBag.Title = Wording.PageIndex_Inventory;
+    Layout = null;
+    Erp.BackOffice.Models.PageSetting pageSetting = new Erp.BackOffice.Models.PageSetting
+    {
+        ModuleName = "SaleReport",
+        ActionName = "InventoryWarning",
+        PageTitle = ViewBag.Title,
+        DisplaySearchPanel = true,
+        IsPopup = false,
+        DisplayBackButton = false
+    };
+    var url = Request.Url;
+    List<InventoryViewModel> inventoryList = (List<InventoryViewModel>)ViewBag.inventoryList;
+    int n = 0;
+}
+
+<style type="text/css">
+    thead, tbody {
+        display: block;
+    }
+
+    tbody {
+        overflow-y: auto; /* Trigger vertical scroll    */
+        overflow-x: hidden; /* Hide the horizontal scroll */
+    }
+
+    .table > tbody > tr > td, .table > tbody > tr > th, .table > tfoot > tr > td, .table > tfoot > tr > th, .table > thead > tr > td, .table > thead > tr > th {
+        vertical-align: middle;
+    }
+
+    .page-content {
+    }
+</style>
+
+<link href="@Url.Content("~/assets/css/Gridmvc.css")" rel="stylesheet" type="text/css" />
+<script src="@Url.Content("~/Scripts/gridmvc.min.js")" type="text/javascript"> </script>
+
+@helper BuildCheckAll()
+{
+    <label>
+        <input class="ace" type="checkbox" name="checkAll" id="checkAll" />
+        <span class="lbl"></span>
+    </label>
+}
+@if (ViewBag.SuccessMessage != null && ViewBag.SuccessMessage != "")
+{
+    <div class="alert alert-block alert-success">
+        <button class="close" data-dismiss="alert" type="button">
+            <i class="ace-icon fa fa-times"></i>
+        </button>
+        <i class="ace-icon fa fa-check green"></i>
+        @Html.Raw(ViewBag.SuccessMessage)
+    </div>
+}
+
+@if (ViewBag.FailedMessage != null && ViewBag.FailedMessage != "")
+{
+    <div class="alert alert-block alert-danger">
+        <button class="close" data-dismiss="alert" type="button">
+            <i class="ace-icon fa fa-times"></i>
+        </button>
+        <i class="ace-icon fa fa-warning red"></i>
+        @ViewBag.FailedMessage
+    </div>
+}
+
+<div class="row">
+    <div class="col-sm-12">
+        <div class="widget-box">
+            <div class="widget-header">
+                <h4 class="widget-title">
+                    Bảng cảnh báo tồn kho
+                </h4>
+            </div>
+
+            <div class="widget-body">
+                <div class="widget-main">
+                    <div class="table-responsive">
+                        <div class="grid-mvc" data-lang="en" data-gridname="" data-selectable="true" data-multiplefilters="false">
+                            <div class="grid-wrap">
+                                <table id="cTable" class="table table-striped grid-table">
+                                    <thead>
+                                        <tr>
+                                            <th class="grid-header" style="width:40px;"><div class="grid-header-title"><span>STT</span></div></th>
+                                            <th class="grid-header" style="width:160px;"><div class="grid-header-title"><span>Mã sản phẩm</span></div></th>
+                                            <th class="grid-header" style="width:800px;"><div class="grid-header-title"><span>Tên sản phẩm</span></div></th>
+                                            <th class="grid-header" style="width:100px;"><div class="grid-header-title"><span>Tổng tồn</span></div></th>
+                                        </tr>
+
+                                    </thead>
+                                    <tbody>
+                                        @foreach (var item in inventoryList)
+                                        {
+                                            
+                                            n++;
+                                            <tr class="grid-row">
+                                                <td class="grid-cell" data-name="" style="width:40px;">@n</td>
+                                                <td class="grid-cell" data-name="" style="width:160px;">@item.ProductCode</td>
+                                                @*<td class="grid-cell" data-name="" style="width:300px;">@item.CategoryCode</td>*@
+                                                <td class="grid-cell" data-name="" style="width:800px;"><a onclick="OpenPopup('@Url.Action("Detail","Inventory", new {area = "Sale", Id = item.ProductId })', '', 500, 700)">@item.ProductName</a></td>
+                                                @*<td class="grid-cell text-right" data-name="" style="width:80px;">@item.MinInventory</td>*@
+                                                <td class="grid-cell text-right red" style="width: 100px; font-weight: bold">@item.Quantity</td>
+                                            </tr>
+                                        }
+
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div><!-- /.widget-main -->
+            </div><!-- /.widget-body -->
+        </div>
+    </div>
+</div>
+
+
+@section Scripts {
+    <script type="text/javascript">
+        $(function () {
+            $("table tbody").height($(window).height() - $("table tbody").position().top - 170);
+        });
+
+        function CheckIsval() {
+            if ($('[name="DeleteId-checkbox"]').is(':checked') == false) {
+                alert("Phải chọn ít nhất 1 item.");
+                return false;
+            }
+            else {
+                if (confirm('Bạn có chắc muốn xóa các item đã chọn ?')) {
+                    return true;
+                }
+                else {
+                    return false;
+                }
+            }
+        }
+
+        $('[name="Delete"]').click(function () {
+            if (confirm('Bạn có chắc muốn xóa item ?')) {
+                $(this).closest('tr').children('td').each(function (i, e) {
+                    $(this).find("input.class-delete-all").prop("checked", true);
+                    return true;
+                })
+            }
+            else {
+                return false;
+            }
+
+        })
+
+        $('#warehouseId').on('change', function () {
+            var $this = $(this);
+            var selected = $this.find("option:selected");
+
+            if (selected.val() == '')// || $('#product_item_' + selected.val()).length > 0)
+                return;
+
+
+            var WarehouseId = selected.val();
+
+            var formdata = {
+                WarehouseId: WarehouseId
+            };
+
+            //Thêm dòng mới
+            ClickEventHandler(true, "/SaleReport/LoadProductItem", ".detailList", formdata, function () {
+                $('#ProductItemCount').val($('#listOrderDetail .detailList tr').length);
+            });
+        });
+    </script>
+}

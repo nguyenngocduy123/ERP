@@ -1,0 +1,197 @@
+﻿@model List<TransactionLiabilitiesViewModel>
+
+@using Erp.BackOffice.App_GlobalResources
+@using Erp.BackOffice.Account.Models
+@using Erp.BackOffice.Helpers
+@using GridMvc.Html
+
+<link href="@Url.Content("~/assets/css/Gridmvc.css")" rel="stylesheet" type="text/css" />
+
+@*@helper LoadSubTable(List<TransactionLiabilitiesViewModel> SubListTransaction, List<ProcessPaymentViewModel> SubListProcessPayment)
+{
+    <div class="row">
+        <div class="col-sm-6">
+            @if (SubListTransaction != null && SubListTransaction.Count > 0)
+            {
+                <h4 style="margin-top:0px">Chi tiết giao dịch</h4>
+                <table class="table table-striped grid-table" style="float:left; width:initial">
+                    <thead>
+                        <tr>
+                            <th class="grid-header" style="width:130px;"><div class="grid-header-title">Ngày giao dịch</div></th>
+                            <th class="grid-header" style="width:150px;"><div class="grid-header-title"><span>Loại giao dịch</span></div></th>
+                            <th class="grid-header" style="width:120px;"><div class="grid-header-title"><span>Đã thu/Đã chi</span></div></th>
+                            <th class="grid-header" style="width:100px;"><div class="grid-header-title"><span>Còn lại</span></div></th>
+                            <th class="grid-header"><div class="grid-header-title"><span>Ngày hẹn trả</span></div></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in SubListTransaction)
+                        {
+                            <tr class="grid-row">
+                                <td class="grid-cell" data-name="CreatedDate">@item.CreatedDate.Value.ToString("dd/MM/yyyy HH:mm")</td>
+                                <td class="grid-cell" data-name="TransactionType">@item.TransactionTypeName</td>
+                                <td class="grid-cell" data-name="">@Erp.BackOffice.Helpers.Common.PhanCachHangNgan(item.Payment)</td>
+                                <td class="grid-cell" data-name="">@Erp.BackOffice.Helpers.Common.PhanCachHangNgan(item.Remain)</td>
+                                <td class="grid-cell" data-name="">@(item.NextPaymentDate.HasValue ? item.NextPaymentDate.Value.ToString("dd/MM/yyyy") : "")</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            }
+        </div>
+        <div class="col-sm-6">
+            @if (SubListProcessPayment != null && SubListProcessPayment.Count > 0)
+            {
+                bool first = true;
+
+                <h4 style="margin-top:0px">Tiến độ thanh toán</h4>
+                <table class="table table-striped grid-table" style="float:left; width:initial">
+                    <thead>
+                        <tr>
+                            <th class="grid-header" style="width:100px;">#</th>
+                            <th class="grid-header" style="width:150px;"><div class="grid-header-title"><span>Trạng thái</span></div></th>
+                            <th class="grid-header" style="width:200px;"><div class="grid-header-title">Hạn thanh toán</div></th>
+                            <th class="grid-header" style="width:150px;"><div class="grid-header-title"><span>Số tiền</span></div></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in SubListProcessPayment)
+                        {
+
+                            <tr class="grid-row">
+                                <td class="grid-cell" data-name="">
+                                    @if (item.Status != Wording.ProcessPaymentStatus_IsPayment)
+                                    {
+                                        <label>
+                                            <input @(first ? "checked" : "") @(first ? "" : "disabled='disabled'") class="ace ProcessPaymentId" type="radio" name="ProcessPaymentId" id="ProcessPaymentId" value="@item.Id" data-amount="@item.MoneyPayment" />
+                                            <span class="lbl">@item.Name</span>
+                                        </label>
+                                        if (first)
+                                        {
+                                            first = false;
+                                        }
+                                    }
+                                    else
+                                    {
+                                        @item.Name
+                                    }
+                                </td>
+                                <td class="grid-cell" data-name="">@Html.Raw(item.Status == Wording.ProcessPaymentStatus_IsPayment ? "<label class=\"label label-success\">" + item.Status + "</label>" : "<label class=\"label label-black\">" + item.Status + "</label>")</td>
+                                <td class="grid-cell" data-name="">@item.DayPayment.Value.ToString("dd/MM/yyyy HH:mm")</td>
+                                <td class="grid-cell" data-name="">@Erp.BackOffice.Helpers.Common.PhanCachHangNgan(item.MoneyPayment)</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            }
+        </div>
+    </div>
+}*@
+
+@helper loadGrid(List<TransactionLiabilitiesViewModel> list)
+{
+    <div class="grid-mvc" data-lang="en" data-gridname="" data-selectable="true" data-multiplefilters="false">
+        <div class="grid-wrap">
+            <table class="table table-striped grid-table">
+                <thead>
+                    <tr>
+                        <th class="grid-header" style="width:20px;"></th>
+                        <th class="grid-header" style="width:20px;"></th>
+                        <th class="grid-header" style="width:100px;"><div class="grid-header-title"><span>Loại giao dịch</span></div></th>
+                        <th class="grid-header" style="width:100px;"><div class="grid-header-title"><span>Mã giao dịch</span></div></th>
+                        <th class="grid-header" style="width:130px;"><div class="grid-header-title">Ngày giao dịch</div></th>
+                        <th class="grid-header" style="width:100px;"><div class="grid-header-title"><span>Tổng tiền</span></div></th>
+                        <th class="grid-header" style="width:100px;"><div class="grid-header-title"><span>Đã thu/Đã chi</span></div></th>
+                        <th class="grid-header" style="width:100px;"><div class="grid-header-title"><span>Còn lại</span></div></th>
+                        @*<th class="grid-header" style="width:200px;"><div class="grid-header-title"><span>Đối tượng</span></div></th>
+                        <th class="grid-header" style="width:120px;"><div class="grid-header-title"><span>Điện thoại</span></div></th>*@
+                        <th class="grid-header"><div class="grid-header-title">Ngày hẹn trả</div></th>
+                    </tr>
+
+                </thead>
+                <tbody>
+                    @foreach (var item in list)
+                {
+                    <tr class="grid-row @(item.Remain > 0 ? "warning red" : "")">
+                        <td class="grid-cell">
+                            @if (item.Remain > 0)
+                            {
+                        <label>
+                            <input name="TransactionId" type="radio" class="ace"
+                                   value="@item.Id"
+                                   data-remain="@item.Remain"
+                                   data-nextpaymentdate="@(item.NextPaymentDate != null ? item.NextPaymentDate.Value.ToString("dd/MM/yyyy") : "")"
+                                   data-hasprocesspayment="@(item.SubListProcessPayment != null && item.SubListProcessPayment.Count > 0 ? "true" : "false")" />
+                            <span class="lbl"></span>
+                        </label>
+                            }
+                        </td>
+                        <td class="grid-cell" data-name="">
+                            <a href="#" class="green show-details-btn" title="Show Details">
+                                <i class="ace-icon fa fa-angle-double-down bigger-120"></i>
+                            </a>
+                        </td>
+                        <td class="grid-cell" data-name="TransactionType">@item.TransactionTypeName</td>
+                        <td class="grid-cell" data-name="">
+                            @*<a href="@Url.Action("Detail", "Contract", new { TransactionCode = item.TransactionCode })" target="_blank">
+                                    @item.TransactionCode
+                                </a>*@
+                            @item.TransactionCode
+                        </td>
+                        <td class="grid-cell" data-name="CreatedDate">@item.CreatedDate.Value.ToString("dd/MM/yyyy HH:mm")</td>
+                        <td class="grid-cell" data-name="">@Erp.BackOffice.Helpers.Common.PhanCachHangNgan(item.Total)</td>
+                        <td class="grid-cell" data-name="">@Erp.BackOffice.Helpers.Common.PhanCachHangNgan(item.Payment)</td>
+                        <td class="grid-cell" data-name="">@Erp.BackOffice.Helpers.Common.PhanCachHangNgan(item.Remain)</td>
+                        @*<td class="grid-cell" data-name=""><b>@item.TargetName</b></td>
+                        <td class="grid-cell" data-name="">@item.Phone</td>*@
+                        <td class="grid-cell" data-name="">@(item.NextPaymentDate.HasValue ? item.NextPaymentDate.Value.ToString("dd/MM/yyyy") : "")</td>
+                    </tr>
+                    <tr class="detail-row">
+                        <td colspan="11">
+                            <div class="table-detail clearfix">
+                                @LoadSubTable(item.SubListTransaction, item.SubListProcessPayment)
+                            </div>
+                        </td>
+                    </tr>
+                }
+                </tbody>
+            </table>
+        </div>
+    </div>
+}
+
+<div class="tabbable">
+    <ul class="nav nav-tabs padding-12 tab-color-blue background-blue" id="tabCustomer">
+        <li class="active">
+            <a data-toggle="tab" href="#tab1">Giao dịch chưa thanh toán</a>
+        </li>
+
+        <li>
+            <a data-toggle="tab" href="#tab2">Giao dịch đã thanh toán</a>
+        </li>
+    </ul>
+
+    <div class="tab-content">
+        <div id="tab1" class="tab-pane in active">
+            @loadGrid(Model.Where(item => item.TransactionModule == "ProductInvoice").ToList())
+        </div>
+
+        <div id="tab2" class="tab-pane">
+            @loadGrid(Model.Where(item => item.TransactionModule == "ProductInvoice").ToList())
+        </div>
+    </div>
+</div>
+
+
+
+<script type="text/javascript">
+    $(function () {
+        /***************/
+        $('.show-details-btn').on('click', function (e) {
+            e.preventDefault();
+            $(this).closest('tr').next().toggleClass('open');
+            $(this).find(ace.vars['.icon']).toggleClass('fa-angle-double-down').toggleClass('fa-angle-double-up');
+        });
+        /***************/
+    });
+</script>

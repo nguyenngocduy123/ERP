@@ -1,0 +1,108 @@
+﻿@using Erp.BackOffice.App_GlobalResources
+@using Erp.BackOffice.Helpers
+@using Erp.BackOffice.Areas.Cms.Models
+@model List<string>
+    @{
+        ViewBag.Title = "Bàn làm việc";
+        Layout = "~/Views/Shared/ACE_AdminLayout.cshtml";
+        Erp.BackOffice.Models.PageSetting pageSetting = new Erp.BackOffice.Models.PageSetting
+        {
+            ModuleName = "",
+            ActionName = "",
+            PageTitle = ViewBag.Title,
+            DisplaySearchPanel = true,
+            IsPopup = false,
+            DisplayBackButton = false,
+            HideClearButton = true,
+            SearchButtonText = "Lấy dữ liệu"
+        };
+        List<CategoryViewModel> Category = (List<CategoryViewModel>)ViewBag.Category;
+
+        string Month = Request["month"] != null ? Request["month"] : DateTime.Now.Month.ToString();
+        string Year = Request["year"] != null ? Request["year"] : DateTime.Now.Year.ToString();
+    }
+    <link href="~/Scripts/fullcalendar-3.6.1/fullcalendar.min.css" rel="stylesheet" />
+    <link href="~/assets/css/jquery-ui.custom.min.css" rel="stylesheet" />
+    <style>
+        .btn.active {
+            background-color: #428BCA !important;
+            border-color: #428BCA !important;
+        }
+    </style>
+
+    @using (Html.BeginPageHeaderContainer(pageSetting))
+    {
+        <select id="month" name="month">
+            @for (int i = 1; i <= 12; i++)
+            {
+                <option @(Month == i.ToString() ? "Selected" : "") value="@i">Tháng @i</option>
+            }
+        </select>
+        <select id="year" name="year">
+            @*<option value="">- Chọn năm -</option>*@
+            @for (int i = 2016; i <= DateTime.Now.Year; i++)
+            {
+                <option @(Year == i.ToString() ? "Selected" : "") value="@i">Năm @i</option>
+            }
+        </select>
+        <div class="pull-right" id="status">
+            <div data-toggle="buttons" class="btn-group">
+                @for (int i = 0; i < Category.Count(); i++)
+                {
+                    <label class="btn btn-sm " id="label_@i" data-toggle="tooltip" title="@Category[i].Name">
+                        <input type="checkbox" value="@Category[i].Value" id="status_check" name="checksss_@i">
+                        <i class="icon-only ace-icon @Category[i].Description bigger-110"></i> @Category[i].Name
+                    </label>
+                }
+            </div>
+        </div>
+    }
+
+    <div id="Calendar">
+    </div>
+    @section Scripts {
+        <script src="~/Scripts/fullcalendar-3.6.1/locale/vi.js"></script>
+        <script src="~/Scripts/fullcalendar-3.6.1/fullcalendar.min.js"></script>
+        <script src="~/assets/js/bootbox.min.js"></script>
+        <script src="~/assets/js/moment.min.js"></script>
+
+        <script type="text/javascript">
+        $(document).ready(function () {
+            $('#label_0').addClass("active");
+            $('#label_1').addClass("active");
+            $('#li_category_0').addClass("active");
+            $('#tab_List_Task_0').addClass("active");
+            $("input[name='checksss_0']").attr("checked", "checked");
+            $("input[name='checksss_1']").attr("checked", "checked");
+            AllowEditRequestCode();
+        });
+
+        function AllowEditRequestCode() {
+
+            ShowLoading();
+            var status = $('#status_check:checked').map(function () {
+                return $(this).val();
+            }).get().join(',');
+            var month = $("#month option:selected").val();
+            var year = $("#year option:selected").val();
+            $.get('@Url.Action("Calendar", "Task", new { area = "Crm" })/?status_check=' + status + '&month=' + month + '&year=' + year, function (html) {
+                $("#Calendar").html(html);
+                    HideLoading();
+            });
+        }
+        $("button[name='search']").click(function (e) {
+            e.preventDefault();
+            ShowLoading();
+            AllowEditRequestCode();
+            return false;
+        });
+        function ClosePopupAndRedirectToURL(url) {
+            ClosePopup(true);
+            location.href = url;
+        }
+
+        </script>
+        @Html.ScriptBottom_ValidationMvc()
+        @Html.ScriptBottom_DatePicker("dd/mm/yyyy")
+        @Html.ScriptBottom_ChosenStyle()
+    }

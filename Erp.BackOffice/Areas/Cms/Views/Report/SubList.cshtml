@@ -1,0 +1,20 @@
+﻿@model List<PageMenuViewModel>
+
+@using Erp.BackOffice.Areas.Administration.Models;
+@using Erp.BackOffice.App_GlobalResources
+@using Erp.BackOffice.Helpers
+@using GridMvc.Html
+
+@helper GridColumnName(string name, string controllerName, string actionName, string url)
+{
+    <a href="/@controllerName/@actionName" target="_blank">@name</a>
+}
+
+@if (Model.Count > 0)
+{
+    @Html.Grid(Model).Columns(columns =>
+    {
+        columns.Add().Titled(Wording.OrderNo).Sortable(false).Sanitized(false).Encoded(false).SetWidth(50).RenderValueAs(u => (Model.IndexOf(u) + 1).ToString());
+        columns.Add().Titled(Wording.Name).Sortable(false).Sanitized(false).Encoded(false).RenderValueAs(u => GridColumnName(u.Name, u.ControllerName, u.ActionName, u.Url));
+    }).Selectable(false)
+}

@@ -1,0 +1,173 @@
+﻿@using Erp.BackOffice.App_GlobalResources
+@using Erp.BackOffice.Helpers
+
+@model Erp.BackOffice.Staff.Models.LabourContractViewModel
+@{
+    ViewBag.Title = "Chi tiết hợp đồng";
+    Layout = "~/Views/Shared/" + (Request["IsPopup"] == null ? "ACE_AdminLayout.cshtml" : "_PopupLayout.cshtml");
+    Model.PositionStaff = GridColumnCategoryValue(Model.PositionStaff, "position").ToString();
+    Erp.BackOffice.Models.PageSetting pageSetting = new Erp.BackOffice.Models.PageSetting
+    {
+        ModuleName = "LabourContract",
+        ActionName = "Detail",
+        PageTitle = ViewBag.Title,
+        DisplaySearchPanel = false,
+        IsPopup = false,
+        DisplayBackButton = false
+    };
+}
+@helper GridColumnCategoryValue(string value, string Code)
+{
+    var attr = Erp.BackOffice.Helpers.Common.GetCategoryByValueCodeOrId("value", value, Code);
+    @(attr != null ? attr.Name : "")
+
+}
+@using (Html.BeginPageHeaderContainer(pageSetting))
+{
+
+}
+
+<div class="row" style="margin-bottom:60px;">
+    <div class="col-sm-4">
+        <div class="row" style="text-align:center">
+            <div class="col-xs-12">
+                <div class="widget-box">
+                    <div class="widget-body">
+                        <div class="widget-main" style="background: #f7f7f7;">
+                            <div class="row">
+                                <div class="col-sm-5">
+                                    <img id="avatar" alt="@Model.StaffName" src="@(Erp.BackOffice.Helpers.Common.KiemTraTonTaiHinhAnh(Model.StaffProfileImage,"Staff","user"))" style="width:130px;height:130px;border-radius:100%;border:1px solid #ccc" />
+                                </div>
+                                <div class="col-sm-7">
+                                    <div style="color:#337ab7;border-bottom:3px solid" class="top-20"><h3><b>@Model.StaffName</b></h3></div>
+                                    <div style="color:#337ab7">@(Model.StaffBirthday.HasValue ? Model.StaffBirthday.Value.ToString("dd-MM-yyyy") : "")</div>
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row top-10">
+            <div class="col-xs-12">
+                <div class="widget-box">
+                    <div class="widget-header">
+                        <h5 class="widget-title">Thông tin hợp đồng</h5>
+                    </div>
+                    <div class="widget-body">
+                        <div class="widget-main">
+                            <div class="detail-view">
+                                <div class="row control-group">
+                                    @Html.DetailViewItem(Model.Code, "Code", "Mã HD", null, null, "col-xs-4", "col-xs-8")
+                                </div>
+                                <div class="row control-group">
+                                    @Html.DetailViewItem(Model.Name, "Name", "Tên HD", null, null, "col-xs-4", "col-xs-8")
+                                </div>
+                                <div class="row control-group">
+                                    @Html.DetailViewItem(Model.ContractTypeName, "ContractTypeName", "Loại HD", null, null, "col-xs-4", "col-xs-8")
+                                </div>
+                                <div class="row control-group">
+                                    @Html.DetailViewItem(Model.SignedDay, "SignedDay", "Ngày ký HD", null, null, "col-xs-4", "col-xs-8")
+                                </div>
+                                <div class="row control-group">
+                                    @Html.DetailViewItem(Model.EffectiveDate, "EffectiveDate", "Ngày hiệu lực", null, null, "col-xs-4", "col-xs-8")
+                                </div>
+                                <div class="row control-group">
+                                    @Html.DetailViewItem(Model.ExpiryDate, "ExpiryDate", "Ngày hết hạn", null, null, "col-xs-4", "col-xs-8")
+                                </div>
+                                <div class="row control-group">
+                                    @Html.DetailViewItem(Model.FormWork, "FormWork", "Hình thức làm việc", null, null, "col-xs-4", "col-xs-8")
+                                </div>
+                                <div class="row control-group">
+                                    @Html.DetailViewItem(Common.PhanCachHangNgan2(Model.WageAgreement), "WageAgreement", "Lương cơ bản", null, null, "col-xs-4", "col-xs-8")
+                                </div>
+                                <div class="row control-group">
+                                    @Html.DetailViewItem(Model.StaffPositionName, "StaffPositionName", "Chức vụ", null, null, "col-xs-4", "col-xs-8")
+                                </div>
+                                <div class="row control-group">
+                                    @Html.DetailViewItem(Model.StaffDepartmentName, "StaffDepartmentName", "Phòng ban", null, null, "col-xs-4", "col-xs-8")
+                                </div>
+                                <div class="row control-group">
+                                    @Html.DetailViewItem(Model.StaffBranchName, "StaffBranchName", "Chi nhánh", null, null, "col-xs-4", "col-xs-8")
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row top-10">
+            <div class="col-xs-12">
+                <div class="widget-box">
+                    <div class="widget-header">
+                        <h5 class="widget-title">Các đặc tính khác</h5>
+                    </div>
+                    <div class="widget-body">
+                        <div class="widget-main">
+                            <div class="clearfix list-attr-by-category">
+                                @Html.Action("GetListByModule", "ObjectAttribute", new { area = "Sale", module = "LabourContract", objectId = Model.Id, colum = "col-sm-6", disabled = true })
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row top-10">
+            <div class="col-xs-12">
+                <div class="widget-box">
+                    <div class="widget-header">
+                        <h5 class="widget-title">File đính kèm</h5>
+                    </div>
+                    <div class="widget-body">
+                        <div class="widget-main">
+                            <div class="clearfix">
+                                @Html.Action("DocumentFieldList", "DocumentField", new { area = "Staff", category = "LabourContract", CategoryId = Model.Id, IsLayout = true })
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-8">
+        <div class="widget-box">
+            <div class="widget-header">
+                <h5 class="widget-title">Nội dung chính hợp đồng</h5>
+            </div>
+            <div class="widget-body">
+                <div class="widget-main table-responsive" id="printme">
+                    @Html.Raw(Model.Content)
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+@using (Html.BeginButtonContainer(pageSetting))
+{
+    if (Erp.BackOffice.Filters.SecurityFilter.AccessRight("Print", "LabourContract", "Staff"))
+    {
+        <a class="btn btn-mini btn-info hidden-print" href="@Url.Action("Print", pageSetting.ModuleName, new { Id = Model.Id })" target="_blank">
+            <i class="ace-icon fa fa-print"></i>
+            @Wording.PrintLabourContract
+        </a>
+    }
+}
+@*@section Scripts {
+        <script>
+            function printDiv(divID) {
+                var divElements = document.getElementById(divID).innerHTML;
+                var oldPage = document.body.innerHTML;
+
+                document.body.innerHTML =
+                  "<html><head><title></title></head><body>" +
+                  divElements + "</body>";
+                window.print();
+                document.body.innerHTML = oldPage;
+            }
+            //$("[name='Print']").click(function () {
+            //    window.print();
+            //});
+
+        </script>
+    }*@

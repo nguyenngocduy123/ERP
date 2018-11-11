@@ -1,0 +1,30 @@
+﻿@model List<Erp.BackOffice.Models.BreadcrumbViewModel>
+
+<div class="breadcrumbs" id="breadcrumbs">
+    <script type="text/javascript">
+        try { ace.settings.check('breadcrumbs', 'fixed') } catch (e) { }
+    </script>
+
+    <ul class="breadcrumb">
+        <li>
+            <i class="ace-icon fa fa-home home-icon"></i>
+            <a href="@Url.Action("Index", "Home", new { Area = "" })">@Erp.BackOffice.Helpers.Common.GetSetting("site_name")</a>
+        </li>
+        @if (Model != null && Model.Count > 0)
+        {
+            foreach (var item in Model)
+            {
+                <li><a href="@item.Url">@item.Name</a></li>
+            }
+        }
+    </ul><!-- /.breadcrumb -->
+</div>
+
+@*@helper GenerateMenu(Erp.BackOffice.Models.BreadcrumbViewModel page)
+    {
+        if (page.ParrentId != null)
+        {
+            @Html.Action("BreadcrumbParentPage", "Home", new { @parrentId = page.ParrentId.Value, @area = "" })
+        }
+        <li class="active">@page.Name</li>
+    }*@

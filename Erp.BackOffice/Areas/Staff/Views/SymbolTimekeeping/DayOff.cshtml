@@ -1,0 +1,57 @@
+﻿@model  SymbolTimekeepingViewModel
+
+@using Erp.BackOffice.App_GlobalResources
+@using Erp.BackOffice.Staff.Models
+@using Erp.BackOffice.Helpers
+@using GridMvc.Html
+
+@{
+    ViewBag.Title = "Thiết lập ngày nghỉ của tuần";
+    Layout = null;
+
+
+}
+
+@if (ViewBag.FailedMessage != null && ViewBag.FailedMessage != "")
+{
+    <div class="alert alert-block alert-danger">
+        <button class="close" data-dismiss="alert" type="button">
+            <i class="ace-icon fa fa-times"></i>
+        </button>
+        <i class="ace-icon fa fa-warning red"></i>
+        @ViewBag.FailedMessage
+    </div>
+}
+
+    @*@using (Html.BeginForm("DayOff", "TypeDayOff", FormMethod.Post, new { @class = "form-horizontal" }))*@
+    @using (Html.BeginForm_AceStyle((string)ViewBag.Title, "DayOff", "SymbolTimekeeping", null, FormMethod.Post, new { @class = "form-horizontal clearfix",showButton=true }))
+    {
+
+        <input type="hidden" name="UrlReferrer" value="@Request.Url" />
+        <input type="hidden" value="@ViewBag.StaffId" name="StaffId" />
+
+        <div class="edit-view clearfix">
+
+            @for (int i = 0; i < Model.ListCategory.Count(); i++)
+            {
+                @*@Html.CustomSwitchesFor(model => model.ListCategory[i].Check, SwitchesStyle.SwitchesStyle7, true)*@
+                @Html.CustomSwitches(Model.ListCategory[i].Name, "ListCategory[" + i + "].Check", Model.ListCategory[i].Check, SwitchesStyle.CheckboxStyle)
+               @*@Html.CheckBox(Model.ListCategory[i].Name,Model.ListCategory[i].Check.Value)*@
+                 <input type="hidden" value="@Model.ListCategory[i].Id" name="ListCategory[@i].Id" />
+            }
+
+        </div>
+    <button class="btn btn-mini btn-primary top-10 pull-right" type="submit" name="Submit" value="Save">
+        <i class="ace-icon fa fa-save"></i>
+        @Wording.Save
+    </button>
+
+
+    }
+
+    <script>
+        $(document).ready(function () {
+
+        });
+    </script>
+    @Html.ScriptBottom_ValidationMvc()   

@@ -1,0 +1,158 @@
+﻿@using Erp.BackOffice.App_GlobalResources
+@using Erp.BackOffice.Helpers
+
+@model Erp.BackOffice.Staff.Models.StaffsViewModel
+@{
+    Layout = "~/Views/Shared/" + (Request["IsPopup"] == null ? "ACE_AdminLayout.cshtml" : "_PopupLayout.cshtml");
+}
+
+@if (ViewBag.HasWidget)
+{
+    <div class="widget-box" >
+        <div class="widget-header" style="height: auto !important;">
+            <h4 class="smaller">@Wording.StaffInfo</h4>
+        </div>
+        <div class="widget-body">
+            <div class="widget-main">
+                @ShowInfo()
+            </div>
+        </div>
+    </div>
+}
+else
+{
+    @ShowInfo()
+}
+
+@helper ShowInfo()
+{
+    <div class="row">
+        <div class="col-sm-3">
+            <div class="profile-picture" style="display:block; text-align:center">
+                <a onclick="addImage();">
+                    <img id="avatar" alt="@Model.Name" src="@(Erp.BackOffice.Helpers.Common.KiemTraTonTaiHinhAnh(Model.ProfileImage,"Staffs","user"))" style="max-width:100%" />
+                </a>
+            </div>
+            <span class="label label-info label-white middle" style="width: 100%; font-size: 20px; line-height: 1; height: 30px;">
+                <b>@(!string.IsNullOrEmpty(Model.ProfileImage) ? Model.ProfileImage.ToString() : "")</b>
+            </span>
+            <div id="ImageCreate" hidden>
+                <div class="col-sm-12" style="padding:0px">
+                    <div class="widget-box">
+                        <div class="widget-body">
+                            <div class="widget-main clearfix">
+                                @using (Html.BeginForm("Detail", "Staffs", null, FormMethod.Post, new { @id = "form-profileimage", @class = "form-horizontal", enctype = "multipart/form-data" }))
+                                {
+                                    @Html.ValidationSummary(true)
+                                    <span>
+                                        @Html.FileUploadFor(model => model.ProfileImagePath, model => model.ProfileImageFile, WidthType.span12)
+                                    </span>
+                                                    <span>
+                                                        <button style="margin-top:30px" type="submit" class="btn btn-success btn-green btn-minier" name="Submit" value="Save">
+                                                            <i class="ace-icon fa fa-floppy-o"></i>
+                                                            @Wording.Save
+                                                        </button>
+                                                        <button style="margin-top:30px" type="button" class="btn btn-black btn-minier" onclick="AllowClose();">
+                                                            <span class="ace-icon fa fa-window-close"></span>
+                                                            @Wording.Close
+                                                        </button>
+                                                    </span>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="detail-view col-sm-9">
+            <div class="col-sm-6">
+                <div class="row control-group">
+                    @Html.DetailViewItemFor2(model => model.Code, null, null, "col-xs-5", "col-xs-7")
+                </div>
+                <div class="row control-group">
+                    @Html.DetailViewItemFor2(model => model.Birthday, null, null, "col-xs-5", "col-xs-7")
+                </div>
+                <div class="row control-group">
+                    @Html.DetailViewItemFor2(model => model.Gender, null, null, "col-xs-5", "col-xs-7")
+                </div>
+                <div class="row control-group">
+                    @Html.DetailViewItemFor2(model => model.Religion, null, null, "col-xs-5", "col-xs-7")
+                </div>
+                <div class="row control-group">
+                    @Html.DetailViewItemFor2(model => model.Ethnic, null, null, "col-xs-5", "col-xs-7")
+                </div>
+                <div class="row control-group">
+                    @Html.DetailViewItemFor2(model => model.MaritalStatus, null, null, "col-xs-5", "col-xs-7")
+                </div>
+                <div class="row control-group">
+                    @Html.DetailViewItemFor2(model => model.CountryId, null, null, "col-xs-5", "col-xs-7")
+                </div>
+                <div class="row control-group">
+                    @Html.DetailViewItemFor2(model => model.IdCardNumber, null, null, "col-xs-5", "col-xs-7")
+                </div>
+                <div class="row control-group">
+                    @Html.DetailViewItemFor2(model => model.IdCardDate, null, null, "col-xs-5", "col-xs-7")
+                </div>
+                <div class="row control-group">
+                    @Html.DetailViewItemFor2(model => model.CardIssuedName, null, null, "col-xs-5", "col-xs-7")
+                </div>
+                <div class="row control-group">
+                    @Html.DetailViewItemFor2(model => model.Address, null, null, "col-xs-5", "col-xs-7")
+                </div>
+                <div class="row control-group">
+                    @Html.DetailViewItemFor2(model => model.WardName, null, null, "col-xs-5", "col-xs-7")
+                </div>
+                <div class="row control-group">
+                    @Html.DetailViewItemFor2(model => model.DistrictName, null, null, "col-xs-5", "col-xs-7")
+                </div>
+                <div class="row control-group">
+                    @Html.DetailViewItemFor2(model => model.ProvinceName, null, null, "col-xs-5", "col-xs-7")
+                </div>
+            </div>
+
+            <div class="col-sm-6">
+                <div class="row control-group">
+                    @Html.DetailViewItemFor2(model => model.UserName, null, null, "col-xs-5", "col-xs-7")
+                </div>
+                <div class="row control-group">
+                    @Html.DetailViewItemFor2(model => model.PositionName, null, null, "col-xs-5", "col-xs-7")
+                </div>
+                <div class="row control-group">
+                    @Html.DetailViewItemFor2(model => model.CommissionPercent, null, null, "col-xs-5", "col-xs-7")
+                </div>
+                <div class="row control-group">
+                    @Html.DetailViewItemFor2(model => model.MinimumRevenue, null, null, "col-xs-5", "col-xs-7")
+                </div>
+                <div class="row control-group">
+                    @Html.DetailViewItemFor2(model => model.StartDate, null, null, "col-xs-5", "col-xs-7")
+                </div>
+                <div class="row control-group">
+                    @Html.DetailViewItemFor2(model => model.EndDate, null, null, "col-xs-5", "col-xs-7")
+                </div>
+                <div class="row control-group">
+                    @Html.DetailViewItemFor2(model => model.Technique, null, null, "col-xs-5", "col-xs-7")
+                </div>
+                <div class="row control-group">
+                    @Html.DetailViewItemFor2(model => model.Literacy, null, null, "col-xs-5", "col-xs-7")
+                </div>
+                <div class="row control-group">
+                    @Html.DetailViewItemFor2(model => model.Language, null, null, "col-xs-5", "col-xs-7")
+                </div>
+                <div class="row control-group">
+                    @Html.DetailViewItemFor2(model => model.Phone, null, null, "col-xs-5", "col-xs-7")
+                </div>
+                <div class="row control-group">
+                    @Html.DetailViewItemFor2(model => model.Phone2, null, null, "col-xs-5", "col-xs-7")
+                </div>
+                <div class="row control-group">
+                    @Html.DetailViewItemFor2(model => model.Email, null, null, "col-xs-5", "col-xs-7")
+                </div>
+                <div class="row control-group">
+                    @Html.DetailViewItemFor2(model => model.Email2, null, null, "col-xs-5", "col-xs-7")
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+}

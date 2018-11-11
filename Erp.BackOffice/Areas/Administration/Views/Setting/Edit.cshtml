@@ -1,0 +1,51 @@
+﻿@model Erp.BackOffice.Areas.Administration.Models.SettingViewModel
+
+@using Erp.BackOffice.Helpers
+
+@{
+    ViewBag.Title = Resources.Wording.UpdateSetting;
+    Layout = "~/Views/Shared/ACE_AdminLayout.cshtml";
+    Erp.BackOffice.Models.PageSetting pageSetting = new Erp.BackOffice.Models.PageSetting
+    {
+        ModuleName = "Setting",
+        ActionName = "Edit",
+        PageTitle = ViewBag.Title,
+        DisplaySearchPanel = false,
+        IsPopup = false,
+        DisplayBackButton = true
+    };
+
+}
+@using (Html.BeginPageHeaderContainer(pageSetting))
+{
+
+}
+@using (Html.BeginForm_AceStyle((string)ViewBag.Title, "Edit", "Setting", new { @area = "Administration" }, FormMethod.Post, new { @class = "form-horizontal" }))
+{
+    @Html.ValidationSummary(true)
+
+    @Html.HiddenFor(m => m.Id)
+
+    @Html.CustomTextboxFor(m => m.Key,null,null,WidthType.span12,true)
+    @Html.CustomTextboxFor(m => m.Value, null, null, WidthType.span12, true)
+    @Html.CustomTextboxFor(m => m.Code, null, null, WidthType.span12, true)
+
+    @Html.CustomTextAreaFor(m => m.Note, null, WidthType.span12, true)
+
+    if (ViewBag.CurrentUser == "host")
+    {
+        @Html.CustomSwitchesFor(m => m.IsLocked,SwitchesStyle.SwitchesStyle6,true,WidthType.none)
+    }
+    using (Html.BeginButtonContainer(pageSetting))
+    {
+        <button class="btn btn-mini btn-primary" type="submit" name="Submit" value="Save">
+            <i class="ace-icon fa fa-save"></i>
+            @Resources.Wording.Save
+        </button>
+    }
+
+}
+
+@section Scripts {
+    @Html.ScriptBottom_ValidationMvc()
+}

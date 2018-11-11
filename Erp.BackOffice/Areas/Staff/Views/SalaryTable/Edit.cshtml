@@ -1,0 +1,37 @@
+﻿@using Erp.BackOffice.App_GlobalResources
+@using Erp.BackOffice.Helpers
+@using Erp.BackOffice.Staff.Models
+
+@model SalaryTableViewModel
+
+@{
+    ViewBag.Title = Wording.PageEdit_SalaryTable;
+
+    Layout = "~/Views/Shared/ACE_AdminLayout.cshtml";
+}
+
+@section HeadOfPage {
+    @Html.ScriptTop_ChosenStyle()
+}
+
+@using (Html.BeginForm_AceStyle((string)ViewBag.Title, "Edit", "SalaryTable", null, FormMethod.Post, new { @class = "form-horizontal", showButton = true }))
+{
+    @Html.ValidationSummary(true)
+    @Html.HiddenFor(model => model.Id)
+    @Html.HiddenFor(model => model.CreatedUserId)
+    @Html.HiddenFor(model => model.AssignedUserId)
+    @Html.HiddenFor(model => model.CreatedDate)
+    @Html.HiddenFor(model => model.IsDeleted)
+
+    //@Html.CustomDropDownListFor(model => model.DepartmentId, SelectListHelper.GetSelectList_BranchDepartment(Model.DepartmentId, Model.BranchId, "- Chọn phòng ban -"), WidthType.span4, true, null, DropdownListStyle.DropdownListStyleChosen)
+    @Html.MonthPicker(model => model.TargetMonth)
+    @Html.YearPicker(model => model.TargetYear)
+    @Html.DatePicker(model => model.PaymentDate, "dd/MM/yyyy", "99/99/9999", true, false)
+
+}
+
+@section Scripts {
+
+    @Html.ScriptBottom_ValidationMvc()
+    @Html.ScriptBottom_ChosenStyle()
+}

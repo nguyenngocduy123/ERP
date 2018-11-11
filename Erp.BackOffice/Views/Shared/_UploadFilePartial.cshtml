@@ -1,0 +1,35 @@
+﻿@inherits System.Web.Mvc.WebViewPage
+       
+
+<div class="widget-main">
+    <input type="file" id="file" name="file" />                                
+</div>
+<div class="row-fluid wizard-actions span5">
+    <button type="submit" class="btn btn-info" name="Submit">
+        <i class="ace-icon fa fa-check bigger-110"></i>
+        Upload				
+    </button>
+    &nbsp; &nbsp; &nbsp;				
+        <button type="reset" class="btn">
+            <i class="icon-undo bigger-110"></i>
+            Reset			
+        </button>
+</div>
+<script type="text/javascript">
+    $(function () {
+
+        $('#file').ace_file_input({
+            no_file: 'Chưa có tệp tin nào ...',
+            btn_choose: 'Chọn',
+            btn_change: 'Thay đổi',
+            droppable: true,
+            onchange: null,
+            thumbnail: true, //| true | large
+            whitelist:'ppt|pptx'
+            //blacklist:'exe|php'
+            //onchange:''
+            //
+        });
+    });
+  
+</script>

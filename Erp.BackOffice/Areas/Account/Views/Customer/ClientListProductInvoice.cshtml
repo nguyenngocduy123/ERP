@@ -1,0 +1,94 @@
+﻿@model List<ProductInvoiceViewModel>
+
+    @using Erp.BackOffice.App_GlobalResources
+    @using Erp.BackOffice.Sale.Models
+    @using Erp.BackOffice.Helpers
+    @using Erp.Domain.Account.Entities
+    @using Erp.Domain.Sale.Entities
+    @using GridMvc.Html
+
+    @{
+        Layout = "~/Views/Shared/ACE_ClientLayout.cshtml";
+        ViewBag.Title = "Danh sách hóa đơn mới nhất";
+        Erp.BackOffice.Models.PageSetting pageSetting = new Erp.BackOffice.Models.PageSetting
+        {
+            ModuleName = "Customer",
+            ActionName = "ClientListProductInvoice",
+            PageTitle = ViewBag.Title,
+            DisplaySearchPanel = true,
+            IsPopup = false,
+            DisplayBackButton = false
+        };
+    }
+
+    @section HeadOfPage {
+<style>
+    .fa-150 {
+        font-size: 1.5em;
+    }
+</style>
+
+    }
+    @using (Html.BeginPageHeaderContainer(pageSetting))
+    {
+        @Html.TextBox("txtCode", Request["txtCode"], new { @class = "", autocomplete = "off", placeholder = "Mã đơn hàng..." })
+        @Html.TextBox("txtCusName", Request["txtCusName"], new { @class = "", autocomplete = "off", placeholder = "Tên khách hàng..." })
+    }
+
+    <div class="row" style="margin-bottom:50px">
+        @foreach (var item in Model)
+        {
+            <div class="col-xs-12">
+                <div class="btn btn-white btn-primary btn-bold" style="text-align: left;  white-space: normal; width: 100%; margin-bottom: 10px;" onclick="loadProject('@Url.Action("CameraInvoice", "Customer", new {area="Account", ProductInvoiceId = item.Id })')">
+                    <h4>
+                        <b style="color: #0058ff;">@Wording.InvoiceCode: @item.Code</b>
+                        <i style="font-size:13px;">@Wording.CreatedDate: @item.CreatedDate.Value.ToString("dd/MM/yyyy HH:mm")</i>
+                    </h4>
+                    <p>@Wording.Customer: @item.CustomerName</p>
+                    <p>@Wording.TheAmount: <span style="color:red;">@Common.PhanCachHangNgan(item.TotalAmount)</span></p>
+                    <p>
+                        @Wording.Note:
+                        @if (!string.IsNullOrEmpty(item.Note) || !string.IsNullOrEmpty(item.CancelReason))
+                        {
+                            item.Note = item.Note + "; " + item.CancelReason;
+                        }
+                    </p>
+                </div>
+            </div>
+        }
+    </div>
+<div class="row">
+    <footer class="btn-default">
+        <div class="col-sm-3 pull-left">
+            <a title="Trở về trang chính" class="btn btn-white btn-default btn-sm" href="@Url.Action("Client", pageSetting.ModuleName)" style="border-radius:100%;width:37px;height:37px;line-height:2.5!important">
+                <i class="ace-icon fa-150 fa fa-arrow-left"></i>
+            </a>
+           
+        </div>
+    </footer>
+</div>
+
+
+@section Scripts {
+    <script src="~/Scripts/jquery.signalR-2.2.1.min.js" type="text/javascript"></script>
+    <script src="~/signalr/hubs"></script>
+<script>
+    function loadProject(url) {
+        location.href = url;
+    }
+</script>
+
+    <script type="text/javascript">
+        $(function () {
+            var erpHub = $.connection.erpHub;
+
+            //Start the connection.
+            $.connection.hub.start().done(function () {
+            });
+
+            //erpHub.client.loadUrl = function (url, userId) {
+            //    window.location = url;
+            //};
+        });
+    </script>
+}

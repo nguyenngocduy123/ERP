@@ -1,0 +1,156 @@
+﻿@model List<SalarySettingViewModel>
+
+@using Erp.BackOffice.App_GlobalResources
+@using Erp.BackOffice.Staff.Models
+@using Erp.BackOffice.Helpers
+@using GridMvc.Html
+
+@{
+    ViewBag.Title = Wording.PageIndex_SalaryTable;
+    bool isPopup = Request["popup"] != null && Request["popup"].ToString().ToLower() == "true" ? true : false;
+    if (isPopup)
+    {
+        Layout = "~/Views/Shared/_PopupLayout.cshtml";
+    }
+    else
+    {
+        Layout = "~/Views/Shared/ACE_AdminLayout.cshtml";
+    }
+    Erp.BackOffice.Models.PageSetting pageSetting = new Erp.BackOffice.Models.PageSetting
+    {
+        ModuleName = "SalaryTable",
+        ActionName = "Index",
+        PageTitle = ViewBag.Title,
+        DisplaySearchPanel = false,
+        IsPopup = false,
+        DisplayBackButton = false
+
+    };
+}
+
+<link href="@Url.Content("~/assets/css/Gridmvc.css")" rel="stylesheet" type="text/css" />
+<script src="@Url.Content("~/Scripts/gridmvc.min.js")" type="text/javascript"> </script>
+
+
+@using (Html.BeginPageHeaderContainer(pageSetting))
+{
+}
+@if (ViewBag.SuccessMessage != null && ViewBag.SuccessMessage != "")
+{
+    <div class="alert alert-block alert-success">
+        <button class="close" data-dismiss="alert" type="button">
+            <i class="ace-icon fa fa-times"></i>
+        </button>
+        <i class="ace-icon fa fa-check green"></i>
+        @ViewBag.SuccessMessage
+    </div>
+}
+
+@if (ViewBag.FailedMessage != null && ViewBag.FailedMessage != "")
+{
+    <div class="alert alert-block alert-danger">
+        <button class="close" data-dismiss="alert" type="button">
+            <i class="ace-icon fa fa-times"></i>
+        </button>
+        <i class="ace-icon fa fa-warning red"></i>
+        @ViewBag.FailedMessage
+    </div>
+}
+
+<!--Button danh sách bản lương-->
+@if (Model != null)
+{
+    @*<div class="row col-sm-4">
+        
+        <div class="widget-box top-10">
+            <div class="widget-header">
+                <h4 class="widget-title">
+                    <i class="ace-icon fa fa-info-circle"></i>
+                    Bảng lương tháng
+                </h4>
+            </div>
+            <div class="widget-body">
+                <div class="widget-main clearfix">
+                    @foreach (var item in Model.Where(item => item.IsSend == false))
+{
+                        <button class="btn btn-mini btn-white btn-bold sendtable col-sm-12" data-salarysetting="@item.Id" style="display: block;margin-bottom: 5px; text-align: left;">
+                            <i class="ace-icon fa fa-list-alt bigger-120"></i>
+                            @(item.OrderNo). @item.Name.ToUpper()
+                        </button>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>*@
+    @*<div class="row">
+        <div class="col-sm-12">
+            <div class="widget-box" id="listSalary-wd">
+                <div class="widget-header">
+                    <h4 class="widget-title nameSalary">
+                        <i class="ace-icon fa fa-list-alt"></i>
+                        Danh sách bảng lương
+                    </h4>
+                </div>
+                <div class="widget-body">
+                    <div class="widget-main clearfix">
+                        <div id="tablecontent">*@
+                            @Html.Action("Table", "SalaryTable", new { Id = 17 })
+                            @*@Html.Action("Table","SalaryTable", new { Id: 17 })*@
+                        @*</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>*@
+}
+
+
+<!--End button-->
+@*@using (Html.BeginButtonContainer(pageSetting))
+{*@
+    @*<a class="btn btn-mini btn-primary" href="@Url.Action("Create", pageSetting.ModuleName)">
+            <i class="ace-icon fa fa-plus"></i>
+            @Wording.CreateNew
+        </a>*@
+@*}*@
+
+@section Scripts {
+    <script type="text/javascript">
+
+        $(document).ready(function () {
+
+        });
+
+        function SetCssSendTable(ele) {
+            //set all white
+            $(".sendtable").each(function () {
+
+                if ($(this).hasClass('btn-primary')) {
+                    $(this).removeClass('btn-primary');
+                    if ($(this) != $(ele)) {
+                        $(this).addClass('btn-white');
+                    }
+                }
+            });
+            //Set class seleted
+            $(ele).addClass('btn-primary');
+            $(ele).removeClass('btn-white');
+            $('.nameSalary').html(' <i class="ace-icon fa fa-list-alt"></i>' + $(ele).text());
+
+        };
+
+        $('.sendtable').click(function () {
+
+            ShowLoading();
+            $("#listSalary-wd").removeClass('hidden');
+
+            SetCssSendTable($(this));
+            var _salarysetting = $(this).data('salarysetting');
+            $.get("@Url.Action("Table","SalaryTable")", { Id: _salarysetting }, function (data) {
+                $("#tablecontent").html(data);
+                HideLoading();
+            });
+        });
+
+    </script>
+}

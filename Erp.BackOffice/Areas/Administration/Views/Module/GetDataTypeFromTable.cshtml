@@ -1,0 +1,42 @@
+﻿@model List<object>
+@for (int i = 0; i < Model.Count; i++)
+{
+    Type objectType = Model[i].GetType();
+    string dataType = objectType.GetProperty("DataType").GetValue(Model[i], null).ToString();
+    <tr>
+        <td><input id="ListColumns_@(i)__Name" name="ListColumns[@i].Name" value="@objectType.GetProperty("ColumnName").GetValue(Model[i], null)" /></td>
+        <td>
+            <select id="ListColumns_@(i)__DataType" name="ListColumns[@i].DataType">
+                <option value="">- Chọn -</option>
+                <option @(dataType == "varchar" ? "selected" : "") value="varchar">varchar</option>
+                <option @(dataType == "nvarchar" ? "selected" : "") value="nvarchar">nvarchar</option>
+                <option @(dataType == "char" ? "selected" : "") value="char">char</option>
+                <option @(dataType == "bit" ? "selected" : "") value="bit">bit</option>
+                <option @(dataType == "datetime" ? "selected" : "") value="datetime">datetime</option>
+                <option @(dataType == "int" ? "selected" : "") value="int">int</option>
+                <option @(dataType == "bigint" ? "selected" : "") value="bigint">bigint</option>
+                <option @(dataType == "float" ? "selected" : "") value="float">float</option>
+                <option @(dataType == "decimal" ? "selected" : "") value="decimal">decimal</option>
+                <option @(dataType == "money" ? "selected" : "") value="money">money</option>
+            </select>
+        </td>
+        <td><input name="ListColumns[@i].Length" value="@objectType.GetProperty("CharMaxLen").GetValue(Model[i], null)" /></td>
+        <td><a class="btn btn-xs btn-danger" onclick="removeColumnData(this)">X</a></td>
+        @*<td>
+            @Html.TextBox("OutputHtml", null, new { @class = "OutputHtml", style = "width:300px" })
+        </td>
+        <td>
+            @Html.TextBox("Wording", null, new { @class = "wording", style = "width:150px" })
+        </td>*@
+        <td>
+            <a class="btn btn-minier btn-info" onclick="htmlCode(this)">Html code</a>
+            <a class="btn btn-minier btn-info" onclick="wording(this)">Wording</a>
+        </td>
+    </tr>
+}
+@if (Model.Count == 0)
+{
+    <tr>
+        <td colspan="3"><span class="text-danger">Không tìm thấy tên bảng hoặc bảng không có cột nào! xin hãy kiểm tra lại</span></td>
+    </tr>
+}

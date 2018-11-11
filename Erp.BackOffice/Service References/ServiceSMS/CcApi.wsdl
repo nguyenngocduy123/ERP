@@ -1,0 +1,188 @@
+<?xml version="1.0" encoding="utf-8"?>
+<definitions xmlns:wsp="http://www.w3.org/ns/ws-policy" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:wsam="http://www.w3.org/2007/05/addressing/metadata" xmlns:tns="http://impl.bulkSms.ws/" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:wsp1_2="http://schemas.xmlsoap.org/ws/2004/09/policy" xmlns:wsu="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd" name="CcApi" targetNamespace="http://impl.bulkSms.ws/" xmlns="http://schemas.xmlsoap.org/wsdl/">
+  <types>
+    <xsd:schema>
+      <xsd:import schemaLocation="http://125.235.4.202:8998/bulkapi?xsd=1" namespace="http://smsbrand.viettel.com/" />
+    </xsd:schema>
+    <xsd:schema>
+      <xsd:import schemaLocation="http://125.235.4.202:8998/bulkapi?xsd=2" namespace="http://impl.bulkSms.ws/" />
+    </xsd:schema>
+  </types>
+  <message name="getIp">
+    <part name="parameters" element="tns:getIp" />
+  </message>
+  <message name="getIpResponse">
+    <part name="parameters" element="tns:getIpResponse" />
+  </message>
+  <message name="checkBalance">
+    <part name="parameters" element="tns:checkBalance" />
+  </message>
+  <message name="checkBalanceResponse">
+    <part name="parameters" element="tns:checkBalanceResponse" />
+  </message>
+  <message name="wsCpMt">
+    <part name="parameters" element="tns:wsCpMt" />
+  </message>
+  <message name="wsCpMtResponse">
+    <part name="parameters" element="tns:wsCpMtResponse" />
+  </message>
+  <message name="wsReportHour">
+    <part name="parameters" element="tns:wsReportHour" />
+  </message>
+  <message name="wsReportHourResponse">
+    <part name="parameters" element="tns:wsReportHourResponse" />
+  </message>
+  <message name="Exception">
+    <part name="fault" element="tns:Exception" />
+  </message>
+  <message name="wsReportDaily">
+    <part name="parameters" element="tns:wsReportDaily" />
+  </message>
+  <message name="wsReportDailyResponse">
+    <part name="parameters" element="tns:wsReportDailyResponse" />
+  </message>
+  <message name="wsReportMonth">
+    <part name="parameters" element="tns:wsReportMonth" />
+  </message>
+  <message name="wsReportMonthResponse">
+    <part name="parameters" element="tns:wsReportMonthResponse" />
+  </message>
+  <message name="getFailSub">
+    <part name="parameters" element="tns:getFailSub" />
+  </message>
+  <message name="getFailSubResponse">
+    <part name="parameters" element="tns:getFailSubResponse" />
+  </message>
+  <message name="wsCpBatchMt">
+    <part name="parameters" element="tns:wsCpBatchMt" />
+  </message>
+  <message name="wsCpBatchMtResponse">
+    <part name="parameters" element="tns:wsCpBatchMtResponse" />
+  </message>
+  <portType name="CcApi">
+    <operation name="getIp">
+      <input wsam:Action="http://impl.bulkSms.ws/CcApi/getIpRequest" message="tns:getIp" />
+      <output wsam:Action="http://impl.bulkSms.ws/CcApi/getIpResponse" message="tns:getIpResponse" />
+    </operation>
+    <operation name="checkBalance">
+      <input wsam:Action="http://impl.bulkSms.ws/CcApi/checkBalanceRequest" message="tns:checkBalance" />
+      <output wsam:Action="http://impl.bulkSms.ws/CcApi/checkBalanceResponse" message="tns:checkBalanceResponse" />
+    </operation>
+    <operation name="wsCpMt">
+      <input wsam:Action="http://impl.bulkSms.ws/CcApi/wsCpMtRequest" message="tns:wsCpMt" />
+      <output wsam:Action="http://impl.bulkSms.ws/CcApi/wsCpMtResponse" message="tns:wsCpMtResponse" />
+    </operation>
+    <operation name="wsReportHour">
+      <input wsam:Action="http://impl.bulkSms.ws/CcApi/wsReportHourRequest" message="tns:wsReportHour" />
+      <output wsam:Action="http://impl.bulkSms.ws/CcApi/wsReportHourResponse" message="tns:wsReportHourResponse" />
+      <fault wsam:Action="http://impl.bulkSms.ws/CcApi/wsReportHour/Fault/Exception" name="Exception" message="tns:Exception" />
+    </operation>
+    <operation name="wsReportDaily">
+      <input wsam:Action="http://impl.bulkSms.ws/CcApi/wsReportDailyRequest" message="tns:wsReportDaily" />
+      <output wsam:Action="http://impl.bulkSms.ws/CcApi/wsReportDailyResponse" message="tns:wsReportDailyResponse" />
+      <fault wsam:Action="http://impl.bulkSms.ws/CcApi/wsReportDaily/Fault/Exception" name="Exception" message="tns:Exception" />
+    </operation>
+    <operation name="wsReportMonth">
+      <input wsam:Action="http://impl.bulkSms.ws/CcApi/wsReportMonthRequest" message="tns:wsReportMonth" />
+      <output wsam:Action="http://impl.bulkSms.ws/CcApi/wsReportMonthResponse" message="tns:wsReportMonthResponse" />
+      <fault wsam:Action="http://impl.bulkSms.ws/CcApi/wsReportMonth/Fault/Exception" name="Exception" message="tns:Exception" />
+    </operation>
+    <operation name="getFailSub">
+      <input wsam:Action="http://impl.bulkSms.ws/CcApi/getFailSubRequest" message="tns:getFailSub" />
+      <output wsam:Action="http://impl.bulkSms.ws/CcApi/getFailSubResponse" message="tns:getFailSubResponse" />
+    </operation>
+    <operation name="wsCpBatchMt">
+      <input wsam:Action="http://impl.bulkSms.ws/CcApi/wsCpBatchMtRequest" message="tns:wsCpBatchMt" />
+      <output wsam:Action="http://impl.bulkSms.ws/CcApi/wsCpBatchMtResponse" message="tns:wsCpBatchMtResponse" />
+    </operation>
+  </portType>
+  <binding name="CcApiPortBinding" type="tns:CcApi">
+    <soap:binding transport="http://schemas.xmlsoap.org/soap/http" />
+    <operation name="getIp">
+      <soap:operation soapAction="" />
+      <input>
+        <soap:body use="literal" />
+      </input>
+      <output>
+        <soap:body use="literal" />
+      </output>
+    </operation>
+    <operation name="checkBalance">
+      <soap:operation soapAction="" />
+      <input>
+        <soap:body use="literal" />
+      </input>
+      <output>
+        <soap:body use="literal" />
+      </output>
+    </operation>
+    <operation name="wsCpMt">
+      <soap:operation soapAction="" />
+      <input>
+        <soap:body use="literal" />
+      </input>
+      <output>
+        <soap:body use="literal" />
+      </output>
+    </operation>
+    <operation name="wsReportHour">
+      <soap:operation soapAction="" />
+      <input>
+        <soap:body use="literal" />
+      </input>
+      <output>
+        <soap:body use="literal" />
+      </output>
+      <fault name="Exception">
+        <soap:fault use="literal" name="Exception" namespace="" />
+      </fault>
+    </operation>
+    <operation name="wsReportDaily">
+      <soap:operation soapAction="" />
+      <input>
+        <soap:body use="literal" />
+      </input>
+      <output>
+        <soap:body use="literal" />
+      </output>
+      <fault name="Exception">
+        <soap:fault use="literal" name="Exception" namespace="" />
+      </fault>
+    </operation>
+    <operation name="wsReportMonth">
+      <soap:operation soapAction="" />
+      <input>
+        <soap:body use="literal" />
+      </input>
+      <output>
+        <soap:body use="literal" />
+      </output>
+      <fault name="Exception">
+        <soap:fault use="literal" name="Exception" namespace="" />
+      </fault>
+    </operation>
+    <operation name="getFailSub">
+      <soap:operation soapAction="" />
+      <input>
+        <soap:body use="literal" />
+      </input>
+      <output>
+        <soap:body use="literal" />
+      </output>
+    </operation>
+    <operation name="wsCpBatchMt">
+      <soap:operation soapAction="" />
+      <input>
+        <soap:body use="literal" />
+      </input>
+      <output>
+        <soap:body use="literal" />
+      </output>
+    </operation>
+  </binding>
+  <service name="CcApi">
+    <port name="CcApiPort" binding="tns:CcApiPortBinding">
+      <soap:address location="http://125.235.4.202:8998/bulkapi" />
+    </port>
+  </service>
+</definitions>

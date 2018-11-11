@@ -1,0 +1,57 @@
+﻿@model Erp.BackOffice.Areas.Administration.Models.EditPageModel
+@using Erp.BackOffice.App_GlobalResources
+
+@using Erp.BackOffice.Helpers
+
+@{
+    ViewBag.Title = Resources.Wording.UpdatePage;
+    Layout = "~/Views/Shared/" + (Request["IsPopup"] == null ? "ACE_AdminLayout.cshtml" : "_PopupLayout.cshtml");
+    WidthType widthType = WidthType.span6;
+
+    Erp.BackOffice.Models.PageSetting pageSetting = new Erp.BackOffice.Models.PageSetting
+    {
+        ModuleName = "Page",
+        ActionName = "Create",
+        PageTitle = ViewBag.Title,
+        DisplaySearchPanel = false,
+        IsPopup = true,
+        DisplayBackButton = false
+    };
+}
+
+@section HeadOfPage {
+    @Html.ScriptTop_ChosenStyle()
+}
+
+@using (Html.BeginPageHeaderContainer(pageSetting))
+{
+
+}
+
+@using (Html.BeginForm_AceStyle((string)ViewBag.Title, "Edit", "Page", null, FormMethod.Post, new { @class = "form-horizontal" }))
+{
+    @Html.ValidationSummary(true)
+
+    @Html.HiddenFor(model => model.Id)
+    @Html.HiddenFor(model => model.Name)
+
+    <input type="hidden" value="@Request["IsPopup"]" name="IsPopup" />
+
+    @Html.CustomDropDownListFor(model => model.AreaName, SelectListHelper.GetSelectList_Category("pageArea", null, "- Chọn Area -"), WidthType.span4, true, null, DropdownListStyle.DropdownListStyleChosen)
+    @Html.CustomTextboxFor(model => model.ControllerName, null, null, widthType, true)
+    @Html.CustomTextboxFor(model => model.ActionName, null, null, widthType, true)
+    @Html.CustomSwitchesFor(model => model.Status, SwitchesStyle.CheckboxStyle, true)    
+
+    using (Html.BeginButtonContainer(pageSetting))
+    {
+        <button class="btn btn-mini btn-primary" type="submit" name="Submit" value="Save">
+            <i class="ace-icon fa fa-save"></i>
+            @Wording.Save
+        </button>
+    }
+}
+
+@section Scripts {
+    @Html.ScriptBottom_ValidationMvc()
+    @Html.ScriptBottom_ChosenStyle()
+}

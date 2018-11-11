@@ -1,0 +1,43 @@
+﻿@using Erp.BackOffice.App_GlobalResources
+@using Erp.BackOffice.Helpers
+@using Erp.BackOffice.Sale.Models
+
+@model IEnumerable<ObjectAttributeViewModel>
+
+@{
+    Layout = null;
+
+
+    List<ObjectAttributeViewModel> listFieldInput = (List<ObjectAttributeViewModel>)ViewBag.listFieldInput;
+    
+    int index = 0;
+}
+
+@foreach (var attr in Model)
+{
+    var inputSearch = listFieldInput.Where(x => x.Id == attr.Id).FirstOrDefault();
+        
+    <div class="form-group">
+        <input type="hidden" name="ListField[@index].Id" value="@attr.Id" />
+        <span class="input input--ichiro">
+            <input class="input__field input__field--ichiro" type="text" id="input-@attr.Id" name="ListField[@index].Value" value="@(inputSearch != null ? inputSearch.Value : "")">
+            <label class="input__label input__label--ichiro" for="input-@attr.Id">
+                <span class="input__label-content input__label-content--ichiro">@attr.Name</span>
+            </label>
+        </span>
+    </div>
+    
+    { index++; }
+}
+
+@helper SwitchDataType(string dataType)
+{
+    string type = string.Empty;
+    switch (dataType)
+    {
+        case "string":
+            type = "text";
+            break;
+    }
+    <text>@type</text>
+}

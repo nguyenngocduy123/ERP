@@ -1,0 +1,115 @@
+﻿@using Erp.BackOffice.App_GlobalResources
+@using Erp.BackOffice.Helpers
+@using Erp.BackOffice.Staff.Models
+
+@model CalendarVisitDrugStoreViewModel
+
+@{
+    ViewBag.Title = "Chỉnh sửa kế hoạch thăm nhà thuốc";
+
+    Layout = "~/Views/Shared/" + (Request["IsPopup"] == null ? "ACE_AdminLayout.cshtml" : "_PopupLayout.cshtml");
+
+    Erp.BackOffice.Models.PageSetting pageSetting = new Erp.BackOffice.Models.PageSetting
+    {
+        ModuleName = "CalendarVisitDrugStore",
+        ActionName = "Edit",
+        PageTitle = ViewBag.Title,
+        DisplaySearchPanel = false,
+        IsPopup = false,
+        DisplayBackButton = true
+    };
+    IEnumerable<SelectListItem> departmentList = Erp.BackOffice.Helpers.SelectListHelper.GetSelectList_DepartmentAllNew(null, Wording.Empty);
+    //IEnumerable<SelectListItem> staffCategoryList = Erp.BackOffice.Helpers.SelectListHelper.GetSelectList_Staff_2("product", null, "value");
+    IEnumerable<SelectListItem> statusCategoryList = Erp.BackOffice.Helpers.SelectListHelper.GetSelectList_Category("status_CalendarVisitDrugStore", null, "value");
+}
+
+@section HeadOfPage {
+    @Html.ScriptTop_ChosenStyle()
+}
+
+@using (Html.BeginPageHeaderContainer(pageSetting))
+{
+
+}
+
+@using (Html.BeginForm_AceStyle((string)ViewBag.Title, pageSetting.ActionName, pageSetting.ModuleName, null, FormMethod.Post, new { @class = "form-horizontal" }))
+{
+    @Html.ValidationSummary(true)
+    @Html.HiddenFor(model => model.StaffId)
+    @Html.HiddenFor(model => model.Id)
+    @Html.HiddenFor(model => model.CreatedUserId)
+    @Html.HiddenFor(model => model.CreatedDate)
+    @Html.HiddenFor(model => model.IsDeleted)
+    @*@Html.HiddenFor(model => model.Status)*@
+    <input type="hidden" value="@Request["IsPopup"]" name="IsPopup" />
+    <input type="hidden" name="UrlReferrer" value="@Request.UrlReferrer" />
+    @Html.CustomDropDownListFor(model => model.DrugStoreId, departmentList, WidthType.span12, true, null, DropdownListStyle.DropdownListStyleChosen)
+    @Html.CustomDropDownListFor(model => model.Status, statusCategoryList, WidthType.span12, true, null, DropdownListStyle.DropdownListStyleDefault)
+    @Html.DateTimePicker(model => model.StartDate, "dd/MM/yyyy H:mm", "00/00/0000 00:00:00", true, false)
+    @Html.DateTimePicker(model => model.EndDate, "dd/MM/yyyy H:mm", "00/00/0000 00:00:00", true, false)
+    @Html.CustomTextAreaFor(model => model.Note, null, WidthType.span12, true)
+    using (Html.BeginButtonContainer(pageSetting))
+    {
+        <button class="btn btn-mini btn-primary" type="submit" name="Submit" value="Save">
+            <i class="ace-icon fa fa-save"></i>
+            @Wording.Save
+        </button>
+        <button class="btn btn-mini btn-danger" onclick="Delete('@Model.Id')">
+            <i class="ace-icon fa fa-remove"></i>
+            @Wording.Delete
+        </button>
+    }
+}
+
+@section Scripts {
+    <script>
+        var urlRefer = '@ViewBag.urlRefer';
+        //truyền từ action create của controller qua khi thực hiện submit và return về lại view create, để nhận biết là được gọi theo dạng popup
+        var closePopup = '@ViewBag.closePopup';
+        $(document).ready(function () {
+            //nếu là được gọi theo dạng popup từ form khác thì chạy đoạn code bên dưới
+            if (closePopup != '') {
+                var option = '<option value="@Model.Id" >@Model.DrugStoreCode</option>';
+                //nếu có url thì gọi hàm này để trang ngoài iframe nhảy trang
+                if (urlRefer != '') {
+                    window.parent.ClosePopupAndRedirectToURL(urlRefer);
+                }
+                //tên funtion có thể khác theo từng công việc riêng (đây chỉ là mẫu khi thêm mới sẽ gọi lại)
+                window.parent.ClosePopupAndDoSomething(option);
+            }
+        });
+        $(document).ready(function () {
+            $('[data-rel="tooltip"]').tooltip({ container: 'body' });
+
+        });
+
+        function Delete(id) {
+            if (confirm('Bạn có chắc muốn xóa item đã chọn ?')) {
+                ShowLoading();
+                $.ajax({
+                    type: "POST",
+                    datatype: 'json',
+                    url: '@Url.Action("Delete", "CalendarVisitDrugStore")',
+                    data: { id: id },
+                    success: function (data) {
+                        HideLoading();
+                        if (data.Result == 'success') {
+                            alertPopup("Thông báo", data.Message, "success");
+                            if (urlRefer != '') {
+                                window.parent.ClosePopupAndRedirectToURL(urlRefer);
+                            }
+                            window.parent.ClosePopupAndDoSomething();
+                        }
+                        else {
+                            alertPopup("Lỗi", data.Message, "danger");
+                        }
+                    }
+                });
+                return true;
+            };
+        };
+    </script>
+    @Html.ScriptBottom_ValidationMvc()
+    @Html.ScriptBottom_ChosenStyle()
+    @Html.ScriptBottom_DatePicker("dd/mm/yyyy")
+}

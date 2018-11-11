@@ -1,0 +1,91 @@
+﻿@using Erp.BackOffice.App_GlobalResources
+@using Erp.BackOffice.Helpers
+@using Erp.BackOffice.Staff.Models
+@using Erp.BackOffice.Filters
+@model DocumentFieldViewModel
+
+@{
+    ViewBag.Title = Wording.PageEdit_DocumentField;
+
+    Layout = "~/Views/Shared/ACE_AdminLayout.cshtml";
+    Erp.BackOffice.Models.PageSetting pageSetting = new Erp.BackOffice.Models.PageSetting
+    {
+        ModuleName = "DocumentField",
+        ActionName = "Edit",
+        PageTitle = ViewBag.Title,
+        DisplaySearchPanel = false,
+        IsPopup = false,
+        DisplayBackButton = false,
+        //AdvancedSearch = true,
+        //SearchOjectAttr = ViewBag.ListOjectAttrSearch
+    };
+}
+
+@section HeadOfPage {
+    @Html.ScriptTop_ChosenStyle()
+    <style type="text/css">
+    </style>
+}
+@using (Html.BeginPageHeaderContainer(pageSetting))
+{
+}
+@using (Html.BeginForm_AceStyle((string)ViewBag.Title, "Edit", "DocumentField", null, FormMethod.Post, new { @class = "form-horizontal clearfix" }))
+{
+    @Html.ValidationSummary(true)
+    @Html.HiddenFor(model => model.Id)
+    @Html.HiddenFor(model => model.CreatedUserId)
+    @Html.HiddenFor(model => model.AssignedUserId)
+    @Html.HiddenFor(model => model.CreatedDate)
+    @Html.HiddenFor(model => model.IsDeleted)
+    @Html.HiddenFor(model => model.Code)
+    <input type="hidden" name="UrlReferrer" value="@Request.UrlReferrer" />
+    <div class="tabbable">
+        <ul class="nav nav-tabs padding-12 tab-color-blue background-blue" id="tabCustomer">
+            <li class="active">
+                <a data-toggle="tab" href="#tab1">Thông tin </a>
+            </li>
+
+            <li>
+                <a data-toggle="tab" href="#tab2">Danh sách nhân viên được xem</a>
+            </li>
+        </ul>
+        <div class="tab-content">
+            <div class="tab-pane clearfix active" id="tab1">
+                <div class="">
+                    <h3 class="header smaller lighter blue"><span>Thông tin tài liệu</span></h3>
+                    <p></p>
+                    @Html.CustomTextboxFor(model => model.Name, null, null, WidthType.span12, true)
+                    @Html.CustomDropDownListFor(model => model.Category, SelectListHelper.GetSelectList_Setting(Model.Category, "module", null), WidthType.span12, true, null, DropdownListStyle.DropdownListStyleChosen)
+                    @Html.CustomDropDownListFor(model => model.CategoryId, new List<SelectListItem> { new SelectListItem { Text = "- Rỗng -", Value = "" } }, WidthType.span12, true, null, DropdownListStyle.DropdownListStyleChosen)
+                    <h3 class="header smaller lighter blue"><span>Các đặc tính khác</span></h3>
+                    <p></p>
+                    <div class="clearfix list-attr-by-category">
+                        @Html.Action("GetListByModule", "ObjectAttribute", new { area = "Sale", module = "DocumentField", objectId = Model.Id, colum = "col-sm-12" })
+                    </div>
+                </div>
+            </div>
+            <div class="tab-pane clearfix" id="tab2">
+                <input type="hidden" value="@Model.IsSearch" name="staffListcancel" />
+                @Html.Partial("_SearchStaffPartial")
+            </div>
+        </div>
+    </div>
+
+    using (Html.BeginButtonContainer(pageSetting))
+    {
+        <button class="btn btn-mini btn-primary" type="submit" name="Submit" value="Save">
+            <i class="ace-icon fa fa-save"></i>
+            @Wording.Save
+        </button>
+    }
+}
+@section Scripts {
+    <script src="~/Scripts/SearchStaff/LoadTableByCategoryDocumentField.js"></script>
+
+    <script>
+
+
+    </script>
+    @Html.ScriptBottom_ValidationMvc()
+    @Html.ScriptBottom_ChosenStyle()
+}

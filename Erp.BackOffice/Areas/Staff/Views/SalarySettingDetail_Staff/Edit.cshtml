@@ -1,0 +1,37 @@
+@using Erp.BackOffice.App_GlobalResources
+@using Erp.BackOffice.Helpers
+@using Erp.BackOffice.Staff.Models
+
+@model SalarySettingDetail_StaffViewModel
+
+@{
+    ViewBag.Title = Wording.PageEdit_SalarySettingDetail_Staff;
+
+    Layout = "~/Views/Shared/ACE_AdminLayout.cshtml";
+}
+
+@section HeadOfPage {
+    @Html.ScriptTop_ChosenStyle()
+}
+
+@using (Html.BeginForm_AceStyle((string)ViewBag.Title, "Edit", "SalarySettingDetail_Staff", null, FormMethod.Post, new { @class = "form-horizontal", showButton = true }))
+{
+    @Html.ValidationSummary(true)
+    @Html.HiddenFor(model => model.Id)
+    @Html.HiddenFor(model => model.CreatedUserId)
+    @Html.HiddenFor(model => model.AssignedUserId)
+    @Html.HiddenFor(model => model.CreatedDate)
+    @Html.HiddenFor(model => model.IsDeleted)
+
+        @Html.CustomDropDownListFor(model => model.StaffId, StaffIdList, WidthType.span12, true, null, DropdownListStyle.DropdownListStyleDefault)
+    @Html.CustomDropDownListFor(model => model.SalarySettingId, SalarySettingIdList, WidthType.span12, true, null, DropdownListStyle.DropdownListStyleDefault)
+    @Html.CustomDropDownListFor(model => model.SalarySettingDetailId, SalarySettingDetailIdList, WidthType.span12, true, null, DropdownListStyle.DropdownListStyleDefault)
+    @Html.CustomTextboxFor(model => model.DefaultValue, null, null, WidthType.span12)
+
+}
+
+@section Scripts {
+    
+    @Html.ScriptBottom_ValidationMvc()
+    @Html.ScriptBottom_ChosenStyle()
+}

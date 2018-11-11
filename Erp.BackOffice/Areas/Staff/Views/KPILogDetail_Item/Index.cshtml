@@ -1,0 +1,88 @@
+﻿@model IQueryable<KPILogDetail_ItemViewModel>
+
+@using Erp.BackOffice.App_GlobalResources
+@using Erp.BackOffice.Staff.Models
+@using Erp.BackOffice.Helpers
+@using GridMvc.Html
+
+@{
+    ViewBag.Title = Wording.PageIndex_KPILogDetail_Item;
+    Layout = "~/Views/Shared/_PopupLayout.cshtml";
+
+    Erp.BackOffice.Models.PageSetting pageSetting = new Erp.BackOffice.Models.PageSetting
+    {
+        ModuleName = "KPILogDetail_Item",
+        ActionName = "Index",
+        PageTitle = ViewBag.Title,
+        DisplaySearchPanel = true,
+        IsPopup = false,
+        DisplayBackButton = false
+    };
+
+    int n = 0;
+    int KPILogDetailId = Convert.ToInt32(ViewBag.KPILogDetailId);
+    int KPICatalogId = Convert.ToInt32(ViewBag.KPICatalogId);
+}
+
+<link href="@Url.Content("~/assets/css/Gridmvc.css")" rel="stylesheet" type="text/css" />
+<script src="@Url.Content("~/Scripts/gridmvc.min.js")" type="text/javascript"> </script>
+
+@helper GridColumnName(string name, int id)
+{
+    @name
+}
+
+@helper GridColumnAchieveScore(int n, int id, double value, double max)
+{
+    @Html.Hidden("model[" + n + "].Id", id)
+    @Html.TextBox("model[" + n + "].AchieveScore", value, new { @class = "AchieveScore", style = "width: 90px; text-align:right", data_max = max, data_index = n })
+}
+
+@helper GridColumnAchieveKPIWeight(double AchieveKPIWeight, double KPIWeight)
+{
+    <div style="text-align:right; font-weight:bold">@AchieveKPIWeight/@(KPIWeight) %</div>
+}
+
+@using (Html.BeginForm(pageSetting.ActionName, pageSetting.ModuleName, null, FormMethod.Post, new { @class = "form-horizontal" }))
+{
+    @Html.Grid(Model).Columns(columns =>
+    {
+        columns.Add().Titled(Wording.Name).Sortable(false).Sanitized(false).Encoded(false).RenderValueAs(u => GridColumnName(u.Name, u.Id));
+        columns.Add().Titled(Wording.AchieveScore).Sanitized(false).Encoded(false).RenderValueAs(u => GridColumnAchieveScore(n++, u.Id, u.AchieveScore, u.TargetScore_To > u.TargetScore_From ? u.TargetScore_To : u.TargetScore_From)).SetWidth(100);
+        columns.Add().Titled(Wording.TargetScore).RenderValueAs(u => u.TargetScore_From + " - " + u.TargetScore_To).SetWidth(100);
+        columns.Add(u => u.Measure).Titled(Wording.Measure).SetWidth(100);        
+        columns.Add().Titled("Điểm trọng số").Sanitized(false).Encoded(false).RenderValueAs(u => GridColumnAchieveKPIWeight(u.AchieveKPIWeight, u.KPIWeight)).SetWidth(100);
+    })
+
+    <p class="top-10" style="text-align:right;font-weight:bold;">Kết quả: <span style="color:red">@Model.Sum(item => item.AchieveKPIWeight)%</span></p>
+
+    using (Html.BeginButtonContainer(pageSetting))
+    {
+        @Html.Hidden("KPILogDetailId", KPILogDetailId)
+        @Html.Hidden("KPICatalogId", KPICatalogId)
+        <button class="btn btn-mini btn-primary" type="submit" name="Submit" value="Save">
+            <i class="ace-icon fa fa-save"></i>
+            @Wording.Save
+        </button>
+    }
+}
+
+<script type="text/javascript">
+    $(function () {
+        $(".AchieveScore").numberFormat();
+        $(".AchieveScore").focus(function () {
+            $(this).select();
+        });
+
+        $(".AchieveScore").blur(function () {
+            var index = $(this).data("index");
+            var max = $(this).data("max");
+            var val = $(this).val();
+
+            if (val > max) {
+                $(this).val(max);
+                $("#model_" + index + "__AchieveScore").val(max);
+            }
+        });
+    });
+</script>

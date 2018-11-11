@@ -1,0 +1,294 @@
+﻿@model  List<TaskViewModel>
+@using Erp.BackOffice.App_GlobalResources
+@using Erp.BackOffice.Crm.Models
+@using Erp.BackOffice.Helpers
+@using GridMvc.Html
+@{
+    var path = Erp.BackOffice.Helpers.Common.GetSetting("Staff");
+    ViewBag.Title = "Log notifications";
+    bool isPopup = Request["popup"] != null && Request["popup"].ToString().ToLower() == "true" ? true : false;
+    if (isPopup)
+    {
+        Layout = "~/Views/Shared/_PopupLayout.cshtml";
+    }
+    else
+    {
+        Layout = "~/Views/Shared/ACE_AdminLayout.cshtml";
+    }
+    Erp.BackOffice.Models.PageSetting pageSetting = new Erp.BackOffice.Models.PageSetting
+    {
+        ModuleName = "Task",
+        ActionName = "LogNotifications",
+        PageTitle = ViewBag.Title,
+        DisplaySearchPanel = false,
+        IsPopup = false,
+        DisplayBackButton = false
+    };
+    var mau = "";
+}
+<style type="text/css">
+    /* Create the blue navigation bar */
+    /*.navbar {
+        background-color: #3b5998;
+        font-size: 22px;
+        padding: 5px 10px;
+    }*/
+
+    /* Define how each icon button should look like */
+    .button {
+        color: white;
+        display: inline-block; /* Inline elements with width and height. TL;DR they make the icon buttons stack from left-to-right instead of top-to-bottom */
+        position: relative; /* All 'absolute'ly positioned elements are relative to this one */
+        padding: 2px 5px; /* Add some padding so it looks nice */
+    }
+
+    /* Make the badge float in the top right corner of the button */
+    .button__badge {
+        background-color: #fa3e3e;
+        border-radius: 2px;
+        color: white;
+        padding: 1px 3px;
+        font-size: 10px;
+        position: absolute; /* Position the badge within the relatively positioned button */
+        top: 0px;
+        right: 0px;
+        height: 17px;
+        line-height: 15px;
+    }
+
+    .nav .open > a:focus {
+        color: #2c5976;
+    }
+
+    .ace-nav > li > a {
+        min-width: 30px !important;
+    }
+
+    .dropdown-navbar .msg-photo {
+        max-height: 45px;
+        border-radius: 100%;
+        max-width: 45px;
+    }
+
+    .mss-style {
+        padding: 10px 2px;
+        margin: 0;
+        border-top: 1px solid;
+        font-size: 12px;
+        line-height: 16px;
+        color: #555 !important;
+        background-color: transparent !important;
+        white-space: normal;
+        border-top-color: #E4ECF3;
+    }
+
+    .dropdown-navbar .msg-photo {
+        max-width: 45px;
+        float: left;
+        margin-top: 2px;
+        max-height: 45px;
+        border-radius: 100%;
+    }
+
+    .dropdown-navbar .msg-body {
+        display: block;
+        line-height: 20px;
+        white-space: normal;
+        vertical-align: middle;
+        margin-left: 50px;
+        margin-right: 40px;
+    }
+
+    .msg-title {
+        display: inline-block;
+        line-height: 14px;
+        font-size: 12px !important;
+        color: black !important;
+    }
+
+    .msg-time {
+        display: block;
+        font-size: 11px;
+        color: #777;
+    }
+
+    .dropdown-navbar {
+        padding: 0;
+        width: 400px !important;
+    }
+
+    .gritter-image {
+        border-radius: 100%;
+    }
+
+    .notifications-action a {
+        margin: 0px !important;
+        height: 25px !important;
+        max-width: 20px !important;
+    }
+
+    .notifications-action {
+        max-width: 40px;
+        margin: 0px;
+        float: right;
+        position: initial;
+        display: grid !important;
+    }
+
+    .dropdown-navbar > li {
+        padding: 10px 8px;
+        background-color: #FFF;
+    }
+
+    .dropdown-navbar > .dropdown-content {
+        padding: 0;
+        width: 400px;
+    }
+
+    .dropdown-footer {
+        padding: 0px !important;
+    }
+
+    .dropdown-navbar.navbar-pink > li.dropdown-header {
+        background-color: #ECF2F7 !important;
+        color: #8090A0 !important;
+        border-bottom-color: #BCD4E5 !important;
+    }
+</style>
+<link href="@Url.Content("~/assets/css/Gridmvc.css")" rel="stylesheet" type="text/css" />
+<script src="@Url.Content("~/Scripts/gridmvc.min.js")" type="text/javascript"> </script>
+
+@*@using (Html.BeginPageHeaderContainer(pageSetting))
+{
+}*@
+@foreach (var item in Model)
+{
+    if (item.AssignedUserId == item.ModifiedUserId)
+    {
+        mau = "white !important";
+    }
+    else
+    {
+        mau = "#ECF2F7 !important";
+    }
+    <div id="notifications_item_@item.Id" style="background-color:@mau; border-top: 1px solid #E4ECF3;" class="checkallseen_color profile-activity clearfix">
+        <div class="notifications-action pull-right">
+            <a onclick="CheckDisable(@item.Id)" class="red pull-right" data-rel="tooltip" title="" data-placement="left" data-original-title="Ẩn thông báo">
+                <i class="ace-icon fa fa-times"></i>
+            </a>
+            @if (item.AssignedUserId == item.ModifiedUserId)
+            {
+                <a onclick="CheckSeen(@item.Id)" class="blue pull-right" id="seen_@item.Id" data-rel="tooltip" title="" data-placement="left" data-original-title="Đánh dấu chưa đọc thông báo">
+                    <i class="ace-icon fa fa-check-circle"></i>
+                </a>
+            }
+            else
+            {
+                <a onclick="CheckSeen(@item.Id)" class="blue pull-right" id="seen_@item.Id" data-rel="tooltip" title="" data-placement="left" data-original-title="Đánh dấu đã đọc thông báo">
+                    <i class="ace-icon fa fa-check-circle"></i>
+                </a>
+            }
+        </div>
+        <div>
+            @if (!string.IsNullOrEmpty(item.ProfileImage))
+            {
+                <img class="pull-left" alt="@item.ProfileImage" src="@path@item.ProfileImage">
+            }
+            else
+            {
+                <img class="pull-left" alt="no-avatar" src="~/assets/img/no-avatar.png">
+            }
+            <a class="user" href="#"> @item.FullName</a>
+            @item.Subject
+
+            <div class="time">
+                <i class="ace-icon fa fa-clock-o bigger-110"></i>
+                @item.CreatedDate.Value.ToString("HH:mm dd/MM/yyyy")
+            </div>
+        </div>
+
+    </div>
+}
+
+<script src="~/Scripts/jquery.signalR-2.2.1.min.js" type="text/javascript"></script>
+<script src="~/signalr/hubs"></script>
+@section Scripts {
+<script type="text/javascript">
+
+
+    // This optional function html-encodes messages for display in the page.
+    function htmlEncode(value) {
+        var encodedValue = $('<div />').text(value).html();
+        return encodedValue;
+    }
+
+    $(document).ready(function () {
+        $('[data-rel="tooltip"]').tooltip({ container: 'body' });
+
+    });
+
+    function CheckSeen(Id) {
+        $.ajax({
+            url: '/Task/CheckSeen',
+            type: 'GET',
+            data: { Id: Id },
+            success: function (res) {
+                if (res == "success") {
+                    //  $(".button__badge").text(parseInt($(".button__badge").text()) - 1);
+                    $("#notifications_item_" + Id).css('background-color', 'white');
+                    if ($(".button__badge").text() <= 0) {
+                        $(".button__badge").hide();
+                    }
+                    $("#seen_" + Id).tooltip('hide')
+                    .attr('data-original-title', 'Chưa xem')
+                    .tooltip('fixTitle')
+                    .tooltip('show');
+                    $(".button__badge").show();
+                }
+                else if (res == "notseen") {
+                    //  $(".button__badge").text(parseInt($(".button__badge").text()) + 1);
+                    $("#notifications_item_" + Id).css('background-color', '#ECF2F7');
+
+                }
+                else {
+                    alertPopup("Lỗi", "Dữ liệu tìm không thấy! Vui lòng kiểm tra lại", "danger");
+                }
+            }
+        });
+    }
+    function CheckDisable(Id) {
+        $.ajax({
+            url: '/Task/CheckDisable',
+            type: 'GET',
+            data: { Id: Id },
+            success: function (res) {
+                if (res == "notseen") {
+                    //    $(".button__badge").text(parseInt($(".button__badge").text()) - 1);
+                    $("#notifications_item_" + Id).closest('li').remove();
+                    if ($(".button__badge").text() <= 0) {
+                        $(".button__badge").hide();
+                    }
+                }
+                else if (res == "seen") {
+                    $("#notifications_item_" + Id).closest('li').remove();
+                }
+                else {
+                    alertPopup("Lỗi", "Dữ liệu tìm không thấy! Vui lòng kiểm tra lại", "danger");
+                }
+            }
+        });
+    }
+    function CheckAllSeen() {
+        $.ajax({
+            url: '/Task/CheckAllSeen',
+            type: 'GET',
+            success: function (res) {
+                if (res == "success") {
+                    //     $(".button__badge").hide();
+                    $(".checkallseen_color").css('background-color', 'white');
+                }
+            }
+        });
+    }
+</script>
+}

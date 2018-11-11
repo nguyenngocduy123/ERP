@@ -1,0 +1,38 @@
+﻿@model Erp.BackOffice.Sale.Models.ProductInboundDetailViewModel
+@using Erp.BackOffice.Helpers
+@{
+    var thanh_tien = Model.Quantity * Model.Price;
+    var locode_null = string.IsNullOrEmpty(Model.LoCode) ? "locode_null" : "";
+    var valid_null = string.IsNullOrEmpty(Model.LoCode) ? "locode valid_null" : "";
+}
+<tr role="role_@(Model.OrderNo)" id="product_item_@Model.OrderNo" data-id="@Model.OrderNo">
+    <td class="text-center">
+        <span>@(Model.OrderNo + 1)</span>
+        @*<br />
+            <label class="toggle_template_location label label-info" data-toggle="tooltip" data-placement="right" title="Bấm để hiển thị danh sách mã vạch và vị trí sản phẩm"><i class="fa fa-angle-double-down"></i></label>*@
+    </td>
+    <td class="detail_item_id">
+        @Html.Hidden("DetailList[" + Model.OrderNo + "].ProductId", Model.ProductId)
+        @Model.ProductName
+    </td>
+    <td class="detail_locode">
+        @Html.TextBox("DetailList[" + Model.OrderNo + "].LoCode", Model.LoCode, new { @style = "width:100px;", @class = valid_null })
+        <input class="form-control input-mask-date @(Model.ExpiryDate == null ? "expiry_date valid_null" : "")" type="text" id="DetailList_@(Model.OrderNo)_ExpiryDate" name="DetailList[@Model.OrderNo].ExpiryDate" value="@Model.ExpiryDate" style=" width:100px;">
+    </td>
+    <td class="has-error">
+        <input type="hidden" name="DetailList[@(Model.OrderNo)].Unit" value="" class="detail_item_unit" />
+        <input type="number" style="width:100%" value="@Model.Quantity" data-val-range="Số lượng phải lớn hơn 1" name="DetailList[@Model.OrderNo].Quantity" id="DetailList_@(Model.OrderNo)_Quantity" class="detail_item_qty numberinput1" autocomplete="off" />
+        <span style="display:block; font-size:11px;" class="field-validation-valid help-inline" data-valmsg-for="DetailList_@(Model.OrderNo)_Quantity" data-valmsg-replace="false"></span>
+    </td>
+    <td class="">
+        <input class="detail_item_price numberinput2" type="text" id="DetailList_@(Model.OrderNo)_Price" name="DetailList[@(Model.OrderNo)].Price" value="@Model.Price" style="width:100%" data-val="true" data-val-required="Chưa nhập giá" autocomplete="off" />
+        <span style="display:block; font-size:11px;" class="field-validation-valid help-inline" data-valmsg-for="DetailList_@(Model.OrderNo)_Price" data-valmsg-replace="false"></span>
+        @*@Html.TextBox("DetailList[" + Model.OrderNo + "].Price", Model.Price, new { style = "width:85px", @class = "detail_item_price", autocomplete = "off" })*@
+    </td>
+    <td class="detail_item_total">@thanh_tien.ToCurrencyStr(null)</td>
+    <td class="text-center">
+        <a class="btn-delete-item">
+            <i class="ace-icon fa fa-trash red bigger-120" style="cursor:pointer"></i>
+        </a>
+    </td>
+</tr>

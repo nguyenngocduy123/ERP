@@ -1,0 +1,216 @@
+﻿@using Erp.BackOffice.App_GlobalResources
+@using Erp.BackOffice.Helpers
+@using Erp.BackOffice.Sale.Models
+
+@model ProductOutboundViewModel
+
+@{
+    ViewBag.Title = Wording.PageCreate_ProductOutbound;
+
+    Layout = "~/Views/Shared/ACE_AdminLayout.cshtml";
+    Erp.BackOffice.Models.PageSetting pageSetting = new Erp.BackOffice.Models.PageSetting
+    {
+        ModuleName = "ProductOutbound",
+        ActionName = "Create",
+        PageTitle = ViewBag.Title,
+        DisplaySearchPanel = false,
+        IsPopup = false,
+        DisplayBackButton = true
+    };
+
+    int n = -1;
+    //IEnumerable<SelectListItem> drugStoreList = Erp.BackOffice.Helpers.SelectListHelper.GetSelectList_DepartmentAllNew(Model.BranchId, Wording.Empty);
+}
+
+@section HeadOfPage {
+    @Html.ScriptTop_ChosenStyle()
+}
+
+@using (Html.BeginPageHeaderContainer(pageSetting))
+{
+
+}
+
+@using (Html.BeginForm_AceStyle((string)ViewBag.Title, "CreateFromInvoice", "ProductOutbound", null, FormMethod.Post, new { id = "ProductOutbound", @class = "form-horizontal clearfix" }))
+{
+    @Html.ValidationSummary(true)
+    @Html.HiddenFor(model => model.CreatedUserId)
+    @Html.HiddenFor(model => model.InvoiceId)
+    <div class="row">
+        <div class="col-sm-7">
+            @if (ViewBag.FailedMessage != null && ViewBag.FailedMessage != "")
+            {
+                <div class="alert alert-block alert-danger">
+                    <button class="close" data-dismiss="alert" type="button">
+                        <i class="ace-icon fa fa-times"></i>
+                    </button>
+                    <i class="ace-icon fa fa-warning red"></i>
+                    @ViewBag.FailedMessage
+                </div>
+            }
+
+
+
+            <table class="table table-bordered top-10">
+                <thead>
+                    <tr>
+                        <th style="width:50px">STT</th>
+                        <th>Tên sản phẩm</th>
+                        <th>Lô/Hạn SD</th>
+                        <th style="width:50px">SL</th>
+                        <th style="width:100px">Đơn giá</th>
+                        <th style="width:100px">Thành tiền</th>
+                    </tr>
+                </thead>
+                <tbody class="detailList">
+                    @for (int i = 0; i < Model.DetailList.Count; i++)
+                    {
+                        var item = Model.DetailList[i];
+                        item.OrderNo = i;
+
+                        <tr class="detail_item" role="@(item.OrderNo + 1)" id="product_item_@item.ProductId" data-id="@item.ProductId" style="background: #EFF3F8; font-weight: bold">
+                            <td class="text-center">
+                                <span>@(item.OrderNo + 1)</span>
+                            </td>
+                            <td class="has-error detail_item_id">
+                                @Html.Hidden("DetailList[" + item.OrderNo + "].ProductId", item.ProductId)
+                                @Html.Hidden("DetailList[" + item.OrderNo + "].ProductCode", item.ProductCode)
+                                @Html.Hidden("DetailList[" + item.OrderNo + "].ProductName", item.ProductName)
+                                @item.ProductCode - @item.ProductName
+                            </td>
+                            <td class="has-error">
+                                @Html.TextBox("DetailList[" + item.OrderNo + "].Quantity", item.Quantity, new { style = "width:50px", @class = "detail_item_qty", autocomplete = "off", @readonly = "readonly" })
+                            </td>
+                            <td class="has-error detail-product-price">
+                                @Html.TextBox("DetailList[" + item.OrderNo + "].Price", item.Price, new { style = "width:85px", @class = "detail_item_price", autocomplete = "off", @readonly = "readonly" })
+                            </td>
+                            <td class="detail_item_total">@Erp.BackOffice.Helpers.Common.PhanCachHangNgan(item.Quantity * item.Price)</td>
+                        </tr>
+                        <tr class="template_location" style="" data-productid="@item.ProductId" data-productcode="@item.ProductCode">
+                            <td></td>
+                            <td colspan="4">
+                                <table class="table table-bordered">
+                                    <thead>
+                                        <tr>
+                                            <th style="width:20px">STT</th>
+                                            <th>SN</th>
+                                            <th>Kệ</th>
+                                            <th>Tầng</th>
+                                            <th>Lô sản xuất</th>
+                                            <th>Ngày hết hạn</th>
+                                            <th></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach (var location in item.ListWarehouseLocationItemViewModel)
+                                        {
+                                            n++;
+                                            <tr>
+                                                <td>
+                                                    <span>@((item.OrderNo + 1) + "." + (n + 1))</span>
+                                                    <input type="hidden" value="@location.Id" name="LocationItemList[@(n)].Id" id="LocationItemList_@(n)__Id" />
+                                                    <input type="hidden" value="@item.ProductId" name="LocationItemList[@(n)].ProductId" />
+                                                </td>
+                                                <td>
+                                                    <input type="text" name="LocationItemList[@n].SN" id="LocationItemList_@(n)__SN" value="@location.SN" readonly="readonly" style="width:100%" />
+                                                </td>
+                                                <td><input type="text" name="LocationItemList[@n].Shelf" id="LocationItemList_@(n)__Shelf" value="@location.Shelf" autocomplete="off" readonly="readonly" style="width:30px;" /></td>
+                                                <td><input type="text" name="LocationItemList[@n].Floor" id="LocationItemList_@(n)__Floor" value="@location.Floor" autocomplete="off" readonly="readonly" style="width:30px;" /></td>
+                                                <td style="width:100px;">
+                                                    <input type="text" name="LocationItemList[@n].LoCode" id="LocationItemList_@(n)__LoCode" value="@location.LoCode" readonly="readonly" style="width:100%;" />
+                                                </td>
+                                                <td style="width:100px;">
+                                                    <input type="text" name="LocationItemList[@n].ExpiryDate" id="LocationItemList_@(n)__ExpiryDate" value="@(location.ExpiryDate.HasValue?location.ExpiryDate.Value.ToShortDateString():"")" readonly="readonly" style="width:100%;" />
+                                                </td>
+                                                <td style="width:50px; text-align:center">
+                                                    <span class="input-group-addon" onclick="OpenPopup('/WarehouseLocationItem/Index?IsPopup=true&OrderNo=@n&productId=@location.ProductId&warehouseId=@location.WarehouseId', 'Tìm kiếm dữ liệu', 800, 600)" style="cursor:pointer">
+                                                        <i class="ace-icon fa fa-search"></i>
+                                                    </span>
+                                                </td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+        <div class="col-sm-5">
+            <div class="tabbable">
+                <ul class="nav nav-tabs padding-12 tab-color-blue background-blue" id="tabCustomer">
+                    <li class="active">
+                        <a data-toggle="tab" href="#tab1">Thông tin chi tiết</a>
+                    </li>
+                </ul>
+                <div class="tab-content">
+                    @*@Html.CustomDropDownListFor(model => model.BranchId, drugStoreList, WidthType.span4, true, null, DropdownListStyle.DropdownListStyleChosen)*@
+                    @Html.CustomDropDownListFor(model => model.WarehouseSourceId, Model.SelectList_WarehouseSource, WidthType.span12, true, "- Chọn kho -", DropdownListStyle.DropdownListStyleDefault)
+                    @*@Html.ModulePopupFor(m => m.CreatedStaffId, "Staffs", Model.CreatedStaffName, false, false, false, null, null, "Search")*@
+                    @*@Html.DateTimePicker(model => model.CreatedDate, "dd/MM/yyyy H:mm", "00/00/0000 00:00:00", true, false)*@
+                    @Html.CustomTextAreaFor(model => model.Note, null, WidthType.span12)
+                    <div class="control-group form-group">
+                        <div class="col-xs-4 control-label"><label for="InvoiceCode">Mã đơn hàng</label></div><div class="col-xs-8 control-value" style="">@Model.InvoiceCode</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    using (Html.BeginButtonContainer(pageSetting))
+    {
+        <button class="btn btn-mini btn-primary" type="submit" name="Submit" value="Save" onclick="return Check();">
+            <i class="ace-icon fa fa-save"></i>
+            @Wording.Save
+        </button>
+    }
+}
+
+@section Scripts {
+    @Html.ScriptBottom_ValidationMvc()
+    @Html.ScriptBottom_ChosenStyle()
+    @Html.ScriptBottom_DatePicker("dd/MM/yyyy H:mm")
+
+    <script type="text/javascript">
+        $(function () {
+            $('.detail_item_qty').numberOnly();
+            $('.detail_item_price').numberFormat();
+
+            $("#WarehouseSourceId").change(function () {
+                ShowLoading();
+                window.location = window.location.href.split("?")[0] + "?InvoiceId=@(Model.InvoiceId)&WarehouseSourceId=" + $(this).val();
+            });
+        });
+
+        function selectLocationItem(id, LoCode, Floor, ExpiryDate, Shelf, SN, orderNo) {
+            $("#LocationItemList_" + orderNo + "__Id").val(id);
+            $("#LocationItemList_" + orderNo + "__SN").val(SN);
+            $("#LocationItemList_" + orderNo + "__Shelf").val(Shelf);
+            $("#LocationItemList_" + orderNo + "__Floor").val(Floor);
+            $("#LocationItemList_" + orderNo + "__LoCode").val(LoCode);
+            $("#LocationItemList_" + orderNo + "__ExpiryDate").val(ExpiryDate);
+            ClosePopup();
+        }
+        function Check() {
+            ShowLoading();
+            var WarehouseSourceId = $("#WarehouseSourceId").val();
+            //var StaffCreate = $("#CreatedStaffId").val();
+            var messagge = "";
+            //if (StaffCreate == '') {
+            //    messagge += "Người lập phiếu chưa có <br>";
+            //}
+            if (WarehouseSourceId == '') {
+                messagge += "Kho xuất sản phẩm chưa có <br>";
+            }
+            if (messagge != '') {
+                alertPopup('Lỗi!', messagge, 'error');
+                HideLoading();
+                return false;
+            }
+            else {
+                return true;
+            }
+        }
+    </script>
+}

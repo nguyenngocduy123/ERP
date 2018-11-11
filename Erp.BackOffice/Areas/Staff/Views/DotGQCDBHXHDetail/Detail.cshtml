@@ -1,0 +1,105 @@
+@using Erp.BackOffice.App_GlobalResources
+@using Erp.BackOffice.Helpers
+@using Erp.BackOffice.Staff.Models
+
+@model DotGQCDBHXHDetailViewModel
+
+@{
+    ViewBag.Title = Wording.PageDetail_DotGQCDBHXHDetail;
+
+
+    Layout = "~/Views/Shared/" + (Request["IsPopup"] == null ? "ACE_AdminLayout.cshtml" : "_PopupLayout.cshtml");
+
+    Erp.BackOffice.Models.PageSetting pageSetting = new Erp.BackOffice.Models.PageSetting
+    {
+        ModuleName = "DotGQCDBHXHDetail",
+        ActionName = "Edit",
+        PageTitle = ViewBag.Title,
+        DisplaySearchPanel = false,
+        IsPopup = false,
+        DisplayBackButton = false
+    };
+}
+
+@using (Html.BeginPageHeaderContainer(pageSetting))
+{
+
+}
+
+<div class="detail-view">
+    <div class="row control-group">
+        @Html.DetailViewItemFor2(model => model.StaffName)
+    </div>
+    <div class="row control-group">
+        @Html.DetailViewItemFor2(model => model.SocietyCode)
+    </div>
+    <div class="row control-group">
+        @Html.DetailViewItemFor2(model => model.DayOffName)
+    </div>
+    <div class="row control-group">
+        @Html.DetailViewItemFor2(model => model.DayStart)
+    </div>
+    <div class="row control-group">
+        @Html.DetailViewItemFor2(model => model.DayEnd)
+    </div>
+    <div class="row control-group">
+        @Html.DetailViewItemFor2(model => model.Quantity)
+    </div>
+    <div class="row control-group">
+        @Html.DetailViewItemFor2(model => model.DKTH_TinhTrang)
+    </div>
+    <div class="row control-group">
+        @Html.DetailViewItemFor2(model => model.DKTH_ThoiDiem)
+    </div>
+    <div class="row control-group">
+        @Html.DetailViewItemFor2(model => model.PaymentMethod)
+    </div>
+    <div class="row control-group">
+        @Html.DetailViewItemFor2(model => model.Note)
+    </div>
+</div>
+
+@using (Html.BeginButtonContainer(pageSetting))
+{
+    if (Erp.BackOffice.Filters.SecurityFilter.AccessRight("Edit", "DotGQCDBHXHDetail", "Staff"))
+    {
+        <a class="btn btn-mini btn-primary" href="@Url.Action("Edit", pageSetting.ModuleName, new { Id = Model.Id })">
+            <i class="ace-icon fa fa-edit"></i>
+            @Wording.Edit
+        </a>
+    }
+
+}
+
+@section Scripts {
+    <script type="text/javascript">
+        function CheckIsval() {
+            if ($('[name="DeleteAll-checkbox"]').is(':checked') == false) {
+                alert("Phải chọn ít nhất 1 item.");
+                return false;
+            }
+            else {
+                if (confirm('Bạn có chắc muốn xóa các item đã chọn ?')) {
+                    return true;
+                }
+                else {
+                    return false;
+                }
+            }
+        }
+
+        $('[name="Delete"]').click(function () {
+            if (confirm('Bạn có chắc muốn xóa item ?')) {
+                $(this).closest('tr').children('td').each(function (i, e) {
+                    $(this).find("input.class-delete-all").prop("checked", true);
+                    return true;
+                })
+            }
+            else {
+                return false;
+            }
+
+        })
+
+    </script>
+}

@@ -1,0 +1,86 @@
+@using Erp.BackOffice.App_GlobalResources
+@using Erp.BackOffice.Helpers
+@using Erp.BackOffice.Staff.Models
+
+@model CalendarVisitDrugStoreViewModel
+
+@{
+    ViewBag.Title = "Chi tiết kế hoạch thăm nhà thuốc";
+
+    Layout = "~/Views/Shared/" + (Request["IsPopup"] == null ? "ACE_AdminLayout.cshtml" : "_PopupLayout.cshtml");
+
+    Erp.BackOffice.Models.PageSetting pageSetting = new Erp.BackOffice.Models.PageSetting
+    {        
+        ModuleName = "CalendarVisitDrugStore",
+        ActionName = "Detail",
+        PageTitle = ViewBag.Title,
+        DisplaySearchPanel = false,
+        IsPopup = false,
+        DisplayBackButton = true
+    };
+}
+
+@using(Html.BeginPageHeaderContainer(pageSetting))
+{
+
+}
+
+<div class="detail-view">
+    <div class="row control-group">
+        @Html.DetailViewItemFor2(model => model.StartDate)
+    </div>
+    <div class="row control-group">
+        @Html.DetailViewItemFor2(model => model.EndDate)
+    </div>
+    @*<div class="row control-group">
+        @Html.DetailViewItemFor2(model => model.BranchName)
+    </div>*@
+    <div class="row control-group">
+        @Html.DetailViewItemFor2(model => model.DrugStoreCode)
+    </div>
+    <div class="row control-group">
+        @Html.DetailViewItemFor2(model => model.DrugStoreName)
+    </div>
+    <div class="row control-group">
+        @Html.DetailViewItemFor2(model => model.StaffName)
+    </div>
+    <div class="row control-group">
+        @Html.DetailViewItemFor2(model => model.Status)
+    </div>
+    <div class="row control-group">
+        @Html.DetailViewItemFor2(model => model.Note)
+    </div>
+</div>
+
+@section Scripts {
+    <script type="text/javascript">
+        function CheckIsval() {
+            if ($('[name="DeleteAll-checkbox"]').is(':checked') == false) {
+                alert("Phải chọn ít nhất 1 item.");
+                return false;
+            }
+            else {
+                if (confirm('Bạn có chắc muốn xóa các item đã chọn ?')) {
+                    return true;
+                }
+                else {
+                    return false;
+                }
+            }
+        }
+
+        $('[name="Delete"]').click(function () {
+            if (confirm('Bạn có chắc muốn xóa item ?')) {
+                $(this).closest('tr').children('td').each(function (i, e) {
+                    $(this).find("input.class-delete-all").prop("checked", true);
+                    return true;
+                })
+            }
+            else {
+                return false;
+            }
+
+        })
+
+    </script>
+}

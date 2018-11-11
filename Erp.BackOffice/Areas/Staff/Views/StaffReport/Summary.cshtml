@@ -1,0 +1,80 @@
+﻿@model IEnumerable<Erp.BackOffice.Staff.Models.SymbolTimekeepingViewModel>
+@{ 
+    int count = 1;
+int index = 0;
+int totalRows = Model.Count();
+//List<Erp.Domain.Staff.Entities.vwDayOff> Dayoff = (List<Erp.Domain.Staff.Entities.vwDayOff>)ViewBag.qThongKeNghiPhep;
+}
+<style>
+    .infobox {
+    width: 220px !important;
+    border:0px!important;
+
+}
+
+</style>
+<div class="widget-box">
+    <div class="widget-header">
+        <h4 class="widget-title">
+            <i class="ace-icon fa fa-line-chart"></i>
+            Tổng quan thông tin nghỉ phép
+        </h4>
+    </div>
+    <div class="widget-body">
+        <div class="widget-main clearfix">
+            <p><b>@ViewBag.DateRangeText (Có 0 đơn xin nghỉ phép)</b></p>
+          
+
+            @foreach (var item in Model)
+            {
+            if (count == 1)
+            {
+            @Html.Raw("<div class=\"dayoff-wrap\">\r\n");
+            }
+            <div class="col-sm-6" style="padding:2px;width:auto!important">
+                <a  href="#"
+                   @*href="@Url.Action("Index", "DayOff", new { area = "Staff", TypeDayOff = item.Id, start_date = ViewBag.aDateTime, end_date = ViewBag.retDateTime, branchId = ViewBag.BranchId, DepartmentId = ViewBag.DepartmentId })"*@ 
+                   target="_blank">
+                    <div id="dayoff-item-@item.Id" class="dayoff-item">
+                        <div class="infobox" style="color:@(item.Color);border-color:@(item.Color);">
+                            <div class="infobox-icon">
+                                <i class="ace-icon @item.Icon" style="background-color:@(item.Color)"></i>
+                            </div>
+                            <div class="infobox-data">
+                                <span class="infobox-data-number ng-binding">0</span>
+                                <div class="infobox-content">
+                                    @item.Name
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    </a>
+</div>
+
+            if (index == totalRows - 1)
+            {
+            @Html.Raw("</div>\r\n");
+            }
+            else
+            {
+            if (count == 2)
+            {
+            count = 1;
+            @Html.Raw("</div>\r\n");
+            }
+            else
+            {
+            count++;
+            }
+
+            index++;
+            }
+            }
+
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+
+</script>

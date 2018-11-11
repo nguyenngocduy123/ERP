@@ -1,0 +1,136 @@
+﻿@model IEnumerable<Erp.BackOffice.Areas.Cms.Models.NewsViewModel>
+@using System.Globalization
+@using GridMvc.Html
+@using Erp.BackOffice.App_GlobalResources
+@using Erp.BackOffice.Helpers
+
+@{
+    ViewBag.Title = Wording.NewsList;
+    Layout = "~/Views/Shared/ACE_AdminLayout.cshtml";
+}
+
+@if (ViewBag.AlertMessage != null && ViewBag.AlertMessage != "")
+{
+    <div class="alert alert-block alert-success">
+        <button class="close" data-dismiss="alert" type="button">
+            <i class="icon-remove"></i>
+        </button>
+        <i class="ace-icon fa fa-check green"></i>
+        @ViewBag.AlertMessage
+    </div>
+}
+
+<link href="@Url.Content("~/assets/css/Gridmvc.css")" rel="stylesheet" type="text/css" />
+<script src="@Url.Content("~/Scripts/gridmvc.min.js")" type="text/javascript"> </script>
+
+<div class="page-header">
+    <h1>
+        @ViewBag.Title
+    </h1>
+</div>
+
+@helper GridColumnCommand(int id)
+{
+    <div class="hidden-phone visible-desktop action-buttons" style="display: inline-block; float: left;">
+        <p>
+            <button name="Delete" value="Delete" type="submit" class="btn btn-mini btn-danger">
+                <i class="ace-icon fa fa-trash bigger-120"></i>
+            </button>
+        </p>
+    </div>
+}
+
+@helper IsPublishedColumn(bool? isPublished)
+{
+    if (isPublished != null && isPublished.Value)
+    {
+        <i class="icon-check"></i>
+    }
+    else
+    {
+        <i class="icon-check-empty"></i>
+    }
+}
+
+@helper TitleColumn(string title, int id)
+{
+    if (string.IsNullOrEmpty(title))
+    {
+        <a href="@Url.Action("EditNews", "News", new { newsId = id })">No Title</a>
+    }
+    else
+    {
+        <a href="@Url.Action("EditNews", "News", new { newsId = id })">@title</a>
+    }
+}
+
+@helper CheckDeleteColumns(int id)
+{
+    <label>
+        <input class="ace class-delete-all" type="checkbox" name="DeleteAll-checkbox" value="@id">
+        <span class="lbl"></span>
+    </label>
+}
+
+@helper BuildCheckAll()
+{
+    <label>
+        <input type="checkbox" name="checkAll" id="checkAll" class="ace" />
+        <span class="lbl"></span>
+    </label>
+}
+
+@using (Html.BeginForm("DeleteAll", "News", FormMethod.Post))
+{
+    <p>
+        @Html.Button(Wording.CreateNew, ButtonType.aTag, ButtonColor.Info, ButtonSize.Mini, true, IconType.Plus, IconSize.Default, false, new { @href = Url.Action("CreateNews", "News") })
+        <button name="DeleteAll" value="DeleteAll" type="submit" class="btn btn-mini btn-danger" onclick="return CheckIsval();">
+            <i class="ace-icon fa fa-trash bigger-120"></i>
+            @Wording.Delete
+        </button>
+    </p>
+
+    @Html.Grid(Model).Columns(columns =>
+        {
+            //columns.Add().Titled(Wording.IndexNumber).SetWidth(20).RenderValueAs(n => (Model.ToList().IndexOf(n) + 1).ToString(CultureInfo.InvariantCulture));
+            columns.Add().Titled(BuildCheckAll().ToHtmlString()).SetWidth(20).Sanitized(false).Encoded(false).RenderValueAs(n => CheckDeleteColumns(n.Id));
+            columns.Add(n => n.Title).Titled(Html.DisplayNameFor(n => n.Title).ToString()).Sortable(false).Sanitized(false).Encoded(false).RenderValueAs(n => TitleColumn(n.Title, n.Id));
+            columns.Add(n => n.IsPublished).Titled(Html.DisplayNameFor(n => n.IsPublished).ToString()).SetWidth(50).Sanitized(false).Encoded(false).RenderValueAs(u => IsPublishedColumn(u.IsPublished));
+            columns.Add(n => n.PublishedDate).Titled(Html.DisplayNameFor(n => n.PublishedDate).ToString()).SetWidth(100);
+            columns.Add(u => u.CreatedDate).Titled(Html.DisplayNameFor(u => u.CreatedDate).ToString()).SetWidth(100);
+            columns.Add().Titled(Wording.Action).Sanitized(false).Encoded(false).RenderValueAs(n => GridColumnCommand(n.Id));
+        }).WithPaging(20)
+}
+
+@section Scripts {
+    <script type="text/javascript">
+        function CheckIsval() {
+            if ($('[name="DeleteAll-checkbox"]').is(':checked') == false) {
+                alert("Phải chọn ít nhất 1 item.");
+                return false;
+            }
+            else {
+                if (confirm('Bạn có chắc muốn xóa các item đã chọn ?')) {
+                    return true;
+                }
+                else {
+                    return false;
+                }
+            }
+        }
+
+        $('[name="Delete"]').click(function () {
+            if (confirm('Bạn có chắc muốn xóa item ?')) {
+                $(this).closest('tr').children('td').each(function (i, e) {
+                    $(this).find("input.class-delete-all").prop("checked", true);
+                    return true;
+                })
+            }
+            else {
+                return false;
+            }
+
+        })
+
+    </script>
+}

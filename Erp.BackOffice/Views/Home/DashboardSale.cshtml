@@ -1,0 +1,298 @@
+﻿@using Erp.BackOffice.App_GlobalResources
+@using Erp.BackOffice.Helpers
+@using System.Globalization;
+@{
+    ViewBag.Title = "Bán hàng";
+    Layout = "~/Views/Shared/ACE_AdminLayout.cshtml";
+
+    Erp.BackOffice.Models.PageSetting pageSetting = new Erp.BackOffice.Models.PageSetting
+    {
+        ModuleName = "",
+        ActionName = "",
+        PageTitle = ViewBag.Title,
+        DisplaySearchPanel = true,
+        IsPopup = false,
+        DisplayBackButton = false,
+        HideClearButton = true,
+        SearchButtonText = "Lấy dữ liệu"
+    };
+    Calendar calendar = CultureInfo.InvariantCulture.Calendar;
+    var weekdefault = calendar.GetWeekOfYear(DateTime.Now, CalendarWeekRule.FirstFourDayWeek, DayOfWeek.Monday);
+    string Month = Request["month"] != null ? Request["month"] : DateTime.Now.Month.ToString();
+    string Year = Request["year"] != null ? Request["year"] : DateTime.Now.Year.ToString();
+    //string manufacturer = Request["manufacturer"] != null ? Request["manufacturer"] : "";
+    //string group = Request["group"] != null ? Request["group"] : "";
+    //string branchId = Request["branchId"] != null ? Request["branchId"] : "";
+    string week = Request["week"] != null ? Request["week"] : weekdefault.ToString();
+    string branchId = Request["branchId"] != null ? Request["branchId"] : "";
+    if (Request["branchId"] == null)
+    {
+        if (Erp.BackOffice.Filters.SecurityFilter.IsAdminDrugStore() || Erp.BackOffice.Filters.SecurityFilter.IsStaffDrugStore())
+        {
+            branchId = Erp.BackOffice.Helpers.Common.CurrentUser.DrugStore;
+        }
+    }
+    ViewData["branchId"] = branchId;
+    string single = Request["single"] != null ? Request["single"] : "month";
+    
+}
+
+<style type="text/css">
+    .widget-main.no-padding .table-bordered td:first-child, .widget-main.no-padding .table-bordered th:first-child {
+        border-left-width: 0px;
+    }
+
+    .widget-main.no-padding .table-bordered > thead > tr > th:last-child {
+        border-right-width: 0px !important;
+    }
+
+    .widget-main.no-padding .table-bordered > tbody > tr:last-child > td {
+        border-bottom-width: 0px !important;
+    }
+    .infobox:hover {
+        background-color:rgba(132, 171, 183, 0.67);
+    }
+    .infobox {
+            width: 100% !important;
+    }
+    .infobox .infobox-content {
+           max-width: 100% !important;
+    }
+</style>
+
+@using (Html.BeginPageHeaderContainer(pageSetting))
+{
+    @Html.Partial("_PartialSearchDrugStore", ViewData["branchId"])
+    <p>
+        Xem dữ liệu theo
+        <label>
+            <input id="single3" name="single" type="radio" class="ace" value="week" @(single == "week" ? "checked=checked" : "")>
+            <span class="lbl"> Tuần</span>
+        </label>
+        <label>
+            <input id="single1" name="single" type="radio" class="ace" value="month" @(single == "month" ? "checked=checked" : "")>
+            <span class="lbl"> Tháng</span>
+        </label>
+
+        <label>
+            <input id="single2" name="single" type="radio" class="ace" value="quarter" @(single == "quarter" ? "checked=checked" : "")>
+            <span class="lbl"> Quý</span>
+        </label>
+
+        <select id="month" name="month" style="@(single == "month" ? "" : "display:none")">
+            @for (int i = 1; i <= 12; i++)
+            {
+                <option @(Month == i.ToString() ? "Selected" : "") value="@i">Tháng @i</option>
+            }
+        </select>
+        <select id="quarter" name="quarter" style="@(single == "quarter" ? "" : "display:none")">
+            <option value="1">Quý I</option>
+            <option value="2">Quý II</option>
+            <option value="3">Quý III</option>
+            <option value="4">Quý IV</option>
+        </select>
+        <select id="week" name="week" style="@(single == "week" ? "" : "display:none")">
+            @for (int i = 1; i <= 52; i++)
+            {
+                //int year=Convert.ToInt32(Year);
+                //var first_day = Erp.BackOffice.Helpers.Common.FirstDateOfWeekISO8601(year, i);
+                //DateTime end_day = first_day.AddDays(6);
+                <option @(week == i.ToString() ? "Selected" : "") value="@i">Tuần @i</option>
+            }
+        </select>
+        <select id="year" name="year">
+            @for (int i = 2016; i <= DateTime.Now.Year; i++)
+            {
+                <option @(Year == i.ToString() ? "Selected" : "") value="@i">Năm @i</option>
+            }
+        </select>
+    </p>
+}
+
+<script src="/Scripts/Chartjs-master/Chartjs.bundle.min.js"></script>
+<script src="/Scripts/Chartjs-master/globalConfig.js"></script>
+
+<div class="row">
+    @if (Erp.BackOffice.Filters.SecurityFilter.AccessRight("Summary", "SaleReport", "Sale"))
+    {
+    <div id="Summary" class="col-sm-5">
+
+        @{Html.RenderAction("Summary", "SaleReport", new { area = "Sale", single = single, year = Year, month = Month, branchId = branchId });}
+    </div>
+    }
+    <div class="col-sm-7">
+@if (Erp.BackOffice.Filters.SecurityFilter.AccessRight("ChartInvoiceDayInMonth", "SaleReport", "Sale"))
+    {
+        <div class="widget-box">
+            <div class="widget-header">
+                <h4 class="widget-title">
+                    Thống kê doanh số theo thời gian
+                </h4>
+            </div>
+            <div class="widget-body">
+                <div class="widget-main">
+                    <div id="ChartInvoiceDayInMonth" style="max-width:700px">
+                        @{Html.RenderAction("ChartInvoiceDayInMonth", "SaleReport", new { area = "Sale", single = single, year = Year, month = Month, branchId = branchId });}
+                    </div>
+                </div>
+            </div>
+        </div>
+        <p></p>
+    }
+    @if (Erp.BackOffice.Filters.SecurityFilter.AccessRight("ChartProductSaleInMonth", "SaleReport", "Sale"))
+    {
+        <div class="widget-box">
+            <div class="widget-header">
+                <h4 class="widget-title">
+                    Top sản phẩm bán chạy nhất
+                </h4>
+            </div>
+            <div class="widget-body">
+                <div class="widget-main">
+                    <div id="ChartProductSaleInMonth" style="max-width:500px">
+                        @{Html.RenderAction("ChartProductSaleInMonth", "SaleReport", new { area = "Sale", single = single, year = Year, month = Month, branchId = branchId });}
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+    </div>
+</div>
+
+@section Scripts {    
+    <script src="/assets/js/jquery.easypiechart.min.js"></script>
+    <script type="text/javascript">
+        $(function () {
+            $('.easy-pie-chart.percentage').each(function () {
+                var $box = $(this).closest('.infobox');
+                var barColor = $(this).data('color') || (!$box.hasClass('infobox-dark') ? $box.css('color') : 'rgba(255,255,255,0.95)');
+                var trackColor = barColor == 'rgba(255,255,255,0.95)' ? 'rgba(255,255,255,0.25)' : '#E2E2E2';
+                var size = parseInt($(this).data('size')) || 50;
+                $(this).easyPieChart({
+                    barColor: barColor,
+                    trackColor: trackColor,
+                    scaleColor: false,
+                    lineCap: 'butt',
+                    lineWidth: parseInt(size / 10),
+                    animate: /msie\s*(8|7|6)/.test(navigator.userAgent.toLowerCase()) ? false : 1000,
+                    size: size
+                });
+            });
+
+
+            $("#quarter").val(currentQuarter);
+
+            var single = "month";
+
+            $("#single1").change(function () {
+                if ($(this).val() == 'month') {
+                    $("#month").show();
+                    $("#week").hide();
+                    $("#quarter").hide();
+                    single = "month";
+                }
+            });
+
+            $("#single2").change(function () {
+                if ($(this).val() == 'quarter') {
+                    $("#month").hide();
+                    $("#week").hide();
+                    $("#quarter").show();
+                    single = "quarter";
+                }
+            });
+            $("#single3").change(function () {
+                if ($(this).val() == 'week') {
+                    $("#month").hide();
+                    $("#quarter").hide();
+                    $("#week").show();
+                    single = "week";
+                }
+            });
+            $("button[name='search']").click(function (e) {
+                e.preventDefault();
+                ShowLoading();
+
+                var month = $("#month option:selected").val();
+                var quarter = $("#quarter option:selected").val();
+                var year = $("#year option:selected").val();
+                var CityId = $("#CityId option:selected").val();
+                var DistrictId = $("#DistrictId option:selected").val();
+                var branchId = $("#branchId option:selected").val();
+                var week = $("#week option:selected").val();
+                var done1 = 0, done2 = 0, done3 = 0;
+
+                $.get('@Url.Action("Summary", "SaleReport", new { area = "Sale" })/?single=' + single + '&year=' + year + '&month=' + month + '&quarter=' + quarter + '&week=' + week + '&CityId=' + CityId + '&DistrictId=' + DistrictId + '&branchId=' + branchId, function (html) {
+                    $("#Summary").html(html);
+                    done1 = 1;
+                    if (done1 == 1 && done2 == 1 && done3 == 1)
+                    {
+                        HideLoading();
+                    }
+                });
+
+                $.get('@Url.Action("ChartInvoiceDayInMonth", "SaleReport", new { area = "Sale" })/?single=' + single + '&year=' + year + '&month=' + month + '&quarter=' + quarter + '&week=' + week + '&CityId=' + CityId + '&DistrictId=' + DistrictId + '&branchId=' + branchId, function (html) {
+                    $("#ChartInvoiceDayInMonth").html(html);
+                    done2 = 1;
+                    if (done1 == 1 && done2 == 1 && done3 == 1) {
+                        HideLoading();
+                    }
+                });
+
+                $.get('@Url.Action("ChartProductSaleInMonth", "SaleReport", new { area = "Sale" })/?single=' + single + '&year=' + year + '&month=' + month + '&quarter=' + quarter + '&week=' + week + '&CityId=' + CityId + '&DistrictId=' + DistrictId + '&branchId=' + branchId, function (html) {
+                    $("#ChartProductSaleInMonth").html(html);
+                    done3 = 1;
+                    if (done1 == 1 && done2 == 1 && done3 == 1) {
+                        HideLoading();
+                    }
+                });
+                return false;
+            });
+        });
+        function Approved(week, year,branchId) {
+            ShowLoading();
+            if (confirm('Bạn có muốn báo đã chuyển tiền lên kế toán Công ty không ?')) {
+                $.ajax({
+                    type: "POST",
+                    datatype: 'json',
+                    url: '@Url.Action("ApprovedDrugStore", "ProductInvoice", new { area = "Sale" })',
+                    data: {
+                        week: week,
+                        year: year,
+                        branchId: branchId
+                    },
+                    success: function (data) {
+                        if (data.Result == 'success') {
+                            alertPopup("Thông báo", data.Message, "success");
+                            var single = $("[name='single']:checked").val();
+                            console.log(single);
+                            var month = $("#month option:selected").val();
+                            var quarter = $("#quarter option:selected").val();
+                            var year = $("#year option:selected").val();
+                            var CityId = $("#CityId option:selected").val();
+                            var DistrictId = $("#DistrictId option:selected").val();
+                            var branchId = $("#branchId option:selected").val();
+                            var week = $("#week option:selected").val();
+                            var done1 = 0, done2 = 0, done3 = 0;
+
+                            $.get('@Url.Action("Summary", "SaleReport", new { area = "Sale" })/?single=' + single + '&year=' + year + '&month=' + month + '&quarter=' + quarter + '&week=' + week + '&CityId=' + CityId + '&DistrictId=' + DistrictId + '&branchId=' + branchId, function (html) {
+                                $("#Summary").html(html);
+                            });
+                        }
+                        else {
+                            alertPopup("Lỗi", data.Message, "danger");
+                        }
+                    }
+                });
+                HideLoading();
+                return true;
+            }
+            else {
+                HideLoading();
+                return false;
+               
+            }
+
+        }
+    </script>
+}

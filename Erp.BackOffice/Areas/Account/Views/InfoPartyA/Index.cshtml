@@ -1,0 +1,231 @@
+@model IEnumerable<InfoPartyAViewModel>
+
+@using Erp.BackOffice.App_GlobalResources
+@using Erp.BackOffice.Account.Models
+@using Erp.BackOffice.Helpers
+@using GridMvc.Html
+
+@{
+    ViewBag.Title = Wording.PageIndex_InfoPartyA;
+    bool isPopup = Request["popup"] != null && Request["popup"].ToString().ToLower() == "true" ? true : false;
+    if (isPopup)
+    {
+        Layout = "~/Views/Shared/_PopupLayout.cshtml";
+    }
+    else
+    {
+        Layout = "~/Views/Shared/ACE_AdminLayout.cshtml";
+    }
+}
+
+@if (ViewBag.SuccessMessage != null && ViewBag.SuccessMessage != "")
+{
+    <div class="alert alert-block alert-success">
+        <button class="close" data-dismiss="alert" type="button">
+            <i class="ace-icon fa fa-times"></i>
+        </button>
+        <i class="ace-icon fa fa-check green"></i>
+        @ViewBag.SuccessMessage
+    </div>
+}
+
+@if (ViewBag.FailedMessage != null && ViewBag.FailedMessage != "")
+{
+    <div class="alert alert-block alert-danger">
+        <button class="close" data-dismiss="alert" type="button">
+            <i class="ace-icon fa fa-times"></i>
+        </button>
+        <i class="ace-icon fa fa-warning red"></i>
+        @ViewBag.FailedMessage
+    </div>
+}
+
+<link href="@Url.Content("~/assets/css/Gridmvc.css")" rel="stylesheet" type="text/css" />
+<script src="@Url.Content("~/Scripts/gridmvc.min.js")" type="text/javascript"> </script>
+
+@helper GridColumnCommand(int id)
+{
+    <div class="hidden-phone visible-desktop action-buttons" style="display: inline-block; float: left;">
+        <p>
+            @if (Erp.BackOffice.Filters.SecurityFilter.AccessRight("Delete", "InfoPartyA", "Account"))
+            {
+                <button name="Delete" value="Delete" type="submit" class="btn btn-mini btn-danger">
+                    <i class="ace-icon fa fa-trash bigger-120"></i>
+                </button>
+            }
+            @if (Erp.BackOffice.Filters.SecurityFilter.AccessRight("Edit", "InfoPartyA", "Account"))
+            {
+                <a class="btn btn-mini btn-success" href="@Url.Action("edit", "InfoPartyA", new { Id = id })">
+                    <i class=" glyphicon glyphicon-edit bigger-120"></i>
+                </a>
+            }
+        </p>
+    </div>
+}
+
+@*@helper GridColumnName(string name, int id, bool isPopup)
+    {
+        if (isPopup)
+        {
+           <a onclick="parent.selectBranchItem(@id)">@name</a>
+        }
+        else
+        {
+            name = string.IsNullOrEmpty(name) ? "No Title" : name;
+            <a href="@Url.Action("edit", "InfoPartyA" , new { Id= id })">@name</a>
+        }
+    }*@
+@helper GridColumnName(string name, int id, bool isPopup)
+{
+
+    name = string.IsNullOrEmpty(name) ? "No Title" : name;
+    <a onclick="OpenPopup('@Url.Action("Detail", "InfoPartyA", new { area = "Account", Id = id, isPopup = "true" })', '@Wording.PageDetailInfoPartyA', 600, 600)"><b>@name</b></a>
+}
+@helper GridColumnCategoryValue(object value)
+{
+    var attr = Erp.BackOffice.Helpers.Common.GetCategoryByValueOrId("value", value);
+    <span>@(attr != null ? attr.Name : "")</span>
+}
+
+@helper CheckDeleteColumns(int Id)
+{
+    <label>
+        <input class="ace class-delete-all" type="checkbox" name="DeleteId-checkbox" value="@Id">
+        <span class="lbl"></span>
+    </label>
+}
+
+@helper BuildCheckAll()
+{
+    <label>
+        <input class="ace" type="checkbox" name="checkAll" id="checkAll" />
+        <span class="lbl"></span>
+    </label>
+}
+<style>
+    .form-search span.row span label {
+        line-height: 34px;
+        text-align: right;
+    }
+
+    .form-group select {
+        height: 34px;
+        text-align: center;
+        padding: 0px;
+    }
+</style>
+
+@if (!isPopup)
+{
+    <div class="page-header">
+        <h1>
+            @ViewBag.Title
+            @*<small><i class="ace-icon fa fa-angle-double-right"></i>...</small>*@
+        </h1>
+    </div>
+    using (Html.BeginForm("Index", "InfoPartyA", FormMethod.Get, new { @class = "form-inline form-search" }))
+    {
+        <div class="col-sm-12" style="padding:0px">
+            <div class="widget-box collapsed">
+                <div class="widget-header" style="padding-top:4px;">
+                    <span class="form-group">
+                        @Html.TextBox("Name", null, new { placeholder = Wording.surrogate })
+                    </span>
+                    <span class="form-group">
+                        @Html.TextBox("CompanyName", null, new { placeholder = Wording.CompanyName })
+                    </span>
+                    <span class="form-group">
+                        @Html.TextBox("TaxCode", null, new { placeholder = Wording.TaxCode })
+                    </span>
+
+                    <span class="form-group top-5">
+                        <button onclick="return true;" class="btn btn-primary btn-sm">
+                            @Wording.Search
+                            <i class="ace-icon fa fa-search icon-on-right bigger-110"></i>
+                        </button>
+                    </span>
+                    <span class="form-group top-5">
+                        <a href="@Url.Action("Index", "InfoPartyA", new { area = "Account" })" class="btn btn-black btn-sm">
+                            @Wording.Reset
+                            <i class="ace-icon fa fa-refresh icon-on-right bigger-110 "></i>
+                        </a>
+                    </span>
+                    @*<div class="widget-toolbar">
+                            <a href="#" data-action="collapse">
+                                <i class="ace-icon fa fa-chevron-down"></i>
+                            </a>
+                        </div>*@
+                </div>
+
+            </div>
+        </div>
+    }
+    using (Html.BeginForm("Delete", "InfoPartyA", FormMethod.Post))
+    {
+        <p>
+            @if (Erp.BackOffice.Filters.SecurityFilter.AccessRight("Create", "InfoPartyA", "Account"))
+            {
+                @Html.Button(Wording.CreateNew, ButtonType.aTag, ButtonColor.Info, ButtonSize.Mini, true, IconType.Plus, IconSize.Default, false, new { @href = Url.Action("Create", "InfoPartyA") })
+            }
+            @if (Erp.BackOffice.Filters.SecurityFilter.AccessRight("Delete", "InfoPartyA", "Account"))
+            {
+                <button name="DeleteAll" value="DeleteAll" type="submit" class="btn btn-mini btn-danger" onclick="return CheckIsval();">
+                    <i class="ace-icon fa fa-trash bigger-120"></i>
+                    @Wording.Delete
+                </button>
+            }
+        </p>
+
+        @Html.Grid(Model).Columns(columns =>
+        {
+            columns.Add().Titled(BuildCheckAll().ToHtmlString()).SetWidth(20).Sanitized(false).Encoded(false).RenderValueAs(n => CheckDeleteColumns(n.Id));
+            columns.Add().Titled(Wording.surrogate).Sortable(false).Sanitized(false).Encoded(false).RenderValueAs(u => GridColumnName(u.Name, u.Id, isPopup));
+            columns.Add(u => u.CompanyName).Titled(Wording.CompanyName);
+            columns.Add(u => u.TaxCode).Titled(Wording.TaxCode);
+            columns.Add(u => u.CreatedDate).Titled(Wording.CreatedDate).RenderValueAs(u => u.CreatedDate.Value.ToString("HH:mm - dd/MM/yyyy"));
+            columns.Add(u => u.ModifiedDate).Titled(Wording.ModifiedDate).RenderValueAs(u => u.ModifiedDate.Value.ToString("HH:mm - dd/MM/yyyy"));
+            columns.Add(u => u.Id).Titled(Wording.Action).Sanitized(false).Encoded(false).RenderValueAs(u => GridColumnCommand(u.Id)).SetWidth(20);
+        }).WithPaging(10)
+    }
+}
+else
+{
+    @Html.Grid(Model).Columns(columns =>
+    {
+        //columns.Add().Titled(BuildCheckAll().ToHtmlString()).SetWidth(20).Sanitized(false).Encoded(false).RenderValueAs(n => CheckDeleteColumns(n.Id));
+        columns.Add().Titled(Html.DisplayNameFor(u => u.FirstOrDefault().Name).ToString()).Sortable(false).Sanitized(false).Encoded(false).RenderValueAs(u => GridColumnName(u.Name, u.Id, isPopup));
+    }).WithPaging(10)
+}
+
+@section Scripts {
+    <script type="text/javascript">
+        function CheckIsval() {
+            if ($('[name="DeleteId-checkbox"]').is(':checked') == false) {
+                alert("Phải chọn ít nhất 1 item.");
+                return false;
+            }
+            else {
+                if (confirm('Bạn có chắc muốn xóa các item đã chọn ?')) {
+                    return true;
+                }
+                else {
+                    return false;
+                }
+            }
+        }
+
+        $('[name="Delete"]').click(function () {
+            if (confirm('Bạn có chắc muốn xóa item ?')) {
+                $(this).closest('tr').children('td').each(function (i, e) {
+                    $(this).find("input.class-delete-all").prop("checked", true);
+                    return true;
+                })
+            }
+            else {
+                return false;
+            }
+
+        })
+
+    </script>
+}

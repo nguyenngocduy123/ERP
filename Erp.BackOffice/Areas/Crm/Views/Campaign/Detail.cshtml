@@ -1,0 +1,156 @@
+﻿@using Erp.BackOffice.App_GlobalResources
+@using Erp.BackOffice.Helpers
+@using Erp.BackOffice.Crm.Models
+
+@model CampaignViewModel
+
+@{
+    ViewBag.Title = "Thông tin chiến dịch";
+    bool isPopup = Request["popup"] != null && Request["popup"].ToString().ToLower() == "true" ? true : false;
+    if (isPopup)
+    {
+        Layout = "~/Views/Shared/_PopupLayout.cshtml";
+    }
+    else
+    {
+        Layout = "~/Views/Shared/ACE_AdminLayout.cshtml";
+    }
+    Erp.BackOffice.Models.PageSetting pageSetting = new Erp.BackOffice.Models.PageSetting
+    {
+        ModuleName = "Campaign",
+        ActionName = "Detail",
+        PageTitle = ViewBag.Title,
+        DisplaySearchPanel = false,
+        IsPopup = false,
+        DisplayBackButton = true,
+        AdvancedSearch = false,
+    };
+}
+
+@using (Html.BeginPageHeaderContainer(pageSetting))
+{
+
+}
+@if (ViewBag.SuccessMessage != null && ViewBag.SuccessMessage != "")
+{
+    <div class="alert alert-block alert-success">
+        <button class="close" data-dismiss="alert" type="button">
+            <i class="ace-icon fa fa-times"></i>
+        </button>
+        <i class="ace-icon fa fa-check green"></i>
+        @ViewBag.SuccessMessage
+    </div>
+}
+
+@if (ViewBag.FailedMessage != null && ViewBag.FailedMessage != "")
+{
+    <div class="alert alert-block alert-danger">
+        <button class="close" data-dismiss="alert" type="button">
+            <i class="ace-icon fa fa-times"></i>
+        </button>
+        <i class="ace-icon fa fa-warning red"></i>
+        @ViewBag.FailedMessage
+    </div>
+}
+@using (Html.BeginButtonContainer(pageSetting))
+{
+    <p>@Html.Button(Wording.Edit, ButtonType.aTag, ButtonColor.Info, ButtonSize.Mini, true, IconType.Edit, IconSize.Default, false, new { @href = Url.Action("Edit", "Campaign", new { Id = Model.Id }) })</p>
+}
+
+<h4 class="green"><span>@Model.Name</span></h4>
+<div class="tabbable">
+    <ul class="nav nav-tabs padding-12 tab-color-blue background-blue" id="tabCustomer">
+        <li class="active">
+            <a data-toggle="tab" href="#tab1">@Wording.Campaign_Detail</a>
+        </li>
+
+        <li>
+            <a data-toggle="tab" href="#tab2">Lịch sử SMS</a>
+        </li>
+        <li>
+            <a data-toggle="tab" href="#tab3">Lịch sử Email</a>
+        </li>
+    </ul>
+    <div class="tab-content">
+        <div class="tab-pane clearfix active" id="tab1">
+            <div class="col-sm-12">
+                <div class="detail-view">
+                    <div class="row control-group">
+                        @Html.DetailViewItemFor2(model => model.Name)
+                    </div>
+                    <div class="row control-group">
+                        @Html.DetailViewItemFor2(model => model.Type)
+                    </div>
+                    <div class="row control-group">
+                        @Html.DetailViewItemFor2(model => model.Status)
+                    </div>
+                    <div class="row control-group">
+                        @Html.DetailViewItemFor2(model => model.StartDate)
+                    </div>
+                    <div class="row control-group">
+                        @Html.DetailViewItemFor2(model => model.EndDate)
+                    </div>
+                    <div class="row control-group">
+                        @Html.DetailViewItemFor2(model => model.BudgetedCost)
+                    </div>
+                    <div class="row control-group">
+                        @Html.DetailViewItemFor2(model => model.ExpectedRevenue)
+                    </div>
+                    <div class="row control-group">
+                        @Html.DetailViewItemFor2(model => model.ActualCost)
+                    </div>
+                    <div class="row control-group">
+                        @Html.DetailViewItemFor2(model => model.ExpectedResponse)
+                    </div>
+                    <div class="row control-group">
+                        @Html.DetailViewItemFor2(model => model.Commision)
+                    </div>
+                </div>
+                <p></p>
+            </div>
+        </div>
+        <div class="tab-pane clearfix" id="tab2">
+            <div class="col-sm-12">
+                <p>
+                    @if (Erp.BackOffice.Filters.SecurityFilter.AccessRight("Create", "SMSLog", "Crm"))
+                    {
+                        <a class="btn btn-mini btn-primary" onclick="OpenPopup('@Url.Action("Create", "SMSLog", new { IsPopup = true, TargetID = Model.Id, TargetModule = "Campaign" })', 'Thêm mới SMS', 0, 0)">
+                            <i class="ace-icon fa fa-plus"></i>
+                            @Wording.CreateNew
+                        </a>
+                    }
+                </p>
+
+                @Html.Action("ListSMS", "SMSLog", new { area = "Crm", TargetID = Model.Id, TargetModule = "Campaign" })
+            </div>
+        </div>
+
+        <div class="tab-pane clearfix" id="tab3">
+            <div class="col-sm-12">
+                <p>
+                    @if (Erp.BackOffice.Filters.SecurityFilter.AccessRight("Create", "EmailLog", "Crm"))
+                    {
+                        <a class="btn btn-mini btn-primary" onclick="OpenPopup('@Url.Action("Create", "EmailLog", new { IsPopup = true, TargetID = Model.Id , TargetModule ="Campaign"})', 'Thêm mới', 0, 0)">
+                            <i class="ace-icon fa fa-plus"></i>
+                            @Wording.CreateNew
+                        </a>
+                    }
+                </p>
+
+                @Html.Action("ListEmail", "EmailLog", new { area = "Crm", TargetID = Model.Id, TargetModule = "Campaign" })
+            </div>
+        </div>
+    </div>
+</div>
+@section Scripts {
+    <script>
+        function ClosePopupAndDoSomething() {
+            ClosePopup(true);
+            ShowLoading();
+        }
+        function ClosePopupAndRedirectToURL(url) {
+            ClosePopup(true);
+            location.href = url;
+        }
+    </script>
+}

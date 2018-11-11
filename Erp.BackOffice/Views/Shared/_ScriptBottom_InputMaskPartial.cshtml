@@ -1,0 +1,7 @@
+﻿<script type="text/javascript">
+    $("input[maskformat]").each(function (index) {
+        if ($(this).attr("maskformat") != undefined && $(this).attr("maskformat") != "") {
+            $(this).mask($(this).attr("maskformat"));
+        }
+    });
+</script>

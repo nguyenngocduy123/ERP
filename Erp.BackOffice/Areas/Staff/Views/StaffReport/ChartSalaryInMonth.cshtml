@@ -1,0 +1,170 @@
+﻿@using Erp.BackOffice.App_GlobalResources
+@using Erp.BackOffice.Sale.Models
+
+@using Erp.BackOffice.Helpers
+@using GridMvc.Html
+
+@model string
+<div class="clearfix">
+    <canvas id="salary-chart"></canvas>
+</div>
+<div class="hr hr8 hr-double"></div>
+    <div class="clearfix">
+        <div class="grid2">
+            <span class="grey">
+                <i class="ace-icon fa fa-money fa-2x blue"></i>
+                &nbsp; Tổng dự toán
+            </span>
+            <h4 class="bigger pull-right red">@(Erp.BackOffice.Helpers.Common.PhanCachHangNgan(ViewBag.Total_Du_toan)) VNĐ</h4>
+        </div>
+
+        <div class="grid2">
+            <span class="grey">
+                <i class="ace-icon fa fa-dollar fa-2x green"></i>
+                &nbsp; Đã quyết toán
+            </span>
+            <h4 class="bigger pull-right red">@(Erp.BackOffice.Helpers.Common.PhanCachHangNgan(ViewBag.total_quyet_toan)) VNĐ</h4>
+        </div>
+
+        @*<div class="grid3">
+            <span class="grey">
+                <i class="ace-icon fa fa-pinterest-square fa-2x red"></i>
+                &nbsp; pins
+            </span>
+            <h4 class="bigger pull-right">1,050</h4>
+        </div>*@
+    </div>
+    <script type="text/javascript">
+        function createNewDataset(arrayData, label, borderColorValue, borderWidth) {
+            var objectDataset = {
+                label: label,
+                backgroundColor: [],
+                borderColor: borderColorValue,
+                borderWidth: borderWidth,
+                data: []
+            };
+
+            var arrBGColor = Object.keys(window.chartColors).map(function (key, index) {
+                return window.chartColors[key];
+            });
+
+            for (var i in arrayData) {
+                objectDataset.backgroundColor.push(colorRender(arrBGColor[i]).alpha(0.8).rgbString());
+                objectDataset.data.push(arrayData[i]);
+            }
+
+            return objectDataset;
+        };
+
+        var colorRender = Chart.helpers.color;
+
+        var responseData = [];
+
+        @if(!string.IsNullOrEmpty(ViewBag.json))
+    {
+        @Html.Raw("responseData = " + ViewBag.json + ";");
+    }
+
+        //nếu không có dữ liệu thì tạo dữ liệu rỗng
+        if (responseData.length == 0) {
+            responseData.push({ label: 'Chưa có dữ liệu', data: 100 });
+        }
+
+        var totalData = 0;
+        var arrayLabel = [];
+        var arrayLabelCode = [];
+        var dataPushToDataset = [];
+
+        for (var i in responseData) {
+            totalData += responseData[i].TotalSalary;
+        }
+
+        for (var i in responseData) {
+            var percent = Math.round((responseData[i].TotalSalary / totalData) * 100);
+            arrayLabelCode.push(responseData[i].Id);
+            arrayLabel.push(responseData[i].BranchName + ' (' + percent + '%' + ')');
+            dataPushToDataset.push(responseData[i].TotalSalary);
+        }
+
+        var arrayDataset = [];
+        var newDataset = createNewDataset(dataPushToDataset, 'Danh sách chi nhánh', window.chartColors.blue, 0);
+        arrayDataset.push(newDataset);
+
+        var pieChartData = {
+            labels: arrayLabel,
+            datasets: [],
+            Code: arrayLabelCode,
+        };
+
+        $(document).ready(function () {
+            //Chart.defaults.global.hover.mode = 'nearest';
+            var canvas = document.getElementById("salary-chart");
+            var ctx = document.getElementById("salary-chart").getContext("2d");
+
+            //legend: là các chú thích theo màu
+
+            var salaryPie = new Chart(ctx, {
+                type: 'pie',
+                data: pieChartData,
+                options: {
+                    responsive: true,
+                    legend: {
+                        position: 'right',
+                    },
+                    title: {
+                        display: false,
+                        text: 'Danh sách chi nhánh'
+                    },
+                    animation: {
+                        duration: 1000,
+                        enabled: true,
+                    },
+                    tooltips: {
+                        enabled: true,
+                        mode: 'single',
+                        callbacks: {
+                            title: function (tooltipItems, data) {
+                                return 'Chi nhánh: ' + data.labels[tooltipItems[0].index];
+                            },
+                            label: function (tooltipItem, data) {
+                                var multiLabel = [];
+                                //multiLabel.push("Tên SP: " + responseData[tooltipItem.index].label2);
+                                var value = data.datasets[tooltipItem.datasetIndex].data[tooltipItem.index];
+                                var valueFormat = "Tổng lương chi trả: " + Number(value).toFixed(0).toString().replace(/\d(?=(?:\d{3})+(?!\d))/g, '$&.');// + 'k / ' + Number(totalData/1000).toFixed(0).toString().replace(/\d(?=(?:\d{3})+(?!\d))/g,'$&.') + 'k';
+                                multiLabel.push(valueFormat);
+                                return multiLabel;
+                            }
+                        }
+                    }
+
+                }
+            });
+
+            canvas.onclick = function (evt) {
+                var activePoints = salaryPie.getElementsAtEvent(evt);
+                if (activePoints[0]) {
+                    var chartData = activePoints[0]['_chart'].config.data;
+                    var idx = activePoints[0]['_index'];
+
+                    var label = chartData.labels[idx];
+                    var value = chartData.datasets[0].data[idx];
+                    var code = chartData.Code[idx];
+                    //var url = "" + label + "&value=" + value;
+                    OpenPopup('@Url.Action("Detail", "SalaryTable", new { area = "Staff"})?Id=' + code + '&IsPopup=true', 'Thông tin bảng lương', 0, 500);
+                    //console.log(url);
+                    //alert("label" + label + "value" + value + "duys" + duys);
+                }
+            };
+            setTimeout(function () {
+                for (var i in arrayDataset) {
+                    pieChartData.datasets.push(arrayDataset[i]);
+                }
+                salaryPie.update();
+                //console.log('updated')
+            }, 500);
+        });
+
+    </script>
+
+
+

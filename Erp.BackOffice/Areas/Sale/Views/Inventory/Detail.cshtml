@@ -1,0 +1,304 @@
+﻿@using Erp.BackOffice.App_GlobalResources
+@using Erp.BackOffice.Helpers
+@using Erp.BackOffice.Sale.Models
+@using Erp.Domain.Sale.Entities
+
+@model ProductViewModel
+
+@{
+    ViewBag.Title = "Lịch sử xuất/nhập kho";
+
+    Layout = "~/Views/Shared/_PopupLayout.cshtml";
+    
+    Erp.BackOffice.Models.PageSetting pageSetting = new Erp.BackOffice.Models.PageSetting
+    {
+        ModuleName = "Inventory",
+        ActionName = "ProductInventoryDetail",
+        PageTitle = ViewBag.Title,
+        DisplaySearchPanel = false,
+        IsPopup = false,
+        DisplayBackButton = false
+    };
+    
+    IEnumerable<vwProductInboundDetail> inboundDetails = (IEnumerable<vwProductInboundDetail>)ViewBag.inboundDetails;
+    IEnumerable<vwProductOutboundDetail> outboundDetails = (IEnumerable<vwProductOutboundDetail>)ViewBag.outboundDetails;
+}
+
+@section HeadOfPage {
+    @Html.ScriptTop_ChosenStyle()
+}
+
+@using (Html.BeginPageHeaderContainer(pageSetting))
+{
+
+}
+
+<h4 class="green" style="margin-top:0px">@Model.Code - @Model.Name</h4>
+
+<ul class="nav nav-tabs" id="myTab">
+    <li id="li-tab1" class="active"><a data-target="#tab1" data-toggle="tab" aria-expanded="true">Lịch sử nhập kho (SL: @(Erp.BackOffice.Helpers.Common.PhanCachHangNgan(inboundDetails.Sum(x=>x.Quantity))))</a></li>
+    <li id="li-tab2" class=""><a data-target="#tab2" data-toggle="tab" aria-expanded="false">Lịch sử xuất kho (SL: @(Erp.BackOffice.Helpers.Common.PhanCachHangNgan(outboundDetails.Sum(x => x.Quantity)))</a></li>
+</ul>
+<div class="tab-content">
+    <div class="tab-pane active" id="tab1">
+    <label class="radio"><input type="radio" value="" class="group_choice ace" data-target="#group_choice_wrap1" checked name="group_choice" />  <span class="lbl">Nhập kho từ nhà cung cấp</span></label>
+    <label class="radio"><input type="radio" value="" class="group_choice ace" data-target="#group_choice_wrap2" name="group_choice" /> <span class="lbl">Nhập từ kho khác</span></label>
+    <label class="radio"><input type="radio" value="" class="group_choice ace" data-target="#group_choice_wrap3" name="group_choice" /> <span class="lbl">Nhập kho từ Đơn hàng trả lại</span></label>
+    <div id="group_choice_wrap1" class="group_choice_wrap clearfix">
+        <div class="table-responsive">
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th>@Wording.OrderNo</th>
+                        <th>@Wording.CreatedDate</th>
+                        <th>@Wording.ModifiedDate</th>
+                        <th>@Wording.ProductInboundCode</th>
+                        <th>@Wording.LoCode</th>
+                        <th>@Wording.ExpiryDate</th>
+                        <th>@Wording.Quantity</th>
+                        <th>@Wording.Destination</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @{int index1 = 0; }
+                    @foreach (var item in inboundDetails.Where(x => x.Type != "internal"))
+                        {
+                        <tr>
+                            <td>@(++index1)</td>
+                            <td>@item.CreatedDate.Value.ToString("dd/MM/yyyy HH:mm")</td>
+                            <td>@item.ModifiedDate.Value.ToString("dd/MM/yyyy HH:mm")</td>
+                            <td>@item.ProductInboundCode</td>
+                            <td>@item.LoCode</td>
+                            <td>@(item.ExpiryDate==null?"":item.ExpiryDate.Value.ToShortDateString())</td>
+                            <td>@item.Quantity</td>
+                            <td>@item.WarehouseDestinationName</td>
+
+                        </tr>
+                        }
+                </tbody>
+                <tfoot>
+                    <tr>
+                        <td colspan="6" align="right">Tổng</td>
+                        <td align="right" style="font-weight:bold">@(Erp.BackOffice.Helpers.Common.PhanCachHangNgan(inboundDetails.Where(x => x.Type != "internal").Sum(x => x.Quantity)))</td>
+                        <td></td>
+                    </tr>
+
+                </tfoot>
+            </table>
+        </div>
+    </div>
+
+    <div id="group_choice_wrap2" class="group_choice_wrap clearfix" style="height:0;overflow: hidden;">
+        <div class="table-responsive">
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th>@Wording.OrderNo</th>
+                        <th>@Wording.CreatedDate</th>
+                        <th>@Wording.ModifiedDate</th>
+                        <th>@Wording.ProductInboundCode</th>
+                        <th>@Wording.LoCode</th>
+                        <th>@Wording.ExpiryDate</th>
+                        <th>@Wording.Destination</th>
+                        <th>@Wording.Quantity</th>
+                        <th>Số lượng chênh lệch</th>
+                        <th>Lý do</th>
+                        <th>Trạng thái xử lý</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @{int index = 0; }
+                    @foreach (var item in inboundDetails.Where(x => x.Type == "internal"))
+                        {
+                        <tr>
+                            <td>@(++index)</td>
+                            <td>@item.CreatedDate.Value.ToString("dd/MM/yyyy HH:mm")</td>
+                            <td>@item.ModifiedDate.Value.ToString("dd/MM/yyyy HH:mm")</td>
+                            <td>@item.ProductInboundCode</td>
+                            <td>@item.LoCode</td>
+                            <td>@(item.ExpiryDate == null ? "" : item.ExpiryDate.Value.ToShortDateString())</td>
+                            <td>@item.WarehouseDestinationName</td>
+                            <td align="right">@item.Quantity</td>
+                            <td>@item.NumberAmount</td>
+                            <td>@item.Reason</td>
+                            <td>@item.Status</td>
+                        </tr>
+                        }
+                </tbody>
+                <tfoot>
+            <tr>
+                <td colspan="7" align="right">Tổng</td>
+                <td align="right" style="font-weight:bold">@(Erp.BackOffice.Helpers.Common.PhanCachHangNgan(inboundDetails.Where(x => x.Type == "internal").Sum(x => x.Quantity)))</td>
+                <td></td>
+                <td></td>
+                <td></td>
+            </tr>
+         
+        </tfoot>
+            </table>
+        </div>
+    </div>
+        <div id="group_choice_wrap3" class="group_choice_wrap clearfix" style="height:0;overflow: hidden;">
+            <div class="table-responsive">
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th>@Wording.OrderNo</th>
+                            <th>@Wording.CreatedDate</th>
+                            <th>@Wording.ModifiedDate</th>
+                            <th>@Wording.ProductInboundCode</th>
+                            <th>@Wording.Destination</th>
+                            <th>@Wording.LoCode</th>
+                            <th>@Wording.ExpiryDate</th>
+                            <th>@Wording.Quantity</th>
+                            <th>Mã đơn hàng trả lại</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @{index = 0; }
+                        @foreach (var item in inboundDetails.Where(x => x.Type == "SalesReturns"))
+                        {
+                            <tr>
+                                <td>@(++index)</td>
+                                <td>@item.CreatedDate.Value.ToString("dd/MM/yyyy HH:mm")</td>
+                                <td>@item.ModifiedDate.Value.ToString("dd/MM/yyyy HH:mm")</td>
+                                <td>@item.ProductInboundCode</td>
+                                <td>@item.WarehouseDestinationName</td>
+                                <td>@item.LoCode</td>
+                                <td>@(item.ExpiryDate == null ? "" : item.ExpiryDate.Value.ToShortDateString())</td>
+                                <td align="right">@item.Quantity</td>
+                                <td>@item.SalesReturnsCode - @item.CustomerName</td>
+                            </tr>
+                        }
+                    </tbody>
+                    <tfoot>
+                        <tr>
+                            <td colspan="7" align="right">Tổng</td>
+                            <td align="right" style="font-weight:bold">@(Erp.BackOffice.Helpers.Common.PhanCachHangNgan(inboundDetails.Where(x => x.Type == "SalesReturns").Sum(x => x.Quantity)))</td>
+                            <td></td>
+                        </tr>
+
+                    </tfoot>
+                </table>
+            </div>
+        </div>
+    </div>
+    <div class="tab-pane" id="tab2">
+
+        <label class="radio"><input type="radio" value="internal" class="group1_choice ace" data-target="#group1_choice_wrap1" checked name="group1_choice" />  <span class="lbl">Xuất kho cho bán hàng</span></label>
+        <label class="radio"><input type="radio" value="service" class="group1_choice ace" data-target="#group1_choice_wrap2" name="group1_choice" /> <span class="lbl">Xuất chuyển kho</span></label>
+        <div id="group1_choice_wrap1" class="group1_choice_wrap clearfix">
+            <div class="table-responsive">
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th>@Wording.OrderNo</th>
+                            <th>@Wording.CreatedDate</th>
+                            <th>@Wording.ModifiedDate</th>
+                            <th>@Wording.ProductOutboundCode</th>
+                            <th>@Wording.LoCode</th>
+                            <th>@Wording.ExpiryDate</th>
+                            <th>@Wording.Quantity</th>
+                            @*<th>@Wording.Source</th>*@
+                            <th>@Wording.ProductInvoiceCode</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @{index = 0; }
+                        @foreach (var item in outboundDetails.Where(x=>x.Type=="invoice"))
+                        {
+                            <tr>
+                                <td>@(++index)</td>
+                                <td>@item.CreatedDate.Value.ToString("dd/MM/yyyy HH:mm")</td>
+                                <td>@item.ModifiedDate.Value.ToString("dd/MM/yyyy HH:mm")</td>
+                                <td>@item.ProductOutboundCode</td>
+                                <td>@item.LoCode</td>
+                                <td>@(item.ExpiryDate == null ? "" : item.ExpiryDate.Value.ToShortDateString())</td>
+                                <td align="right">@item.Quantity</td>
+                                <td>@item.InvoiceCode - @item.CustomerName</td>
+                            </tr>
+                        }
+                    </tbody>
+                    <tfoot>
+                        <tr>
+                            <td colspan="6" align="right">Tổng</td>
+                            <td align="right" style="font-weight:bold">@(Erp.BackOffice.Helpers.Common.PhanCachHangNgan(outboundDetails.Where(x => x.Type == "invoice").Sum(x => x.Quantity)))</td>
+                            <td></td>
+                        </tr>
+
+                    </tfoot>
+                </table>
+            </div>
+        </div>
+
+        <div id="group1_choice_wrap2" class="group1_choice_wrap clearfix" style="height:0;overflow: hidden;">
+            <div class="table-responsive">
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th>@Wording.OrderNo</th>
+                            <th>@Wording.CreatedDate</th>
+                            <th>@Wording.ModifiedDate</th>
+                            <th>@Wording.ProductOutboundCode</th>
+                            <th>@Wording.LoCode</th>
+                            <th>@Wording.ExpiryDate</th>
+                            <th>@Wording.Quantity</th>
+                            <th>@Wording.Destination</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @{index = 0; }
+                        @foreach (var item in outboundDetails.Where(x => x.Type != "invoice"))
+                        {
+                            <tr>
+                                <td>@(++index)</td>
+                                <td>@item.CreatedDate.Value.ToString("dd/MM/yyyy HH:mm")</td>
+                                <td>@item.ModifiedDate.Value.ToString("dd/MM/yyyy HH:mm")</td>
+                                <td>@item.ProductOutboundCode</td>
+                                <td>@item.LoCode</td>
+                                <td>@(item.ExpiryDate == null ? "" : item.ExpiryDate.Value.ToShortDateString())</td>
+                                <td align="right">@item.Quantity</td>
+                                <td>@item.WarehouseDestinationName</td>
+                            </tr>
+                        }
+                    </tbody>
+                    <tfoot>
+                        <tr>
+                            <td colspan="6" align="right">Tổng</td>
+                            <td align="right" style="font-weight:bold">@(Erp.BackOffice.Helpers.Common.PhanCachHangNgan(outboundDetails.Where(x => x.Type != "invoice").Sum(x => x.Quantity)))</td>
+                            <td></td>
+                        </tr>
+
+                    </tfoot>
+                </table>
+            </div>
+        </div>
+      
+    </div>
+</div>
+
+@section Scripts {
+
+    @Html.ScriptBottom_ValidationMvc()
+    @Html.ScriptBottom_ChosenStyle()
+<script>
+    $(".group_choice").change(function () {
+        ShowLoading();
+        $(".group_choice_wrap").css('height', 'initial');
+        if ($(this).is(":checked")) {
+            $(".group_choice_wrap").hide();
+            $($(this).data("target")).show();
+        }
+        HideLoading();
+    });
+    $(".group1_choice").change(function () {
+        ShowLoading();
+        $(".group1_choice_wrap").css('height', 'initial');
+        if ($(this).is(":checked")) {
+            $(".group1_choice_wrap").hide();
+            $($(this).data("target")).show();
+        }
+        HideLoading();
+    });
+    </script>
+}

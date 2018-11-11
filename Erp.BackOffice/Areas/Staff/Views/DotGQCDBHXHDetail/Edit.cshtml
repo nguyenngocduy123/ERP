@@ -1,0 +1,120 @@
+﻿@using Erp.BackOffice.App_GlobalResources
+@using Erp.BackOffice.Helpers
+@using Erp.BackOffice.Staff.Models
+
+@model DotGQCDBHXHDetailViewModel
+
+@{
+    ViewBag.Title = Wording.PageEdit_DotGQCDBHXHDetail;
+
+    Layout = "~/Views/Shared/" + (Request["IsPopup"] == null ? "ACE_AdminLayout.cshtml" : "_PopupLayout.cshtml");
+
+    Erp.BackOffice.Models.PageSetting pageSetting = new Erp.BackOffice.Models.PageSetting
+    {
+        ModuleName = "DotGQCDBHXHDetail",
+        ActionName = "Edit",
+        PageTitle = ViewBag.Title,
+        DisplaySearchPanel = false,
+        IsPopup = false,
+        DisplayBackButton = true
+    };
+}
+
+@section HeadOfPage {
+    @Html.ScriptTop_ChosenStyle()
+}
+
+@using (Html.BeginPageHeaderContainer(pageSetting))
+{
+
+}
+
+@using (Html.BeginForm_AceStyle((string)ViewBag.Title, pageSetting.ActionName, pageSetting.ModuleName, null, FormMethod.Post, new { @class = "form-horizontal" }))
+{
+    @Html.ValidationSummary(true)
+    @Html.HiddenFor(model => model.Id)
+    @Html.HiddenFor(model => model.CreatedUserId)
+    @Html.HiddenFor(model => model.AssignedUserId)
+    @Html.HiddenFor(model => model.CreatedDate)
+    @Html.HiddenFor(model => model.IsDeleted)
+    @Html.HiddenFor(model => model.DotGQCDBHXHId)
+    @Html.HiddenFor(model => model.StaffId)
+    @Html.HiddenFor(model => model.DayOffId)
+    @Html.HiddenFor(model => model.SocietyCode)
+    @Html.HiddenFor(model => model.DayStart)
+    @Html.HiddenFor(model => model.DayEnd)
+    @Html.HiddenFor(model => model.Quantity)
+    <div class="row">
+        <div class="col-sm-7">
+            <div class="widget-box">
+                <div class="widget-header">
+                    <h5 class="widget-title">Thông tin chi tiết đợt giải quyết chế độ BHXH</h5>
+                </div>
+                <div class="widget-body">
+                    <div class="widget-main">
+                        <div class="detail-view">
+                            @*<div class="row control-group">
+                                @Html.DetailViewItemFor2(model => model.StaffName)
+                            </div>*@
+                            <div class="row control-group">
+                                @Html.DetailViewItemFor2(model => model.SocietyCode)
+                            </div>
+                            <div class="row control-group">
+                                @Html.DetailViewItemFor2(model => model.DayOffName)
+                            </div>
+                        </div>
+
+                        @if (Model.Code.Contains("TS"))
+                        {
+                        @Html.CustomDropDownListFor(model => model.Type, SelectListHelper.GetSelectList_Category("CDTS_BHXH", null, "Value", Wording.Empty), WidthType.span4, true, null, DropdownListStyle.DropdownListStyleDefault)
+                        }
+                        @if (Model.Code.Contains("OM"))
+                        {
+                        @Html.CustomDropDownListFor(model => model.Type, SelectListHelper.GetSelectList_Category("CDOD_BHXH", null, "Value", Wording.Empty), WidthType.span4, true, null, DropdownListStyle.DropdownListStyleDefault)
+                        }
+                        @if (Model.Code.Contains("HP"))
+                        {
+                        @Html.CustomDropDownListFor(model => model.Type, SelectListHelper.GetSelectList_Category("CDDSPH_BHXH", null, "Value", Wording.Empty), WidthType.span12, true, null, DropdownListStyle.DropdownListStyleDefault)
+                        }
+                        <div class="detail-view">
+                            <div class="row control-group">
+                                @Html.DetailViewItemFor2(model => model.DayStart)
+                            </div>
+                            <div class="row control-group">
+                                @Html.DetailViewItemFor2(model => model.DayEnd)
+                            </div>
+                            <div class="row control-group">
+                                @Html.DetailViewItemFor2(model => model.Quantity)
+                            </div>
+                        </div>
+
+                        @Html.CustomTextboxFor(model => model.DKTH_TinhTrang, null, null, WidthType.span12)
+                        @Html.DatePicker(model => model.DKTH_ThoiDiem, "dd/MM/yyyy", "99/99/9999", true, false, "control-label col-lg-5 col-md-4 col-sm-4", "col-lg-7 col-md-8 col-sm-8", "col-xs-12")
+                        @Html.CustomDropDownListFor(model => model.PaymentMethod, SelectListHelper.GetSelectList_Category("FormPayment", null, "Name", Wording.Empty), WidthType.span12, true, null, DropdownListStyle.DropdownListStyleDefault)
+                        @Html.CustomTextAreaFor(model => model.Note, null, WidthType.span12)
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-5">
+            @Html.Action("DetailBasicFull", "Staffs", new { Id = Model.StaffId.Value })
+        </div>
+     </div>
+   
+
+
+    using (Html.BeginButtonContainer(pageSetting))
+    {
+        <input type="hidden" value="@Request["IsPopup"]" name="IsPopup" />
+        <button class="btn btn-mini btn-primary" type="submit" name="Submit" value="Save">
+            <i class="ace-icon fa fa-save"></i>
+            @Wording.Save
+        </button>
+    }
+}
+
+@section Scripts {
+
+    @Html.ScriptBottom_ValidationMvc()
+    @Html.ScriptBottom_ChosenStyle()
+}

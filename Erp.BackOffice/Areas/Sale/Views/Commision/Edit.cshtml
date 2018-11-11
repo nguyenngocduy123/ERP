@@ -1,0 +1,136 @@
+﻿@using Erp.BackOffice.App_GlobalResources
+@using Erp.BackOffice.Helpers
+@using Erp.BackOffice.Sale.Models
+
+@model CommisionEditViewModel
+
+@{
+    ViewBag.Title = Wording.PageEdit_Commision;
+
+    Layout = "~/Views/Shared/ACE_AdminLayout.cshtml";
+    Erp.BackOffice.Models.PageSetting pageSetting = new Erp.BackOffice.Models.PageSetting
+    {
+        ModuleName = "Commision",
+        ActionName = "Edit",
+        PageTitle = ViewBag.Title,
+        DisplaySearchPanel = false,
+        IsPopup = false,
+        DisplayBackButton = true
+    };
+    IEnumerable<SelectListItem> branchList = (IEnumerable<SelectListItem>)ViewBag.branchList;
+
+    int staffOrderNo = 0;
+}
+
+@section HeadOfPage {
+    @Html.ScriptTop_ChosenStyle()
+
+    <style>
+        .bootstrap-duallistbox-container select {
+            height: 150px !important;
+        }
+    </style>
+
+}
+
+@using (Html.BeginPageHeaderContainer(pageSetting))
+{
+
+}
+
+@using (Html.BeginForm_AceStyle((string)ViewBag.Title, "Edit", "Commision", null, FormMethod.Post, new { @class = "form-horizontal" }))
+{
+    @Html.ValidationSummary(true)
+
+    <div class="row">
+        <div class="col-sm-7">
+            <h4 class="green" style="margin-top:0px">Chi nhánh: @Model.BranchName</h4>
+            <div class="table-responsive">
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th width="30">STT</th>
+                            <th width="120">Mã nhân viên</th>
+                            <th>Tên nhân viên</th>
+                            <th width="100"></th>
+                        </tr>
+                    </thead>
+                    <tbody class="detailList">
+                        @foreach(var item in Model.ListStaff)
+                        {
+                            staffOrderNo++;
+                            <tr>
+                                <td>@staffOrderNo</td>
+                                <td>@item.Code</td>
+                                <td>@item.Name</td>
+                                <td>
+                                    <a class="btn btn-white btn-success btn-sm" onclick="OpenPopup('@Url.Action("Detail", "Commision", new { BranchId = Model.BranchId, StaffId = item.Id })', 'Cài đặt', 500, 700)">
+                                        <i class="ace-icon fa fa-cog"></i>
+                                        Cài đặt chiết khấu
+                                    </a>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="col-sm-5">
+            <div class="widget-box">
+                <div class="widget-header">
+                    <h5 class="widget-title">Thông tin chi tiết</h5>
+                </div>
+                <div class="widget-body">
+                    <div class="widget-main">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    using (Html.BeginButtonContainer(pageSetting))
+    {
+        @*<button class="btn btn-mini btn-primary" type="submit" name="Submit" value="Save">
+            <i class="ace-icon fa fa-save"></i>
+            @Wording.Save
+        </button>*@
+    }
+}
+
+@section Scripts {
+
+    @Html.ScriptBottom_ValidationMvc()
+    @Html.ScriptBottom_ChosenStyle()
+    @Html.ScriptBottom_DatePicker("dd/mm/yyyy")
+
+    <link rel="stylesheet" href="/assets/css/bootstrap-duallistbox.min.css" />
+    <script src="/assets/js/jquery.bootstrap-duallistbox.min.js"></script>
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            var duallist = $('#duallist').bootstrapDualListbox({
+                infoTextFiltered: '<span class="label label-purple label-lg">Đã lọc</span>',
+                infoText: '',
+                showFilterInputs: false,
+                filterPlaceHolder: 'Tìm theo tên'
+            });
+            var container1 = duallist.bootstrapDualListbox('getContainer');
+            container1.find('.btn').addClass('btn-white btn-info btn-bold');
+
+            /**var setRatingColors = function() {
+                $(this).find('.star-on-png,.star-half-png').addClass('orange2').removeClass('grey');
+                $(this).find('.star-off-png').removeClass('orange2').addClass('grey');
+            }*/
+
+
+            //in ajax mode, remove remaining elements before leaving page
+            $(document).one('ajaxloadstart.page', function (e) {
+                $('[class*=select2]').remove();
+                $('select[name="duallistbox_demo1[]"]').bootstrapDualListbox('destroy');
+                $('.rating').raty('destroy');
+                $('.multiselect').multiselect('destroy');
+            });
+
+        });
+    </script>
+}

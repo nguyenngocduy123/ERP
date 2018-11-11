@@ -1,0 +1,295 @@
+﻿@model List<TaskViewModel>
+@using Erp.BackOffice.Areas.Cms.Models
+@using Erp.BackOffice.App_GlobalResources
+@using Erp.BackOffice.Crm.Models
+@using Erp.BackOffice.Helpers
+@using GridMvc.Html
+
+@{
+    ViewBag.Title = "Lịch làm việc";
+    Layout = null;
+    List<CategoryViewModel> Category = (List<CategoryViewModel>)ViewBag.Category;
+    var quantityDate = Erp.BackOffice.Helpers.Common.GetSetting("quantity_Reminder_Date");
+    var date = DateTime.Now.AddDays(Convert.ToInt32(quantityDate));
+}
+               <style type="text/css">
+                   .fc-day-grid-event .fc-time {
+                       display: none;
+                   }
+
+                   /*.fc-day-grid-event > .fc-content {
+                                      white-space: normal;
+                                      overflow: auto;
+                                  }*/
+                   .badge, .badge-red.label {
+                       position: initial !important;
+                   }
+
+                   .fc-day-grid-event {
+                       padding: 1px 1px !important;
+                   }
+
+                   .fc-event {
+                       border: none !important;
+                   }
+
+                   .popover {
+                       max-width: 350px !important;
+                   }
+
+                   .itemdiv > .body {
+                       margin-left: 0px !important;
+                   }
+
+                   .itemdiv .tools {
+                       left: inherit;
+                   }
+
+                   #external-events {
+                       float: left;
+                       width: 150px;
+                       padding: 0 10px;
+                       border: 1px solid #ccc;
+                       background: #eee;
+                       text-align: left;
+                   }
+
+                       #external-events h4 {
+                           font-size: 16px;
+                           margin-top: 0;
+                           padding-top: 1em;
+                       }
+
+                       #external-events .fc-event {
+                           margin: 10px 0;
+                           cursor: pointer;
+                       }
+
+                       #external-events p {
+                           margin: 1.5em 0;
+                           font-size: 11px;
+                           color: #666;
+                       }
+
+                           #external-events p input {
+                               margin: 0;
+                               vertical-align: middle;
+                           }
+                   /*#calendar {
+                                  float: right;
+                                  width: 900px;
+                              }*/
+               </style>
+<div class="row">
+    <div class="col-sm-5">
+        <div class="widget-container-col ui-sortable" id="widget-container-col-10" style="min-height: 108px;">
+            <div class="widget-box ui-sortable-handle" id="widget-box-10" style="opacity: 1;">
+                <div class="widget-header widget-header-small">
+                    <h5 class="widget-title smaller"><i class="fa fa-bars"></i> DS công việc</h5>
+
+                    <div class="widget-toolbar no-border">
+                        <ul class="nav nav-tabs" id="myTab">
+                            @for (int i = 0; i < Category.Count(); i++)
+                            {
+                                var total = Model.Where(x => x.Status == Category[i].Value).ToList().Count();
+                                <li id="li_category_@i">
+                                    <a data-toggle="tab" href="#tab_List_Task_@i"><i class="@Category[i].Description"></i> @Category[i].Name <span class="badge badge-danger">@total</span></a>
+                                </li>
+                            }
+
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="widget-body">
+                    <div class="widget-main padding-6">
+                        <div class="tab-content">
+                            @for (int i = 0; i < Category.Count(); i++)
+                            {
+                                var list = Model.Where(x => x.Status == Category[i].Value).ToList();
+                                <div id="tab_List_Task_@i" class="tab-pane clearfix">
+                                    @foreach (var item in list)
+                                    {
+                                        var mau = "";
+                                        if (item.Status == "pending" || item.Status == "inprogress")
+                                        {
+
+                                            if (DateTime.Now <= item.DueDate && item.DueDate <= date)
+                                            {
+                                                mau = "#F89406";
+                                            }
+                                            if (item.DueDate < DateTime.Now)
+                                            {
+                                                mau = "#d15b47";
+                                            }
+                                        }
+                                        else
+                                        {
+                                            mau = "black";
+                                        }
+                                        <div class="itemdiv commentdiv" id="item_@item.Id">
+
+                                            @*<div class="user">
+                                                    <img alt="@item.FullName" src="@item.UserCreateImagePath">
+                                                </div>*@
+
+                                            <div class="body">
+                                                <div class="name" style="color:green">
+                                                    @item.Subject
+                                                </div>
+
+                                                <div class="time">
+                                                    <i class="ace-icon fa fa-clock-o" data-toggle="tooltip" title="Thời gian bắt đầu dự kiến"></i>
+                                                    <span style="color:@mau">@item.StartDate.Value.ToString("dd/MM/yyyy HH:mm")</span>
+                                                </div>
+
+                                                <div class="text">
+                                                    <i class="ace-icon fa fa-quote-left"></i>
+                                                    @item.Description
+                                                    <i class="ace-icon fa fa-quote-right" style="color: #DCE3ED;"></i>
+                                                </div>
+                                            </div>
+                                            <div class="tools">
+                                                <div class="action-buttons bigger-125">
+                                                    <a data-toggle="tooltip" title="Xem chi tiết" onclick="OpenPopup('@Url.Action("Detail", "Task", new { area="Crm",Id=item.Id, IsPopup = true })', 'Chi tiết công việc', 900, 500)">
+                                                        <i class="ace-icon fa fa-search green"></i>
+                                                    </a>
+                                                    @*@if (item.Status == "pending")
+                                                        {
+                                                            <a data-toggle="tooltip" title="Phân công cho nhân viên">
+                                                                <i class="ace-icon fa fa-send-o" style="color:orange"></i>
+                                                            </a>
+                                                        }*@
+                                                    <a data-toggle="tooltip" title="Cập nhật" onclick="OpenPopup('@Url.Action("UpdateTask", "Task", new { area="Crm",Id=item.Id, IsPopup = true })', 'Cập nhật công việc', 900, 500)">
+                                                        <i class="ace-icon fa fa-pencil blue"></i>
+                                                    </a>
+                                                    <a onclick="Delete(@item.Id)" data-toggle="tooltip" title="Xóa dòng này">
+                                                        <i class="ace-icon fa fa-trash-o red"></i>
+                                                    </a>
+                                                </div>
+                                            </div>
+
+                                        </div>
+                                    }
+                                    @*</div>
+                                        </div>*@
+
+                                </div>
+                            }
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-7">
+        <div id="calendar"></div>
+    </div>
+</div>
+<div id="calendar"></div>
+<script>
+    jQuery(function ($) {
+        /* initialize the external events
+            -----------------------------------------------------------------*/
+
+        $('#external-events div.external-event').each(function () {
+
+            // create an Event Object (http://arshaw.com/fullcalendar/docs/event_data/Event_Object/)
+            // it doesn't need to have a start or end
+            var eventObject = {
+                title: $.trim($(this).text()) // use the element's text as the event title
+            };
+
+            // store the Event Object in the DOM element so we can get to it later
+            $(this).data('eventObject', eventObject);
+
+            // make the event draggable using jQuery UI
+            $(this).draggable({
+                zIndex: 999,
+                revert: true,      // will cause the event to go back to its
+                revertDuration: 0  //  original position after the drag
+            });
+
+        });
+
+
+
+
+        /* initialize the calendar
+        -----------------------------------------------------------------*/
+
+        var date = new Date();
+        var d = date.getDate();
+        var m = date.getMonth();
+        var y = date.getFullYear();
+        var dataEvents = @Html.Raw(ViewBag.dataEvent);
+
+        var calendar = $('#calendar').fullCalendar({
+            //isRTL: true,
+            //firstDay: 1,// >> change first day of week
+
+            buttonHtml: {
+                prev: '<i class="ace-icon fa fa-chevron-left"></i>',
+                next: '<i class="ace-icon fa fa-chevron-right"></i>'
+            },
+
+            header: {
+                left: 'prev,next today',
+                center: 'title',
+                right: 'month,agendaWeek,agendaDay,listMonth'
+            },
+            eventLimitText: "xem thêm",
+            events:dataEvents,
+            defaultDate: '@ViewBag.aDateTime',
+            locale: 'vi',
+            navLinks: true, // can click day/week names to navigate views
+            editable: true,
+            eventLimit: true, // allow "more" link when too many events
+
+            selectable: true,
+            selectHelper: true,
+            select: function (date) {
+              
+                OpenPopup('/Task/CreateOfUser/?date='+date.format()+'&IsPopup=true', 'Thêm Công việc', 900, 500);
+               
+                calendar.fullCalendar('unselect');
+            }
+    ,
+        
+            eventClick: function (calEvent, jsEvent, view) {
+
+                if (calEvent.url) {
+                    OpenPopup(calEvent.urlEdit + '&IsPopup=true', 'Công việc', 900, 500);
+                    return false;
+                }
+            },
+            eventAfterAllRender: function (view) {
+
+            }
+        })
+
+
+    })
+
+    function Delete(id) {
+        if (confirm('Bạn có chắc muốn xóa các item đã chọn ?')) {
+            ShowLoading();
+            $.post("@Url.Action("DeleteTask", "Task", new { area = "Crm" })", { id: id })
+        .done(function (data) {
+            if (data == "success") {
+                $("#item_" + id).closest('div').remove();
+            }
+            else {
+                alertPopup('Lỗi', 'Không thể xóa', 'danger');
+            }
+            HideLoading();
+        });
+            return false;
+        }
+        else {
+            return false;
+        }
+    };
+
+</script>

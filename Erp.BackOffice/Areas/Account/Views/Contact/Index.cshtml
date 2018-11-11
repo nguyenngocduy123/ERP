@@ -1,0 +1,145 @@
+﻿@model IEnumerable<ContactViewModel>
+
+@using Erp.BackOffice.App_GlobalResources
+@using Erp.BackOffice.Account.Models
+@using Erp.BackOffice.Helpers
+@using GridMvc.Html
+
+@{
+    ViewBag.Title = Wording.PageIndex_Contact;
+    bool isPopup = Request["popup"] != null && Request["popup"].ToString().ToLower() == "true" ? true : false;
+    if (isPopup)
+    {
+        Layout = "~/Views/Shared/_PopupLayout.cshtml";
+    }
+    else
+    {
+        Layout = "~/Views/Shared/ACE_AdminLayout.cshtml";
+    }
+
+    Erp.BackOffice.Models.PageSetting pageSetting = new Erp.BackOffice.Models.PageSetting
+    {
+        ModuleName = "Contact",
+        ActionName = "Index",
+        PageTitle = ViewBag.Title,
+        DisplaySearchPanel = true,
+        IsPopup = false,
+        DisplayBackButton = false
+    };
+
+    SelectList customerList = Erp.BackOffice.Helpers.SelectListHelper.GetSelectList("Sale_Customer", "Id", "CompanyName", null, "- Khách hàng -");
+    SelectList supplierList = Erp.BackOffice.Helpers.SelectListHelper.GetSelectList("Sale_Supplier", "Id", "Name", null, "- Nhà cung cấp -");
+}
+
+<link href="@Url.Content("~/assets/css/Gridmvc.css")" rel="stylesheet" type="text/css" />
+<script src="@Url.Content("~/Scripts/gridmvc.min.js")" type="text/javascript"> </script>
+
+<style>
+    .form-search .widget-header select {
+        height: 34px;
+    }
+</style>
+
+@helper GridColumnCommand(int id)
+{
+    <div class="hidden-phone visible-desktop action-buttons" style="display: inline-block; float: left;">
+        <p>
+            @if (Erp.BackOffice.Filters.SecurityFilter.AccessRight("Delete", "Contact", "Account"))
+            {
+                <button name="Delete" value="@id" type="submit" class="btn btn-mini btn-danger">
+                    <i class="ace-icon fa fa-trash bigger-120"></i>
+                </button>
+            }
+        </p>
+    </div>
+}
+
+@helper GridColumnName(string name, int id)
+{
+    <a onclick="OpenPopup('/Contact/ContactEdit?IsPopup=true&Id=@id', 'Cập nhật liên hệ', 500, 500)">@name</a>
+}
+
+@helper CheckDeleteColumns(int Id)
+{
+    <label>
+        <input class="ace class-delete-all" type="checkbox" name="DeleteId-checkbox" value="@Id">
+        <span class="lbl"></span>
+    </label>
+}
+
+@helper BuildCheckAll()
+{
+    <label>
+        <input class="ace" type="checkbox" name="checkAll" id="checkAll" />
+        <span class="lbl"></span>
+    </label>
+}
+
+@using (Html.BeginPageHeaderContainer(pageSetting))
+{
+    <p>
+        @Html.TextBox("txtPhone", Request["txtPhone"], new { @class = "", autocomplete = "off", placeholder = "Số điện thoại" })
+        @Html.TextBox("txtName", Request["txtName"], new { @class = "", autocomplete = "off", placeholder = "Tên liên hệ" })
+    </p>
+}
+
+@using (Html.BeginForm("Delete", "Contact", FormMethod.Post))
+{
+    @Html.Grid(Model).Columns(columns =>
+    {
+        columns.Add().Titled(BuildCheckAll().ToHtmlString()).SetWidth(20).Sanitized(false).Encoded(false).RenderValueAs(n => CheckDeleteColumns(n.Id));
+        columns.Add().Titled(Wording.FullName).Sortable(false).Sanitized(false).Encoded(false).RenderValueAs(u => GridColumnName(u.LastName + " " + u.FirstName, u.Id));
+        columns.Add(u => u.Birthday).Titled(Wording.Birthday).Format("{0:dd/MM/yyyy}").SetWidth(100);
+        columns.Add().Titled(Wording.Gender).SetWidth(100).RenderValueAs(u => (u.Gender == true ? "Nữ" : "Nam"));
+        columns.Add(u => u.Phone).Titled(Wording.Phone).SetWidth(100);
+        columns.Add(u => u.Mobile).Titled(Wording.Mobile).SetWidth(100);
+        columns.Add(u => u.Email).Titled(Wording.Email).SetWidth(100);
+        columns.Add(u => u.Address).Titled(Wording.Address).SetWidth(100);
+        columns.Add(u => u.CreatedDate).Titled(Wording.CreatedDate).SetWidth(100);
+        columns.Add(u => u.Id).Titled(Wording.Action).Sanitized(false).Encoded(false).RenderValueAs(u => GridColumnCommand(u.Id)).SetWidth(20);
+    }).WithPaging(20)
+}
+
+@using (Html.BeginButtonContainer(pageSetting))
+{
+    if (Erp.BackOffice.Filters.SecurityFilter.AccessRight("ContactCreate", "Contact", "Account"))
+    {
+        <a class="btn btn-primary btn-mini" onclick="OpenPopup('@Url.Action("ContactCreate", "Contact", new { IsPopup = true })', 'Thêm mới liên hệ', 500, 500);">
+            <i class="ace-icon fa fa-plus"></i>
+            @Resources.Wording.CreateNew
+        </a>
+    }
+}
+
+@section Scripts {
+    <script type="text/javascript">
+        function CheckIsval() {
+            if ($('[name="DeleteId-checkbox"]').is(':checked') == false) {
+                alert("Phải chọn ít nhất 1 item.");
+                return false;
+            }
+            else {
+                if (confirm('Bạn có chắc muốn xóa các item đã chọn ?')) {
+                    return true;
+                }
+                else {
+                    return false;
+                }
+            }
+        }
+
+        $('[name="Delete"]').click(function () {
+            if (confirm('Bạn có chắc muốn xóa item ?')) {
+                $(this).closest('tr').children('td').each(function (i, e) {
+                    $(this).find("input.class-delete-all").prop("checked", true);
+                    return true;
+                })
+            }
+            else {
+                return false;
+            }
+
+        })
+
+    </script>
+}

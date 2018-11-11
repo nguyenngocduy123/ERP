@@ -1,0 +1,134 @@
+﻿@model CreateUserViewModel
+@using Erp.BackOffice.App_GlobalResources
+@using Erp.BackOffice.Helpers
+@using Erp.BackOffice.Areas.Administration.Models
+@using Erp.BackOffice.Staff.Models
+
+@{
+    ViewBag.Title = Wording.CreateUser;
+    Layout = "~/Views/Shared/ACE_AdminLayout.cshtml";
+    Erp.BackOffice.Models.PageSetting pageSetting = new Erp.BackOffice.Models.PageSetting
+    {
+        ModuleName = "User",
+        ActionName = "CreateUser",
+        PageTitle = ViewBag.Title,
+        DisplaySearchPanel = false,
+        IsPopup = false,
+        DisplayBackButton = true
+    };
+    ViewData["DrugStore"] = "";
+}
+
+@section HeadOfPage {
+    @*@Html.ScriptTop_DatePicker()*@
+    @Html.ScriptTop_ChosenStyle()
+}
+
+
+@using (Html.BeginPageHeaderContainer(pageSetting))
+{
+
+}
+
+@using (Html.BeginForm_AceStyle((string)ViewBag.Title, "CreateUser", "User", null, FormMethod.Post, new { id = "CreateUser", @class = "form-horizontal" }))
+{
+    @Html.AntiForgeryToken()
+    @Html.ValidationSummary(true)
+    <div class="row">
+        <div class="col-sm-6">
+            <div class="widget-box">
+                <div class="widget-header">
+                    <h5 class="widget-title">@Wording.LoginInformation</h5>
+                </div>
+                <div class="widget-body">
+                    <div class="widget-main">
+                        @*@Html.CustomDropDownListFor(model => model.BranchId, SelectListHelper.GetSelectList_Branch(null, "- Chọn chi nhánh -"), WidthType.span4, true, null, DropdownListStyle.DropdownListStyleDefault)*@
+                        @Html.CustomTextboxFor(model => model.FirstName, null, null, WidthType.span12, true)
+
+                        @Html.CustomTextboxFor(model => model.LastName, null, null, WidthType.span12, true)
+
+                        @Html.DateInput(model => model.DateOfBirth, "dd/MM/yyyy", "99/99/9999", true)
+
+                        @Html.CustomDropDownListFor(model => model.Sex, SelectListHelper.GetSelectList_Gender(null), WidthType.span4, true, null, DropdownListStyle.DropdownListStyleDefault)
+                        @Html.CustomTextboxFor(model => model.Mobile, null, null, WidthType.span12, true)
+                        @Html.CustomTextboxFor(model => model.Email, null, null, WidthType.span12, true)
+
+                        @Html.HiddenFor(m => m.Status)
+                        @Html.CustomTextboxFor(model => model.Address, null, null, WidthType.span12, true)
+
+
+                    </div>
+                </div>
+            </div>
+            <p></p>
+            <div class="widget-box">
+                <div class="widget-header">
+                    <h5 class="widget-title">@Wording.LoginInformation</h5>
+                </div>
+                <div class="widget-body">
+                    <div class="widget-main">
+                        @Html.CustomTextboxFor(model => model.UserName, null, null, WidthType.span4)
+                        <div class="control-group form-group">
+                            @Html.LabelFor(model => model.Password, new { @class = "control-label col-lg-5 col-md-4 col-sm-4" })
+                            <div class="control-value col-lg-7 col-md-8 col-sm-8">
+                                @Html.PasswordFor(model => model.Password, new { @class = "col-sm-4" })
+                                @Html.ValidationMessageFor(model => model.Password, null, new { @class = "help-inline" })
+                            </div>
+                        </div>
+
+                        <div class="control-group form-group">
+                            @Html.LabelFor(model => model.ConfirmPassword, new { @class = "control-label col-lg-5 col-md-4 col-sm-4" })
+                            <div class="control-value col-lg-7 col-md-8 col-sm-8">
+                                @Html.PasswordFor(model => model.ConfirmPassword, new { @class = "col-sm-4" })
+                                @Html.ValidationMessageFor(model => model.ConfirmPassword, null, new { @class = "help-inline" })
+                            </div>
+                        </div>
+                        <div class="control-group form-group">
+                            <label class="control-label no-padding-right col-lg-5 col-md-4 col-sm-4" for="UserTypeId">Loại người dùng</label>
+                            <div class="control-value col-lg-7 col-md-8 col-sm-8">
+                                <div class="clearfix">
+                                    <select class="col-xs-4 " data-val="true" data-val-number="The field Loại người dùng must be a number." data-val-required="Bắt buộc nhập" id="UserTypeId" name="UserTypeId">
+                                        <option @(Model.UserTypeId == null ? "selected" : "") value="" data-code="">Rỗng</option>
+                                        @foreach (var item in Model.listUserType)
+                                        {
+                                            <option @(Model.UserTypeId == item.Id ? "selected" : "") value="@item.Id" data-code="@item.Code">@item.Name</option>
+                                        }
+                                    </select>
+                                </div>
+                                <div class="clearfix">
+                                    <span class="field-validation-valid help-inline" data-valmsg-for="UserTypeId" data-valmsg-replace="true"></span>
+                                </div>
+                            </div>
+                        </div>
+                        @if (Erp.BackOffice.Filters.SecurityFilter.IsAdmin())
+                        {
+                            @Html.ModulePopupFor(m => m.ParentId, "Staffs", Model.ParentName, false, false, false, null, null, "Search")
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-6">
+            @if (Erp.BackOffice.Filters.SecurityFilter.IsAdmin())
+            {
+                @Html.Partial("_SearchDrugStore", ViewData["DrugStore"])
+            }
+        </div>
+    </div>
+    using (Html.BeginButtonContainer(pageSetting))
+    {
+        <button class="btn btn-mini btn-primary" type="submit" name="Submit" value="Save">
+            <i class="ace-icon fa fa-save"></i>
+            @Wording.Save
+        </button>
+    }
+}
+
+@section Scripts {
+    @Html.ScriptBottom_ValidationMvc()
+    @Html.ScriptBottom_DatePicker("dd/mm/yyyy")
+    @Html.ScriptBottom_ChosenStyle()
+    @Html.ScriptBottom_RequireEitherInput()
+    @Html.ScriptBottom_InputMask()
+
+}

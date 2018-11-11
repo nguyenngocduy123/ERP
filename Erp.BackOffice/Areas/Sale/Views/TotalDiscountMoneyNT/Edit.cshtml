@@ -1,0 +1,67 @@
+@using Erp.BackOffice.App_GlobalResources
+@using Erp.BackOffice.Helpers
+@using Erp.BackOffice.Sale.Models
+
+@model TotalDiscountMoneyNTViewModel
+
+@{
+    ViewBag.Title = Wording.PageEdit_TotalDiscountMoneyNT;
+
+    Layout = "~/Views/Shared/" + (Request["IsPopup"] == null ? "ACE_AdminLayout.cshtml" : "_PopupLayout.cshtml");
+    
+    Erp.BackOffice.Models.PageSetting pageSetting = new Erp.BackOffice.Models.PageSetting
+    {        
+        ModuleName = "TotalDiscountMoneyNT",
+        ActionName = "Edit",
+        PageTitle = ViewBag.Title,
+        DisplaySearchPanel = false,
+        IsPopup = false,
+        DisplayBackButton = true
+    };
+}
+
+@section HeadOfPage {
+    @Html.ScriptTop_ChosenStyle()
+}
+
+@using(Html.BeginPageHeaderContainer(pageSetting))
+{
+
+}
+
+@using (Html.BeginForm_AceStyle((string)ViewBag.Title, pageSetting.ActionName, pageSetting.ModuleName, null, FormMethod.Post, new { @class = "form-horizontal" }))
+{
+    @Html.ValidationSummary(true)
+    @Html.HiddenFor(model => model.Id)
+    @Html.HiddenFor(model => model.CreatedUserId)
+    @Html.HiddenFor(model => model.AssignedUserId)
+    @Html.HiddenFor(model => model.CreatedDate)
+    @Html.HiddenFor(model => model.IsDeleted)
+
+        @Html.CustomDropDownListFor(model => model.DrugStoreId, DrugStoreIdList, WidthType.span12, true, null, DropdownListStyle.DropdownListStyleDefault)
+    @Html.CustomDropDownListFor(model => model.BranchId, BranchIdList, WidthType.span12, true, null, DropdownListStyle.DropdownListStyleDefault)
+    @Html.CustomDropDownListFor(model => model.UserManagerId, UserManagerIdList, WidthType.span12, true, null, DropdownListStyle.DropdownListStyleDefault)
+    @Html.CustomTextboxFor(model => model.Month, null, null, WidthType.span12)
+    @Html.CustomTextboxFor(model => model.Year, null, null, WidthType.span12)
+    @Html.CustomTextboxFor(model => model.QuantityDay, null, null, WidthType.span12)
+    @Html.CustomTextboxFor(model => model.PercentDecrease, null, null, WidthType.span12)
+    @Html.CustomTextboxFor(model => model.DiscountAmount, null, null, WidthType.span12)
+    @Html.CustomTextboxFor(model => model.DecreaseAmount , null, null, WidthType.span12)
+    @Html.CustomTextboxFor(model => model.RemainingAmount, null, null, WidthType.span12)
+    @Html.CustomTextboxFor(model => model.Status, null, null, WidthType.span12)
+
+
+    @using (Html.BeginButtonContainer(pageSetting))
+    {
+        <button class="btn btn-mini btn-primary" type="submit" name="Submit" value="Save">
+            <i class="ace-icon fa fa-save"></i>
+            @Wording.Save
+        </button>
+    }
+}
+
+@section Scripts {
+    
+    @Html.ScriptBottom_ValidationMvc()
+    @Html.ScriptBottom_ChosenStyle()
+}

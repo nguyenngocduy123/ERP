@@ -1,0 +1,126 @@
+﻿@using Erp.BackOffice.App_GlobalResources
+@using Erp.BackOffice.Helpers
+@using Erp.BackOffice.Sale.Models
+
+@model List<PurchaseOrderDetailViewModel>
+
+@{
+    Layout = null;
+
+    IEnumerable<ProductViewModel> productList = (IEnumerable<ProductViewModel>)ViewBag.productList;
+    
+    IEnumerable<SelectListItem> productCategoryList = Erp.BackOffice.Helpers.Common.GetSelectList_Category("product", null, "value");
+    
+}
+
+
+<tbody class="detailList">
+    @{ int index_serial = 0; }
+    @foreach (var od in Model)
+    {
+        int index = Model.IndexOf(od);
+        var product = productList.Where(x => x.Id == od.ProductId).FirstOrDefault();
+                        
+    <tr role="@index">
+        <td>
+            <span>@(index + 1)</span>
+            <br />
+            <label class="toggle_template_location label label-info" data-toggle="tooltip" data-placement="right" title="Bấm để hiển thị danh sách mã vạch và vị trí sản phẩm" style="display:none"><i class="fa fa-angle-double-down"></i></label>
+        </td>
+        <td>
+            <select class="detail_item_category_type" style="width:100%">
+                @foreach (var item in productCategoryList.OrderBy(x => x.Text))
+                {
+                    <option @(product != null ? (product.CategoryCode == item.Value ? "selected" : "") : "") value="@item.Value">@item.Text</option>
+                }
+            </select>
+        </td>
+        <td class="has-error">
+            <select id="DetailList_@(index)_ProductId" name="DetailList[@index].ProductId" data-val="true" data-val-required="Chưa chọn sản phẩm" class="detail_item_id" style="width:100%">
+                <option value="">- chọn -</option>
+                @foreach (var item in productList.OrderBy(x => x.Name))
+                {
+                    <option @(product.Id == item.Id ? "selected" : (product.CategoryCode == item.CategoryCode ? "" : "style=display:none")) value="@item.Id" data-code="@item.Code" data-barcode="@item.Barcode" data-product-type="@item.CategoryCode" data-price="@item.PriceInbound" data-unit="@item.Unit">@item.Name</option>
+                }
+            </select>
+            <span class="field-validation-valid help-inline" data-valmsg-for="DetailList_@(index)_ProductId" data-valmsg-replace="true"></span>
+        </td>
+        <td class="has-error">
+            <input type="hidden" id="DetailList_@(index)_Unit" name="DetailList[@index].Unit" value="" class="detail_item_unit" />
+            <input type="number" style="width:100%" min="1" data-max="@od.Quantity" value="@od.Quantity" data-val-range="Số lượng phải lớn hơn 1" name="DetailList[@index].Quantity" id="DetailList_@(index)_Quantity" class="detail_item_qty" />
+            <span style="display:block" class="field-validation-valid help-inline" data-valmsg-for="DetailList_@(index)_Quantity" data-valmsg-replace="true"></span>
+        </td>
+        <td class="has-error detail-product-price">
+            <input class="detail_item_price" type="text" id="DetailList_@(index)_Price" name="DetailList[@index].Price" value="@od.Price" role="price" style="width:100%" data-val="true" data-val-required="Chưa nhập giá" />
+            <span class="field-validation-valid help-inline" data-valmsg-for="DetailList_@(index)_Price" data-valmsg-replace="false"></span>
+        </td>
+        <td class="detail_item_total">@Erp.BackOffice.Helpers.Common.PhanCachHangNgan(od.Quantity * od.Price)</td>
+        <td class="text-center"><a class="btn btn-xs btn-danger">X</a></td>
+    </tr>
+    
+    <tr class="template_location" style=""> 
+        <td></td>
+        <td colspan="6"> 
+            <table class="table table-bordered"> <thead> <tr> <th style="width:20px">STT</th> <th>SN</th> <th>Kệ</th> <th>Tầng</th> <th>Vị trí</th> <th>Ngày hết hạn</th> <th></th> </tr></thead> 
+            <tbody>
+                @for(int i=0; i < od.Quantity; i++)
+                {
+                <tr class="row_location" role="@index_serial"> 
+                <td> <span>@((index + 1) + "." + (i + 1))</span> <input type="hidden" value="@od.ProductId" name="LocationItemList[@index_serial].ProductId" class="location_product_id"> </td>
+                <td> <input type="text" name="LocationItemList[@index_serial].SN" value="" autocomplete="off" class="location_sn"> <span class="field-validation-valid help-inline" data-valmsg-for="DetailList_@(index_serial)_SN" data-valmsg-replace="true"></span> </td>
+                <td><input type="text" name="LocationItemList[@index_serial].Shelf" value="" autocomplete="off" class="location_shelf"></td>
+                <td><input type="text" name="LocationItemList[@index_serial].Floor" value="" autocomplete="off" class="location_floor"></td>
+                <td><input type="text" name="LocationItemList[@index_serial].Position" value="" autocomplete="off" class="location_position"></td>
+                <td> <input type="text" id="LocationItemList_@(index_serial)_ExpiryDate" name="LocationItemList[@index_serial].ExpiryDate" value="" autocomplete="off" class="location_expiry_date">
+                     <script>$(document).ready(function () { $("#LocationItemList_@(index_serial)_ExpiryDate").datetimepicker({ format: "DD/MM/YYYY" }); }); </script> </td> 
+                <td><a class="delete_location_item"><i class="fa fa-remove"></i></a></td> 
+                </tr>
+                    index_serial++;
+                }
+            </tbody> 
+            </table>
+        </td>
+    </tr>
+    }
+</tbody>
+
+
+
+@*<div class="col-sm-12 box">
+    <p>Các sản phẩm trong đơn hàng</p>
+    <div class="box-body">
+        <div class="table-responsive">
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th style="width:5%">STT</th>
+                        <th style="width:35%">Tên sản phẩm</th>
+                        <th style="width:30%">Số lượng</th>
+                        <th style="width:10%">Đơn giá</th>
+                        <th style="width:10%">Thành tiền</th>
+                    </tr>
+                </thead>
+                <tbody id="detailList">
+                    @foreach (var od in Model)
+                    {
+                        int index = Model.IndexOf(od);
+                    <tr>
+                        <td>@(index+1)</td>
+                        <td class="has-error">
+                            <input disabled value="@od.ProductName" style="width:100%; padding: 6px 5px;border: 1px solid #d5d5d5;" />
+                            <input id="DetailList[@index].ProductId" value="@od.ProductId" name="DetailList[@index].ProductId" data-price="@od.Price" class="detail_item_id" style="width:0px; height:0px;opacity:0;position: absolute;" />
+                            <span class="field-validation-valid help-inline" data-valmsg-for="DetailList[@index].ProductId" data-valmsg-replace="true"></span>
+                        </td>
+                        <td class="has-error">
+                            <input type="number" min="1" data-max-qty="@od.Quantity" data-val-range="Số lượng phải lớn hơn 1" value="@od.Quantity" name="DetailList[@index].Quantity" id="DetailList[@index].Quantity" class="detail_item_qty" />
+                            <span class="field-validation-valid help-inline" data-valmsg-for="DetailList[@index].Quantity" data-valmsg-replace="true"></span>
+                        </td>
+                        <td class="detail_item_price">@Erp.BackOffice.Helpers.Common.PhanCachHangNgan(od.Price)</td>
+                        <td class="detail_item_total">@Erp.BackOffice.Helpers.Common.PhanCachHangNgan(od.Quantity * od.Price)</td>
+                    </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>*@

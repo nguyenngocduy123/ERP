@@ -1,0 +1,134 @@
+﻿@using Erp.BackOffice.App_GlobalResources
+@using Erp.BackOffice.Helpers
+@using Erp.BackOffice.Staff.Models
+@model  InternalNotificationsViewModel
+
+@{
+    ViewBag.Title = Wording.PageCreate_InternalNotifications;
+    Layout = "~/Views/Shared/ACE_AdminLayout.cshtml";
+    //Layout = "~/Views/Shared/" + (Request["IsPopup"] == null ? "ACE_AdminLayout.cshtml" : "_PopupLayout.cshtml");
+    Erp.BackOffice.Models.PageSetting pageSetting = new Erp.BackOffice.Models.PageSetting
+    {
+        ModuleName = "InternalNotifications",
+        ActionName = "Create",
+        PageTitle = ViewBag.Title,
+        DisplaySearchPanel = false,
+        IsPopup = false,
+        DisplayBackButton = true
+    };
+
+}
+@section HeadOfPage {
+
+    @Html.ScriptTop_ChosenStyle()
+    <style>
+    </style>
+}
+@using (Html.BeginPageHeaderContainer(pageSetting))
+{
+
+}
+@using (Ajax.BeginForm("Create", "InternalNotifications", new AjaxOptions()
+{
+    HttpMethod = "POST",
+    OnSuccess = "CreateNotifications_OnSuccess"
+}
+            , new { id = "InternalNotifications", @class = "form-horizontal clearfix" }))
+{
+    @Html.AntiForgeryToken()
+    // Detect browser
+    var browser = Request.Browser;
+    var browserName = browser.Browser;
+    @Html.ValidationSummary(true)
+    using (Html.BeginButtonContainer(pageSetting))
+    {
+        <button class="btn btn-mini btn-primary" type="submit" name="Submit" value="Save">
+            <i class="ace-icon fa fa-save"></i>
+            @Wording.Save
+        </button>
+    }
+    <input type="hidden" value="@Request["IsPopup"]" name="IsPopup" />
+    <ul class="nav nav-tabs" id="myTab">
+        <li id="li-tab1" class="active"><a data-target="#tab1" data-toggle="tab">Nội dung thông báo</a></li>
+        <li id="li-tab2"><a data-target="#tab2" data-toggle="tab">Danh sách nhân viên nhận thông báo</a></li>
+    </ul>
+    <div class="tab-content" style="border-width:1px;">
+        <div class="tab-pane clearfix active" id="tab1">
+
+            @Html.TextBox("Titles", null, new { placeholder = "Tiêu đề thông báo", style = "width:100%;margin-bottom:15px;" })
+            @*@Html.TextArea("Describe", null, new { placeholder = "Mô tả thông báo", style = "width:100%" })*@
+            <div id="group-Content" class="control-group form-group" style="margin-top:5px;">
+                <label class="col-sm-12" for="Content">Nội dung thông báo</label>
+                <div class="control-value col-sm-12">
+                    <div class="clearfix">
+                        <textarea class="ckeditor" cols="30" id="Content" name="Content" placeholder="" rows="2">@Model.Content</textarea>
+                    </div>
+                </div>
+            </div>
+            <div>
+                @*@using (Html.BeginButtonContainer())
+                    {*@
+
+                @*}*@
+            </div>
+        </div>
+        <div class="tab-pane clearfix" id="tab2">
+            <div>
+                <input type="hidden" value="@Request["staffListcancel"]" name="staffListcancel" id="staffListcancel" />
+                @Html.Partial("_SearchStaffPartial")
+
+            </div>
+        </div>
+
+    </div>
+
+}
+
+@Html.Partial("_UploadDocumentField")
+
+@section Scripts {
+    <link href="/Scripts/ckeditor/contents.css" rel="stylesheet" />
+    <script src="/Scripts/ckeditor/ckeditor.js"></script>
+    <script>
+        function initCkeditor() {
+            $('.ckeditor').ckeditor({
+                "extraPlugins": 'imagebrowser',
+                "imageBrowser_listUrl": "@Url.Action("ListJson","Images")",
+                // Define the toolbar groups as it is a more accessible solution.
+                toolbarGroups: [
+                    { "name": "document", "groups": ["mode", "document", "doctools"] },
+                    { "name": "editing", "groups": ["find", "selection", "spellchecker"] },
+                    { "name": "forms" },
+                    { "name": "tools" },
+                    { "name": "basicstyles", "groups": ["basicstyles", "cleanup"] },
+                    { "name": "clipboard", "groups": ["clipboar", "undo"] },
+                    { "name": "links", "groups": ["links"] },
+                    { "name": "paragraph", "groups": ["list", "blocks"] },
+                    { "name": "insert", "groups": ["insert"] },
+                    { "name": "styles", "groups": ["styles"] },
+                    //{ "name": "about", "groups": ["about"] },
+                    { "name": "styles" },
+                    { "name": "colors" },
+                    { "name": "align", "groups": ['JustifyLeft', 'JustifyCenter', 'JustifyRight', 'JustifyBlock'] }
+
+                ],
+                // Remove the redundant buttons from toolbar groups defined above.
+                removeButtons: 'Underline,Strike,Subscript,Superscript,Anchor,Styles,Specialchar'
+            });
+        }
+
+
+    </script>
+    @Html.ScriptBottom_ValidationMvc()
+    @Html.ScriptBottom_ChosenStyle()
+    @Html.ScriptBottom_RequireEitherInput()
+    <script src="@Url.Content("~/Scripts/uploadFile.js")"></script>
+    <script type="text/javascript">
+        function CreateNotifications_OnSuccess(rs) {
+
+            sendNotfication(rs.id, rs.message);
+            //location.href = "/InternalNotifications";
+            HideLoading();
+        }
+    </script>
+}

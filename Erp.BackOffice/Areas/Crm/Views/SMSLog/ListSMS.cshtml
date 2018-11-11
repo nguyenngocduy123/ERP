@@ -1,0 +1,167 @@
+﻿@model IEnumerable<SMSLogViewModel>
+
+@using Erp.BackOffice.App_GlobalResources
+@using Erp.BackOffice.Crm.Models
+@using Erp.BackOffice.Helpers
+@using GridMvc.Html
+
+
+@{
+    ViewBag.Title = Wording.PageIndex_SMSLog;
+    Layout = null;
+    Erp.BackOffice.Models.PageSetting pageSetting = new Erp.BackOffice.Models.PageSetting
+    {
+        ModuleName = "SMSLog",
+        ActionName = "ListSMS",
+        PageTitle = ViewBag.Title,
+        DisplaySearchPanel = false,
+        IsPopup = false,
+        DisplayBackButton = false,
+    };
+
+}
+
+<link href="@Url.Content("~/assets/css/Gridmvc.css")" rel="stylesheet" type="text/css" />
+<script src="@Url.Content("~/Scripts/gridmvc.min.js")" type="text/javascript"> </script>
+
+@helper GridColumnCommand(int id, string pageSetting, string TargetModule, int? TargetID)
+{
+    <div class="hidden-phone visible-desktop action-buttons" style="display: inline-block; float: left;">
+        <p>
+            @if (Erp.BackOffice.Filters.SecurityFilter.AccessRight("Edit", "SMSLog", "Crm"))
+            {
+                <a class="btn btn-mini btn-primary" onclick="OpenPopup('@Url.Action("Edit", "SMSLog", new { IsPopup = true, Id = id, TargetID = TargetID, TargetModule = TargetModule })', 'Chỉnh Sửa SMS',  0,  0)">
+                    <i class="ace-icon fa fa-edit"></i>
+                    @Wording.Edit
+                </a>
+            }
+        </p>
+    </div>
+}
+@helper GridColumnCheckTrue(bool? check)
+{
+    if (check == true)
+    {
+        <i class="fa fa-check green"></i>
+    }
+    else
+    {
+        <i class="fa fa-remove red"></i>
+    }
+}
+@helper GridColumnName(string name, int id, bool isPopup)
+{
+    if (isPopup)
+    {
+        <a onclick="parent.selectBranchItem(@id)">@name</a>
+    }
+    else
+    {
+        name = string.IsNullOrEmpty(name) ? "No Title" : name;
+        <a href="@Url.Action("Edit", "SMSLog" , new { Id= id })">@name</a>
+    }
+}
+
+@helper GridColumnCategoryValue(object value)
+{
+    var attr = Erp.BackOffice.Helpers.Common.GetCategoryByValueOrId("value", value);
+    <span>@(attr != null ? attr.Name : "")</span>
+}
+
+@helper CheckDeleteColumns(int Id)
+{
+    <label>
+        <input class="ace class-delete-all-SMS" type="checkbox" name="DeleteId-checkboxSMS" value="@Id">
+        <span class="lbl"></span>
+    </label>
+}
+
+@helper GridColumnName(int id, string customer, string TargetModule, int? TargetID)
+{
+    customer = string.IsNullOrEmpty(customer) ? "No Title" : customer;
+    <a onclick="OpenPopup('@Url.Action("Detail", "SMSLog", new { IsPopup = true, Id = id, TargetID = TargetID, TargetModule = TargetModule })', 'Chi tiết SMS',  0,  0)"><b>@customer</b>   </a><br />
+}
+
+@helper BuildCheckAll()
+{
+    <label>
+        <input class="ace" type="checkbox" name="checkAll" id="checkAll" />
+        <span class="lbl"></span>
+    </label>
+}
+@helper GridColumnStatusName(string status)
+{
+    switch (status)
+    {
+        case "Đã gửi":
+            <span class="label label-success">@Wording.SMSLogStatus_Send</span>
+            break;
+        case "Chờ gửi":
+        <span class="label label-primary">@Wording.SMSLogStatus_Not_Submitted</span>
+            break;
+        case "Không gửi được":
+        <span class="label label-danger">@Wording.SMSLogStatus_Not_Send</span>
+            break;
+    }
+}
+@using (Html.BeginForm("Delete", "SMSLog", FormMethod.Post))
+{
+    <div class="table-responsive">
+        @Html.Grid(Model).Columns(columns =>
+   {
+       columns.Add().Titled(BuildCheckAll().ToHtmlString()).SetWidth(20).Sanitized(false).Encoded(false).RenderValueAs(n => CheckDeleteColumns(n.Id));
+       int index = 0;
+       columns.Add().Titled(Wording.OrderNo).SetWidth(30).RenderValueAs(n => (++index).ToString());
+       columns.Add(u => u.Status).Titled(Wording.Status).SetWidth(100).Sanitized(false).Encoded(false).RenderValueAs(n => GridColumnStatusName(n.Status));
+       columns.Add(u => u.SentDate).Titled(Wording.SentDate).SetWidth(130).Sortable(false).Sanitized(false).Encoded(false).RenderValueAs(u => GridColumnName(u.Id, u.SentDate.Value.ToString("dd/MM/yyyy HH:mm"), u.TargetModule, u.TargetID));
+       columns.Add(u => u.Customer).Titled(Wording.Customer).RenderValueAs(u => u.Customer);
+       columns.Add(u => u.Phone).Titled(Wording.Phone).SetWidth(250).RenderValueAs(u => u.Phone);
+       columns.Add(u => u.Id).Titled(Wording.Action).Sanitized(false).Encoded(false).RenderValueAs(u => GridColumnCommand(u.Id, pageSetting.ModuleName, u.TargetModule, u.TargetID)).SetWidth(20);
+   }).WithPaging(10)
+    </div>
+    <p>
+        @if (Erp.BackOffice.Filters.SecurityFilter.AccessRight("Delete", "SMSLog", "Crm"))
+        {
+            <input type="hidden" name="UrlReferrerDelete" value="@Request.UrlReferrer" />
+            <input type="hidden" value="@Request["IsPopup"]" name="IsPopup" />
+            <button class="btn btn-mini btn-danger" name="DeleteAll" value="DeleteAll" onclick="return CheckIsvalSms();">
+                <i class="ace-icon fa fa-trash"></i>
+                @Wording.Delete
+            </button>
+        }
+    </p>
+}
+
+@section Scripts {
+
+    <script type="text/javascript">
+        function CheckIsvalS() {
+            if ($('[name="DeleteId-checkboxSMS"]').is(':checked') == false) {
+                alert("Phải chọn ít nhất 1 item.");
+                return false;
+            }
+            else {
+                if (confirm('Bạn có chắc muốn xóa các item đã chọn ?')) {
+                    return true;
+                }
+                else {
+                    return false;
+                }
+            }
+        }
+
+        $('[name="DeleteSMS"]').click(function () {
+            if (confirm('Bạn có chắc muốn xóa item ?')) {
+                $(this).closest('tr').children('td').each(function (i, e) {
+                    $(this).find("input.class-delete-all-SMS").prop("checked", true);
+                    return true;
+                })
+            }
+            else {
+                return false;
+            }
+        })
+
+    </script>
+}
+@Html.ScriptBottom_DatePicker("dd/mm/yyyy")

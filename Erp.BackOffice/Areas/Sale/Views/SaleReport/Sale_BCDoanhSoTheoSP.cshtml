@@ -1,0 +1,230 @@
+﻿@using Erp.BackOffice.App_GlobalResources
+@using Erp.BackOffice.Sale.Models
+@using Erp.BackOffice.Helpers
+@using System.Globalization;
+@model List<ProductInvoiceDetailViewModel>
+    @{
+        ViewBag.Title = "Báo cáo doanh số theo nhà thuốc";
+        bool isPopup = Request["IsPopup"] != null && Request["IsPopup"].ToString().ToLower() == "true" ? true : false;
+        if (isPopup)
+        {
+            Layout = "~/Views/Shared/_PopupLayout.cshtml";
+        }
+        else
+        {
+            Layout = "~/Views/Shared/ACE_AdminLayout.cshtml";
+        }
+        Erp.BackOffice.Models.PageSetting pageSetting = new Erp.BackOffice.Models.PageSetting
+        {
+            ModuleName = "SaleReport",
+            ActionName = "Sale_BCDoanhSoTheoSP",
+            PageTitle = ViewBag.Title,
+            DisplaySearchPanel = true,
+            IsPopup = false,
+            DisplayBackButton = false
+        };
+        List<Erp.BackOffice.Sale.Models.ProductViewModel> productList = (List<Erp.BackOffice.Sale.Models.ProductViewModel>)ViewBag.productList;
+        List<Erp.BackOffice.Staff.Models.BranchViewModel> branchList = (List<Erp.BackOffice.Staff.Models.BranchViewModel>)ViewBag.branchList;
+        Calendar calendar = CultureInfo.InvariantCulture.Calendar;
+        int index = 0;
+        var weekdefault = calendar.GetWeekOfYear(DateTime.Now, CalendarWeekRule.FirstFourDayWeek, DayOfWeek.Monday);
+        string Month = Request["month"] != null ? Request["month"] : DateTime.Now.Month.ToString();
+        string Year = Request["year"] != null ? Request["year"] : DateTime.Now.Year.ToString();
+        string week = Request["week"] != null ? Request["week"] : weekdefault.ToString();
+        string branchId = Request["branchId"] != null ? Request["branchId"] : "";
+        if (Request["branchId"] == null)
+        {
+            if (Erp.BackOffice.Filters.SecurityFilter.IsAdminDrugStore() || Erp.BackOffice.Filters.SecurityFilter.IsStaffDrugStore())
+            {
+                branchId = Erp.BackOffice.Helpers.Common.CurrentUser.DrugStore;
+            }
+        }
+        ViewData["branchId"] = branchId;
+    }
+
+    <style type="text/css">
+    </style>
+
+    @using (Html.BeginPageHeaderContainer(pageSetting))
+    {
+        @Html.Partial("_PartialSearchDrugStore", ViewData["branchId"])
+        <p>
+            Xem dữ liệu theo
+            <label>
+                <input id="single3" name="single" type="radio" class="ace" value="week">
+                <span class="lbl"> Tuần</span>
+            </label>
+            <label>
+                <input id="single1" name="single" type="radio" class="ace" value="month" checked="checked">
+                <span class="lbl"> Tháng</span>
+            </label>
+
+            <label>
+                <input id="single2" name="single" type="radio" class="ace" value="quarter">
+                <span class="lbl"> Quý</span>
+            </label>
+
+            <select id="month" name="month">
+                @for (int i = 1; i <= 12; i++)
+                {
+                    <option @(Month == i.ToString() ? "Selected" : "") value="@i">Tháng @i</option>
+                }
+            </select>
+            <select id="quarter" name="quarter" style="display:none">
+                <option value="1">Quý I</option>
+                <option value="2">Quý II</option>
+                <option value="3">Quý III</option>
+                <option value="4">Quý IV</option>
+            </select>
+            <select id="week" name="week" style="display:none">
+                @for (int i = 1; i <= 52; i++)
+                {
+                    //int year=Convert.ToInt32(Year);
+                    //var first_day = Erp.BackOffice.Helpers.Common.FirstDateOfWeekISO8601(year, i);
+                    //DateTime end_day = first_day.AddDays(6);
+                    <option @(week == i.ToString() ? "Selected" : "") value="@i">Tuần @i</option>
+                }
+            </select>
+            <select id="year" name="year">
+                @for (int i = 2016; i <= DateTime.Now.Year; i++)
+                {
+                    <option @(Year == i.ToString() ? "Selected" : "") value="@i">Năm @i</option>
+                }
+            </select>
+        </p>
+    }
+
+    <div class="table-responsive" id="BaoCaoDoanhThu">
+        <table id="CTable" class="table table-bordered">
+            <thead>
+                <tr>
+                    <th class="text-center" rowspan="2" style="width:40px;">STT</th>
+                    <th class="text-center" rowspan="2">Nhà thuốc</th>
+                    <th class="text-center" colspan="@productList.Count()" style="width:400px;">Sản phẩm</th>
+                    <th class="text-center" rowspan="2" style="width:80px;">Tổng tiền</th>
+                </tr>
+                <tr class="">
+                    @foreach (var item in productList.OrderBy(x => x.Code))
+                    {
+                        <th class="text-center" style="width:100px;">@item.Code</th>
+                    }
+                </tr>
+            </thead>
+            <tbody>
+
+                @foreach (var ii in branchList.OrderBy(x => x.Code))
+                {
+                    index++;
+                    <tr class="@(index%2==0?"alert-warning":"")">
+                        <td class="" style="width:40px;">@(index)</td>
+                        <td class="">@(ii.Name)</td>
+                        @foreach (var item in productList.OrderBy(x => x.Code))
+                        {
+                            var list = Model.Where(x => x.ProductId == item.Id && x.BranchId == ii.Id);
+                            if (list.Count() > 0)
+                            {
+                                <td class="text-right">
+                                    <a onclick="OpenPopup('@Url.Action("DoanhThuNgay", "SaleReport", new { area = "Sale", startDate = ViewBag.aDateTime, endDate = ViewBag.retDateTime, branchId = ii.Id, productId = item.Id, IsPopup = "true" })', 'Trang chi tiết doanh số theo sản phẩm', 0, 500)">
+                                        @(CommonSatic.ToCurrencyStr(list.Sum(a => a.Amount),null))
+                                    </a>
+                                </td>
+                            }
+                            else
+                            {
+                                <td class="text-right">0</td>
+                            }
+                        }
+                        <td class="text-right red" data-name="" style="width:80px;">
+                            @(CommonSatic.ToCurrencyStr(Model.Where(x => x.BranchId == ii.Id).Sum(x => x.Amount),null))
+                        </td>
+                    </tr>
+                }
+
+            </tbody>
+            <thead>
+                <tr class="">
+                    <td class="text-center" style="font-weight:bold" colspan="2">Tổng</td>
+                    @if (productList.Count()>0)
+                    { 
+                    foreach (var item in productList.OrderBy(x => x.Code))
+                    {
+                        var aa = Model.Where(x => x.ProductId == item.Id);
+                        if (aa.Count() > 0)
+                        {
+                            <td class="text-right" style="font-weight:bold">@(CommonSatic.ToCurrencyStr(aa.Sum(x => x.Amount),null))</td>
+                        }
+                        else
+                        {
+                            <td class="text-right red" style="font-weight:bold">0</td>
+                        }
+                    }
+                    }
+                    else
+                    {
+                        <td class="text-right red" style="font-weight:bold"></td>
+                    }
+                    <td class="text-right red" style="font-weight:bold">@(CommonSatic.ToCurrencyStr(Model.Sum(x => x.Amount),null))</td>
+                </tr>
+            </thead>
+        </table>
+
+    </div>
+    @using (Html.BeginButtonContainer(pageSetting))
+    {
+        <button onclick="tableToExcel('CTable', 'BaoCaoDoanhThu')" class=" btn btn-primary btn-sm btn-white btn-success">
+            <i class="ace-icon fa fa-download"></i>
+            Xuất Excel
+        </button>
+    }
+    @section Scripts {
+        <script type="text/javascript">
+
+            var tableToExcel = (function () {
+                var uri = 'data:application/vnd.ms-excel;base64,'
+                    , template = '<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40"><head><!--[if gte mso 9]><xml><x:ExcelWorkbook><x:ExcelWorksheets><x:ExcelWorksheet><x:Name>{worksheet}</x:Name><x:WorksheetOptions><x:DisplayGridlines/></x:WorksheetOptions></x:ExcelWorksheet></x:ExcelWorksheets></x:ExcelWorkbook></xml><![endif]--></head><body><table>{table}</table></body></html>'
+                    , base64 = function (s) { return window.btoa(unescape(encodeURIComponent(s))) }
+                    , format = function (s, c) { return s.replace(/{(\w+)}/g, function (m, p) { return c[p]; }) }
+                return function (table, name) {
+                    if (!table.nodeType) table = document.getElementById(table)
+                    var ctx = { worksheet: name || 'Worksheet', table: table.innerHTML }
+                    window.location.href = uri + base64(format(template, ctx))
+                }
+            })()
+        </script>
+<script>
+    $(function () {
+        $("#quarter").val(currentQuarter);
+
+        var single = "month";
+
+        $("#single1").change(function () {
+            if ($(this).val() == 'month') {
+                $("#month").show();
+                $("#week").hide();
+                $("#quarter").hide();
+                single = "month";
+            }
+        });
+
+        $("#single2").change(function () {
+            if ($(this).val() == 'quarter') {
+                $("#month").hide();
+                $("#week").hide();
+                $("#quarter").show();
+                single = "quarter";
+            }
+        });
+        $("#single3").change(function () {
+            if ($(this).val() == 'week') {
+                $("#month").hide();
+                $("#quarter").hide();
+                $("#week").show();
+                single = "week";
+            }
+        });
+    });
+</script>
+
+        @Html.ScriptBottom_ValidationMvc()
+        @Html.ScriptBottom_DatePicker("dd/MM/yyyy")
+    }

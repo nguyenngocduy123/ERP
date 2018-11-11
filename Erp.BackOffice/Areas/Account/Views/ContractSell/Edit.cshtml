@@ -1,0 +1,100 @@
+@using Erp.BackOffice.App_GlobalResources
+@using Erp.BackOffice.Helpers
+@using Erp.BackOffice.Account.Models
+
+@model ContractSellViewModel
+
+@{
+    ViewBag.Title = Wording.PageEdit_ContractSell;
+
+    Layout = "~/Views/Shared/ACE_AdminLayout.cshtml";
+}
+
+@section HeadOfPage {
+    @Html.ScriptTop_ChosenStyle()
+<style type="text/css">
+    .chosen-search:after {
+        content: none !important;
+    }
+
+    .chosen-onthispage {
+        margin-right: 2px;
+    }
+
+        .chosen-onthispage label {
+            display: none;
+        }
+
+        .chosen-onthispage .control-group {
+            margin: 0px;
+            display: inline-block;
+        }
+
+    .chosen-single {
+        border-radius: 0px !important;
+        height: 34px !important;
+        line-height: 34px !important;
+        margin-top: -5px !important;
+    }
+
+    .form-search input {
+        padding: 0px 4px;
+        height: 34px;
+        line-height: 26px;
+    }
+
+    .chosen-container {
+        width: 300px !important;
+        max-width: 100%;
+    }
+
+    #ItemType_chosen {
+        width: 150px !important;
+    }
+
+    .radio {
+        margin-right: 5px;
+    }
+</style>
+}
+
+@using (Html.BeginForm_AceStyle((string)ViewBag.Title, "Edit", "ContractSell", null, FormMethod.Post, new { @class = "form-horizontal" }))
+{
+    @Html.ValidationSummary(true)
+    @Html.HiddenFor(model => model.Id)
+    @Html.HiddenFor(model => model.CreatedUserId)
+    @Html.HiddenFor(model => model.AssignedUserId)
+    @Html.HiddenFor(model => model.CreatedDate)
+    @Html.HiddenFor(model => model.IsDeleted)
+
+    @Html.CustomDropDownListFor(model => model.CondosId, SelectListHelper.GetSelectList_Condos(null), WidthType.span12, true, null, DropdownListStyle.DropdownListStyleChosen)
+    @Html.CustomTextboxFor(model => model.Quantity, null, null, WidthType.span3, true, new Dictionary<string, object> { { "class", "col-sm-6 text-right" } })
+    @Html.CustomTextboxFor(model => model.Price, null, null, WidthType.span3, true, new Dictionary<string, object> { { "class", "col-sm-6 text-right" } })
+    @Html.CustomTextboxFor(model => model.Unit, null, null, WidthType.span4)
+    @Html.CustomTextboxFor(model => model.VAT, null, null, WidthType.span4)
+    @Html.CustomTextboxFor(model => model.MaintenanceCosts, null, null, WidthType.span3, true, new Dictionary<string, object> { { "class", "col-sm-6 text-right" } })
+    @Html.CustomTextboxFor(model => model.UnitMoney, null, null, WidthType.span4)
+    @Html.DatePicker(model => model.DayHandOver, "dd/MM/yyyy", "99/99/9999", true, true, "col-sm-3", "col-sm-9", "col-sm-4")
+    @Html.DatePicker(model => model.DayPay, "dd/MM/yyyy", "99/99/9999", true, true, "col-sm-3", "col-sm-9", "col-sm-4")
+
+
+
+    <button style="margin-top:10px" type="submit" class="btn btn-info" name="Submit" value="Save">
+        <i class="ace-icon fa fa-save bigger-110"></i>
+        @Wording.Save
+    </button>
+}
+
+@section Scripts {
+    <script>
+
+        $(document).ready(function () {
+
+            $('#Quantity').numberFormat();
+            $('#Prince').numberFormat();
+        });
+</script>
+    @Html.ScriptBottom_ValidationMvc()
+@Html.ScriptBottom_DatePicker("dd/mm/yyyy")
+    @Html.ScriptBottom_ChosenStyle()
+}

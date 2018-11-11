@@ -1,0 +1,12 @@
+﻿<script type="text/javascript">
+    jQuery.validator.addMethod('requireeitherinput', function (value, element, params) {
+        var otherFieldName = $(element).attr('data-val-requireeitherinput-string64prop');
+        var otherFieldValue = $("[name='" + otherFieldName + "']").first().val();
+        return (value != undefined && value != "") || (otherFieldValue != undefined && otherFieldValue != "");
+    }, '');
+
+    jQuery.validator.unobtrusive.adapters.add('requireeitherinput', {}, function (options) {
+        options.rules['requireeitherinput'] = true;
+        options.messages['requireeitherinput'] = options.message;
+    });
+</script>

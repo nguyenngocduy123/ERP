@@ -1,0 +1,211 @@
+﻿@model List<WorkSchedulesViewModel>
+    @using Erp.BackOffice.Areas.Cms.Models
+    @using Erp.BackOffice.App_GlobalResources
+    @using Erp.BackOffice.Staff.Models
+    @using Erp.BackOffice.Helpers
+    @using GridMvc.Html
+
+    @{
+        ViewBag.Title = "Lịch làm việc";
+        Layout = null;
+        Erp.BackOffice.Models.PageSetting pageSetting = new Erp.BackOffice.Models.PageSetting
+        {
+            ModuleName = "Timekeeping",
+            ActionName = "Calender",
+            PageTitle = ViewBag.Title,
+            DisplaySearchPanel = false,
+            IsPopup = false,
+            DisplayBackButton = false
+        };
+    }
+    <style type="text/css">
+        .fc-timeline-event .fc-time {
+            display: none;
+        }
+
+            /*.fc-day-grid-event > .fc-content {
+                white-space: normal;
+                overflow: auto;
+            }*/
+            .badge, .badge-red.label {
+                position: initial !important;
+            }
+
+            .fc-day-grid-event {
+                padding: 1px 1px !important;
+            }
+
+            .fc-event {
+                border: none !important;
+            }
+
+            .popover {
+                max-width: 350px !important;
+            }
+
+            .itemdiv > .body {
+                margin-left: 0px !important;
+            }
+
+            .itemdiv .tools {
+                left: inherit;
+            }
+
+            #external-events {
+                float: left;
+                width: 150px;
+                padding: 0 10px;
+                border: 1px solid #ccc;
+                background: #eee;
+                text-align: left;
+            }
+
+                #external-events h4 {
+                    font-size: 16px;
+                    margin-top: 0;
+                    padding-top: 1em;
+                }
+
+                #external-events .fc-event {
+                    margin: 10px 0;
+                    cursor: pointer;
+                }
+
+                #external-events p {
+                    margin: 1.5em 0;
+                    font-size: 11px;
+                    color: #666;
+                }
+
+                    #external-events p input {
+                        margin: 0;
+                        vertical-align: middle;
+                    }
+            /*#calendar {
+            width: 100%;
+            height:50%;
+        }*/
+    </style>
+    <link href="~/Scripts/fullcalendar-3.6.1/fullcalendar.min.css" rel="stylesheet" />
+    <link href="~/Scripts/fullcalendar-3.6.1/fullcalendar.print.min.css" rel="stylesheet" media="print" />
+    <link href="~/Scripts/fullcalendar-3.6.1/scheduler.min.css" rel="stylesheet" />
+    <script src="~/Scripts/fullcalendar-3.6.1/lib/moment.min.js"></script>
+    <script src="~/Scripts/fullcalendar-3.6.1/demos/fullcalendar.min.js"></script>
+    <script src="~/Scripts/fullcalendar-3.6.1/scheduler.min.js"></script>
+    <script src="~/Scripts/fullcalendar-3.6.1/locale/vi.js"></script>
+    <script>
+
+            $(function () { // document ready
+
+                 var dataEvents = @Html.Raw(ViewBag.dataEvent);
+                 var resources = @Html.Raw(ViewBag.resource);
+                 //$('.fc-scroller').scroll(function () {
+                 //    console.log(aaaaa);
+                 //    $('#calendar').fullCalendar({ events: dataEvents });
+                 //});
+            $('#calendar').fullCalendar({
+                schedulerLicenseKey: 'GPL-My-Project-Is-Open-Source',
+                now: '@(ViewBag.aDateTime)',
+                editable: true,
+                aspectRatio: 1.8,
+                scrollTime: '00:00',
+                header: {
+                  //  today prev, next
+                    left: '',
+                    center: '',
+                    right: ''
+                    //timelineDay, timelineTenDay,timelineYear
+                },
+                defaultView: 'timelineMonth',
+                //views: {
+                //    timelineDay: {
+                //        buttonText: ':15 slots',
+                //        slotDuration: '00:15'
+                //    },
+                //    timelineTenDay: {
+                //        type: 'timeline',
+                //        duration: { days: 10 }
+                //    }
+                //},
+                navLinks: true,
+                locale: 'vi',
+                resourceAreaWidth: '20%',
+                resourceLabelText: 'Nhân viên',
+                //resourceRender: function (resource, cellEls) {
+                //    cellEls.on('click', function () {
+                //        $('#calendar').fullCalendar('removeResource', resource);
+                //    });
+                //},
+                resourceGroupField: 'branch_id',
+                resources: resources ,
+                events: dataEvents,
+                eventRender: function (event, element) {
+                    element.attr('title', event.tooltip);
+                },
+                //eventRender: function (event, scroll) {
+                //    $('#calendar').fullCalendar('addResource', event, scroll);
+                //},
+                //drop: function (date, jsEvent, ui, resourceId) {
+                //    console.log('drop', date.format(), resourceId);
+
+                //    // is the "remove after drop" checkbox checked?
+                //    if ($('#drop-remove').is(':checked')) {
+                //        // if so, remove the element from the "Draggable Events" list
+                //        $(this).remove();
+                //    }
+                //},
+                //eventReceive: function (event) { // called when a proper external event is dropped
+                //    console.log('eventReceive', event);
+                //},
+                //eventDrop: function (event) { // called when an event (already on the calendar) is moved
+                //    console.log('eventDrop', event);
+                //}
+                selectable: true,
+                selectHelper: true,
+                select: function (date,resources) {
+
+                    OpenPopup('/Timekeeping/Create/?StaffId='+resources.Id+'&Day='+date.format()+'&IsPopup=true', 'Thêm Công việc', 0, 0);
+
+                    calendar.fullCalendar('unselect');
+                }
+    ,
+                eventClick: function (calEvent, jsEvent, view) {
+
+                    if (calEvent.url) {
+                        OpenPopup('/Timekeeping/Detail/?Id='+calEvent.url + '&IsPopup=true', 'Chi tiết phân công', 0, 0);
+                        return false;
+                    }
+                },
+                eventDrop: function(event,dayDelta,minuteDelta,allDay,revertFunc) {
+                    if (!confirm("Bạn có muốn thay đổi?")) {
+                        ShowLoading();
+                        $.post("@Url.Action("UpdateDate", "Timekeeping", new { area = "Staff" })", { Id: event.url,date:event.start.format() })
+                        .done(function (data) {
+                            //$("#item_" + id).closest('div').remove();
+                            HideLoading();
+                            //revertFunc();
+                            if(data=="success")
+                            {
+                                alertPopup("Thông báo","Lưu thành công","success");
+                            }
+                            if(data=="error")
+                            {
+                                revertFunc();
+                                alertPopup("Thông báo","Lưu không thành công","danger");
+                            }
+                        });
+
+                    }
+
+                }
+            });
+                HideLoading();
+        });
+
+    </script>
+            <div id="calendar"></div>
+<script type="text/javascript">
+    //$(document).ready(function () {
+    //    HideLoading();
+    //});
+</script>

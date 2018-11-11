@@ -1,0 +1,112 @@
+﻿@using Erp.BackOffice.App_GlobalResources
+@using Erp.BackOffice.Helpers
+@using Erp.BackOffice.Account.Models
+
+@model ReceiptViewModel
+
+@{
+    ViewBag.Title = Wording.PageEdit_Receipt;
+
+    Layout = "~/Views/Shared/" + (Request["IsPopup"] == null ? "ACE_AdminLayout.cshtml" : "_PopupLayout.cshtml");
+    Erp.BackOffice.Models.PageSetting pageSetting = new Erp.BackOffice.Models.PageSetting
+    {
+        ModuleName = "Receipt",
+        ActionName = "Edit",
+        PageTitle = ViewBag.Title,
+        DisplaySearchPanel = false,
+        IsPopup = false,
+        DisplayBackButton = true
+    };
+}
+
+@section HeadOfPage {
+    @Html.ScriptTop_ChosenStyle()
+}
+@using (Html.BeginPageHeaderContainer(pageSetting))
+{
+
+}
+@using (Html.BeginForm_AceStyle((string)ViewBag.Title, "Edit", "Receipt", null, FormMethod.Post, new {id="EditReceipt", @class = "form-horizontal" }))
+{
+    @Html.ValidationSummary(true)
+    @Html.HiddenFor(model => model.Id)
+    @Html.HiddenFor(model => model.CreatedUserId)
+    @Html.HiddenFor(model => model.AssignedUserId)
+    @Html.HiddenFor(model => model.CreatedDate)
+    @Html.HiddenFor(model => model.IsDeleted)
+    @Html.HiddenFor(model => model.Code)
+    <input type="hidden" value="@Request["IsPopup"]" name="IsPopup" />
+
+    @*@Html.CustomDropDownListFor(model => model.Name, SelectListHelper.GetSelectList_Category("receipt_Category", null, "- Chọn loại khoản mục -"), WidthType.span6, true, null, DropdownListStyle.DropdownListStyleChosen)*@
+    @Html.DateInput(model => model.VoucherDate, "dd/MM/yyyy", "99/99/9999", true, WidthType.span12)
+    @Html.ModulePopupFor(m => m.CustomerId, "Customer", Model.CompanyName)
+    @Html.CustomTextboxFor(model => model.Payer, null, null, WidthType.span12)
+    @Html.CustomTextboxFor(model => model.Address, null, null, WidthType.span12)
+    @*@Html.CustomTextboxFor(model => model.Amount, null, null, WidthType.span12)*@
+    <div id="" class="control-group form-group">
+        <label class="control-label col-lg-5 col-md-4 col-sm-4">@Wording.Amount</label>
+        <div class="control-value col-lg-7 col-md-8 col-sm-8">
+            <div class="clearfix">
+                <input class="numberinput2 col-sm-12 text-right" id="Amount" name="Amount" type="text" value="@Model.Amount">
+            </div>
+        </div>
+    </div>
+    @Html.CustomDropDownListFor(model => model.PaymentMethod, SelectListHelper.GetSelectList_Category("FormPayment", null, "Name", Wording.Empty), WidthType.span4, true, null, DropdownListStyle.DropdownListStyleDefault)
+    @*<div class="bank-container" style="display:none">
+            @Html.CustomTextboxFor(model => model.BankAccountNo, null, null, WidthType.span6)
+            @Html.CustomTextboxFor(model => model.BankAccountName, null, null, WidthType.span6)
+            @Html.CustomTextboxFor(model => model.BankName, null, null, WidthType.span6)
+        </div>*@
+    @Html.CustomTextboxFor(model => model.Name, null, null, WidthType.span12)
+    @Html.CustomTextAreaFor(model => model.Note, null, WidthType.span12)
+    @*@Html.CustomDropDownListFor(model => model.SalerId, SelectListHelper.GetSelectList_FullUserName(null,Wording.Empty), WidthType.span6, true, null, DropdownListStyle.DropdownListStyleChosen)*@
+    using (Html.BeginButtonContainer(pageSetting))
+    {
+        <a class="btn btn-mini btn-primary" id="Save" name="Save" value="Save">
+            <i class="ace-icon fa fa-save"></i>
+            @Wording.Save
+        </a>
+    }
+}
+
+@section Scripts {
+    <script type="text/javascript">
+        //truyền từ action create của controller qua khi thực hiện submit và return về lại view create, để nhận biết là được gọi theo dạng popup
+        var closePopup = '@ViewBag.closePopup';
+        $(document).ready(function () {
+            //nếu là được gọi theo dạng popup từ form khác thì chạy đoạn code bên dưới
+            if (closePopup != '') {
+                var option = '<option value="@Model.Id" >@Model.Name</option>';
+                //tên funtion có thể khác theo từng công việc riêng (đây chỉ là mẫu khi thêm mới sẽ gọi lại)
+                window.parent.ClosePopupAndAppendSelect(option);
+            }
+        });
+
+        $(function () {
+            LoadNumberInput();
+            $('#Save').click(function () {
+                ShowLoading();
+                ClearFormatBeforeSubmit($("#EditReceipt"));
+                $("#EditReceipt").submit();
+                HideLoading();
+            });
+
+            //$('#PaymentMethod').change(function () {
+            //    if ($(this).val() == "Chuyển khoản") {
+            //        $('.bank-container').show();
+            //    }
+            //    else {
+            //        $('.bank-container').hide();
+            //        $('#BankAccountNo').val('');
+            //        $('#BankAccountName').val('');
+            //        $('#BankName').val('');
+            //    }
+            //});
+        });
+    </script>
+    @Html.ScriptBottom_ValidationMvc()
+    @Html.ScriptBottom_DatePicker("dd/mm/yyyy")
+    @Html.ScriptBottom_ChosenStyle()
+    @Html.ScriptBottom_RequireEitherInput()
+    @Html.ScriptBottom_InputMask()
+}

@@ -1,0 +1,69 @@
+﻿@model Erp.BackOffice.Models.LoginModel
+
+@using Erp.BackOffice.Helpers
+
+@{
+    ViewBag.Title = Resources.Wording.Login;
+    Layout = "~/Views/Shared/_AnonymousLayout.cshtml";
+}
+
+@section HeadOfPage
+{
+    <title>@MvcHtmlString.Create((string)ViewBag.Title)</title>
+    <meta name="description" content="User login page" />
+}
+
+<div id="login-box" class="login-box visible widget-box top-40">
+    <div class="widget-body">
+        <div class="widget-main">
+            <h4 class="blue lighter bigger">
+                <i class="fa fa-coffee green"></i>
+                @MvcHtmlString.Create(Resources.Wording.PleaseEnterYourInformation)
+            </h4>
+            <div class="space-6"></div>
+            @using (Html.BeginForm())
+            {
+                @Html.AntiForgeryToken()
+                @Html.ValidationSummary(true)
+                <fieldset>
+                    <label class="block clearfix">
+                        <span class="block input-icon input-icon-right">
+                            @Html.TextBoxFor(m => m.UserName, new { @class = "form-control", placeholder = Resources.Wording.Username })
+                            <i class="ace-icon fa fa-user"></i>
+                        </span>
+                        @Html.ValidationMessageFor(m => m.UserName)
+                    </label>
+
+                    <label class="block clearfix">
+                        <span class="block input-icon input-icon-right">
+                            @Html.PasswordFor(m => m.Password, new { @class = "form-control", placeholder = Resources.Wording.Password })
+                            <i class="ace-icon fa fa-lock"></i>
+                        </span>
+                        @Html.ValidationMessageFor(m => m.Password)
+                    </label>
+
+                    <div class="space"></div>
+
+                    <div class="clearfix">
+                        @*@Html.ActionLink(Resources.Wording.ForgetPassword + "?", "ForgetPassword", "User", new { @area = "Administration" }, null)*@
+
+                        <button class="width-39 pull-right btn btn-sm btn-primary">
+                            <i class="ace-icon fa fa-key"></i>
+                            <span class="bigger-110">Đăng nhập</span>
+                        </button>
+                    </div>
+
+                    <div class="space-4"></div>
+                </fieldset>
+            }
+        </div>
+        <!--/widget-main-->
+
+    </div>
+    <!--/widget-body-->
+</div>
+<!--/login-box-->
+@section Scripts
+{
+    @Html.ScriptBottom_ValidationMvc()
+}

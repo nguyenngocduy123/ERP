@@ -1,0 +1,83 @@
+﻿@model IEnumerable<StaffsViewModel>
+@using Erp.BackOffice.App_GlobalResources
+@using Erp.BackOffice.Staff.Models
+@using Erp.BackOffice.Helpers
+
+@{
+    //bool isOffice = ViewBag.BoolOffice != null ? (bool)ViewBag.BoolOffice : false;
+    int count = 1;
+    int index = 0;
+    int totalRows = Model.Count();
+    Layout = null;
+    //rename
+    //string lophoc = "lớp học";
+    //string phongban = "phòng ban";
+}
+@foreach (var item in Model)
+{
+    if (count == 1)
+    {
+        @Html.Raw("<div class=\"department-wrap\">\r\n");
+    }
+    <div class="col-sm-4" style="margin-bottom:20px">
+        <div id="department-item-@item.Id" class="department-item" onclick="OpenPopup('@Url.Action("DetailBasic", "Staffs", new { area = "Staff", Id = item.Id, isPopup = true })', 'Thông tin chi tiết', 600, 500)">
+            <img class="nav-user-photo" style="text-align:center" src="@Erp.BackOffice.Helpers.Common.KiemTraTonTaiHinhAnh(item.ProfileImage,"Staffs","user")" alt="@item.Name">
+            <div class="user-info">
+                <h4 style="color:green;font-weight:bold"> @item.Name</h4>
+                <p class="sum" data-rel="tooltip" title="" data-placement="bottom" data-original-title="Mã giáo viên"><i class="fa fa-barcode"></i>  @item.Code </p>
+                @*<p class="sum" data-rel="tooltip" title="" data-placement="bottom" data-original-title="Chức vụ"><i class="fa fa-envelope"></i>   @item.PositionName</p>*@
+                @*<p class="sum" data-rel="tooltip" title="" data-placement="bottom" data-original-title="Số điện thoại"><i class="fa fa-phone"></i>   @item.Phone</p>*@
+            </div>
+
+        </div>
+        @if (ViewBag.AccessRightEdit)
+        {
+            <p>
+                @if (Erp.BackOffice.Filters.SecurityFilter.AccessRight("Edit", "Staffs", "Staff"))
+                {
+                    <a class="btn btn-mini btn-primary btn-DepartmentEdit" onclick="OpenPopup('@Url.Action("Edit", "Staffs", new { area = "Staff", Id = item.Id, isPopup = true })', 'Cập nhật nhân viên', 0, 500)">
+                        <i class="ace-icon fa fa-edit"></i>
+                        @Wording.Edit
+                    </a>
+                }
+                @if (Erp.BackOffice.Filters.SecurityFilter.AccessRight("Delete", "Staffs", "Staff"))
+                {
+                    <a class="btn btn-mini btn-danger btn-DepartmentDelete" onclick="return DepartmentDelete(@item.Id)">
+                        <i class="ace-icon fa fa-trash"></i>
+                        @Wording.Delete
+                    </a>
+                }
+            </p>
+        }
+    </div>
+    if (index == totalRows - 1)
+    {
+        @Html.Raw("</div>\r\n");
+    }
+    else
+    {
+        if (count == 3)
+        {
+            count = 1;
+            @Html.Raw("</div>\r\n");
+        }
+        else
+        {
+            count++;
+        }
+
+        index++;
+    }
+}
+
+@*@if (Model.Count() != 0)
+    {
+        string script = "<script>$(document).ready(function(){showBranchIfEmptyDepartment(" + ViewBag.BranchId + ")});</script>";
+        @Html.Raw(script);
+    }
+    @if (Model.Count() == 0)
+    {
+        string script = "<script>$(document).ready(function(){showBranchIfEmptyDepartment(" + ViewBag.BranchId + ")});</script>";
+        //string script = "<script>$(document).ready(function(){showLabelEmptyClass()});</script>";
+        @Html.Raw(script);
+    }*@

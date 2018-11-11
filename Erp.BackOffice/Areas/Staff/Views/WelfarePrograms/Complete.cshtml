@@ -1,0 +1,96 @@
+﻿@using Erp.BackOffice.App_GlobalResources
+@using Erp.BackOffice.Helpers
+@using Erp.BackOffice.Staff.Models
+
+@model WelfareProgramsViewModel
+
+@{
+    ViewBag.Title ="Hoàn thành kế hoạch phúc lợi";
+
+    Layout = "~/Views/Shared/" + (Request["IsPopup"] == null ? "ACE_AdminLayout.cshtml" : "_PopupLayout.cshtml");
+    
+    Erp.BackOffice.Models.PageSetting pageSetting = new Erp.BackOffice.Models.PageSetting
+    {        
+        ModuleName = "WelfarePrograms",
+        ActionName = "Complete",
+        PageTitle = ViewBag.Title,
+        DisplaySearchPanel = false,
+        IsPopup = false,
+        DisplayBackButton = true
+    };
+}
+
+@section HeadOfPage {
+    @Html.ScriptTop_ChosenStyle()
+<style>
+    .edit-view .input-group .input-group-addon {
+        font-size: 11px !important;
+    }
+
+    .edit-view textarea {
+        width: 200px !important;
+    }
+</style>
+
+}
+
+@using(Html.BeginPageHeaderContainer(pageSetting))
+{
+
+}
+
+@using (Html.BeginForm_AceStyle((string)ViewBag.Title, pageSetting.ActionName, pageSetting.ModuleName, null, FormMethod.Post, new { @class = "form-horizontal" }))
+{
+    @Html.ValidationSummary(true)
+    @Html.HiddenFor(model => model.Id)
+    @Html.HiddenFor(model => model.Name)
+    <input type="hidden" value="@Request["IsPopup"]" name="IsPopup" />
+    <div id="" class="control-group form-group ">
+        <label class="control-label col-lg-5 col-md-4 col-sm-4" for="ImplementationStartDate">Thời gian thực hiện</label>
+        <div class="control-value col-lg-7 col-md-8 col-sm-8" style="width: 384px;">
+            <div class="clearfix">
+                <span class="input-daterange input-group">
+                    @Html.TextBox("ImplementationStartDate", Model.ImplementationStartDate != null ? Model.ImplementationStartDate.Value.ToString() : "", new { autocomplete = "off", placeholder = "Từ ngày", style = "width:150px" })
+                    <span class="input-group-addon">
+                        <i class="fa fa-exchange"></i>
+                    </span>
+                    @Html.TextBox("ImplementationEndDate", Model.ImplementationEndDate != null ? Model.ImplementationEndDate.Value.ToString() : "", new { autocomplete = "off", placeholder = "Đến ngày", style = "width:150px" })
+                </span>
+            </div>
+            <div class="clearfix">
+                <span class="field-validation-valid help-inline" data-valmsg-for="ImplementationStartDate" data-valmsg-replace="true"></span>
+            </div>
+        </div>
+    </div>
+    @Html.CustomTextboxFor(model => model.TotalActualCosts, null, null, WidthType.span12, true, new Dictionary<string, object> { { "class", "text-right" } })
+    using (Html.BeginButtonContainer(pageSetting))
+    {
+        <button class="btn btn-mini btn-primary" type="submit" name="Submit" value="Save">
+            <i class="ace-icon fa fa-save"></i>
+            @Wording.Save
+        </button>
+    }
+}
+
+@section Scripts {
+ <script>
+        //truyền từ action create của controller qua khi thực hiện submit và return về lại view create, để nhận biết là được gọi theo dạng popup
+        var closePopup = '@ViewBag.closePopup';
+        $(document).ready(function () {
+            $('#TotalActualCosts').numberFormat();
+          
+            //nếu là được gọi theo dạng popup từ form khác thì chạy đoạn code bên dưới
+            if (closePopup != '') {
+                var option = '<option value="@Model.Id" >@Model.Name</option>';
+                //tên funtion có thể khác theo từng công việc riêng (đây chỉ là mẫu khi thêm mới sẽ gọi lại)
+                window.parent.ClosePopupAndAppendSelect(option);
+            }
+           
+     });
+
+      
+</script>
+@Html.ScriptBottom_ValidationMvc()
+@Html.ScriptBottom_DatePicker("dd/mm/yyyy HH:mm")
+@Html.ScriptBottom_ChosenStyle()
+}

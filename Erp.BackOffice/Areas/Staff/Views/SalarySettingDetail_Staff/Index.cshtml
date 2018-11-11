@@ -1,0 +1,72 @@
+﻿@model SalarySettingDetail_StaffViewModel
+
+@using Erp.BackOffice.App_GlobalResources
+@using Erp.BackOffice.Staff.Models
+@using Erp.BackOffice.Helpers
+@using GridMvc.Html
+
+@{
+    Layout = null;
+    //  List<SelectListItem> SelectList_Group = (List<SelectListItem>)ViewBag.SelectList_Group;
+}
+
+@if (ViewBag.FailedMessage != null && ViewBag.FailedMessage != "")
+{
+    <div class="alert alert-block alert-danger">
+        <button class="close" data-dismiss="alert" type="button">
+            <i class="ace-icon fa fa-times"></i>
+        </button>
+        <i class="ace-icon fa fa-warning red"></i>
+        @ViewBag.FailedMessage
+    </div>
+}
+@using (Html.BeginForm("Index", "SalarySettingDetail_Staff", FormMethod.Post, new { @class = "form-horizontal" }))
+{
+    if (ViewBag.salarySetting != null)
+    {
+        <input type="hidden" name="UrlReferrer" value="@Request.Url" />
+        <input type="hidden" value="@ViewBag.StaffId" name="StaffId" />
+        <div class="edit-view clearfix">
+            @foreach (var group in Model.SelectList_Group)
+            {
+                if (!string.IsNullOrEmpty(group.Text))
+                {
+                    <label class="" for="@group.Text">@group.Text</label>
+                }
+                for (int i = 0; i < Model.ListAllColumns.Count(); i++)
+                {
+                    if (Model.ListAllColumns[i].GroupName == group.Text)
+                    {
+                        <div id="" class="control-group form-group">
+                            <label class="control-label col-lg-7 col-md-7 col-sm-4" for="ListAllColumns[@i].Name">@Model.ListAllColumns[i].Name</label>
+                            <div class="control-value  col-lg-5 col-md-5 col-sm-8">
+                                <div class="clearfix">
+                                    <input autocomplete="off" class="col-xs-12 input-numberic" data-val="true" data-val-length="Giá trị không được vượt quá 50 ký tự." data-val-length-max="50" data-val-required="Bắt buộc nhập" id="ListAllColumns[@i].DefaultValue" maskformat="" name="ListAllColumns[@i].DefaultValue" placeholder="" type="text" value="@Model.ListAllColumns[i].DefaultValue" aria-required="true" aria-describedby="ListAllColumns[@i].DefaultValue-error" aria-invalid="false">
+                                </div>
+                                <div class="clearfix">
+                                    <span class="help-inline field-validation-valid" data-valmsg-for="ListAllColumns[@i].DefaultValue" data-valmsg-replace="true"></span>
+                                </div>
+                                <input type="hidden" value="@Model.ListAllColumns[i].SalarySettingId" name="ListAllColumns[@i].SalarySettingId" />
+                                <input type="hidden" value="@Model.ListAllColumns[i].Id" name="ListAllColumns[@i].Id" />
+                            </div>
+                        </div>
+
+                    }
+                }
+            }
+        </div>
+
+        <div class="">
+            <button class="btn btn-mini btn-primary top-10" type="submit" name="Submit" value="Save">
+                <i class="ace-icon fa fa-save"></i>
+                @Wording.Save
+            </button>
+        </div>
+    }
+}
+<script>
+    $(document).ready(function () {
+
+        $('.input-numberic').numberFormat();
+    });
+</script>

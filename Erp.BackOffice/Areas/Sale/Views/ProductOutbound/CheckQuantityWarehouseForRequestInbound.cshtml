@@ -1,0 +1,164 @@
+﻿@using Erp.BackOffice.App_GlobalResources
+@using Erp.BackOffice.Helpers
+@using Erp.BackOffice.Sale.Models
+
+@{
+    Layout = null;
+
+    List<RequestInboundDetailViewModel> invoiceDetails = (List<RequestInboundDetailViewModel>)ViewBag.orderDetails;
+    List<InventoryViewModel> productsInWarehouse = (List<InventoryViewModel>)ViewBag.productsInWarehouse;
+}
+<p></p>
+<span class="field-validation-valid help-inline barcode-notfound" style="color:#F44336"></span>
+<div class="box-body">
+    <div class="table-responsive">
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th style="width:5%">STT</th>
+                    <th style="width:45%">Tên sản phẩm</th>
+                    <th style="width:10%">Số lượng</th>
+                    <th style="width:15%">Đơn giá</th>
+                    <th style="width:15%">Thành tiền</th>
+                </tr>
+            </thead>
+            <tbody id="detailList" class="detailList">
+                @for (int i = 0; i < invoiceDetails.Count; i++)
+                {
+                    int orderNo = 0;
+                    <tr role="@(i)" id="product_item_@i" data-id="@i" style="background-color:#3A87AD;color:white">
+                        <td>@(i + 1)</td>
+                        <td class="detail_item_id">
+                            @Html.Hidden("DetailList[" + i + "].ProductId", invoiceDetails[i].ProductId)
+                            @*<input type="hidden" name="DetailList[@i].QuantityUsed" value="@Model.DetailList[i].QuantityUsed" class="detail_item_qtyUsed" />*@
+                            @*<input type="hidden" name="DetailList[@i].QuantityTest" value="@Model.DetailList[i].QuantityTest" class="detail_item_qtyTest" />*@
+                            @Html.Hidden("DetailList[" + i + "].Id", invoiceDetails[i].Id)
+                            @Html.Hidden("DetailList[" + i + "].ProductCode", invoiceDetails[i].ProductCode)
+                            <span>@invoiceDetails[i].ProductCode - @invoiceDetails[i].ProductName</span>
+                            @if (!string.IsNullOrEmpty(invoiceDetails[i].LabelNotification))
+                            {
+                                <a data-rel="tooltip" data-placement="right" data-original-title="@invoiceDetails[i].LabelNotification">
+                                    <i class="ace-icon fa fa-exclamation-triangle bigger-120" style="color:#F89406"></i>
+                                </a>
+                            }
+                        </td>
+
+                        <td class="has-error" style="text-align:right">
+                            <input type="hidden" name="DetailList[@i].Unit" value="@invoiceDetails[i].Unit" id="DetailList_@(i)__Unit" class="detail_item_unit" />
+                            <input type="number" style="width:50px" min="0" value="@invoiceDetails[i].Quantity" name="DetailList[@i].Quantity" id="DetailList_@(i)__Quantity" class="detail_item_qty" />
+                            <span class="field-validation-valid help-inline" data-valmsg-for="DetailList_@(i)__Quantity" data-valmsg-replace="true"></span>
+                        </td>
+                        <td class="has-error detail-product-price" style="text-align:right">
+                            <input type="hidden" class="detail_item_price numberinput2" id="DetailList_@(i)__Price" name="DetailList[@i].Price" value="@invoiceDetails[i].Price" role="price" style="width:100px" data-val="true" data-val-required="Chưa nhập giá" />
+                            <span class="field-validation-valid help-inline" data-valmsg-for="DetailList_@(i)__Price" data-valmsg-replace="false"></span>
+                            <span>@Common.PhanCachHangNgan2(invoiceDetails[i].Price)</span>
+                        </td>
+                        <td class="detail_item_total">@Erp.BackOffice.Helpers.Common.PhanCachHangNgan(invoiceDetails[i].Price * invoiceDetails[i].Quantity)</td>
+
+                    </tr>
+                    if (invoiceDetails[i].Quantity > 0)
+                    {
+                    <tr class="template_location" style="" data-productid="@invoiceDetails[i].ProductId" data-productcode="@invoiceDetails[i].ProductCode">
+                        <td></td>
+                        <td colspan="4">
+                            <table class="table table-bordered">
+                                <thead>
+                                    <tr>
+                                        <th style="width:20px">STT</th>
+                                        <th>SN</th>
+                                        <th>Kệ</th>
+                                        <th>Tầng</th>
+                                        <th>Lô sản xuất</th>
+                                        <th>Ngày hết hạn</th>
+                                        <th></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+
+                                    @foreach (var location in invoiceDetails[i].ListWarehouseLocationItemViewModel)
+                                    {
+                                        orderNo++;
+                                        <tr>
+                                            <td>
+                                                <span>@((i + 1) + "." + (orderNo))</span>
+                                                <input type="hidden" value="@location.Id" name="LocationItemList[@orderNo].Id" id="LocationItemList_@(orderNo)__Id" />
+                                                <input type="hidden" value="@invoiceDetails[i].ProductId" name="LocationItemList[@orderNo].ProductId" />
+                                            </td>
+                                            <td>
+
+                                                <input type="text" name="LocationItemList[@orderNo].SN" id="LocationItemList_@(orderNo)__SN" value="@location.SN" readonly="readonly" style="width:100%" />
+                                            </td>
+                                            <td><input type="text" name="LocationItemList[@orderNo].Shelf" id="LocationItemList_@(orderNo)__Shelf" value="@location.Shelf" autocomplete="off" readonly="readonly" style="width:30px;" /></td>
+                                            <td><input type="text" name="LocationItemList[@orderNo].Floor" id="LocationItemList_@(orderNo)__Floor" value="@location.Floor" autocomplete="off" readonly="readonly" style="width:30px;" /></td>
+                                            <td style="width:100px;">
+                                                <input type="text" name="LocationItemList[@orderNo].LoCode" id="LocationItemList_@(orderNo)__LoCode" value="@location.LoCode" readonly="readonly" style="width:100%;" />
+                                            </td>
+                                            <td style="width:100px;">
+                                                <input type="text" name="LocationItemList[@orderNo].ExpiryDate" id="LocationItemList_@(orderNo)__ExpiryDate" value="@(location.ExpiryDate.HasValue?location.ExpiryDate.Value.ToShortDateString():"")" readonly="readonly" style="width:100%;" />
+                                            </td>
+                                            <td style="width:50px;">
+                                                <span class="input-group-addon" onclick="OpenPopup('/WarehouseLocationItem/Index?IsPopup=true&OrderNo=@orderNo&productId=@location.ProductId&warehouseId=@location.WarehouseId', 'Tìm kiếm dữ liệu', 800, 600)" style="cursor:pointer">
+                                                    <i class="ace-icon fa fa-search"></i>
+                                                </span>
+                                            </td>
+
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </td>
+                    </tr>
+                    }
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<script type="text/javascript">
+    function selectLocationItem(id, LoCode, Floor, ExpiryDate, Shelf, SN, orderNo) {
+        $("#LocationItemList_" + orderNo + "__Id").val(id);
+        $("#LocationItemList_" + orderNo + "__SN").val(SN);
+        $("#LocationItemList_" + orderNo + "__Shelf").val(Shelf);
+        $("#LocationItemList_" + orderNo + "__Floor").val(Floor);
+        $("#LocationItemList_" + orderNo + "__LoCode").val(LoCode);
+        $("#LocationItemList_" + orderNo + "__ExpiryDate").val(ExpiryDate);
+        ClosePopup();
+    }
+    $(document).ready(function () {
+        $('[data-rel="tooltip"]').tooltip({ container: 'body' });
+        // tính thành tiền và tổng cộng
+      
+    });
+    $(document).ready(function () {
+    // tính thành tiền và tổng cộng
+        $('#detailList').on('change', '.detail_item_qty', function () {
+        var $this = $(this);
+        var id = $this.closest('tr').data('id');
+        //tính tổng cộng
+        calcAmountItem(id);
+    });
+    });
+
+    function calcAmountItem(id, priceFrom) {
+        var price = 0;
+        var $priceElem = $('tr#product_item_' + id).find('.detail_item_price');
+        if (priceFrom == 'item select') {
+            $priceElem.val(price_of_item).trigger('change');
+            price = parseFloat(price_of_item);
+        } else {
+            price = parseFloat($priceElem.last().val().replace(/[^0-9\.]/g, ''));
+        }
+
+        $('tr#product_item_' + id).find('.detail_item_price').text(currencyFormat(price));
+        var $qty = $('tr#product_item_' + id).find('.detail_item_qty');
+        var qty = 1;
+        if ($qty.val() == '') {
+            $qty.val(1);
+        } else {
+            qty = parseInt($qty.val()) < 0 ? parseInt($qty.val()) * -1 : parseInt($qty.val());
+        }
+        var total = parseFloat(price) * qty;
+        $('tr#product_item_' + id).find('.detail_item_total').text(currencyFormat(total));
+    };
+</script>

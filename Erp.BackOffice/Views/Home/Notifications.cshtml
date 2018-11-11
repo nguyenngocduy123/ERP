@@ -1,0 +1,332 @@
+﻿@model List<Erp.BackOffice.Crm.Models.TaskViewModel>
+
+@{
+    //var path = Erp.BackOffice.Helpers.Common.GetSetting("Staff");
+    Layout = null;
+    var mau = "";
+}
+
+<style type="text/css">
+    /* Create the blue navigation bar */
+    /*.navbar {
+        background-color: #3b5998;
+        font-size: 22px;
+        padding: 5px 10px;
+    }*/
+
+    /* Define how each icon button should look like */
+    .button {
+        color: white;
+        display: inline-block; /* Inline elements with width and height. TL;DR they make the icon buttons stack from left-to-right instead of top-to-bottom */
+        position: relative; /* All 'absolute'ly positioned elements are relative to this one */
+        padding: 2px 5px; /* Add some padding so it looks nice */
+    }
+
+    /* Make the badge float in the top right corner of the button */
+    .button__badge {
+        background-color: #fa3e3e;
+        border-radius: 2px;
+        color: white;
+        padding: 1px 3px;
+        font-size: 10px;
+        position: absolute; /* Position the badge within the relatively positioned button */
+        top: 0px;
+        right: 0px;
+        height: 17px;
+        line-height: 15px;
+    }
+
+    .nav .open > a:focus {
+        color: #2c5976;
+    }
+
+    .ace-nav > li > a {
+        min-width: 30px !important;
+    }
+
+    .dropdown-navbar .msg-photo {
+        max-height: 45px;
+        border-radius: 100%;
+        max-width: 45px;
+    }
+
+    .mss-style {
+        padding: 10px 2px;
+        margin: 0;
+        border-top: 1px solid;
+        font-size: 12px;
+        line-height: 16px;
+        color: #555 !important;
+        background-color: transparent !important;
+        white-space: normal;
+        border-top-color: #E4ECF3;
+    }
+
+    .dropdown-navbar .msg-photo {
+        max-width: 45px;
+        float: left;
+        margin-top: 2px;
+        max-height: 45px;
+        border-radius: 100%;
+    }
+
+    .dropdown-navbar .msg-body {
+        display: block;
+        line-height: 20px;
+        white-space: normal;
+        vertical-align: middle;
+        margin-left: 50px;
+        margin-right: 40px;
+    }
+
+    .msg-title {
+        display: inline-block;
+        line-height: 14px;
+        font-size:12px !important;
+        color:black !important;
+    }
+
+    .msg-time {
+        display: block;
+        font-size: 11px;
+        color: #777;
+    }
+
+    .dropdown-navbar {
+        padding: 0;
+        width: 400px !important;
+    }
+
+    .gritter-image {
+        border-radius: 100%;
+    }
+
+    .notifications-action a {
+        margin: 0px !important;
+        height: 25px !important;
+        max-width: 20px !important;
+    }
+
+    .notifications-action {
+        max-width: 40px;
+        margin: 0px;
+        float: right;
+        position: initial;
+        display: grid !important;
+    }
+    .dropdown-navbar>li {
+    padding: 10px 8px;
+    background-color: #FFF;
+}
+    .dropdown-navbar>.dropdown-content {
+    padding: 0;
+    width: 400px;
+}
+    .dropdown-footer {
+    padding:0px !important;
+    }
+.dropdown-navbar.navbar-pink>li.dropdown-header {
+    background-color: #ECF2F7 !important;
+    color: #8090A0 !important;
+    border-bottom-color: #BCD4E5 !important;
+}
+</style>
+
+<a id="notifications_button" data-toggle="dropdown" class="button dropdown-toggle" href="#" aria-expanded="false">
+    <i class="ace-icon fa fa-globe" style="font-size:24px;margin-top:2px"></i>
+    <span class="button__badge" style="display:none">0</span>
+</a>
+<ul class="dropdown-menu-right dropdown-navbar navbar-pink dropdown-menu dropdown-caret dropdown-close">
+    <li class="dropdown-header">
+        <i class="ace-icon fa fa-globe"></i>
+        Thông báo
+        <a onclick="CheckAllSeen()" class="pull-right">
+            Đánh dấu tất cả đã đọc
+        </a>
+    </li>
+
+    <li class="dropdown-content ace-scroll" style="position: relative;">
+        <div class="scroll-track" style="display: none;"><div class="scroll-bar"></div></div><div class="scroll-content">
+            <ul id="notifications_list" class="dropdown-menu dropdown-navbar">
+                @foreach (var item in Model)
+                {
+
+                    if (item.AssignedUserId == item.ModifiedUserId)
+                    {
+                        mau = "white !important";
+                    }
+                    else
+                    {
+                        mau = "#ECF2F7 !important";
+                    }
+                    <li id="notifications_item_@item.Id" style="background-color:@mau; border-top: 1px solid #E4ECF3;" class="checkallseen_color">
+                        <div class="notifications-action pull-right">
+                            <a onclick="CheckDisable(@item.Id)" class="red pull-right" data-rel="tooltip" title="" data-placement="left" data-original-title="Ẩn thông báo">
+                                <i class="ace-icon fa fa-times"></i>
+                            </a>
+                            @if (item.AssignedUserId == item.ModifiedUserId)
+                            {
+                                <a onclick="CheckSeen(@item.Id)" class="blue pull-right" id="seen_@item.Id" data-rel="tooltip" title="" data-placement="left" data-original-title="Đánh dấu chưa đọc thông báo">
+                                    <i class="ace-icon fa fa-check-circle"></i>
+                                </a>
+                            }
+                            else
+                            { 
+                            <a onclick="CheckSeen(@item.Id)" class="blue pull-right" id="seen_@item.Id" data-rel="tooltip" title="" data-placement="left" data-original-title="Đánh dấu đã đọc thông báo">
+                                <i class="ace-icon fa fa-check-circle"></i>
+                            </a>
+                            }
+                        </div>
+                        <div style="display:initial">
+                                <img src="@item.ProfileImage" class="msg-photo">
+                            <div class="msg-body">
+                                <a href="/@item.ParentType/Detail/@item.ParentId" onclick="CheckSeen(@item.Id)">
+                                    <span class="msg-title">
+                                        <span class="blue">
+                                            <b>@item.FullName </b>
+
+                                        </span>
+                                        @item.Subject ...
+                                    </span>
+                                </a>
+                                <span class="msg-time">
+                                    <i class="ace-icon fa fa-clock-o"></i>
+                                    @item.CreatedDate.Value.ToString("HH:mm dd/MM/yyyy")
+                                </span>
+                            </div>
+
+                        </div>
+                    </li>
+
+                }
+            </ul>
+        </div>
+    </li>
+    <li class="dropdown-footer">
+        <a href="/Task/LogNotifications">
+            Xem tất cả thông báo
+            <i class="ace-icon fa fa-arrow-right"></i>
+        </a>
+    </li>
+</ul>
+
+<script src="~/Scripts/jquery.signalR-2.2.1.min.js" type="text/javascript"></script>
+<script src="~/signalr/hubs"></script>
+
+<script type="text/javascript">
+    $(function () {
+        // Reference the auto-generated proxy for the hub.
+        erpHub = $.connection.erpHub;
+        // Create a function that the hub can call back to display messages.
+        erpHub.client.addNotification = function (id, message) {
+            $("#notifications_item_" + id).remove();
+            $("#notifications_list").prepend(message);
+            $(".button__badge").text(parseInt($(".button__badge").text()) + 1);
+            $(".button__badge").show();
+            var audioElement = document.createElement('audio');
+            audioElement.setAttribute('src', '/assets/facebookme.mp3');
+            audioElement.play();
+            var title = document.title;
+            var newTitle = '(' + parseInt($(".button__badge").text()) + ') ' + title;
+            document.title = newTitle;
+        };
+        erpHub.client.alert = function (message, Image) {
+            var unique_id = $.gritter.add({
+                title: 'Thông báo',
+                text: message,
+                image: Image,
+                sticky: true,
+                time: '',
+                class_name: 'gritter-info' + ' gritter-light'
+            });
+            return false;
+        };
+        // Start the connection.
+        $.connection.hub.start().done(function () {
+        });
+    });
+
+    // This optional function html-encodes messages for display in the page.
+    function htmlEncode(value) {
+        var encodedValue = $('<div />').text(value).html();
+        return encodedValue;
+    }
+    if(@Model.Where(x=>x.AssignedUserId.Value<=0).Count()>0)
+    {
+        $(".button__badge").text(@Model.Where(x=>x.AssignedUserId.Value<=0).Count());
+        $(".button__badge").show();
+    }
+    $(document).ready(function () {
+        $('[data-rel="tooltip"]').tooltip({ container: 'body' });
+    });
+
+    function CheckSeen(Id) {
+        $.ajax({
+            url: '/Task/CheckSeen',
+            type: 'GET',
+            data: { Id: Id},
+            success: function (res) {
+                if (res == "success") {
+                    $(".button__badge").text(parseInt($(".button__badge").text()) - 1);
+                    $("#notifications_item_"+Id).css('background-color','white');
+                    if($(".button__badge").text()<=0)
+                    {
+                        $(".button__badge").hide();
+                    }
+                    $("#seen_"+Id).tooltip('hide')
+                    .attr('data-original-title','Chưa xem')
+                    .tooltip('fixTitle')
+                    .tooltip('show');
+                    $(".button__badge").show();
+                }
+                else if(res=="notseen")
+                {
+                    $(".button__badge").text(parseInt($(".button__badge").text()) + 1);
+                    $("#notifications_item_"+Id).css('background-color','#ECF2F7');
+                  
+                }
+                else
+                {
+                    alertPopup("Lỗi","Dữ liệu tìm không thấy! Vui lòng kiểm tra lại","danger");
+                }
+            }
+        });
+    }
+    function CheckDisable(Id) {
+        $.ajax({
+            url: '/Task/CheckDisable',
+            type: 'GET',
+            data: { Id: Id},
+            success: function (res) {
+                if (res == "notseen") {
+                    $(".button__badge").text(parseInt($(".button__badge").text()) - 1);
+                    $("#notifications_item_"+Id).closest('li').remove();
+                    if($(".button__badge").text()<=0)
+                    {
+                        $(".button__badge").hide();
+                    }
+                }
+                else if(res=="seen")
+                {
+                    $("#notifications_item_"+Id).closest('li').remove();
+                }
+                else
+                {
+                  alertPopup("Lỗi","Dữ liệu tìm không thấy! Vui lòng kiểm tra lại","danger");
+                }
+            }
+        });
+    }
+    function CheckAllSeen() {
+        $.ajax({
+            url: '/Task/CheckAllSeen',
+            type: 'GET',
+            success: function (res) {
+                if (res == "success") {
+                    $(".button__badge").hide();
+                    $(".checkallseen_color").css('background-color','white');
+                }
+            }
+        });
+    }
+</script>

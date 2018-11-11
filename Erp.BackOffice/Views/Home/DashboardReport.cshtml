@@ -1,0 +1,64 @@
+﻿@using Erp.BackOffice.App_GlobalResources
+@using Erp.BackOffice.Sale.Models
+@using Erp.BackOffice.Helpers
+
+@{
+    ViewBag.Title = "Báo cáo";
+    Layout = "~/Views/Shared/ACE_AdminLayout.cshtml";
+    Erp.BackOffice.Models.PageSetting pageSetting = new Erp.BackOffice.Models.PageSetting
+    {
+        ModuleName = "",
+        ActionName = "",
+        PageTitle = ViewBag.Title,
+        DisplaySearchPanel = false,
+        IsPopup = false,
+        DisplayBackButton = false,
+        HideClearButton = true,
+        SearchButtonText = "Lấy dữ liệu"
+    };
+
+    string startDate = Request["startDate"] != null ? Request["startDate"] : "";
+    string endDate = Request["endDate"] != null ? Request["endDate"] : "";
+}
+<link href="~/assets/css/fullcalendar.min.css" rel="stylesheet" />
+
+@using (Html.BeginPageHeaderContainer(pageSetting))
+{
+    @*<p>
+        <span class="input-daterange input-group">
+            @Html.TextBox("startDate", Request["startDate"] != null ? Request["startDate"] : "", new { @class = "form-control", autocomplete = "off", placeholder = "Từ ngày" })
+            <span class="input-group-addon">
+                <i class="fa fa-exchange"></i>
+            </span>
+            @Html.TextBox("endDate", Request["endDate"] != null ? Request["endDate"] : "", new { @class = "form-control", autocomplete = "off", placeholder = "Đến ngày" })
+        </span>
+    </p>*@
+}
+
+<div class="row">
+    <div class="col-sm-12">
+        <div class="widget-box">
+            <div class="widget-header">
+                <h5 class="widget-title">Tổng quan về đánh giá của KH</h5>
+            </div>
+            <div class="widget-body">
+                <div class="widget-main">
+                    @{Html.RenderAction("Statistics", "Vote", new { area = "Crm" });}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+@section Scripts {
+
+<script type="text/javascript">
+    function ClosePopupAndRedirectToURL(url) {
+        ClosePopup(true);
+        location.href = url;
+    }
+</script>
+
+@Html.ScriptBottom_ValidationMvc()
+@Html.ScriptBottom_DatePicker("dd/mm/yyyy")
+@Html.ScriptBottom_ChosenStyle()
+}

@@ -1,0 +1,57 @@
+﻿@using Erp.BackOffice.App_GlobalResources
+@using Erp.BackOffice.Sale.Models
+@using Erp.BackOffice.Helpers
+@model List<Sale_BaoCaoCongNoTongHopViewModel>
+@{
+    Layout = null;
+    int index = 1;
+}
+
+<table id="CTable" class="table table-bordered">
+    <thead>
+        <tr class="" style="display:none">
+            <th class="" colspan="12" style="text-align:center"><h4>BÁO CÁO CÔNG NỢ TỔNG HỢP TỪ @ViewBag.StartDate ĐẾN @ViewBag.EndDate</h4></th>
+        </tr>
+        <tr>
+            <th style="width:40px;text-align:center">STT</th>
+            <th style="width:100px;text-align:center">Ngày hóa đơn</th>
+            <th style="width:200px;text-align:center">Số HĐ</th>
+            <th style="width:100px;text-align:center">Trị giá công nợ gốc</th>
+            <th style="width:100px;text-align:center">Trị giá còn phải thu</th>
+            <th style="width:150px;text-align:center">Ngày phải thu</th>
+            <th style="width:100px;text-align:center">Số ngày quá hạn</th>
+            <th style="width:100px;text-align:center">Tên nhân viên</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var ii in Model)
+           {
+               foreach (var item in Model)
+               {
+                   
+
+                        <tr>
+                            <td>
+                                <span>@(index++)</span>
+                            </td>
+                            <td>@(item.CreatedDate)</td>
+                            <td>@(item.MaChungTuGoc)</td>
+                            <td style="text-align:right">@(CommonSatic.ToCurrencyStr(item.TotalAmount,null))</td>
+                            <td style="text-align:right">@(CommonSatic.ToCurrencyStr(item.cnt,null))</td>
+                            <td>@(item.NextPaymentDate)</td>
+                            <td style="text-align:right">@(Common.PhanCachHangNgan(item.daytra))</td>
+                            <td>@(item.SalerFullName)</td>
+                        </tr>
+                        }
+           }
+
+        <tr>
+            <td colspan="3" style="text-align:right"><b>Tổng</b></td>
+            <td style="text-align:right">@(CommonSatic.ToCurrencyStr(Model.Sum(x => x.TotalAmount),null))</td>
+            <td style="text-align:right">@(CommonSatic.ToCurrencyStr(Model.Sum(x => x.cnt),null))</td>
+            <td style="text-align:right"></td>
+            <td style="text-align:right"></td>
+            <td style="text-align:right"></td>
+        </tr>
+    </tbody>
+</table>

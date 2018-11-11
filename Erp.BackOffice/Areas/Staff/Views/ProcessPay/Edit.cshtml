@@ -1,0 +1,131 @@
+﻿@using Erp.BackOffice.App_GlobalResources
+@using Erp.BackOffice.Helpers
+@using Erp.BackOffice.Staff.Models
+
+@model ProcessPayViewModel
+
+@{
+    ViewBag.Title = Wording.PageEdit_ProcessPay;
+
+    Layout = "~/Views/Shared/" + (Request["IsPopup"] == null ? "ACE_AdminLayout.cshtml" : "_PopupLayout.cshtml");
+    Erp.BackOffice.Models.PageSetting pageSetting = new Erp.BackOffice.Models.PageSetting
+    {
+        ModuleName = "ProcessPay",
+        ActionName = "Edit",
+        PageTitle = ViewBag.Title,
+        DisplaySearchPanel = false,
+        IsPopup = false,
+        DisplayBackButton = false
+    };
+}
+
+@section HeadOfPage {
+    @Html.ScriptTop_ChosenStyle()
+}
+@using (Html.BeginPageHeaderContainer(pageSetting))
+{
+
+}
+@using (Html.BeginForm_AceStyle((string)ViewBag.Title, "Edit", "ProcessPay", null, FormMethod.Post, new { @class = "form-horizontal" }))
+{
+    @Html.ValidationSummary(true)
+    @Html.HiddenFor(model => model.Id)
+    @Html.HiddenFor(model => model.CreatedUserId)
+    @Html.HiddenFor(model => model.CreatedDate)
+    @Html.HiddenFor(model => model.IsDeleted)
+    @Html.HiddenFor(model => model.StaffId)
+    <div class="row">
+        <div class="col-sm-7">
+            <input type="hidden" value="@Request["IsPopup"]" name="IsPopup" />
+            @Html.CustomTextboxFor(model => model.CodePay, null, null, WidthType.span12, true, new Dictionary<string, object> { { "readonly", "readonly" } })
+            @Html.DatePicker(model => model.DayDecision, "dd/MM/yyyy", "99/99/9999", true, true)
+            @Html.DatePicker(model => model.DayEffective, "dd/MM/yyyy", "99/99/9999", true, true)
+            @Html.CustomTextboxFor(model => model.BasicPay, null, null, WidthType.span12, true, new Dictionary<string, object> { { "class", "text-right" } })
+            <a class="btn btn-mini btn-primary ProcessPay bottom-5">
+                Hiện quyết định
+            </a>
+            <textarea class="ckeditor" cols="30" id="Content" name="Content" placeholder="" rows="2">@Model.Content</textarea>
+        </div>
+        <div class="col-sm-5">
+            @Html.Action("DetailBasicFull", "Staffs", new { Id = Model.StaffId.Value })
+        </div>
+    </div>
+    using (Html.BeginButtonContainer(pageSetting))
+    {
+        <button class="btn btn-mini btn-primary" type="submit" name="Submit" value="Save">
+            <i class="ace-icon fa fa-save"></i>
+            @Wording.Save
+        </button>
+    }
+}
+
+@section Scripts {
+<link href="/Scripts/ckeditor/contents.css" rel="stylesheet" />
+<script src="/Scripts/ckeditor/ckeditor.js"></script>
+    <script>
+        //truyền từ action create của controller qua khi thực hiện submit và return về lại view create, để nhận biết là được gọi theo dạng popup
+        var closePopup = '@ViewBag.closePopup';
+        $(document).ready(function () {
+            //nếu là được gọi theo dạng popup từ form khác thì chạy đoạn code bên dưới
+            if (closePopup != '') {
+                var option = '<option value="@Model.Id" >@Model.BasicPay</option>';
+                window.parent.ClosePopupAndReloadPageStaffDetail();
+                window.parent.ClosePopupAndAppendSelect(option);
+            }
+        });
+        $(document).ready(function () {
+            $('#BasicPay').numberFormat();
+        });
+        function initCkeditor() {
+            $('.ckeditor').ckeditor({
+                "extraPlugins": 'imagebrowser',
+                "imageBrowser_listUrl": "@Url.Action("ListJson","Images")",
+                // Define the toolbar groups as it is a more accessible solution.
+                toolbarGroups: [
+                    { "name": "document", "groups": ["mode", "document", "doctools"] },
+                    { "name": "editing", "groups": ["find", "selection", "spellchecker"] },
+                    { "name": "forms" },
+                    { "name": "tools" },
+                    { "name": "basicstyles", "groups": ["basicstyles", "cleanup"] },
+                    { "name": "clipboard", "groups": ["clipboar", "undo"] },
+                    { "name": "links", "groups": ["links"] },
+                    { "name": "paragraph", "groups": ["list", "blocks"] },
+                    { "name": "insert", "groups": ["insert"] },
+                    { "name": "styles", "groups": ["styles"] },
+                    //{ "name": "about", "groups": ["about"] },
+                    { "name": "styles" },
+                    { "name": "colors" },
+                    { "name": "align", "groups": ['JustifyLeft', 'JustifyCenter', 'JustifyRight', 'JustifyBlock'] }
+
+                ],
+            // Remove the redundant buttons from toolbar groups defined above.
+            removeButtons: 'Underline,Strike,Subscript,Superscript,Anchor,Styles,Specialchar'
+        });
+        }
+        $('.ProcessPay').click(function () {
+            ShowLoading();
+            CKEDITOR.instances.Content.setData('');
+            var Code = $("#Code").val();
+            var DayDecision = $("#DayDecision").val();
+            var DayEffective = $("#DayEffective").val();
+            var StaffId = $("#StaffId").val();
+            var BasicPay = $("#BasicPay").val();
+            if (Code == "" || DayDecision == "" || DayEffective == "" || StaffId == "" || BasicPay == "") {
+                alert("Chưa chọn đủ thông tin");
+                //return false;
+                HideLoading();
+            } else
+            {
+                $.get("@Url.Action("ContentProcessPay", "ProcessPay")", { Code: Code, StaffId: StaffId, DayDecision: DayDecision, DayEffective: DayEffective, BasicPay: BasicPay }, function (data) {
+                    //$("#Content").val(data);
+                    CKEDITOR.instances.Content.insertHtml(data);
+                    HideLoading();
+                });
+            }
+
+        });
+    </script>
+    @Html.ScriptBottom_ValidationMvc()
+    @Html.ScriptBottom_DatePicker("dd/mm/yyyy")
+    @Html.ScriptBottom_ChosenStyle()
+}

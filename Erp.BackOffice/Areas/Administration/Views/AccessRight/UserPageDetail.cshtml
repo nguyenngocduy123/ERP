@@ -1,0 +1,64 @@
+﻿@model AccessRightViewModel
+@using System.Globalization
+@using Erp.BackOffice.App_GlobalResources
+@using Erp.BackOffice.Areas.Administration.Models
+@helper RecursiveACL(List<PageMenuViewModel> pageMenuViewModels, int? parentId, List<Erp.Domain.Entities.User> users, string level="")
+{   
+    int index = 1;
+    List<PageMenuViewModel> parentMenus =  pageMenuViewModels.Where(x=>x.ParentId== parentId).OrderBy(x=>x.OrderNo).ToList();
+    foreach (PageMenuViewModel pageMenuViewModel in parentMenus)
+    {
+        string prefix = string.IsNullOrEmpty(level) ? index.ToString(CultureInfo.InvariantCulture) : level + "." + index.ToString(CultureInfo.InvariantCulture);
+        int n = prefix.Split('.').Count();
+        string tab = "";
+        for (int i = 1; i < n; i++)
+        {
+            tab = tab + @"&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
+        }
+        <tr>            
+            <td>@HttpContext.Current.Server.HtmlDecode(tab)@prefix @pageMenuViewModel.MenuItemName</td>
+            @if (pageMenuViewModel.IsParent)
+            {
+                <td colspan="@Model.Users.Count"></td>
+            }
+            else
+            {
+                foreach (var user in users)
+                {
+                    var userTypePage = pageMenuViewModel.UserTypePages != null ? pageMenuViewModel.UserTypePages.Where(x => x.PageId == pageMenuViewModel.Id && x.UserTypeId == user.UserTypeId).FirstOrDefault() : null;
+                    var userPage = pageMenuViewModel.UserPages != null ? pageMenuViewModel.UserPages.Where(x => x.PageId == pageMenuViewModel.Id && x.UserId == user.Id).FirstOrDefault() : null;
+                    
+                    var checkedAndEnbale = userPage != null? "checked=\"checked\"" : "";
+                    if (userTypePage != null)
+                    {
+                        checkedAndEnbale = "checked=\"checked\" disabled=\"true\"";
+                    }  
+                    <td>                           
+                        <label>
+                            <input type="checkbox" id="UserPage" name="UserPage" value="@pageMenuViewModel.Id-@user.Id" @checkedAndEnbale />
+                            <span class="lbl"></span>
+                        </label>
+                           
+                    </td>
+                }
+            }                
+            
+        </tr>    
+       @RecursiveACL(pageMenuViewModels, pageMenuViewModel.Id, users,prefix);
+        index++;
+    }
+}
+
+
+<table class="table table-striped table-bordered table-hover">
+    <tr>
+        <td>@Wording.Function</td>
+        @foreach (var user in Model.Users)
+        {
+            <td>@user.FullName</td>
+        }
+    </tr>
+    @RecursiveACL(Model.PageMenuViewModels, null, Model.Users)
+</table>
+    
+ 

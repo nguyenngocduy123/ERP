@@ -1,0 +1,102 @@
+﻿@model List<Erp.BackOffice.Staff.Models.SummaryStaffViewModel>
+@{ 
+    int count = 1;
+int index = 0;
+int totalRows = Model.Count();
+}
+<style>
+    .infobox {
+   width: 100% !important;
+    border:0px!important;
+
+}
+    .dayoff-wrap .dayoff-item {
+        width: 100% !important;
+    }
+</style>
+<div class="widget-box">
+    <div class="widget-header">
+        <h4 class="widget-title">
+            <i class="ace-icon fa fa-line-chart"></i>
+            @ViewBag.Title_qThongKeBanHang_TheoKhachHang
+        </h4>
+    </div>
+    <div class="widget-body">
+        <div class="widget-main clearfix">
+            <p><b>@ViewBag.DateRangeText Doanh số tổng: @(Erp.BackOffice.Helpers.CommonSatic.ToCurrencyStr(Model.Sum(x=>x.Amount),null))</b></p>
+            @if(Model.Count()>0)
+            { 
+            foreach (var item in Model)
+            {
+                var branchid="";
+                var CreatedUserId="";
+                if (Erp.BackOffice.Filters.SecurityFilter.IsAdminDrugStore())
+                {
+                    CreatedUserId = item.id;
+                }
+                else
+                {
+                    branchid = item.id;
+                }
+            if (count == 1)
+            {
+            @Html.Raw("<div class=\"dayoff-wrap\">\r\n");
+            }
+            <div class="col-sm-12" style="padding:2px;width:auto!important">
+                <a onclick="OpenPopup('@Url.Action("DoanhThuNgay", "SaleReport", new { area = "Sale", single = ViewBag.single, year = ViewBag.year, month = ViewBag.month,
+                                                                                       quarter = ViewBag.quarter,
+                                                                                       week = ViewBag.week,
+                                                                                       branchId = branchid,
+                                                                                       CreatedUserId = CreatedUserId,
+                                                                                       IsPopup = "true"
+                                  })', 'Trang doanh số theo nhân viên', 0, 500)">
+                    <div id="dayoff-item-@item.id" class="dayoff-item">
+                        <div class="infobox" style="color:#D53F40;border-color:#5FBC47;">
+                            <div class="infobox-icon">
+                                <i class="ace-icon fa fa-user-circle" style="background-color:#5FBC47"></i>
+                            </div>
+                            <div class="infobox-data">
+                                <span class="infobox-data-number ng-binding">@item.label </span>
+                                <div class="infobox-content">
+                                    <span style="color:#5FBC47;">
+                                    @(Erp.BackOffice.Helpers.CommonSatic.ToCurrencyStr(item.Amount,null)) VNĐ
+                                  </span>
+                                </div>
+                            </div>
+                            <div class="badge badge-warning">
+                                Số lượng: @(Erp.BackOffice.Helpers.Common.PhanCachHangNgan(item.Quantity))
+                            </div>
+                        </div>
+                    </div>
+                </a>
+</div>
+
+            if (index == totalRows - 1)
+            {
+            @Html.Raw("</div>\r\n");
+            }
+            else
+            {
+            if (count == 2)
+            {
+            count = 1;
+            @Html.Raw("</div>\r\n");
+            }
+            else
+            {
+                count++;
+            }
+
+            index++;
+            }
+            }
+            }
+            else
+            {
+                <div class="alert alert-block alert-info">
+                   Không có dữ liệu
+                </div>
+            }
+        </div>
+    </div>
+</div>

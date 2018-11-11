@@ -1,0 +1,296 @@
+﻿@using Erp.BackOffice.App_GlobalResources
+@using Erp.BackOffice.Helpers
+@using Erp.BackOffice.Account.Models
+
+@model CustomerViewModel
+
+@{
+    ViewBag.Title = Wording.PageEdit_Customer;
+
+    Layout = "~/Views/Shared/ACE_AdminLayout.cshtml";
+    Erp.BackOffice.Models.PageSetting pageSetting = new Erp.BackOffice.Models.PageSetting
+    {
+        ModuleName = "Customer",
+        ActionName = "Edit",
+        PageTitle = ViewBag.Title,
+        DisplaySearchPanel = false,
+        IsPopup = false,
+        DisplayBackButton = true
+    };
+    SelectList genderList = Erp.BackOffice.Helpers.Common.GetSelectList_Gender(null);
+    SelectList provinceList = Erp.BackOffice.Helpers.SelectListHelper.GetSelectList_Location("0", null,Wording.Empty);
+    SelectList districtList = Erp.BackOffice.Helpers.SelectListHelper.GetSelectList_Location(Model.CityId, null, Wording.Empty);
+    SelectList wardList = Erp.BackOffice.Helpers.SelectListHelper.GetSelectList_Location(Model.DistrictId, null, Wording.Empty);
+
+    IEnumerable<ContactViewModel> contactList = (IEnumerable<ContactViewModel>)ViewBag.contactList;
+}
+
+@section HeadOfPage {
+    @Html.ScriptTop_ChosenStyle()
+}
+
+<style>
+    #Customer select {
+        width: 100%;
+    }
+</style>
+@using (Html.BeginPageHeaderContainer(pageSetting))
+{
+
+}
+@using (Html.BeginForm_AceStyle((string)ViewBag.Title, "Edit", "Customer", null, FormMethod.Post, new { id = "Customer", @class = "form-horizontal clearfix" }))
+{
+    @Html.ValidationSummary(true)
+    @Html.HiddenFor(model => model.Id)
+    @Html.HiddenFor(model => model.CreatedUserId)
+    @Html.HiddenFor(model => model.CreatedDate)
+    @Html.HiddenFor(model => model.IsDeleted)
+    @Html.HiddenFor(model => model.Code)
+    @Html.HiddenFor(model => model.CustomerType)
+    <div class="row">
+        <div class="col-sm-6">
+            @Html.CustomTextboxFor(model => model.CompanyName, null, null, WidthType.span12)
+            @Html.CustomTextboxFor(model => model.LastName, null, null, WidthType.span12)
+            @Html.CustomTextboxFor(model => model.FirstName, null, null, WidthType.span12)
+            @Html.CustomDropDownListFor(model => model.Gender, genderList, WidthType.span12, false, null, DropdownListStyle.DropdownListStyleDefault)
+            @Html.CustomTextboxFor(model => model.Birthday, null, null, WidthType.span12)
+            @Html.CustomTextboxFor(model => model.IdCardNumber, null, null, WidthType.span12, true)
+            @Html.DateInput(model => model.IdCardDate, "dd/MM/yyyy", "99/99/9999", true, WidthType.span12)
+            @Html.CustomDropDownListFor(model => model.IdCardIssued, provinceList, WidthType.span12, true, null, DropdownListStyle.DropdownListStyleChosen)
+
+        </div>
+        <div class="col-sm-6">
+            @Html.CustomTextboxFor(model => model.Phone, null, null, WidthType.span12)
+            @Html.CustomTextboxFor(model => model.Mobile, null, null, WidthType.span12)
+            @Html.CustomTextboxFor(model => model.Email, null, null, WidthType.span12)
+            @Html.CustomTextboxFor(model => model.Address, null, null, WidthType.span12)
+            @Html.CustomDropDownListFor(model => model.CityId, provinceList, WidthType.span12)
+            @Html.CustomDropDownListFor(model => model.DistrictId, districtList, WidthType.span12)
+            @Html.CustomDropDownListFor(model => model.WardId, wardList, WidthType.span12)
+            @Html.CustomTextboxFor(model => model.Point, null, null, WidthType.span12, true, new Dictionary<string, object> { { "class", "col-sm-12 text-right" } })
+            @Html.CustomTextAreaFor(model => model.Note, null, WidthType.span12)
+        </div>
+    </div>
+
+    <div class="clearfix col-sm-12 box box-attr">
+        <h4><span>Các đặc tính khác</span></h4>
+        <div class="clearfix list-attr-by-category">
+            @Html.Action("GetListByModule", "ObjectAttribute", new { module = "customer", area = "Sale", objectId = Model.Id })
+        </div>
+    </div>
+
+    <div class="col-sm-12">
+        @using (Html.BeginButtonContainer(pageSetting))
+        {
+            <button class="btn btn-mini btn-primary" type="submit" name="Submit" value="Save">
+                <i class="ace-icon fa fa-save"></i>
+                @Wording.Save
+            </button>
+        }
+    </div>
+}
+
+@*<div class="widget-box top-15">
+        <div class="widget-header widget-header-blue widget-header-flat">
+            <h4 class="lighter">Chiết khấu</h4>
+        </div>
+        <div class="widget-body">
+            <div class="widget-main clearfix">
+                @{Html.RenderAction("ListByCustomer", "CustomerDiscount", new { area = "Account", CustomerId = Model.Id });}
+            </div>
+        </div>
+    </div>
+
+
+    <div class="widget-box top-15">
+        <div class="widget-header widget-header-blue widget-header-flat">
+            <h4 class="lighter">Thông tin liên hệ</h4>
+        </div>
+        <div class="widget-body">
+            <div class="widget-main clearfix">
+                @{Html.RenderAction("ContactList", "Contact", new { area = "Account", CustomerId = Model.Id });}
+            </div>
+        </div>
+    </div>*@
+
+@*<div class="widget-box top-15 bottom-20">
+        <div class="widget-header widget-header-blue widget-header-flat">
+            <h4 class="lighter">Bản cam kết</h4>
+        </div>
+        <div class="widget-body">
+            <div class="widget-main clearfix">
+                @{Html.RenderAction("Index", "CustomerCommitment", new { area = "Account", CustomerId = Model.Id });}
+            </div>
+        </div>
+    </div>*@
+
+
+<!-- Modal -->
+<div id="confirmModal" class="modal fade" role="dialog">
+    <div class="modal-dialog">
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">Modal Header</h4>
+            </div>
+            <div class="modal-body">
+                <p>Some text in the modal.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary btn-agree" data-dismiss="modal">Đồng ý</button>
+                <button type="button" class="btn btn-default btn-cancel" data-dismiss="modal">Đóng</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+
+    @Html.ScriptBottom_ValidationMvc()
+    @Html.ScriptBottom_ChosenStyle()
+    @Html.ScriptBottom_DatePicker("dd/MM/yyyy")
+
+    <script>
+        var city = $('#CityId');
+        var districts = $('#DistrictId'); // cache it
+        var ward = $('#WardId');
+
+        $(document).ready(function () {
+            $("[name='Birthday']").mask('99/99/9999');
+            $('#Point').numberFormat();
+
+            $('#ContactId').change(function () {
+
+                if ($('#btnSubmitContact').is(':visible') == true) {
+                    popupConfirmModal('Xin xác nhận không lưu!', 'Bạn có chắc không muốn lưu những giá trị vừa mới thay đổi?', loadContact, cancelChooseContact);
+                } else {
+                    resetInputAndSelectChoosen();
+                    loadContact();
+                }
+            });
+
+            $('.input-select-field input, .input-select-field select').change(function () {
+                $('#btnSubmitContact').show();
+            });
+
+            $('.btn-create-contact').click(function () {
+                if ($('#btnSubmitContact').is(':visible') == true) {
+                    popupConfirmModal('Xin xác nhận không lưu!', 'Bạn có chắc không muốn lưu những giá trị vừa mới thay đổi?', resetInputAndSelectChoosen, function () { });
+                } else {
+                    resetInputAndSelectChoosen();
+                }
+            });
+        });
+
+        function loadContact() {
+            $('#contact-old').val($('#ContactId').val());
+            resetInputAndSelectChoosen();
+            var $option = $('#ContactId').find('option:selected');
+            if ($('#ContactId').val() != '') {
+                $('#FirstName').val($option.data('first-name'));
+                $('#LastName').val($option.data('last-name'));
+                $('#Email').val($option.data('email'));
+                $('#Phone').val($option.data('phone'));
+                $('#Mobile').val($option.data('mobile'));
+                $('#Gender').val($option.data('gender').toLowerCase());
+                $('#Birthday').val($option.data('birthday'));
+
+                $('#Address').val($option.data('address').toString().replace(/\//g, ''));
+                city.val($option.data('city'));
+                city.trigger("chosen:updated");
+                city.trigger('change');
+
+                //setTimeout(function () {
+                //    districts.val($option.data('district'));
+                //    districts.trigger("chosen:updated");
+                //    districts.trigger('change');
+                //}, 500);
+
+                //setTimeout(function () {
+                //    ward.val($option.data('ward'));
+                //    ward.trigger("chosen:updated");
+                //    ward.trigger('change');
+                //}, 1000);
+
+                $('#btnSubmitContact').hide();
+            }
+        };
+
+        function cancelChooseContact() {
+            $('#ContactId').val($('#contact-old').val());
+        };
+
+        function popupConfirmModal(title, content, callbackAgree, callbackCancel) {
+            $('#confirmModal .modal-title').text(title);
+            $('#confirmModal .modal-body').text(content);
+
+            $('#confirmModal').modal('show');
+            $('#confirmModal .btn-agree').click(function () {
+                if (typeof callbackAgree === "function")
+                    callbackAgree();
+            });
+
+            $('#confirmModal .btn-cancel').click(function () {
+                if (typeof callbackCancel === "function")
+                    callbackCancel();
+            });
+        };
+
+        function resetInputAndSelectChoosen() {
+            $('.input-select-field input:not([type="hidden"]), .input-select-field select').val('');
+            city.val('');
+            city.trigger("chosen:updated");
+            city.trigger('change');
+
+            districts.val('');
+            districts.trigger("chosen:updated");
+            districts.trigger('change');
+
+            ward.val('');
+            ward.trigger("chosen:updated");
+            ward.trigger('change');
+
+            $('#btnSubmitContact').hide();
+        };
+
+        $(function () {
+            var url = '/api/BackOfficeServiceAPI/FetchLocation';
+
+
+            $("#CityId").change(function () {
+                var id = $(this).val(); // Use $(this) so you don't traverse the DOM again
+                $.getJSON(url, { parentId: id }, function (response) {
+                    districts.empty(); // remove any existing options
+                    ward.empty();
+                    $(document.createElement('option'))
+                            .attr('value', '')
+                            .text('- Rỗng -')
+                            .appendTo(ward);
+                    $(response).each(function () {
+                        $(document.createElement('option'))
+                            .attr('value', this.Id)
+                            .text(capitalizeFirstAllWords(this.Name.toLowerCase().replace('huyện', '').replace('quận', '')))
+                            .appendTo(districts);
+                    });
+
+                    districts.trigger("chosen:updated");
+                });
+            });
+
+            districts.change(function () {
+                var id = $(this).val(); // Use $(this) so you don't traverse the DOM again
+                $.getJSON(url, { parentId: id }, function (response) {
+                    ward.empty(); // remove any existing options
+                    $(response).each(function () {
+                        $(document.createElement('option'))
+                            .attr('value', this.Id)
+                            .text(capitalizeFirstAllWords(this.Name.toLowerCase()))
+                            .appendTo(ward);
+                    });
+                    ward.trigger("chosen:updated");
+                });
+            });
+        });
+    </script>
+}

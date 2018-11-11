@@ -1,0 +1,167 @@
+﻿@model IEnumerable<CategoryViewModel>
+@using Erp.BackOffice.App_GlobalResources
+@using Erp.BackOffice.Areas.Cms.Models
+@using Erp.BackOffice.Helpers
+@using GridMvc.Html
+
+@{
+    ViewBag.Title = "Danh mục";
+    bool isPopup = Request["IsPopup"] != null && Request["IsPopup"].ToString().ToLower() == "true" ? true : false;
+    if (isPopup)
+    {
+        Layout = "~/Views/Shared/_PopupLayout.cshtml";
+    }
+    else
+    {
+        Layout = "~/Views/Shared/ACE_AdminLayout.cshtml";
+    }
+    var jsCallback = Request["jsCallback"] == null ? "" : Request["jsCallback"].ToString();
+    Erp.BackOffice.Models.PageSetting pageSetting = new Erp.BackOffice.Models.PageSetting
+    {
+        ModuleName = "SaleCategory",
+        ActionName = "Index",
+        PageTitle = ViewBag.Title,
+        DisplaySearchPanel = false,
+        IsPopup = false,
+        DisplayBackButton = false
+    };
+}
+
+<link href="@Url.Content("~/assets/css/Gridmvc.css")" rel="stylesheet" type="text/css" />
+<script src="@Url.Content("~/Scripts/gridmvc.min.js")" type="text/javascript"> </script>
+
+@helper GridColumnCommand(int id, string value, string name, bool isPopup = false, string jsCallback = null)
+{
+    <p>
+        <a class="btn btn-mini btn-danger" onclick="SaleCategoryDelete(@id)">
+            <i class="ace-icon fa fa-trash bigger-120"></i>
+        </a>
+        @if (isPopup)
+        {
+            <a class="btn btn-mini btn-success" onclick="parent.@(jsCallback)('@id','@value', '@name')"><i class="ace-icon fa fa-check bigger-120"></i> Chọn</a>
+        }
+    </p>
+}
+
+@helper GridColumnName(string name, int id)
+{
+    name = string.IsNullOrEmpty(name) ? "No Title" : name;
+    <a onclick="OpenPopup('@Url.Action("Edit", "SaleCategory", new { IsPopup = true, Id = id })', '', 500, 500)">@name</a>
+}
+
+@helper CheckDeleteColumns(int Id)
+{
+    <label>
+        <input class="ace class-delete-all" type="checkbox" name="DeleteAll-checkbox" value="@Id">
+        <span class="lbl"></span>
+    </label>
+}
+
+@helper BuildCheckAll()
+{
+    <label>
+        <input type="checkbox" name="checkAll" id="checkAll" class="ace" />
+        <span class="lbl"></span>
+    </label>
+}
+
+@using (Html.BeginPageHeaderContainer(pageSetting))
+{
+    <input type="hidden" value="@Request["IsPopup"]" name="IsPopup" />
+    <input type="hidden" value="@Request["jsCallback"]" name="jsCallback" />
+}
+
+@if (ViewBag.SuccessMessage != null && ViewBag.SuccessMessage != "")
+{
+    <div class="alert alert-block alert-success">
+        <button class="close" data-dismiss="alert" type="button">
+            <i class="icon-remove"></i>
+        </button>
+        <i class="ace-icon fa fa-check green"></i>
+        @ViewBag.SuccessMessage
+    </div>
+}
+
+@if (ViewBag.FailedMessage != null && ViewBag.FailedMessage != "")
+{
+    <div class="alert alert-block alert-error">
+        <button class="close" data-dismiss="alert" type="button">
+            <i class="icon-remove"></i>
+        </button>
+        <i class="icon-warning-sign red"></i>
+        @ViewBag.FailedMessage
+    </div>
+}
+
+@Html.Grid(Model).Columns(columns =>
+    {
+        columns.Add().Titled(BuildCheckAll().ToHtmlString()).SetWidth(20).Sanitized(false).Encoded(false).RenderValueAs(n => CheckDeleteColumns(n.Id));
+        columns.Add(u => u.OrderNo).Titled(Html.DisplayNameFor(u => u.OrderNo).ToString()).SetWidth(50).Sortable(false);
+        columns.Add().Titled(Html.DisplayNameFor(u => u.Name).ToString()).SetWidth(220).Sanitized(false).Encoded(false).RenderValueAs(u => GridColumnName(u.Name, u.Id));
+        columns.Add(u => u.Value).Titled(Html.DisplayNameFor(u => u.Value).ToString());
+        columns.Add(u => u.Id).Titled(Wording.Action).Sanitized(false).Encoded(false).RenderValueAs(u => GridColumnCommand(u.Id, u.Value, u.Name, isPopup, jsCallback)).SetWidth(120);
+    })
+
+@using (Html.BeginButtonContainer(pageSetting))
+{
+    if (Erp.BackOffice.Filters.SecurityFilter.AccessRight("Create", "SaleCategory", "Sale"))
+    {
+        @Html.Button(Wording.CreateNew, ButtonType.aTag, ButtonColor.Primary, ButtonSize.Mini, true, IconType.Plus, IconSize.Default, false, new { onclick = "OpenPopup('" + Url.Action("Create", "SaleCategory", new { IsPopup = true, Code = ViewBag.CategoryCode }) + "', '', 500, 500)" })
+    }
+    @*<button name="DeleteAll" value="DeleteAll" type="submit" class="btn btn-mini btn-danger" onclick="return CheckIsval();">
+            <i class="ace-icon fa fa-trash bigger-120"></i>
+            @Wording.Delete
+        </button>*@
+}
+
+@section Scripts {
+    <script type="text/javascript">
+        function CheckIsval() {
+            if ($('[name="DeleteAll-checkbox"]').is(':checked') == false) {
+                alert("Phải chọn ít nhất 1 item.");
+                return false;
+            }
+            else {
+                if (confirm('Bạn có chắc muốn xóa các item đã chọn ?')) {
+                    return true;
+                }
+                else {
+                    return false;
+                }
+            }
+        }
+
+        $('[name="Delete"]').click(function () {
+            if (confirm('Bạn có chắc muốn xóa item ?')) {
+                $(this).closest('tr').children('td').each(function (i, e) {
+                    $(this).find("input.class-delete-all").prop("checked", true);
+                    return true;
+                })
+            }
+            else {
+                return false;
+            }
+
+        })
+        //    1.4 Xóa nhân viên
+        function SaleCategoryDelete(id) {
+            if (confirm('Bạn có chắc muốn xóa các item đã chọn ?')) {
+                ShowLoading();
+                $.post("@Url.Action("Delete", "SaleCategory", new { area = "Sale" })", { id: id })
+            .done(function (data) {
+                if (data == "Success") {
+                    location.reload();
+                }
+                else {
+                    alert("Lỗi! Không thể xóa.");
+                }
+                HideLoading();
+            });
+                return false;
+            }
+            else {
+                return false;
+            }
+        };
+    </script>
+}

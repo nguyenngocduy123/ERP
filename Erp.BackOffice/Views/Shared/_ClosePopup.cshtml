@@ -1,0 +1,27 @@
+﻿@{
+    Layout = null;
+}
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title></title>
+
+</head>
+<body>
+    @if (Request["FunctionCallback"] != null)
+    {
+        var functionCallback = Convert.ToString(Request["FunctionCallback"]);
+        <script type="text/javascript">
+            parent.@Html.Raw(Request["FunctionCallback"].ToString() + (functionCallback.Contains("(") ? "" : "()"));
+        </script>
+    }
+    else
+    {
+        <script type="text/javascript">
+            parent.ClosePopupAndDoSomething();
+        </script>
+    }
+</body>
+</html>

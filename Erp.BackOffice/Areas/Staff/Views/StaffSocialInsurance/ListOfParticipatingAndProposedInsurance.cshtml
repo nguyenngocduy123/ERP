@@ -1,0 +1,394 @@
+﻿@model List<vwDotBCBHXHDetail>
+
+@using Erp.BackOffice.App_GlobalResources
+@using Erp.BackOffice.Staff.Models
+@using Erp.BackOffice.Helpers
+@using Erp.Domain.Staff.Entities
+@using GridMvc.Html
+
+@{
+    ViewBag.Title = "Danh sách lao động tham gia và đề nghị cấp sổ BHXH, thẻ BHYT";
+    DotBCBHXH dot = (DotBCBHXH)ViewBag.DotBHXH;
+    string type = "";
+    int index = 0;
+    bool isPopup = Request["IsPopup"] != null && Request["IsPopup"].ToString().ToLower() == "true" ? true : false;
+    if (isPopup)
+    {
+        Layout = "~/Views/Shared/_PopupLayout.cshtml";
+    }
+    else
+    {
+        Layout = "~/Views/Shared/ACE_AdminLayout.cshtml";
+    }
+
+    Erp.BackOffice.Models.PageSetting pageSetting = new Erp.BackOffice.Models.PageSetting
+    {
+        ModuleName = "StaffSocialInsurance",
+        ActionName = "ListOfParticipatingAndProposedInsurance",
+        PageTitle = ViewBag.Title,
+        DisplaySearchPanel = true,
+        IsPopup = false,
+        DisplayBackButton = false,
+        SearchButtonText = "Lọc danh sách"
+    };
+
+}
+
+
+@section HeadOfPage {
+    @Html.ScriptTop_ChosenStyle()
+    <style type="text/css">
+        table thead tr td {
+            text-align: center;
+            vertical-align: middle !important;
+        }
+
+        table thead th {
+            text-align: center;
+            vertical-align: middle !important;
+        }
+
+        #SalaryTable_wrapper .dt-buttons, #SalaryTable_wrapper #SalaryTable_filter, #SalaryTable_wrapper #SalaryTable_info, #SalaryTable_wrapper #SalaryTable_paginate {
+            display: none;
+        }
+
+        .no-bodertable {
+            border: none !important;
+            border-bottom: none !important;
+            border-left: none !important;
+            border-right: none !important;
+        }
+    </style>
+
+    <script type="text/javascript">
+        var exportThis = (function () {
+            var uri = 'data:application/vnd.ms-excel;base64,',
+                template = '<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel"  xmlns="http://www.w3.org/TR/REC-html40"><head> <!--[if gte mso 9]><xml><x:ExcelWorkbook><x:ExcelWorksheets> <x:ExcelWorksheet><x:Name>{worksheet}</x:Name> <x:WorksheetOptions><x:DisplayGridlines/></x:WorksheetOptions> </x:ExcelWorksheet></x:ExcelWorksheets></x:ExcelWorkbook> </xml><![endif]--></head><body> <table>{table}</table></body></html>',
+                base64 = function (s) {
+                    return window.btoa(unescape(encodeURIComponent(s)))
+                },
+                format = function (s, c) {
+                    return s.replace(/{(\w+)}/g, function (m, p) { return c[p]; })
+                }
+            return function () {
+                var ctx = { worksheet: 'DANH SÁCH LAO ĐỘNG THAM GIA VÀ ĐỀ NGHỊ CẤP SỔ BHXH, THẺ BHYT' || 'Worksheet', table: document.getElementById("cTable").innerHTML }
+                window.location.href = uri + base64(format(template, ctx))
+            }
+        })()
+
+        var exportThisWithParameter = (function () {
+            var uri = 'data:application/vnd.ms-excel;base64,',
+                template = '<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel"  xmlns="http://www.w3.org/TR/REC-html40"><head> <!--[if gte mso 9]><xml><x:ExcelWorkbook><x:ExcelWorksheets> <x:ExcelWorksheet><x:Name>{worksheet}</x:Name> <x:WorksheetOptions><x:DisplayGridlines/></x:WorksheetOptions> </x:ExcelWorksheet></x:ExcelWorksheets></x:ExcelWorkbook> </xml><![endif]--></head><body> <table>{table}</table></body></html>',
+                base64 = function (s) {
+                    return window.btoa(unescape(encodeURIComponent(s)))
+                },
+                format = function (s, c) {
+                    return s.replace(/{(\w+)}/g, function (m, p) { return c[p]; })
+                }
+            return function (tableID, excelName) {
+                tableID = document.getElementById(tableID)
+                var ctx = { worksheet: excelName || 'Worksheet', table: tableID.innerHTML }
+                window.location.href = uri + base64(format(template, ctx))
+            }
+        })()
+    </script>
+}
+
+@using (Html.BeginPageHeaderContainer(pageSetting))
+{
+    <p>
+        @Html.CustomDropDownList("Đợt báo cáo BHXH", "DotBCBHXHId", "", SelectListHelper.GetSelectList_GetDotBCBHXH(!string.IsNullOrEmpty(Request["DotBCBHXHId"]) ? int.Parse(Request["DotBCBHXHId"]) : -1, Wording.IsAll), WidthType.span12, DropdownListStyle.DropdownListStyleChosen, null, false, true, false)
+    </p>
+    @*@Html.TextBox("Code", Request["Code"], new { @class = "form-control", autocomplete = "off", placeholder = Wording.CodeStaff + "..." })
+        @Html.TextBox("Name", Request["Name"], new { @class = "form-control", autocomplete = "off", placeholder = Wording.NameStaff + "..." })
+
+        <label>
+            <input id="bhyt" name="bhyt" type="checkbox" @(Request["bhyt"] == "on" ? "checked=\"checked\"" : "") class="ace" />
+            <span class="lbl"> Bảo hiểm y tế</span>
+        </label>
+
+        <label>
+            <input id="bhxh" name="bhxh" type="checkbox" @(Request["bhxh"] == "on" ? "checked=\"checked\"" : "") class="ace" />
+            <span class="lbl"> Bảo hiểm xã hội</span>
+        </label>*@
+}
+
+@if (ViewBag.SuccessMessage != null && ViewBag.SuccessMessage != "")
+{
+    <div class="alert alert-block alert-success">
+        <button class="close" data-dismiss="alert" type="button">
+            <i class="ace-icon fa fa-times"></i>
+        </button>
+        <i class="ace-icon fa fa-check green"></i>
+        @ViewBag.SuccessMessage
+    </div>
+}
+
+@if (ViewBag.FailedMessage != null && ViewBag.FailedMessage != "")
+{
+    <div class="alert alert-block alert-danger">
+        <button class="close" data-dismiss="alert" type="button">
+            <i class="ace-icon fa fa-times"></i>
+        </button>
+        <i class="ace-icon fa fa-warning red"></i>
+        @ViewBag.FailedMessage
+    </div>
+}
+
+
+<div class="table-responsive">
+    <table id="cTable" class="table table-bordered table-responsive">
+
+        <tr>
+            <td colspan="15">
+                <table style="width:100%;">
+                    <tr>
+                        <td>Mã  đơn vị:_______</td>
+                        <td>Mã KCB:_______</td>
+                        <th colspan="10" style="text-align:center;">DANH SÁCH LAO ĐỘNG THAM GIA VÀ ĐỀ NGHỊ CẤP SỔ BHXH, THẺ BHYT</th>
+                        <th></th>
+                        <th></th>
+                        <th>Mẫu số: 01a-TBH</th>
+                    </tr>
+                    <tr>
+                        <td>Tên đơn vị:_______</td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        @if (dot != null)
+                        {
+                        <td style="text-align:center;">Số:<b> @(dot.BatchNumber != null ? dot.BatchNumber.Value.ToString() : ".........." ) </b> Tháng <b>@(dot.Month != null ? dot.Month.Value.ToString() : ".........." )</b> Năm <b>@(dot.Year != null ? dot.Year.Value.ToString() : ".........." )</b></td>
+                        }
+                        else
+                        {
+                        <td style="text-align:center;">Số:..........Tháng........ Năm ..............</td>
+                        }
+
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>Địa chỉ:_______</td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+
+        <tr>
+            <td colspan="15">
+                <table class="table table-bordered table-responsive">
+                    <thead>
+                        <tr>
+                            <th rowspan="2">Số TT</th>
+                            <th rowspan="2">Họ và tên</th>
+                            <th rowspan="2">Số sổ BHXH</th>
+                            <th rowspan="2">Số thẻ BHYT</th>
+                            <th rowspan="2">Ngày, tháng, năm sinh</th>
+                            <th rowspan="2">Nữ (X)</th>
+                            <th colspan="3">Số chứng minh thư</th>
+                            <th rowspan="2">Nguyên quán</th>
+                            <th rowspan="2">Chức danh công việc</th>
+                            <th rowspan="2">Địa chỉ</th>
+                            <th colspan="2">Nơi đăng ký KCB ban đầu (mã số)</th>
+                            <th rowspan="2">Ghi chú</th>
+                        </tr>
+                        <tr>
+                            <th>Số</th>
+                            <th>Ngày cấp</th>
+                            <th>Mã Tỉnh cấp</th>
+                            <th>Tỉnh</th>
+                            <th>Bệnh viện</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model.OrderBy(n => n.Type))
+                        {
+                            if (type != item.Type)
+                            {
+                                index = 1;
+                                type = item.Type;
+                                string value = "";
+                                switch (type)
+                                {
+                                    case "Increase":
+                                        value = Wording.Increase;
+                                        break;
+                                    case "Reduced":
+                                        value = Wording.Reduced;
+                                        break;
+                                    case "Adjusted":
+                                        value = Wording.Adjusted;
+                                        break;
+                                }
+                                <tr>
+                                    <td colspan="15"><b> @value.ToUpper()</b></td>
+                                   
+                                </tr>
+                            }
+                            <tr>
+                                <td>@(index++)</td>
+                                <td>@item.StaffName</td>
+                                <td>@item.SocietyCode</td>
+                                <td>@item.MedicalCode</td>
+                                <td>@(item.Birthday != null ? item.Birthday.Value.ToShortDateString() : "")</td>
+                                <td style="text-align:center;">@(item.Gender == null ? "" : item.Gender.Value ? "X" : "" ) </td>
+                                <td>@item.IdCardNumber</td>
+                                <td>@(item.IdCardDate != null ? item.IdCardDate.Value.ToShortDateString() : "")</td>
+                                <td>@item.IdCardIssued</td>
+                                <td>@item.ProvinceName</td>
+                                <td>@item.PositionName</td>
+                                <td>@item.BranchName</td>
+                                <td></td>
+                                <td></td>
+                                <td>@item.Note</td>
+                            </tr>
+                        }
+
+                    </tbody>
+
+                </table>
+            </td>
+        </tr>
+        <tr ></tr>
+        <tr colspan="15">
+            <td>
+                <table style="width:100%;">
+                    <tr>
+                        <td></td>
+                        <td colspan="2"><b>* Phần dành cho cơ quan BHXH ghi:</b></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td></td>
+                        <td colspan="8">- Số sổ BHXH được cấp:................................ số, Từ số:................................ Đến số:................................</td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td></td>
+                        <td colspan="8">- Số thẻ BHYT được cấp:.............................. thẻ, trong đó cấp ngoại tỉnh:........................................ thẻ.</td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td></td>
+                        <td colspan="8">- Thời hạn sử dụng của thẻ BHYT: Từ ngày ____/____/_______ Đến ngày ____/____/_______</td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td></td>
+                        <td style="text-align:center;">Ngày..... tháng...... năm..........</td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td style="text-align:center;">Ngày..... tháng...... năm..........</td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td style="text-align:center;">Ngày..... tháng...... năm..........</td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td></td>
+                        <td style="text-align:center;"><b>Cán bộ tiếp nhận</b></td>
+                        <td></td>
+                        <td style="text-align:center;"><b>Cán bộ QL thu</b></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td style="text-align:center;"><b>Giám đốc BHXH</b></td>
+                        <td></td>
+                        <td></td>
+                        <td style="text-align:center;"><b>Người lập biểu</b></td>
+                        <td></td>
+                        <td></td>
+                        <td style="text-align:center;"><b>Người sử dụng lao động</b></td>
+                        <td></td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+
+    </table>
+</div>
+
+@using (Html.BeginButtonContainer(pageSetting))
+{
+    <button onclick="exportThis()" class="btn btn-primary btn-sm btn-white btn-success">
+        <i class="ace-icon fa fa-download"></i>
+        Xuất Excel
+    </button>
+}
+
+@section Scripts {
+
+    @Html.ScriptBottom_ChosenStyle()
+
+}

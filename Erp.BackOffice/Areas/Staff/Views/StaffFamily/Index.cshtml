@@ -1,0 +1,97 @@
+@model IQueryable<StaffFamilyViewModel>
+
+@using Erp.BackOffice.App_GlobalResources
+@using Erp.BackOffice.Staff.Models
+@using Erp.BackOffice.Helpers
+@using GridMvc.Html
+
+@{
+    ViewBag.Title = Wording.PageIndex_StaffFamily;
+    bool isPopup = Request["IsPopup"] != null && Request["IsPopup"].ToString().ToLower() == "true" ? true : false;
+    if (isPopup)
+    {
+        Layout = "~/Views/Shared/_PopupLayout.cshtml";
+    }
+    else
+    {
+        Layout = "~/Views/Shared/ACE_AdminLayout.cshtml";
+    }
+    Erp.BackOffice.Models.PageSetting pageSetting = new Erp.BackOffice.Models.PageSetting
+    {
+        ModuleName = "StaffFamily",
+        ActionName = "Index",
+        PageTitle = ViewBag.Title,
+        DisplaySearchPanel = false,
+        IsPopup = false,
+        DisplayBackButton = false
+    };
+}
+
+<link href="@Url.Content("~/assets/css/Gridmvc.css")" rel="stylesheet" type="text/css" />
+<script src="@Url.Content("~/Scripts/gridmvc.min.js")" type="text/javascript"> </script>
+
+@helper GridColumnCommand(int id)
+{
+    <button name="Delete" value="Delete" type="submit" id="btn_delete_stafffamily_@id" class="btn btn-mini btn-danger" onclick="return StaffFamilyDelete(@id)">
+        <i class="ace-icon fa fa-trash bigger-120"></i>
+    </button>
+}
+
+@helper GridColumnName(string name, int id)
+{
+    <a onclick="OpenPopup('@Url.Action("Edit", "StaffFamily", new { area = "Staff", Id = id, IsPopup = "true" })', '@Wording.PageEdit_StaffFamily', 500, 500)">@name</a>
+}
+
+@helper GridColumnCategoryValue(object value)
+{
+    var attr = Erp.BackOffice.Helpers.Common.GetCategoryByValueOrId("value", value);
+    <span>@(attr != null ? attr.Name : "")</span>
+}
+@helper GridColumnGender(bool gender)
+{
+    if (gender == true || gender == null)
+    {
+        @Wording.females
+    }
+    else
+    {
+
+        @Wording.male
+    }
+}
+
+<div class="table-responsive">
+    @Html.Grid(Model).Columns(columns =>
+{
+    int index = 0;
+    columns.Add().Titled(Wording.OrderNo).SetWidth(30).RenderValueAs(n => (++index).ToString());
+    columns.Add().Titled(Wording.Name).SetWidth(200).Sortable(false).Sanitized(false).Encoded(false).RenderValueAs(u => GridColumnName(u.Name, u.Id));
+    //columns.Add(u => u.CreatedUserId).Titled(Wording.CreatedUserId).SetWidth(100).RenderValueAs(u => u.CreatedUserName);
+    columns.Add(u => u.Birthday).Format("{0:dd/MM/yyyy}").Titled(Wording.Birthday).SetWidth(100);
+    columns.Add().Titled(Wording.Gender).SetWidth(100).Sanitized(false).Encoded(false).RenderValueAs(n => GridColumnGender(n.Gender.Value));
+    columns.Add().Titled(Wording.Correlative).SetWidth(100).RenderValueAs(n => n.Correlative);
+    columns.Add().Titled(Wording.Phone).SetWidth(200).RenderValueAs(n => n.Phone);
+    columns.Add().Titled(Wording.Address).SetWidth(200).RenderValueAs(n => n.Address);
+    columns.Add(u => u.CreatedDate).Titled(Wording.CreatedDate).SetWidth(100);
+    //columns.Add(u => u.ModifiedUserId).Titled(Html.DisplayNameFor(u => u.FirstOrDefault().ModifiedUserId).ToString()).SetWidth(100).RenderValueAs(u => u.ModifiedUserName);
+    columns.Add(u => u.ModifiedDate).Titled(Wording.ModifiedDate).SetWidth(100).Sortable(true);
+    columns.Add(u => u.Id).Titled(Wording.Action).Sanitized(false).Encoded(false).RenderValueAs(u => GridColumnCommand(u.Id)).SetWidth(100);
+}).WithPaging(10)
+</div>
+ @using (Html.BeginButtonContainer(pageSetting))
+    {
+        if (Erp.BackOffice.Filters.SecurityFilter.AccessRight("Create", "StaffFamily", "Staff"))
+        {
+        <p>@Html.Button(Wording.CreateNew, ButtonType.aTag, ButtonColor.Primary, ButtonSize.Mini, true, IconType.Plus, IconSize.Default, false, new { @class = "btn-StaffFamilyCreate", @onclick = "OpenPopup('" + Url.Action("Create", "StaffFamily", new { area = "Staff", StaffId = ViewBag.StaffId, IsPopup = "true" }) + "', '" + Wording.PageCreate_StaffFamily + "', 0, 500)" })</p>
+    }
+}
+@section Scripts {
+    <script type="text/javascript">
+        function ClosePopupAndReloadPageStaffDetail() {
+            ClosePopup(true);
+            ShowLoading();
+        };
+        //hàm xóa technique nằm trong trang detail staff
+
+    </script>
+}

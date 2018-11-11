@@ -1,0 +1,50 @@
+﻿
+
+@*<link href="~/assets/css/fileinput_Camera.css" rel="stylesheet" />*@
+@*<link href="~/Scripts/fileInput/themes/explorer/theme.css" rel="stylesheet" />
+<script src="~/Scripts/fileInput/js/fileinput_Camera.js"></script>
+<script src="~/Scripts/fileInput/themes/explorer/theme.js"></script>*@
+<link href="~/Scripts/bootstrap-fileinput-master/themes/explorer-fa/theme.css" rel="stylesheet" />
+<script src="~/Scripts/bootstrap-fileinput-master/js/plugins/piexif.js"></script>
+<script src="~/Scripts/bootstrap-fileinput-master/js/plugins/purify.js"></script>
+<script src="~/Scripts/bootstrap-fileinput-master/themes/explorer-fa/theme.js"></script>
+<script src="~/Scripts/bootstrap-fileinput-master/js/plugins/sortable.js"></script>
+<link href="~/Scripts/bootstrap-fileinput-master/css/fileinput.css" rel="stylesheet" />
+<link href="~/Scripts/bootstrap-fileinput-master/css/fileinput-rtl.css" rel="stylesheet" />
+<script src="~/Scripts/bootstrap-fileinput-master/js/fileinput.js"></script>
+<script src="~/Scripts/bootstrap-fileinput-master/js/locales/vi.js"></script>
+<form enctype="multipart/form-data" id="thisForm">
+    <div class="form-group">
+        <input id="file-1" type="file" multiple class="file" data-overwrite-initial="false" data-min-file-count="1">
+    </div>
+</form>
+<script type="text/javascript">
+    $("#file-1").fileinput({
+        uploadUrl: '/DocumentField/Upload/', // you must set a valid URL here else you will get an error
+        allowedFileExtensions: ['jpg', 'png', 'gif'],
+        allowedFileTypes: ['image', 'video', 'flash'],
+        browseOnZoneClick: true,
+        resizeImage: true,
+        maxImageWidth: 700,
+        maxImageHeight: 700,
+        resizePreference: 'width',
+        overwriteInitial: false,
+        maxFileSize: 1000000,
+        maxFilesNum: 10,
+        uploadAsync: false,
+        showUpload: false, // hide upload button
+        showRemove: false, // hide remove button
+        showBrower: false,
+        showCaption: false,
+        showBrowse: false,
+      
+       
+        slugCallback: function (filename) {
+            return filename.replace('(', '_').replace(']', '_');
+        }
+
+    }).on("filebatchselected", function (event, files) {
+        $("#file-1").fileinput("upload");
+    });
+
+</script>

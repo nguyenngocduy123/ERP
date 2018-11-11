@@ -1,0 +1,193 @@
+@model IEnumerable<CheckInOutViewModel>
+
+@using Erp.BackOffice.App_GlobalResources
+@using Erp.BackOffice.Staff.Models
+@using Erp.BackOffice.Helpers
+@using GridMvc.Html
+
+@{
+    ViewBag.Title = Wording.PageIndex_CheckInOut;
+    bool isPopup = Request["IsPopup"] != null && Request["IsPopup"].ToString().ToLower() == "true" ? true : false;
+    if (isPopup)
+    {
+        Layout = "~/Views/Shared/_PopupLayout.cshtml";
+    }
+    else
+    {
+        Layout = "~/Views/Shared/ACE_AdminLayout.cshtml";
+    }
+
+    Erp.BackOffice.Models.PageSetting pageSetting = new Erp.BackOffice.Models.PageSetting
+    {
+        ModuleName = "CheckInOut",
+        ActionName = "Index",
+        PageTitle = ViewBag.Title,
+        DisplaySearchPanel = true,
+        IsPopup = false,
+        DisplayBackButton = false
+    };
+    string branch = (string.IsNullOrEmpty(Request["Branch"]) == false ? Request["Branch"] : Common.CurrentUser.BranchId.Value.ToString());
+}
+
+<link href="@Url.Content("~/assets/css/Gridmvc.css")" rel="stylesheet" type="text/css" />
+<script src="@Url.Content("~/Scripts/gridmvc.min.js")" type="text/javascript"> </script>
+
+@helper GridColumnCommand(int id)
+{
+    <div class="hidden-phone visible-desktop action-buttons" style="display: inline-block; float: left;">
+        <p>
+            <button name="Delete" value="Delete" type="submit" class="btn btn-mini btn-danger">
+                <i class="ace-icon fa fa-trash bigger-120"></i>
+            </button>
+        </p>
+    </div>
+}
+
+@helper GridColumnName(string name, int id, bool isPopup)
+{
+    if (isPopup)
+    {
+        <a onclick="parent.selectBranchItem(@id)">@name</a>
+    }
+    else
+    {
+        name = string.IsNullOrEmpty(name) ? "No Title" : name;
+        <a href="@Url.Action("Detail", "Staffs" , new {area="Staff", Id= id })">@name</a>
+    }
+}
+
+@helper GridColumnCategoryValue(object value)
+{
+    var attr = Common.GetCategoryByValueOrId("value", value);
+    <span>@(attr != null ? attr.Name : "")</span>
+}
+
+@helper CheckDeleteColumns(int Id)
+{
+    <label>
+        <input class="ace class-delete-all" type="checkbox" name="DeleteId-checkbox" value="@Id">
+        <span class="lbl"></span>
+    </label>
+}
+
+@helper BuildCheckAll()
+{
+    <label>
+        <input class="ace" type="checkbox" name="checkAll" id="checkAll" />
+        <span class="lbl"></span>
+    </label>
+}
+
+@using (Html.BeginPageHeaderContainer(pageSetting))
+{
+    <p>
+        @Html.TextBox("Code", Request["Code"], new { @class = "form-control", autocomplete = "off", placeholder = Wording.CodeStaff + "..." })
+        @Html.TextBox("Name", Request["Name"], new { @class = "form-control", autocomplete = "off", placeholder = Wording.NameStaff + "..." })
+        @Html.DropDownList("Branch",SelectListHelper.GetSelectList_Branch(branch, Wording.BranchName), new Dictionary<string, object> { { "class", "form-control" }, { "data-val-required", "Bắt buộc chọn." } })
+        @Html.DropDownList("Department", SelectListHelper.GetSelectList_BranchDepartment(Request["Department"], Int32.Parse(branch), Wording.Department), new Dictionary<string, object> { { "class", "form-control" }, { "data-val-required", "Bắt buộc chọn." } })
+    </p>
+        }
+
+        @if (ViewBag.SuccessMessage != null && ViewBag.SuccessMessage != "")
+        {
+            <div class="alert alert-block alert-success">
+                <button class="close" data-dismiss="alert" type="button">
+                    <i class="ace-icon fa fa-times"></i>
+                </button>
+                <i class="ace-icon fa fa-check green"></i>
+                @ViewBag.SuccessMessage
+            </div>
+        }
+
+        @if (ViewBag.FailedMessage != null && ViewBag.FailedMessage != "")
+        {
+            <div class="alert alert-block alert-danger">
+                <button class="close" data-dismiss="alert" type="button">
+                    <i class="ace-icon fa fa-times"></i>
+                </button>
+                <i class="ace-icon fa fa-warning red"></i>
+                @ViewBag.FailedMessage
+            </div>
+        }
+
+        @using (Html.BeginForm("Delete", pageSetting.ModuleName, FormMethod.Post))
+        {
+            @Html.Grid(Model).Columns(columns =>
+       {
+           //columns.Add().Titled(BuildCheckAll().ToHtmlString()).SetWidth(20).Sanitized(false).Encoded(false).RenderValueAs(n => CheckDeleteColumns(n.Id));
+           columns.Add().Titled(Wording.NameStaff).Sortable(false).Sanitized(false).Encoded(false).RenderValueAs(u => GridColumnName(u.Name,u.StaffId.Value,isPopup));
+           columns.Add().Titled(Wording.CodeStaff).Sortable(false).Sanitized(false).Encoded(false).RenderValueAs(u => u.Code);
+           //columns.Add().Titled(Wording.CodeStaff).Sortable(false).Sanitized(false).Encoded(false).RenderValueAs(u => u.Code);
+           columns.Add(m => m.MachineNo).Titled("MachineNo").Sortable(false);
+           columns.Add(m => m.UserId).Titled("UserId").Sortable(false);
+           columns.Add(m => m.TimeStr).Titled("Thời gian quẹt thẻ").Sortable(false);
+       }).WithPaging(50)
+
+            //using (Html.BeginButtonContainer(pageSetting))
+            //{
+            @*<a class="btn btn-info btn-mini" href="@Url.Action("Create", pageSetting.ModuleName)">
+                    <i class="ace-icon fa fa-plus"></i>
+                    @Wording.CreateNew
+                </a>
+                <button name="DeleteAll" value="DeleteAll" type="submit" class="btn btn-mini btn-danger" onclick="return CheckIsval();">
+                    <i class="ace-icon fa fa-trash bigger-120"></i>
+                    @Wording.Delete
+                </button>*@
+            @*}*@
+        }
+
+        @section Scripts {
+            <script type="text/javascript">
+                function CheckIsval() {
+                    if ($('[name="DeleteId-checkbox"]').is(':checked') == false) {
+                        alert("Phải chọn ít nhất 1 item.");
+                        return false;
+                    }
+                    else {
+                        if (confirm('Bạn có chắc muốn xóa các item đã chọn ?')) {
+                            return true;
+                        }
+                        else {
+                            return false;
+                        }
+                    }
+                }
+
+                $('[name="Delete"]').click(function () {
+                    if (confirm('Bạn có chắc muốn xóa item ?')) {
+                        $(this).closest('tr').children('td').each(function (i, e) {
+                            $(this).find("input.class-delete-all").prop("checked", true);
+                            return true;
+                        })
+                    }
+                    else {
+                        return false;
+                    }
+
+                })
+                //Fetch BranchDepartment of University
+                var urDepartmentl = '/api/BackOfficeServiceAPI/FetchBranchDepartment';
+                var department = $("#Department"); // cache it
+
+                $("#Branch").change(function () {
+                    //console.log($(this).val());
+                    ShowLoading();
+                    department.empty(); // remove any existing options
+                    $(document.createElement('option'))
+                        .attr('value', '')
+                        .text('Phòng ban')
+                        .appendTo(department).trigger('chosen:updated');
+                    var id = $(this).val(); // Use $(this) so you don't traverse the DOM again
+                    $.getJSON(urDepartmentl, { BranchId: id }, function (response) {
+                        department.empty(); // remove any existing options
+                        $(response).each(function () {
+                            $(document.createElement('option'))
+                                .attr('value', this.Id)
+                                .text(this.Staff_DepartmentId)
+                                .appendTo(department).trigger('chosen:updated');
+                            HideLoading();
+                        });
+                    });
+                });
+            </script>
+        }

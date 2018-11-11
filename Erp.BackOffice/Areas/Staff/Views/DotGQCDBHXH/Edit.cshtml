@@ -1,0 +1,201 @@
+﻿@using Erp.BackOffice.App_GlobalResources
+@using Erp.BackOffice.Helpers
+@using Erp.BackOffice.Staff.Models
+
+@model DotGQCDBHXHViewModel
+
+@{
+    ViewBag.Title = Wording.PageEdit_DotQGCDBHXH;
+
+    Layout = "~/Views/Shared/" + (Request["IsPopup"] == null ? "ACE_AdminLayout.cshtml" : "_PopupLayout.cshtml");
+
+    Erp.BackOffice.Models.PageSetting pageSetting = new Erp.BackOffice.Models.PageSetting
+    {
+        ModuleName = "DotGQCDBHXH",
+        ActionName = "Edit",
+        PageTitle = ViewBag.Title,
+        DisplaySearchPanel = false,
+        IsPopup = false,
+        DisplayBackButton = true
+    };
+    int index = 1;
+}
+
+@section HeadOfPage {
+    @Html.ScriptTop_ChosenStyle()
+}
+
+@using (Html.BeginPageHeaderContainer(pageSetting))
+{
+
+}
+@helper GridColumnCommand(int id)
+{
+    <div class="hidden-phone visible-desktop action-buttons" style="display: inline-block; float: left;">
+        <p>
+            <button name="Delete" value="Save" type="submit" id="@id" class="btn btn-mini btn-danger">
+                <i class="ace-icon fa fa-trash"> Xóa</i>
+            </button>
+            @*<a href="@Url.Action("Edit", "DotBCBHXH" , new { Id= id })" class="btn btn-mini btn-success">
+                    <i class="ace-icon fa fa-pencil-square-o bigger-120"></i>
+                </a>*@
+        </p>
+    </div>
+}
+@helper GridColumnName(string name, int id)
+{
+    name = string.IsNullOrEmpty(name) ? "No Title" : name;
+    <a class="isSearch" onclick="OpenPopup('@Url.Action("Edit", "DotGQCDBHXHDetail", new { Id = id, IsPopup = true })', '', 0, 0)">@name</a>
+
+}
+@using (Html.BeginForm_AceStyle((string)ViewBag.Title, pageSetting.ActionName, pageSetting.ModuleName, null, FormMethod.Post, new { @class = "form-horizontal" }))
+{
+    @Html.ValidationSummary(true)
+    @Html.HiddenFor(model => model.Id)
+    @Html.HiddenFor(model => model.CreatedUserId)
+    @Html.HiddenFor(model => model.AssignedUserId)
+    @Html.HiddenFor(model => model.CreatedDate)
+    @Html.HiddenFor(model => model.IsDeleted)
+
+    @Html.CustomTextboxFor(model => model.BatchNumber, null, null, WidthType.span12)
+    @Html.MonthPicker(model => model.Month)
+    @Html.YearPicker(model => model.Year)
+    @Html.CustomTextboxFor(model => model.Name, null, null, WidthType.span12)
+
+    <div class="row top-5">
+        <div class="col-sm-12">
+            <p>
+                <a class="btn btn-mini btn-primary " onclick="OpenPopup('/DayOff/Index?IsPopup=true', 'Tìm kiếm dữ liệu', 0, 500)" style="border-width:0px; "><i class="ace fa fa-plus"></i> Thêm</a>
+            </p>
+            @if (Model.ListDotGQCDBHXHDetail != null)
+            {
+                <div class="widget-box">
+                    <div class="widget-header">
+                        <h5 class="widget-title">Danh sách đề nghị</h5>
+                    </div>
+                    <div class="widget-body">
+                        <div class="widget-main">
+                            @*@Html.Grid(Model.ListDotBCBHXHDetail.Where(u => u.Type.Contains("Increase"))).Columns(columns =>
+                                {
+                                    columns.Add().Titled(Wording.Name).Sortable(false).Sanitized(false).Encoded(false).RenderValueAs(u => GridColumnName(u.StaffName, u.SocialInsuranceId.Value));
+                                    columns.Add(u => u.Id).Titled(Wording.Action).Sanitized(false).Encoded(false).RenderValueAs(u => GridColumnCommand(u.Id)).SetWidth(85);
+                                })*@
+                            <table class="table table-striped table-bordered table-hover">
+                                <thead>
+                                    <tr>
+                                        <th style="text-align: center; width:35px;">STT</th>
+                                        <th>@Resources.Wording.StaffName</th>
+                                        <th style="text-align: center; width:120px; ">@Resources.Wording.SocietyCode</th>
+                                        <th style="text-align: center; width: 120px;">@Resources.Wording.DKTH_TinhTrang</th>
+                                        <th style="text-align: center; width: 120px;">@Resources.Wording.Type</th>
+                                        <th style="text-align: center; width: 120px;">@Resources.Wording.DKTH_ThoiDiem</th>
+                                        <th style="text-align: center; width: 120px; ">@Resources.Wording.DayStart</th>
+                                        <th style="text-align: center; width: 120px; ">@Resources.Wording.DayEnd</th>
+                                        <th style="text-align: center; width: 120px; ">Tổng số</th>
+                                        <th style="text-align: center; width: 120px; ">@Resources.Wording.PaymentMethod</th>
+                                        <th style="text-align: center; width: 120px; ">@Resources.Wording.Note</th>
+                                        <th style="text-align: center; width: 70px; "></th>
+                                    </tr>
+                                </thead>
+                                <tbody id="detailList">
+                                    @foreach (var item in Model.ListDotGQCDBHXHDetail)
+                                {
+                                <tr class="id">
+                                    <td style="text-align:center;">@(index++)</td>
+                                    <td>@GridColumnName(item.StaffName, item.Id)</td>
+                                    <td style="text-align:center;">@item.SocietyCode</td>
+                                    <td style="text-align:center;">@item.DKTH_TinhTrang</td>
+                                    <td style="text-align:center;">@item.Type</td>
+                                    <td style="text-align:center;">@item.DKTH_ThoiDiem</td>
+                                    <td style="text-align:center;">@item.DayStart.Value.ToString("dd/MM/yyyy")</td>
+                                    <td style="text-align:center;">@item.DayEnd.Value.ToString("dd/MM/yyyy")</td>
+                                    <td style="text-align:center;">@item.Quantity</td>
+                                    <td style="text-align:center;">@item.PaymentMethod</td>
+                                    <td>@item.Note</td>
+                                    <td style="text-align:center;">@GridColumnCommand(item.Id)</td>
+                                </tr>
+                                }
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+    using (Html.BeginButtonContainer(pageSetting))
+    {
+        <button class="btn btn-mini btn-primary" type="submit" name="Submit" value="Save">
+            <i class="ace-icon fa fa-save"></i>
+            @Wording.Save
+        </button>
+    }
+}
+
+@section Scripts {
+
+    <script>
+        function loadProject(url) {
+            location.href = url;
+        }
+        function selectLocationItem(DayOffId, Id, Code, Name, OrderNo) {
+            // thêm dòng mới
+            var dongmoi = true;
+            var isSearch = $(".isSearch");
+            var tr = $('#detailList tr');
+            tr.find(isSearch).each(function (key, ele) {
+                var _name = ele.text;
+
+                if (_name == Name) {
+                    dongmoi = false;
+                }
+            });
+
+            if (dongmoi) {
+                ShowLoading();
+                var id = '@Model.Id';
+                $.ajax({
+                    url: '/DotGQCDBHXH/AddDotGQCDBHXHDetail',
+                    type: 'GET',
+                    data: { DotGQCDBHXHId: id, DayOffId: DayOffId, StaffId: Id },
+                    success: function (res) {
+                        if (res == "success") {
+                            location.reload();
+                        } else {
+
+                        }
+                    }
+                });
+
+                ClosePopup();
+            }
+            else {
+                alert('Đã thêm');
+            }
+
+
+        }
+        $('[name="Delete"]').click(function () {
+
+            if (confirm("Bạn có chắc muốn thực hiện thao tác này?")) {
+                var url = '@Url.Action("Delete", "DotGQCDBHXHDetail", new { area = "Staff" })';
+
+                var value = $(this).attr("id");
+                ShowLoading();
+                $.ajax({
+                    url: url,
+                    type: "POST",
+                    data: { Id: value },
+                    success: function (data) {
+                        loadProject('@Url.Action("Edit", "DotGQCDBHXH", new { area = "Staff", Id = Model.Id })');
+                    }
+                });
+            }
+            else
+                return false;
+        });
+
+    </script>
+    @Html.ScriptBottom_ValidationMvc()
+    @Html.ScriptBottom_ChosenStyle()
+}

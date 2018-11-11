@@ -1,0 +1,227 @@
+﻿@using Erp.BackOffice.App_GlobalResources
+@using Erp.BackOffice.Helpers
+@using Erp.BackOffice.Staff.Models
+
+@model DotBCBHXHDetailViewModel
+
+@{
+    ViewBag.Title = Wording.PageDetail_DotBCBHXHDetail;
+
+    Layout = "~/Views/Shared/" + (Request["IsPopup"] == null ? "ACE_AdminLayout.cshtml" : "_PopupLayout.cshtml");
+
+
+    Erp.BackOffice.Models.PageSetting pageSetting = new Erp.BackOffice.Models.PageSetting
+    {
+        ModuleName = "DotBCBHXHDetail",
+        ActionName = "Detail",
+        PageTitle = ViewBag.Title,
+        DisplaySearchPanel = false,
+        IsPopup = false,
+        DisplayBackButton = true
+    };
+}
+
+@*@using(Html.BeginPageHeaderContainer(pageSetting))
+    {
+
+    }*@
+<div class="row">
+    <div class="col-sm-7">
+        <div class="widget-box">
+            <div class="widget-header">
+                <h5 class="widget-title"><i class="ace-icon fa fa-medkit"></i> @Wording.PageDetail_StaffSocialInsurance </h5>
+            </div>
+            <div class="widget-body">
+                <div class="widget-main clearfix">
+                    <div class="row">
+                        <div class="col-xs-12 top-5">
+                            <div class="widget-box  @(string.IsNullOrEmpty(Model.MedicalCode) ? "widget-color-red2" : "widget-color-green")" id="widget-box-2" style="opacity: 1;">
+                                <div class="widget-header">
+                                    <h5 class="widget-title bigger lighter" style="color:white;">
+                                        <i class="ace-icon fa fa-table"></i>
+                                        @Wording.HealthInsurance
+                                    </h5>
+                                </div>
+
+                                <div class="widget-body">
+
+                                    <div class="widget-main">
+                                        <div class="detail-view">
+                                            <div class="row control-group">
+                                                @Html.DetailViewItemFor2(model => model.MedicalCode, null, null, "col-xs-4", "col-xs-8")
+                                            </div>
+                                            <div class="row control-group">
+                                                @Html.DetailViewItemFor2(model => model.MedicalStartDate, null, null, "col-xs-4", "col-xs-8")
+                                            </div>
+                                            <div class="row control-group">
+                                                @Html.DetailViewItemFor2(model => model.MedicalEndDate, null, null, "col-xs-4", "col-xs-8")
+                                            </div>
+
+                                            <div class="row control-group">
+                                                @Html.DetailViewItemFor2(model => model.MedicalIssue, null, null, "col-xs-4", "col-xs-8")
+                                            </div>
+                                            <div class="row control-group">
+                                                @Html.DetailViewItemFor2(model => model.MedicalDefaultValue, null, null, "col-xs-4", "col-xs-8")
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-xs-12 top-5">
+                            <div class="widget-box  @(string.IsNullOrEmpty(Model.SocietyCode) ? "widget-color-red2" : "widget-color-green")" id="widget-box-2" style="opacity: 1;">
+                                <div class="widget-header">
+                                    <h5 class="widget-title bigger lighter" style="color:white;">
+                                        <i class="ace-icon fa fa-table"></i>
+                                        @Wording.SocialInsurance
+                                    </h5>
+                                </div>
+                                <div class="widget-body">
+                                    <div class="widget-main">
+                                        <div class="detail-view">
+                                            <div class="row control-group">
+                                                @Html.DetailViewItemFor2(model => model.SocietyCode, null, null, "col-xs-4", "col-xs-8")
+                                            </div>
+                                            <div class="row control-group">
+                                                @Html.DetailViewItemFor2(model => model.SocietyStartDate, null, null, "col-xs-4", "col-xs-8")
+                                            </div>
+                                            <div class="row control-group">
+                                                @Html.DetailViewItemFor2(model => model.SocietyEndDate, null, null, "col-xs-4", "col-xs-8")
+                                            </div>
+                                            <div class="row control-group">
+                                                @Html.DetailViewItemFor2(model => model.SocietyIssue, null, null, "col-xs-4", "col-xs-8")
+                                            </div>
+                                            <div class="row control-group">
+                                                @Html.DetailViewItemFor2(model => model.SocietyDefaultValue, null, null, "col-xs-4", "col-xs-8")
+                                            </div>
+
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-xs-12 top-5">
+                            <div class="widget-box" id="widget-box-2" style="opacity: 1;">
+                                <div class="widget-header">
+                                    <h5 class="widget-title bigger lighter">
+                                        <i class="ace-icon fa fa-table"></i>
+                                        @Wording.OtherInformation
+                                    </h5>
+                                </div>
+                                <div class="widget-body">
+                                    <div class="widget-main">
+                                        <div class="detail-view">
+                                            <div class="row control-group">
+                                                @Html.DetailViewItemFor2(model => model.TienLuong, null, null, "col-xs-4", "col-xs-8")
+                                            </div>
+                                            <div class="row control-group">
+                                                @Html.DetailViewItemFor2(model => model.PC_CV, null, null, "col-xs-4", "col-xs-8")
+                                            </div>
+                                            <div class="row control-group">
+                                                @Html.DetailViewItemFor2(model => model.PC_TNN, null, null, "col-xs-4", "col-xs-8")
+                                            </div>
+                                            <div class="row control-group">
+                                                @Html.DetailViewItemFor2(model => model.PC_TNVK, null, null, "col-xs-4", "col-xs-8")
+                                            </div>
+                                            <div class="row control-group">
+                                                @Html.DetailViewItemFor2(model => model.PC_Khac, null, null, "col-xs-4", "col-xs-8")
+                                            </div>
+
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-5">
+                            <ul class="list-unstyled spaced2">
+                                <li>
+                                    <b>Chú thích</b>
+                                </li>
+                                <li>
+                                    <i class="ace-icon fa fa-circle green"></i>
+                                    Đã đăng ký hoặc còn hạn sử dụng
+                                </li>
+                                <li>
+                                    <i class="ace-icon fa fa-circle red"></i>
+                                    Không đăng ký hoặc đã hết hạn sử dụng
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="col-sm-7">
+
+                            <div class="col-sm-12" style="margin-top:20px;">
+                                <blockquote>
+                                    <p class="lighter line-height-125">
+                                        @Wording.Note
+                                    </p>
+
+                                    <small>
+                                        @Model.Note ...
+                                    </small>
+                                </blockquote>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-5">
+        @Html.Action("DetailBasicFull", "Staffs", new { Id = Model.StaffId.Value })
+    </div>
+</div>
+@if (Request["IsPopup"] == null)
+{
+    using (Html.BeginButtonContainer(pageSetting))
+    {
+        if (Erp.BackOffice.Filters.SecurityFilter.AccessRight("Edit", "DotBCBHXHDetail", "Staff"))
+        {
+            <a class="btn btn-mini btn-primary" href="@Url.Action("Edit", pageSetting.ModuleName, new { Id = Model.Id })">
+                <i class="ace-icon fa fa-edit"></i>
+                @Wording.Edit
+            </a>
+        }
+    }
+}
+
+@section Scripts {
+    <script type="text/javascript">
+        function CheckIsval() {
+            if ($('[name="DeleteAll-checkbox"]').is(':checked') == false) {
+                alert("Phải chọn ít nhất 1 item.");
+                return false;
+            }
+            else {
+                if (confirm('Bạn có chắc muốn xóa các item đã chọn ?')) {
+                    return true;
+                }
+                else {
+                    return false;
+                }
+            }
+        }
+
+        $('[name="Delete"]').click(function () {
+            if (confirm('Bạn có chắc muốn xóa item ?')) {
+                $(this).closest('tr').children('td').each(function (i, e) {
+                    $(this).find("input.class-delete-all").prop("checked", true);
+                    return true;
+                })
+            }
+            else {
+                return false;
+            }
+
+        })
+
+    </script>
+}

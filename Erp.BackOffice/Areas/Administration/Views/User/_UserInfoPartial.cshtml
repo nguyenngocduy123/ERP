@@ -1,0 +1,41 @@
+﻿@model Erp.BackOffice.Administration.Models.EditUserViewmodel
+@using Erp.BackOffice.App_GlobalResources
+@using Erp.BackOffice.Helpers
+
+@using (Html.BeginForm_AceStyle(Resources.Wording.PersonalInformation, "EditUserInfo", "User", null, FormMethod.Post, new { @class = "form-horizontal" }))
+{
+    @Html.ValidationSummary(true)
+
+    <h3 class="header smaller lighter blue">@Wording.PersonalInformation</h3>
+    <div class="top-20">
+        @Html.CustomTextboxFor(model => model.FirstName, null, null, WidthType.span4, true)
+
+        @Html.CustomTextboxFor(model => model.LastName, null, null, WidthType.span4, true)
+
+        @Html.DateInput(model => model.DateOfBirth, "dd/MM/yyyy", "99/99/9999", true)
+
+        @Html.CustomRadioButtonListFor(model => model.Sex, new SelectList(new[]{
+                                                                                new SelectListItem{ Text="Nam", Value="True"},
+                                                                                new SelectListItem{ Text="Nữ", Value="False"},
+                                                                            }, "Value", "Text"), true)
+
+
+        @Html.CustomTextboxFor(model => model.Email, null, null, WidthType.span4, true)
+
+        @Html.HiddenFor(m => m.Status)
+
+        @Html.CustomTextboxFor(model => model.Address, null, null, WidthType.span4, true)
+
+        @Html.CustomTextboxFor(model => model.Mobile, null, "9999999999?9", WidthType.span4, true)
+    </div>
+
+    <div class="row">
+        <div class="col-sm-3"></div>
+        <div class="col-sm-9">
+            <button type="submit" class="btn btn-info" name="Submit" value="Save">
+                <i class="ace-icon fa fa-save bigger-110"></i>
+                @Wording.Save
+            </button>
+        </div>
+    </div>
+}

@@ -1,0 +1,16 @@
+﻿@{
+    int Id = ViewData["Id"] == null ? 0 : Convert.ToInt32(ViewData["Id"].ToString());
+    string actionName = ViewData["ActionName"] != null ? ViewData["ActionName"].ToString() : "";
+    string controllerName = ViewData["ControllerName"] != null ? ViewData["ControllerName"].ToString() : "";
+}
+
+<div class="hidden-phone visible-desktop action-buttons" style="display:inline-block;float:left;">
+    @using (Html.BeginForm(actionName, controllerName, FormMethod.Post))
+    {
+        <input type="hidden" value="@Id" name="Id"/>
+        <button type="submit" class="btn btn-mini btn-danger" onclick="return confirm('Bạn có muốn xóa dữ liệu không ?');">
+             <i class="ace-icon fa fa-trash bigger-120"></i>
+        </button> 
+    }
+</div>
+

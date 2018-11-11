@@ -1,0 +1,99 @@
+﻿@using Erp.BackOffice.App_GlobalResources
+@using Erp.BackOffice.Sale.Models
+@using Erp.BackOffice.Helpers
+@model List<CommisionStaffViewModel>
+@{
+    ViewBag.Title = "Báo cáo hoa hồng của nhân viên";
+    bool isPopup = Request["IsPopup"] != null && Request["IsPopup"].ToString().ToLower() == "true" ? true : false;
+    if (isPopup)
+    {
+        Layout = "~/Views/Shared/_PopupLayout.cshtml";
+    }
+    else
+    {
+        Layout = "~/Views/Shared/ACE_AdminLayout.cshtml";
+    }
+    Erp.BackOffice.Models.PageSetting pageSetting = new Erp.BackOffice.Models.PageSetting
+    {
+        ModuleName = "SaleReport",
+        ActionName = "ListCommisionStaff",
+        PageTitle = ViewBag.Title,
+        IsPopup = false,
+        DisplayBackButton = false
+    };
+    int index = 1;
+}
+
+    <div class="table-responsive" id="BCCommisionStaff">
+        <div class="grid-mvc" data-lang="en" data-gridname="" data-selectable="true" data-multiplefilters="false">
+            <div class="grid-wrap">
+                <table id="CTable" class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th style="width:40px;text-align:center">STT</th>
+                            <th style="width:200px;text-align:center">Ngày tính hoa hồng</th>
+                            <th style="width:150px;text-align:center">Mã đơn hàng</th>
+                            <th style="text-align:center">Tên sản phẩm/Dịch vụ</th>
+                            <th style="width:100px;text-align:center">% Chiết khấu</th>
+                            <th style="width:150px;text-align:center">Số tiền</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model)
+                        {
+                            <tr>
+                                <td>
+                                    <span>@(index++)</span>
+                                </td>
+                                <td>@(item.CreatedDate.Value.ToString("dd/MM/yyyy HH:mm"))</td>
+                                <td>
+                                    @item.ProductInvoiceCode
+                                </td>
+                                <td>
+                                    @item.ProductCode -@item.ProductName
+                                </td>
+                                <td class="text-right">
+                                    @Common.PhanCachHangNgan(item.PercentOfCommision)
+                                </td>
+                                <td class="text-right">
+                                    @Common.PhanCachHangNgan(item.AmountOfCommision)
+                                </td>
+                            </tr>
+                        }
+
+                        <tr>
+                            <td colspan="5" style="text-align:right"><b>Tổng</b></td>
+                            <td style="width:100px;text-align:right;color:red"><b>@(Common.PhanCachHangNgan(Model.Sum(x => x.AmountOfCommision)))</b></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+@*@using (Html.BeginButtonContainer(pageSetting))
+{
+    <button onclick="tableToExcel('CTable', 'BCCommisionStaff')" class=" btn btn-primary btn-sm btn-white btn-success">
+        <i class="ace-icon fa fa-download"></i>
+        Xuất Excel
+    </button>
+}*@
+
+@section Scripts {
+    <script type="text/javascript">
+
+        //var tableToExcel = (function () {
+        //    var uri = 'data:application/vnd.ms-excel;base64,'
+        //      , template = '<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40"><head><!--[if gte mso 9]><xml><x:ExcelWorkbook><x:ExcelWorksheets><x:ExcelWorksheet><x:Name>{worksheet}</x:Name><x:WorksheetOptions><x:DisplayGridlines/></x:WorksheetOptions></x:ExcelWorksheet></x:ExcelWorksheets></x:ExcelWorkbook></xml><![endif]--></head><body><table>{table}</table></body></html>'
+        //      , base64 = function (s) { return window.btoa(unescape(encodeURIComponent(s))) }
+        //      , format = function (s, c) { return s.replace(/{(\w+)}/g, function (m, p) { return c[p]; }) }
+        //    return function (table, name) {
+        //        if (!table.nodeType) table = document.getElementById(table)
+        //        var ctx = { worksheet: name || 'Worksheet', table: table.innerHTML }
+        //        window.location.href = uri + base64(format(template, ctx))
+        //    }
+        //})()
+    </script>
+    @Html.ScriptBottom_ValidationMvc()
+    @Html.ScriptBottom_DatePicker("dd/MM/yyyy")
+}

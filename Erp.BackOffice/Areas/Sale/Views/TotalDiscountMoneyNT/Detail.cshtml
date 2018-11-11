@@ -1,0 +1,131 @@
+@using Erp.BackOffice.App_GlobalResources
+@using Erp.BackOffice.Helpers
+@using Erp.BackOffice.Sale.Models
+
+@model TotalDiscountMoneyNTViewModel
+
+@{
+    ViewBag.Title = "Chi tiết";
+
+    Layout = "~/Views/Shared/" + (Request["IsPopup"] == null ? "ACE_AdminLayout.cshtml" : "_PopupLayout.cshtml");
+
+    Erp.BackOffice.Models.PageSetting pageSetting = new Erp.BackOffice.Models.PageSetting
+    {
+        ModuleName = "TotalDiscountMoneyNT",
+        ActionName = "Detail",
+        PageTitle = ViewBag.Title,
+        DisplaySearchPanel = false,
+        IsPopup = false,
+        DisplayBackButton = true
+    };
+    int index = 1;
+}
+
+@using (Html.BeginPageHeaderContainer(pageSetting))
+{
+
+}
+<div class="row">
+    <div class="col-sm-7">
+        <div class="table-responsive" id="BCDoanhthu" style="margin-bottom:40px">
+            <table id="cTable" class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th style="width:40px;text-align:center">STT</th>
+                        <th style="width:120px;text-align:center">Mã SP</th>
+                        <th style="text-align:center">Tên SP</th>
+                        <th style="width:100px;text-align:center">ĐVT</th>
+                        <th style="width:50px;text-align:center">SL</th>
+                        <th style="width:100px;text-align:center">Doanh số</th>
+                        <th style="width:100px;text-align:center">Chiết khấu cố định</th>
+                        <th style="width:100px;text-align:center">Chiết khấu đột xuất</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model.DetailList.GroupBy(x=>x.ProductId))
+                    {
+                    <tr class="@(index%2==0?"alert-warning":"")">
+                        <td>
+                            <span>@(index++)</span>
+                        </td>
+                        <td>@(item.FirstOrDefault().ProductCode)</td>
+                        <td>@(item.FirstOrDefault().ProductName)</td>
+                        <td>@(item.FirstOrDefault().Unit)</td>
+                        <td>@(Common.PhanCachHangNgan(item.Sum(x => x.Quantity)))</td>
+                        <td style="text-align:right">@(Common.PhanCachHangNgan2(item.Sum(x=>x.Amount)))</td>
+                        <td style="text-align:right">@(Common.PhanCachHangNgan2(item.Sum(x=>x.FixedDiscountAmount)))</td>
+                        <td style="text-align:right">@(Common.PhanCachHangNgan2(item.Sum(x=>x.IrregularDiscountAmount)))</td>
+                    </tr>
+                    }
+                </tbody>
+                <thead>
+                    <tr>
+                        <td colspan="4" style="text-align:right"><b>Tổng</b></td>
+                        <td style="text-align:right"><b>@(Common.PhanCachHangNgan(Model.DetailList.Sum(x => x.Quantity)))</b></td>
+                        <td style="text-align:right"><b>@(Common.PhanCachHangNgan(Model.DetailList.Sum(x => x.Amount)))</b></td>
+                        <td style="text-align:right"><b>@(Common.PhanCachHangNgan(Model.DetailList.Sum(x => x.FixedDiscountAmount)))</b></td>
+                        <td style="text-align:right"><b>@(Common.PhanCachHangNgan(Model.DetailList.Sum(x => x.IrregularDiscountAmount)))</b></td>
+
+                    </tr>
+                </thead>
+            </table>
+        </div>
+    </div>
+    <div class="col-sm-5">
+        <div class="widget-box">
+            <div class="widget-header">
+                <h5 class="widget-title">Thông tin chiết khấu</h5>
+            </div>
+            <div class="widget-body">
+                <div class="widget-main">
+                    <div class="detail-view">
+                        <div class="row control-group">
+                            @Html.DetailViewItemFor2(model => model.BranchCode, null, null, "col-xs-4", "col-xs-8")
+                        </div>
+                        <div class="row control-group">
+                            @Html.DetailViewItemFor2(model => model.BranchName, null, null, "col-xs-4", "col-xs-8")
+                        </div>
+                        <div class="row control-group">
+                            @Html.DetailViewItemFor2(model => model.DrugStoreCode, null, null, "col-xs-4", "col-xs-8")
+                        </div>
+                        <div class="row control-group">
+                            @Html.DetailViewItemFor2(model => model.DrugStoreName, null, null, "col-xs-4", "col-xs-8")
+                        </div>
+                        <div class="row control-group">
+                            @Html.DetailViewItemFor2(model => model.QuantityDay, null, null, "col-xs-4", "col-xs-8")
+                        </div>
+                        <div class="row control-group">
+                            @Html.DetailViewItem(Common.PhanCachHangNgan2(Model.PercentDecrease), "PercentDecrease",Wording.PercentDecrease, null, null, "col-xs-4", "col-xs-8")
+                        </div>
+                        <div class="row control-group">
+                            @Html.DetailViewItem(Common.PhanCachHangNgan2(Model.DecreaseAmount), "DecreaseAmount", Wording.DecreaseAmount, null, null, "col-xs-4", "col-xs-8")
+                        </div>
+                        <div class="row control-group">
+                            @Html.DetailViewItem(Common.PhanCachHangNgan2(Model.DiscountAmount), "DiscountAmount", Wording.DisCountAmount, null, null, "col-xs-4", "col-xs-8")
+                        </div>
+                        <div class="row control-group">
+                            @Html.DetailViewItem(Common.PhanCachHangNgan2(Model.RemainingAmount), "RemainingAmount", Wording.RemainingAmount, null, null, "col-xs-4", "col-xs-8 red")
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+</div>
+@using (Html.BeginButtonContainer(pageSetting))
+{
+    if (Erp.BackOffice.Filters.SecurityFilter.AccessRight("Print", "TotalDiscountMoneyNT", "Sale"))
+    {
+        <a href="@Url.Action("Print", "TotalDiscountMoneyNT", new { id = Model.Id })" target="_blank" class="btn btn-white btn-success btn-sm">
+            <i class="ace-icon fa fa-print"></i>
+            In phiếu
+        </a>
+
+        <a class="btn btn-white btn-success btn-sm" href="@Url.Action("Print", "TotalDiscountMoneyNT", new { id = Model.Id, ExportExcel = true })">
+            <i class="ace-icon fa fa-file-excel-o"></i>
+            Xuất excel
+        </a>
+    }
+}

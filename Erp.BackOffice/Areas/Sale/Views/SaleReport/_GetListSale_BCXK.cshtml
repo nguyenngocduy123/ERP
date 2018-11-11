@@ -1,0 +1,66 @@
+﻿@using Erp.BackOffice.App_GlobalResources
+@using Erp.BackOffice.Sale.Models
+@using Erp.BackOffice.Helpers
+@model List<Sale_BaoCaoXuatKhoViewModel>
+@{
+    Layout = null;
+    int index = 1;
+    var total = Model.Sum(x => (x.service + x.invoice + x._internal));
+}
+
+<table id="CTable" class="table table-bordered">
+    <thead>
+        <tr class="" style="display:none">
+            <th class="" colspan="14" style="text-align:center"><h4>BÁO CÁO XUẤT KHO TỪ @ViewBag.StartDate ĐẾN @ViewBag.EndDate</h4></th>
+        </tr>
+        <tr>
+            <th style="width:40px;text-align:center">STT</th>
+            <th style="width:100px;text-align:center">Mã sản phẩm</th>
+            <th style="width:200px;text-align:center">Tên sản phẩm</th>
+            <th style="width:100px;text-align:center">Danh mục sản phẩm</th>
+            <th style="width:100px;text-align:center">Nhà sản xuất</th>
+            <th style="width:150px;text-align:center">Kho</th>
+            <th style="width:100px;text-align:center">Số Lô</th>
+            <th style="width:100px;text-align:center">Hạn dùng</th>
+            <th style="width:100px;text-align:center">Đơn giá</th>
+            <th style="width:100px;text-align:center">Đơn vị tính</th>
+            <th style="width:100px;text-align:center">Xuất bán</th>
+            <th style="width:100px;text-align:center">Xuất vận chuyển</th>
+            <th style="width:100px;text-align:center">Xuất sử dụng</th>
+            <th style="width:100px;text-align:center">Tổng xuất</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            var total_row = item.invoice + item._internal + item.service;
+            <tr class="@(index%2==0?"alert-warning":"")">
+                <td>
+                    <span>@(index++)</span>
+                </td>
+                <td>@(item.ProductCode)</td>
+                <td>@(item.ProductName)</td>
+                <td>@(item.CategoryCode)</td>
+                <td>@(item.Manufacturer)</td>
+                <td>@(item.WarehouseName)</td>
+                <td>@(item.LoCode)</td>
+                <td>@(item.ExpiryDate == null ? "" : item.ExpiryDate.Value.ToString("dd/MM/yyyy"))</td>
+                <td style="text-align:right">@(CommonSatic.ToCurrencyStr(item.Price,null))</td>
+                <td>@(item.Unit)</td>
+                <td style="text-align:right">@(Common.PhanCachHangNgan(item.invoice))</td>
+                <td style="text-align:right">@(Common.PhanCachHangNgan(item._internal))</td>
+                <td style="text-align:right">@(Common.PhanCachHangNgan(item.service))</td>
+                <td style="text-align:right">@(Common.PhanCachHangNgan(total_row))</td>
+            </tr>
+        }
+    </tbody>
+    <thead>
+        <tr>
+            <td colspan="10" style="text-align:right"><b>Tổng</b></td>
+            <td style="text-align:right">@(Common.PhanCachHangNgan(Model.Sum(x => x.invoice)))</td>
+            <td style="text-align:right">@(Common.PhanCachHangNgan(Model.Sum(x => x._internal)))</td>
+            <td style="text-align:right">@(Common.PhanCachHangNgan(Model.Sum(x => x.service)))</td>
+            <td style="text-align:right">@(Common.PhanCachHangNgan(total))</td>
+        </tr>
+    </thead>
+</table>

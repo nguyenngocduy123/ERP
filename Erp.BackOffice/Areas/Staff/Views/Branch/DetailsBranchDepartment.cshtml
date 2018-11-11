@@ -1,0 +1,54 @@
+﻿
+@model IEnumerable<BranchViewModel>
+@using Erp.BackOffice.App_GlobalResources
+@using Erp.BackOffice.Staff.Models
+@using Erp.BackOffice.Helpers
+
+@{
+    //string xoatruonghoc = "Xóa lớp học";
+    //string tongsolophoc = "Tổng số lớp học: ";
+    //string chitietlop = Wording.PageDetailClass;
+    //string themlop = Wording.AddClass;
+    //string tongsogiaovien = "Tổng số giáo viên";
+    //string capnhattruonghoc = "Cập nhật trường học";
+    //string chitiettruonghoc = "Thông tin chi tiết trường học";
+    //string thongtintruong = Wording.PageDetailSchool;
+    //string suatruong = Wording.PageEdit_School;
+    string lophoc = "lớp học";
+    string phongban = "phòng ban";
+    string phonggiaoduc = "phòng giáo dục";
+    string truonghoc = "trường học";
+}
+
+
+@foreach (var item in Model)
+{
+    bool? dk = item.IsOfficeOfAcademicAffairs;
+    <div id="branch-item-@item.Id" class="widget-box branch" style="margin-bottom:10px; display:none;">
+        <div class="widget-header widget-header-blue widget-header-flat">
+            <h5 class="widget-title">
+                <a onclick="OpenPopup('@Url.Action("DetailBasic", "Branch", new { area = "Staff", Id = item.Id, IsPopup = "true" })', '@Common.ReplaceWhere(dk,Wording.PageDetailSchool, "trường", phonggiaoduc)', 700, 300)" data-rel="tooltip" title="" data-placement="bottom" data-original-title="@Common.ReplaceWhere(dk,"Thông tin chi tiết trường học", truonghoc, phonggiaoduc)"><b>@item.Name</b></a>
+                @if (ViewBag.AccessRightEdit)
+                {
+                    <a class="green" onclick="OpenPopup('@Url.Action("Edit", "Branch", new { area = "Staff", Id = item.Id, IsPopup = "true" })', '@Common.ReplaceWhere( dk,Wording.PageEdit_School, "trường", phonggiaoduc)', 700, 360)" data-rel="tooltip" title="" data-placement="bottom" data-original-title="@Common.ReplaceWhere(dk, "Cập nhật trường học", truonghoc, phonggiaoduc)"><i class="fa fa-edit"></i></a>
+                }
+
+                @if (ViewBag.AccessRightDelete)
+                {
+                    <a class="btn-BranchDelete red" onclick="return BranchDelete(@item.Id)" data-rel="tooltip" title="" data-placement="bottom" data-original-title="@Common.ReplaceWhere(dk, "Xóa lớp học", lophoc, phongban) "><i class="fa fa-trash"></i></a>
+                }
+                @*<span>Tổng số lớp học: <span class="badge badge-info total-number"></span>@item.TotalDepartment*@@*</span> -*@ <span>@Common.ReplaceWhere(dk, "Tổng số giáo viên:", "giáo viên", "nhân viên")  <span class="badge badge-info total-minus"></span>@item.TotalStaff</span>
+            </h5>
+        </div>
+        <div class="widget-body">
+            <div class="widget-main">
+                @if (ViewBag.AccessRightCreate)
+                {
+                    <p>@Html.Button(Common.ReplaceWhere(dk, Wording.AddClass, lophoc, phongban), ButtonType.aTag, ButtonColor.Success, ButtonSize.Mini, true, IconType.Plus, IconSize.Default, false, new { @class = "btn-DepartmentCreate", @onclick = "OpenPopup('" + Url.Action("Create", "BranchDepartment", new { area = "Staff", BranchId = item.Id, IsPopup = "true" }) + "', '" + Common.ReplaceWhere(dk, Wording.PageDetailClass, "lớp", phongban) + "', 300, 300)" })</p>
+                }
+
+                @Html.Action("Index", "BranchDepartment", new { area = "Staff", BranchId = item.Id })
+            </div>
+        </div>
+    </div>
+}

@@ -1,0 +1,116 @@
+﻿@using Erp.BackOffice.App_GlobalResources
+@using Erp.BackOffice.Helpers
+@using Erp.BackOffice.Staff.Models
+
+@model TransferWorkViewModel
+
+@{
+    ViewBag.Title = Wording.PageCreate_TransferWork;
+
+    Layout = "~/Views/Shared/" + (Request["IsPopup"] == null ? "ACE_AdminLayout.cshtml" : "_PopupLayout.cshtml");
+    Erp.BackOffice.Models.PageSetting pageSetting = new Erp.BackOffice.Models.PageSetting
+    {
+        ModuleName = "TransferWork",
+        ActionName = "Create",
+        PageTitle = ViewBag.Title,
+        DisplaySearchPanel = false,
+        IsPopup = false,
+        DisplayBackButton = false
+    };
+
+}
+
+@section HeadOfPage {
+    @Html.ScriptTop_ChosenStyle()
+    <style type="text/css">
+    </style>
+
+}
+@using (Html.BeginPageHeaderContainer(pageSetting))
+{
+
+}
+@using (Html.BeginForm_AceStyle((string)ViewBag.Title, "Create", "TransferWork", null, FormMethod.Post, new { @class = "form-horizontal" }))
+{
+    @Html.ValidationSummary(true)
+
+    <input type="hidden" value="@Request["IsPopup"]" name="IsPopup" />
+    @Html.DatePicker(model => model.DayEffective, "dd/MM/yyyy", "99/99/9999", true, true, "control-label col-lg-5 col-md-4 col-sm-4", "col-lg-7 col-md-8 col-sm-8", "col-xs-12")
+    @Html.ModulePopupFor(m => m.StaffId, "Staffs", Model.NameStaff, false, false, false, null, null, "Search")
+    @Html.CustomTextboxFor(model => model.BranchNameOld, null, null, WidthType.span12, true, new Dictionary<string, object> { { "readonly", "readonly" } })
+    @Html.CustomTextboxFor(model => model.Staff_DepartmentOld, null, null, WidthType.span12, true, new Dictionary<string, object> { { "readonly", "readonly" } })
+    @Html.CustomTextboxFor(model => model.PositionOld, null, null, WidthType.span12, true, new Dictionary<string, object> { { "readonly", "readonly" } })
+    @Html.CustomDropDownListFor(model => model.BranchIdNew, SelectListHelper.GetSelectList_Branch(null, Wording.Empty), WidthType.span12, true, null, DropdownListStyle.DropdownListStyleChosen)
+    @Html.CustomDropDownListFor(model => model.BranchDepartmentNewId, SelectListHelper.GetSelectList_BranchDepartment(null, 0, Wording.Empty), WidthType.span12, true, null, DropdownListStyle.DropdownListStyleChosen)
+    @Html.CustomDropDownListFor(model => model.PositionNew, SelectListHelper.GetSelectList_Category("position", null, "Value", Wording.Empty), WidthType.span12, true, null, DropdownListStyle.DropdownListStyleChosen)
+    @Html.CustomTextAreaFor(model => model.Reason, null, WidthType.span12)
+    using (Html.BeginButtonContainer(pageSetting))
+    {
+        <button class="btn btn-mini btn-primary" type="submit" name="Submit" value="Save">
+            <i class="ace-icon fa fa-save"></i>
+            @Wording.Save
+        </button>
+    }
+}
+
+@section Scripts {
+    <script>
+        //truyền từ action create của controller qua khi thực hiện submit và return về lại view create, để nhận biết là được gọi theo dạng popup
+        var closePopup = '@ViewBag.closePopup';
+        $(document).ready(function () {
+            //nếu là được gọi theo dạng popup từ form khác thì chạy đoạn code bên dưới
+            if (closePopup != '') {
+                var option = '<option value="@Model.Id" >@Model.StaffId</option>';
+                //tên funtion có thể khác theo từng công việc riêng (đây chỉ là mẫu khi thêm mới sẽ gọi lại)
+                window.parent.ClosePopupAndAppendSelect(option);
+            }
+        });
+        //Fetch Department of University
+        var urDepartmentl = '/api/BackOfficeServiceAPI/FetchBranchDepartment';
+        var department = $('#BranchDepartmentNewId'); // cache it
+
+        $("#BranchIdNew").change(function () {
+            department.empty(); // remove any existing options
+            $(document.createElement('option'))
+                        .attr('value', '')
+                        .text('- Rỗng -')
+                        .appendTo(department).trigger('chosen:updated');
+            var id = $(this).val(); // Use $(this) so you don't traverse the DOM again
+            $.getJSON(urDepartmentl, { BranchId: id }, function (response) {
+                department.empty(); // remove any existing options
+
+                $(response).each(function () {
+                    $(document.createElement('option'))
+                        .attr('value', this.Id)
+                        .text(this.Staff_DepartmentId)
+                        .appendTo(department).trigger('chosen:updated');
+                    console.log(department);
+                });
+            });
+        });
+
+        //hàm load đơn giá khi chọn căn hộ
+        var url = '/api/BackOfficeServiceAPI/FetchListStaff';
+        var image = $('#ProfileImage'); // cache it
+        var branch = $('#BranchNameOld'); // cache it
+        var departments = $('#Staff_DepartmentOld'); // cache it
+        var position = $('#PositionOld'); // cache it
+        $("#StaffId").change(function () {
+            ShowLoading();
+            var id = $(this).val(); // Use $(this) so you don't traverse the DOM again
+            $.getJSON(url, { StaffId: id }, function (response) {
+                //image.attr('src', response.ProfileImage).trigger('change');
+                departments.attr('value', response.Staff_DepartmentId).trigger('change');
+                branch.attr('value', response.BranchName).trigger('change');
+                position.attr('value', response.PositionName).trigger('change');
+                // console.log(response);
+                //  console.log();
+                //  $('#mask-ContractSellModel_Price').val(response).trigger('change');
+                HideLoading()
+            });
+        });
+    </script>
+    @Html.ScriptBottom_ValidationMvc()
+    @Html.ScriptBottom_DatePicker("dd/mm/yyyy")
+    @Html.ScriptBottom_ChosenStyle()
+}

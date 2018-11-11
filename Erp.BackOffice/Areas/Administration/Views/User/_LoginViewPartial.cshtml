@@ -1,0 +1,70 @@
+﻿@model Erp.BackOffice.Models.LoginModel
+
+
+@using (Html.BeginForm("Login", "User", new { ReturnUrl = ViewBag.ReturnUrl }, FormMethod.Post, new { id = "loginForm" }))
+{
+    @Html.AntiForgeryToken()
+    @Html.ValidationSummary()
+
+    <fieldset>
+        <label>
+            <span class="block input-icon input-icon-right">
+                @*<input type="text" placeholder="Username" class="span12">*@
+                @Html.TextBoxFor(m => m.UserName, new Dictionary<string, object> { { "placeholder", "Username" }, { "class", "span12" } })
+                <i class="icon-user"></i>
+            </span>
+        </label>
+
+        <label>
+            <span class="block input-icon input-icon-right">
+                @*<input type="password" placeholder="Password" class="span12">*@
+                @Html.PasswordFor(m => m.Password, new Dictionary<string, object> { { "placeholder", "Password" }, { "class", "span12" } })
+                <i class="icon-lock" ></i>
+            </span>
+        </label>
+
+        <div class="space"></div>
+
+        <div class="clearfix">
+            <label class="inline">
+                @Html.CheckBoxFor(m => m.RememberMe, new { style = "opacity:1;margin-top:2px" })
+                <span class="checkbox">Remember Me</span>
+            </label>
+
+            <button class="width-35 pull-right btn btn-small btn-primary" value="Log in" name="UserLogin" id="submitUserLogin">
+                <i class="icon-key"></i>Login
+            </button>
+        </div>
+
+        <div class="space-4"></div>
+    </fieldset>
+}
+
+<script>
+    $(document).ready(function () {
+        $('#submitUserLogin').click(function (e) {
+            e.preventDefault();
+            $.ajax({
+                type: "POST",
+                url: '@Url.Action("Login", "User", new { ReturnUrl = ViewBag.ReturnUrl })',
+                    data: $('#loginForm').serialize(),
+                    success: function (result) {
+                        if (result.redirectTo) {
+                            // The operation was a success on the server as it returned
+                            // a JSON objet with an url property pointing to the location
+                            // you would like to redirect to => now use the window.location.href
+                            // property to redirect the client to this location
+                            window.location.href = result.redirectTo;
+                        } else {
+                            // The server returned a partial view => let's refresh
+                            // the corresponding section of our DOM with it
+                            $("#loginDiv").html(result);
+                        }
+                    },
+                    error: function () {
+
+                    }
+                });
+            });
+        });
+</script>

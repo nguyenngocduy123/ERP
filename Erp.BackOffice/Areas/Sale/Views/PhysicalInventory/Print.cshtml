@@ -1,0 +1,44 @@
+﻿@using Erp.BackOffice.App_GlobalResources
+@using Erp.BackOffice.Helpers
+@using Erp.BackOffice.Sale.Models
+@using Erp.BackOffice.Account.Models
+
+@model TemplatePrintViewModel
+
+@{
+    ViewBag.Title = "";
+
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title></title>
+    <style type="text/css">
+        body {
+            font-size: 12px;
+        }
+
+        p {
+            margin: 0px;
+            margin-bottom: 5px;
+        }
+
+        td {
+            padding-bottom: 3px;
+        }
+
+        .text-left {
+            text-align: left;
+        }
+    </style>
+</head>
+<body>
+    @Html.Raw(Model.Content)
+    <script>
+        window.print();
+        @*location.href = '@Url.Action("Index")';*@
+    </script>
+</body>
+</html>

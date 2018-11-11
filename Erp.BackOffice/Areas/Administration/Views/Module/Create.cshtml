@@ -1,0 +1,236 @@
+﻿@model Erp.BackOffice.Administration.Models.ModuleViewModel
+
+@using Erp.BackOffice.Helpers
+
+@{
+    ViewBag.Title = "Tạo module";
+    Layout = "~/Views/Shared/ACE_AdminLayout.cshtml";
+}
+
+@if (ViewBag.AlertMessage != null && ViewBag.AlertMessage != "")
+{
+    <div class="alert alert-block alert-success">
+        <button class="close" data-dismiss="alert" type="button">
+            <i class="icon-remove"></i>
+        </button>
+        <i class="ace-icon fa fa-check green"></i>
+        @Html.Raw(ViewBag.AlertMessage)
+    </div>
+}
+
+@using (Html.BeginForm_AceStyle((string)ViewBag.Title, "Create", "Module", new { @area = "Administration" }, FormMethod.Post, new { @class = "form-horizontal" }))
+{
+    @Html.Button(Resources.Wording.Save, ButtonType.buttonTag, ButtonColor.Info, ButtonSize.Default, true, IconType.Ok, IconSize.Default, false, null)
+
+    @Html.ValidationSummary(true)
+    @Html.HiddenFor(m => m.SourceFolder)
+    @Html.HiddenFor(m => m.AppName)
+    @Html.HiddenFor(m => m.Name)
+
+    @Html.CustomTextboxFor(m => m.ModuleName, null, null, WidthType.span4, true)
+    @Html.CustomTextboxFor(m => m.ModuleLabel, null, null, WidthType.span4, true)
+    @Html.CustomTextboxFor(m => m.AreaName, null, null, WidthType.span4, true)
+
+    <div id="" class="control-group form-group ">
+        <label class="control-label no-padding-right col-sm-3" for="TableName">Table alrealy exits</label>
+        <div class="control-value col-sm-9">
+            <div class="clearfix">
+                <input class="col-sm-4" id="TableName" name="TableName" placeholder="Enter table name" type="text" value="">
+            </div>
+            <div class="clearfix">
+                <span class="field-validation-valid help-inline" data-valmsg-for="TableName" data-valmsg-replace="true"></span>
+            </div>
+        </div>
+    </div>
+
+    @Html.CustomSwitchesFor(m => m.IsViewEntity, SwitchesStyle.CheckboxStyle, true, WidthType.span4)
+
+    <div class="clearfix">
+        <table class="table" style="width:auto">
+            <thead>
+                <tr>
+                    <td>Name</td>
+                    <td>DataType</td>
+                    <td>Length</td>
+                    <td></td>
+                    @*<td>html code</td>
+                    <td>wording</td>*@
+                    <td>tool</td>
+                </tr>
+            </thead>
+            <tbody id="list_column_data">
+                @for (int i = 0; i <= 10; i++)
+                {
+                    <tr>
+                        <td>@Html.TextBox("ListColumns[" + i + "].Name", null)</td>
+                        <td>
+                            <select id="ListColumns_@(i)__.DataType" name="ListColumns[@i].DataType">
+                                <option value="">- Chọn -</option>
+                                <option value="varchar">varchar</option>
+                                <option value="nvarchar">nvarchar</option>
+                                <option value="char">char</option>
+                                <option value="bit">bit</option>
+                                <option value="datetime">datetime</option>
+                                <option value="int">int</option>
+                                <option value="bigint">bigint</option>
+                                <option value="float">float</option>
+                                <option value="decimal">decimal</option>
+                                <option value="money">money</option>
+                            </select>
+                        </td>
+                        <td>@Html.TextBox("ListColumns[" + i + "].Length", null)</td>
+                        <td>
+                            <a class="btn btn-xs btn-danger" onclick="removeColumnData(this)">X</a>
+                        </td>
+                        @*<td>
+                            @Html.TextBox("OutputHtml", null, new { @class = "OutputHtml", style = "width:300px" })
+                        </td>
+                        <td>
+                            @Html.TextBox("Wording", null, new { @class = "wording", style = "width:150px" })
+                        </td>*@
+                        <td>
+                            <a class="btn btn-minier btn-info" onclick="htmlCode(this)">Html code</a>
+                            <a class="btn btn-minier btn-info" onclick="wording(this)">Wording</a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+        <div class="clearfix">
+            <a class="btn btn-primary" onclick="addColumnData()">Thêm cột</a>
+            @*<a class="btn btn-primary" onclick="createViewModel()">Create view model</a>*@
+        </div>
+    </div>
+    <p></p>
+    <textarea id="output_html_form" style="width:100%; height:400px"></textarea>
+}
+
+@section Scripts {
+    @Html.ScriptBottom_ValidationMvc()
+    <script>
+        $(document).ready(function () {
+            $('#TableName').change(function () {
+                ShowLoading();
+                $('#list_column_data').load('/module/GetDataTypeFromTable', { tableName: $(this).val() }, function () {
+                    //console.log(res);
+                    //$('#list_column_data').html(res);
+                    HideLoading();
+                });
+            });
+        });
+
+        function getHtmlControl(obj) {
+            var columnName = $(obj).find('td:nth-child(1) input').val();
+            var columnType = $(obj).find('td:nth-child(2) select').val();
+
+            switch (columnType) {
+                case "datetime":
+                    return '@@Html.DateInput(model => model.' + columnName + ', "dd/MM/yyyy", "99/99/9999", true)';
+                    break;
+                case "bigint":
+                case "decimal":
+                case "float":
+                case "int":
+                case "money":
+                    return '@@Html.SpinnerFor(model => model.' + columnName + ', 100, 0, 1, SpinnerStyle.SpinnerStyle1, true)';
+                    break;
+                case "bit":
+                    return '@@Html.CustomSwitchesFor(model => model.' + columnName + ', SwitchesStyle.CheckboxStyle, true)';
+                    break;
+                default:
+                    return '@@Html.CustomTextboxFor(model => model.' + columnName + ', null, null, WidthType.span4, true)';
+                    break;
+            }
+        }
+
+        //function createViewModel()
+        //{
+        //    $('#list_column_data tr').each(function (index, tr) {
+        //        var columnName = $(tr).find('td:nth-child(1) input').val();
+        //        var columnType = $(tr).find('td:nth-child(2) select').val();
+
+        //        var str = "        [Display(Name = \"" + columnName + "\", ResourceType = typeof(Wording))]\r\n";
+        //        switch (columnType) {
+        //            case "datetime":
+        //                str += "        public Nullable<System.DateTime> " + columnName + " { get; set; }\r\n";
+        //                break;
+        //            case "bigint":
+        //                str += "        public Nullable<int> " + columnName + " { get; set; }\r\n";
+        //                break;
+        //            case "decimal":
+        //                str += "        public Nullable<decimal> " + columnName + " { get; set; }\r\n";
+        //                break;
+        //            case "float":
+        //                str += "        public Nullable<double> " + columnName + " { get; set; }\r\n";
+        //                break;
+        //            case "int":
+        //                str += "        public Nullable<int> " + columnName + " { get; set; }\r\n";
+        //                break;
+        //            case "money":
+        //                str += "        public Nullable<int> " + columnName + " { get; set; }\r\n";
+        //                break;
+        //            case "bit":
+        //                str += "        public Nullable<bool> " + columnName + " { get; set; }\r\n";
+        //                break;
+        //            default:
+        //                str += "        public string " + columnName + " { get; set; }\r\n";
+        //                break;
+        //        }
+        //        $("#output_html_form").val($("#output_html_form").val() + '\r\n' + str);
+        //    });
+        //}
+
+        function wording(elem) {
+            var columnName = $(elem).closest('tr').find('td:nth-child(1) input').val();
+            var columnWording = $(elem).closest('tr').find('td:nth-child(6) input').val();
+
+            var str = '<data name="' + columnName + '" xml:space="preserve">';
+            str += '\r\n	<value>' + columnWording + '</value>';
+            str += '\r\n</data>';
+            str += '\r\n\r\n';
+            str += '\r\n/// <summary>';
+            str += '\r\n///   Looks up a localized string similar to ' + columnWording + '.';
+            str += '\r\n/// </summary>';
+            str += '\r\npublic static string ' + columnName + ' {';
+            str += '\r\n    get {';
+            str += '\r\n        return ResourceManager.GetString("' + columnName + '", resourceCulture);';
+            str += '\r\n    }';
+            str += '\r\n}';
+
+            $("#output_html_form").val(str);
+        }
+
+        function htmlCode(elem) {
+            $(elem).closest('tr').find('td:nth-child(5) input').val(getHtmlControl($(elem).closest('tr')));
+            $("#output_html_form").val("");
+            $('#list_column_data tr').each(function (index, tr) {
+                $("#output_html_form").val($("#output_html_form").val() + '\r\n' + getHtmlControl(tr));
+            });
+        }
+
+        function removeColumnData(elem) {
+            $(elem).closest('tr').remove();
+
+            $('#list_column_data tr').each(function (index, tr) {
+                $(tr).find('td:nth-child(1) input').attr('name', 'ListColumns[' + index + '].Name')
+                $(tr).find('td:nth-child(2) select').attr('name', 'ListColumns[' + index + '].DataType')
+                $(tr).find('td:nth-child(3) input').attr('name', 'ListColumns[' + index + '].Length')
+            });
+        }
+
+        function addColumnData() {
+            var index = $('#list_column_data tr').length;
+            var column = '<tr><td><input name="ListColumns[' + index + '].Name" value="" type="text" /></td>';
+            column += '<td><select id="ListColumns_' + index + '__.DataType" name="ListColumns[' + index + '].DataType"><option value="">- Chọn -</option>';
+            column += '<option value="varchar">varchar</option><option value="nvarchar">nvarchar</option>';
+            column += '<option value="char">char</option><option value="bit">bit</option>';
+            column += '<option value="datetime">datetime</option><option value="int">int</option>';
+            column += '<option value="bigint">bigint</option><option value="float">float</option>';
+            column += '<option value="decimal">decimal</option><option value="money">money</option></select></td>';
+            column += '<td><input name="ListColumns[' + index + '].Length" value="" type="text" /></td>';
+            column += '<td><a class="btn btn-xs btn-danger" onclick="removeColumnData(this)">X</a></td></tr>';
+
+            $('#list_column_data').append($(column));
+        }
+    </script>
+}

@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ReferenceGroup xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" ID="3d7d094a-85d6-439b-b665-fbf6feb09d93" xmlns="urn:schemas-microsoft-com:xml-wcfservicemap">
+  <ClientOptions>
+    <GenerateAsynchronousMethods>false</GenerateAsynchronousMethods>
+    <GenerateTaskBasedAsynchronousMethod>true</GenerateTaskBasedAsynchronousMethod>
+    <EnableDataBinding>true</EnableDataBinding>
+    <ExcludedTypes />
+    <ImportXmlTypes>false</ImportXmlTypes>
+    <GenerateInternalTypes>false</GenerateInternalTypes>
+    <GenerateMessageContracts>false</GenerateMessageContracts>
+    <NamespaceMappings />
+    <CollectionMappings />
+    <GenerateSerializableTypes>true</GenerateSerializableTypes>
+    <Serializer>Auto</Serializer>
+    <UseSerializerForFaults>true</UseSerializerForFaults>
+    <ReferenceAllAssemblies>true</ReferenceAllAssemblies>
+    <ReferencedAssemblies />
+    <ReferencedDataContractTypes />
+    <ServiceContractMappings />
+  </ClientOptions>
+  <MetadataSources>
+    <MetadataSource Address="http://125.235.4.202:8998/bulkapi?wsdl" Protocol="http" SourceId="1" />
+  </MetadataSources>
+  <Metadata>
+    <MetadataFile FileName="CcApi.wsdl" MetadataType="Wsdl" ID="8dc3035e-aa08-4c63-9628-10f3ddbe9454" SourceId="1" SourceUrl="http://125.235.4.202:8998/bulkapi?wsdl" />
+    <MetadataFile FileName="bulkapi.xsd" MetadataType="Schema" ID="2085a35f-1efa-4ba6-9086-55a501ea6756" SourceId="1" SourceUrl="http://125.235.4.202:8998/bulkapi?xsd=2" />
+    <MetadataFile FileName="bulkapi1.xsd" MetadataType="Schema" ID="bff3f183-8c77-4f7e-9f06-d01963deb393" SourceId="1" SourceUrl="http://125.235.4.202:8998/bulkapi?xsd=1" />
+  </Metadata>
+  <Extensions>
+    <ExtensionFile FileName="configuration91.svcinfo" Name="configuration91.svcinfo" />
+    <ExtensionFile FileName="configuration.svcinfo" Name="configuration.svcinfo" />
+  </Extensions>
+</ReferenceGroup>

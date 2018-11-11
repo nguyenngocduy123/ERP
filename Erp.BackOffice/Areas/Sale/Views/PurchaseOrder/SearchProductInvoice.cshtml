@@ -1,0 +1,117 @@
+﻿@using Erp.BackOffice.App_GlobalResources
+@using Erp.BackOffice.Helpers
+@using Erp.BackOffice.Sale.Models
+@using Erp.BackOffice.Account.Models
+@model List<ProductViewModel>
+@{
+    Layout =null;
+}
+
+<div class="product-search-box">
+        <input id="product_barcode" type="text" placeholder="[F3] Mã sản phẩm..." autocomplete="off" />
+        <select id="productSelectList" name="productSelectList" style="width:400px">
+            <option value="">- Tìm sản phẩm -</option>
+            @foreach (var item in Model.OrderBy(x => x.Name).ToList())
+            {
+                <option value="@item.Id" data-selected="0" data-value="@item.Id | @(Erp.BackOffice.Helpers.Common.KiemTraTonTaiHinhAnh(item.Image_Name, "product-image-folder", "product")) | @(item.Code + " - " + item.Name + " <br> (Giá nhập: " +CommonSatic.ToCurrencyStr(item.PriceInbound,null)+" VNĐ)"  )" data-code="@item.Code" data-barcode="@item.Barcode" data-product-type="@item.CategoryCode" data-price="@(item.PriceInbound)" data-unit="@item.Unit" data-quantity-inventory="@item.QuantityTotalInventory.Value">@item.Name</option>
+            }
+        </select>
+    </div>
+<link href="/Scripts/RadCombobox_v1/RadComboBoxLite.css" rel="stylesheet" />
+<script src="/Scripts/RadCombobox_v1/rabCombobox.js"></script>
+<script>
+
+    $(document).ready(function () {
+    $('#productSelectList').radComboBox({
+    colTitle: 'ID, Hình, Tên sản phẩm',
+    colValue: 1,
+    colImage: 2,
+    colHide: '1',
+    colSize: '0px,50px,',
+    colClass: ',,',
+    //width: 600,
+    height: 500,
+    boxSearch: true,
+    colSearch: 2
+    });
+        //Hiển thị giá và tính thành tiền khi chọn sản phẩm
+    $('#productSelectList').on('change', function () {
+        var $this = $(this);
+        var selected = $this.find("option:selected");
+
+        if (selected.val() == '')// || $('#product_item_' + selected.val()).length > 0)
+            return;
+
+        var OrderNo = $('.detailList tr').length;
+        var ProductId = selected.val();
+        var ProductName = selected.text();
+        var Unit = selected.data("unit");
+        var Quantity = 1;
+        var Price = selected.data("price");
+        var ProductType = selected.data("product-type");
+        var ProductCode = selected.data("code");
+        var QuantityInventory = selected.data("quantity-inventory");
+        var formdata = {
+            OrderNo: OrderNo,
+            ProductId: ProductId,
+            ProductName: ProductName,
+            Unit: Unit,
+            Quantity: Quantity,
+            Price: Price,
+            ProductType: ProductType,
+            ProductCode: ProductCode,
+            QuantityInventory: QuantityInventory
+        };
+
+        //Thêm dòng mới
+        ClickEventHandler(true, "/PurchaseOrder/LoadProductItem", ".detailList", formdata, function () {
+            $('#ProductItemCount').val($('#listOrderDetail .detailList tr').length);
+            LoadNumberInput();
+            calcTotalAmount();
+
+            //$('#DetailList_' + OrderNo + '__Quantity').numberOnly();
+            //$('#DetailList_' + OrderNo + '__Price').numberFormat();
+            //$('#DetailList_' + OrderNo + '__DisCount').numberOnly();
+            $('#DetailList_' + OrderNo + '__DisCount').val($("#InputDiscount").val()).trigger("change");
+
+            $("#DetailList_" + OrderNo + "__Quantity").focus().select();
+        });
+    });
+    $('#product_barcode').keypress(function (e) {
+        if (e.which == 13) {
+            e.preventDefault();
+            $('#product_barcode').trigger('change');
+        }
+    });
+
+    $(window).keydown(function (e) {
+        if (e.which == 114) {
+            e.preventDefault();
+            $("#product_barcode").focus();
+        }
+    });
+
+        //khi nhập barcode
+    $('#product_barcode').change(function () {
+        var $this = $(this);
+        if ($this.val() != '') {
+
+            var barcode = $this.val();
+            //đặt lại giá trị rỗng
+            $this.val('').focus();
+
+            var valueSearch = searchProductByBarCodeContain(barcode);
+            if (valueSearch == undefined) {
+                alert('Không tìm thấy sản phẩm với mã code trên!');
+                return;
+            }
+
+            $('#productSelectList').val(valueSearch).trigger("change");
+
+            //kết thúc các lệnh của sự kiện
+        }
+    });
+
+    });
+  
+</script>

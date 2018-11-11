@@ -1,0 +1,17 @@
+﻿@*@Scripts.Render("~/Scripts/ckeditor/ckeditor.js")*@
+<script type="text/javascript">
+    // >>>>> CKEDITOR <<<<<
+    $("[type=submit]").click(function (e) {
+        if (CKEDITOR != undefined) {
+            for (var instance in CKEDITOR.instances)
+                CKEDITOR.instances[instance].updateElement();
+        }
+    });
+
+    $("button").click(function (e) {
+        if (CKEDITOR != undefined) {
+            for (var instance in CKEDITOR.instances)
+                CKEDITOR.instances[instance].updateElement();
+        }
+    });
+</script>

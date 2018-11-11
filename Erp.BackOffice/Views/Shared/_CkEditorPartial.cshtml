@@ -1,0 +1,28 @@
+﻿@{
+    MvcHtmlString inputUI = (MvcHtmlString)ViewData["inputUI"];
+    MvcHtmlString defaultValueUI = (MvcHtmlString)ViewData["defaultValueUI"];
+    string inputName = ViewData["inputName"].ToString().Replace(".", "_");
+}
+
+@inputUI
+@defaultValueUI
+<script type="text/javascript">
+    {
+        var $editor_@inputName = CKEDITOR.replace('@inputName');
+        CKEDITOR.editorConfig = function (config) {
+            ignoreEmptyParagraph = true;
+        };
+        CKEDITOR.config.resize_enabled = false;
+
+        $editor_@(inputName).on('instanceReady', function (e) {
+            $("#@inputName").css("display", "block");
+            $("#@inputName").css("height", "0px");
+            $("#@inputName").css("margin-top", "-10px");
+            $("[name='defaultValue_@inputName']").val($("#@inputName").val());
+        });
+
+        $("#@inputName").closest("form").on("reset", function () {
+            $editor_@(inputName).setData($("[name='defaultValue_@inputName']").val());
+        });
+    }
+</script>

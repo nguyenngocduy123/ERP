@@ -1,0 +1,629 @@
+﻿@using Erp.BackOffice.App_GlobalResources
+@using Erp.BackOffice.Helpers
+@using Erp.BackOffice.Sale.Models
+@using Erp.BackOffice.Account.Models
+
+@model SalesReturnsViewModel
+
+@{
+    if (Model.Id > 0)
+    {
+        ViewBag.Title =Wording.PageCreate_SalesReturns;
+    }
+    else
+    {
+        ViewBag.Title =Wording.PageCreate_SalesReturns;
+    }
+
+    Layout = "~/Views/Shared/ACE_AdminLayout.cshtml";
+
+ 
+    IEnumerable<CustomerViewModel> customerList = (IEnumerable<CustomerViewModel>)ViewBag.customerList;
+
+    IEnumerable<SelectListItem> SaleList = (IEnumerable<SelectListItem>)ViewBag.SaleList;
+
+    SelectList provinceList = Erp.BackOffice.Helpers.SelectListHelper.GetSelectList_Location("0", null,Wording.Empty);
+
+    IEnumerable<SelectListItem> productCategoryList = Erp.BackOffice.Helpers.Common.GetSelectList_Category("product", null, "value");
+    IEnumerable<SelectListItem> warehouseList = (IEnumerable<SelectListItem>)ViewBag.warehouseList;
+    Erp.BackOffice.Models.PageSetting pageSetting = new Erp.BackOffice.Models.PageSetting
+    {
+        ModuleName = "SalesReturns",
+        ActionName = "Create",
+        PageTitle = ViewBag.Title,
+        DisplaySearchPanel = false,
+        IsPopup = false,
+        DisplayBackButton = true
+    };
+}
+
+@section HeadOfPage {
+    @Html.ScriptTop_ChosenStyle()
+}
+
+<style type="text/css">
+    .has-error .field-validation-error, .has-error .field-validation-valid {
+        color: #de2a2a;
+    }
+</style>
+
+@using (Html.BeginPageHeaderContainer(pageSetting))
+{
+
+}
+
+@using (Html.BeginForm_AceStyle((string)ViewBag.Title, pageSetting.ActionName, pageSetting.ModuleName, null, FormMethod.Post, new { id = "SaleOrder", @class = "form-horizontal clearfix" }))
+{
+    @Html.ValidationSummary(true)
+
+    @*if (Model.Id == 0)
+    {
+        @Html.HiddenFor(model => model.CreatedUserName)
+        @Html.HiddenFor(model => model.CustomerDiscountId)
+    }
+    else
+    {
+        @Html.HiddenFor(model => model.Id)
+        @Html.HiddenFor(model => model.CreatedUserId)
+        @Html.HiddenFor(model => model.CreatedDate)
+        @Html.HiddenFor(model => model.IsDeleted)
+        @Html.HiddenFor(model => model.Code)
+        @Html.HiddenFor(model => model.CustomerDiscountId)
+        @Html.HiddenFor(model => model.Status)
+        @Html.HiddenFor(model => model.BranchId)
+    }*@
+
+    <div class="row">
+        <div class="col-sm-7">
+            <div id="Search_Product">
+            </div>
+          
+            <div id="listOrderDetail" class="table-responsive top-10">
+                <table class="table table-bordered bottom-5">
+                    <thead>
+                        <tr>
+                            <th class="detail-th-orderno">STT</th>
+                            <th class="detail-th-product-name">Tên sản phẩm</th>
+                            <th class="detail-th-quantity">Số lượng</th>
+                            <th class="detail-th-price">Đơn giá</th>
+                            <th class="detail-th-discount">% CK @Html.TextBox("InputDiscount", 0, new { style = "width:50px; text-align:right" })</th>
+                            <th class="detail-th-total">Thành tiền</th>
+                            <th class="detail-th-quantity"></th>
+                        </tr>
+                    </thead>
+                    <tbody class="detailList">
+                        @if (Model.DetailList.Count > 0)
+                        {
+                            foreach (var item in Model.DetailList)
+                            {
+                                @Html.Partial("LoadProductItem", item);
+                            }
+                        }
+                    </tbody>
+                    <tfoot>
+                        <tr>
+                            <td>
+                                <input style="width:30px;" autocomplete="off" data-val="true" data-val-required="Vui lòng chọn sản phẩm!" id="ProductItemCount" name="ProductItemCount" type="text" value="@(Model.DetailList != null && Model.DetailList.Count > 0 ? Model.DetailList.Count.ToString() : "")" readonly="readonly" />
+                            </td>
+                            <td></td>
+                            <td id="TongSoLuong" align="right" style="font-weight:bold"></td>
+                            <td colspan="2"></td>
+                            <td id="TongThanhTien" align="right" style="font-weight:bold"></td>
+                            <td></td>
+                        </tr>
+                    </tfoot>
+                </table>
+                <span style="color:red" class="field-validation-valid help-inline" data-valmsg-for="ProductItemCount" data-valmsg-replace="true"></span>
+            </div>
+        </div>
+        <div class="col-sm-5">
+            <div class="tabbable">
+                <ul class="nav nav-tabs padding-12 tab-color-blue background-blue" id="tabCustomer">
+                    <li class="active">
+                        <a data-toggle="tab" href="#tab1">Thông tin chi tiết</a>
+                    </li>
+                </ul>
+
+                <div class="tab-content">
+                    <div id="tab1" class="tab-pane in active">
+                        @if (Model.Id > 0)
+                        {
+                            <div class="detail-view">
+                                <div class="row control-group">
+                                    @Html.DetailViewItemFor2(m => m.Code)
+                                </div>
+                            </div>
+                        }
+
+                        @Html.ModulePopupFor(m => m.CustomerId, "Customer", Model.CustomerName, true, true)
+                        <div class="control-group form-group">
+                            <label class="control-label no-padding-right col-sm-3" for="ContactId">Liên hệ</label>
+                            <div class="control-value col-sm-9">
+                                <div class="clearfix">
+                                    <select name="ContactId" id="ContactId" class="col-sm-12 chzn-select">
+                                        <option value="">- chọn KH trước-</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        @Html.CustomDropDownListFor(model => model.WarehouseDestinationId, warehouseList, WidthType.span12, true, "- chọn -")
+                        @Html.CustomDropDownListFor(model => model.SalerId, SaleList, WidthType.span12, true, "- chọn -")
+                        @Html.CustomDropDownListFor(model => model.PaymentMethod, SelectListHelper.GetSelectList_Category("SalesReturns_PaymentMethod", null, "Name", null), WidthType.span12, true, null, DropdownListStyle.DropdownListStyleDefault)
+                        @Html.CustomTextAreaFor(model => model.Note, Wording.Note, WidthType.span12, true, null, "hide", "full-w")
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    using (Html.BeginButtonContainer(pageSetting))
+    {
+        <button class="btn btn-mini btn-primary" type="submit" name="Submit" value="Save">
+            <i class="ace-icon fa fa-save"></i>
+            @Wording.Save
+        </button>
+    }
+}
+
+@section Scripts {
+
+    @Html.ScriptBottom_ValidationMvc()
+    @Html.ScriptBottom_ChosenStyle()
+
+    @*<link href="/Scripts/RadCombobox_v1/RadComboBoxLite.css" rel="stylesheet" />
+    <script src="/Scripts/RadCombobox_v1/rabCombobox.js"></script>*@
+
+    <script type="text/javascript">
+        var $tr_template = $('#detailList tr:first-child');
+
+        var city = $('#ShipCityId');
+        var districts = $('#ShipDistrictId'); // cache it
+        var ward = $('#ShipWardId');
+
+        //tạo biến để lấy các chương trình khuyến mãi hiện tại theo ngày
+        var promotion = {};
+
+        $(document).ready(function () {
+            //Load thông tin cho trang Edit
+            if ($("#CustomerId").val() != '') {
+                loadContact($("#CustomerId").val());
+              
+            }
+
+            $("#product_barcode").focus();
+            calcTotalAmount();
+
+            //$.getJSON('/Promotion/GetCurrentPromotion', function (res) {
+            //    promotion = res;
+            //});
+
+            //init rcb chọn sản phẩm
+            //$('#productSelectList').radComboBox({
+            //    colTitle: 'ID, Hình, Tên sản phẩm',
+            //    colValue: 1,
+            //    colImage: 2,
+            //    colHide: '1',
+            //    colSize: '0px,50px,',
+            //    colClass: ',,',
+            //    //width: 600,
+            //    height: 500,
+            //    boxSearch: true,
+            //    colSearch: 2
+            //});
+
+            $('#TotalAmount').numberFormat();
+            $('#InputDiscount').numberOnly();
+
+            $('.detail_item_qty').numberOnly();
+            $('.detail_item_price').numberFormat();
+            $('.detail_item_discount').numberOnly();
+
+            $('#InputDiscount').keypress(function (e) {
+                if (e.which == 13) {
+                    e.preventDefault();
+                    if ($(this).val() != '') {
+                        $(".detail_item_discount").val($(this).val()).trigger("change");
+                    }
+                }
+            });
+
+            $('#InputDiscount').change(function () {
+                if ($(this).val() != '') {
+                    $(".detail_item_discount").val($(this).val()).trigger("change");
+                }
+            });
+
+            $('#InputDiscount').focus(function () {
+                $(this).select();
+            });
+
+            //// lấy địa chỉ theo khách hàng
+            $('#CustomerId').change(function (e) {
+                loadContact($(this).val());
+                //console.log(optionSelect);
+                e.preventDefault();
+                ShowLoading();
+                AppendSearchProduct($(this).val());
+                return false;
+            });
+
+            $('#ContactId').change(function () {
+                var $this = $(this);
+                var $option = $this.find('option:selected');
+
+                if ($option.val() != '') {
+
+                    $('#ShipName').val($option.text());
+                    $('#Phone').val($option.data('phone'));
+                    if ($option.data('address') != '/null/') {
+                        $('#ShipAddress').val($option.data('address').toString().replace(/\//g, ''));
+                    }
+                    else {
+                        $('#ShipAddress').val('');
+                    }
+                    city.val($option.data('city'));
+                    city.trigger("chosen:updated");
+                    city.trigger('change');
+
+                    setTimeout(function () { });
+
+                } else {
+                    $('#ShipName, #Phone, #ShipAddress, #ShipCityId').val('').trigger('change');
+                    city.trigger("chosen:updated");
+                }
+            });
+
+       
+
+            // tính thành tiền và tổng cộng
+            $('#listOrderDetail').on('change', '.detail_item_qty', function () {
+                if ($(this).val() > $(this).data("quantity-inventory")) {
+                    $(this).val($(this).data("quantity-inventory"));
+                }
+
+                var $this = $(this);
+                var id = $this.closest('tr').data('id');
+                //tính tổng cộng
+                calcAmountItem(id);
+                calcTotalAmount();
+            });
+
+            $('#listOrderDetail').on('change', '.detail_item_price', function () {
+                var $this = $(this);
+                var id = $this.closest('tr').data('id');
+                calcAmountItem(id);
+                calcTotalAmount();
+            });
+
+            $('#listOrderDetail').on('change', '.detail_item_discount', function () {
+                var $this = $(this);
+                var id = $this.closest('tr').data('id');
+                //tính tổng cộng
+                calcAmountItem(id);
+                calcTotalAmount();
+            });
+
+            $('#listOrderDetail').on('focus', '.detail_item_discount', function () {
+                $(this).select();
+            });
+            $('#listOrderDetail').on('focus', '.detail_item_price', function () {
+                $(this).select();
+            });
+
+            $('#listOrderDetail').on('focus', '.detail_item_qty', function () {
+                $(this).select();
+            });
+
+            $('#listOrderDetail').on('keypress', '.detail_item_discount', function (e) {
+                if (e.which == 13) {
+                    e.preventDefault();
+                    $("#product_barcode").focus();
+                }
+            });
+
+            $('#listOrderDetail').on('keypress', '.detail_item_price', function (e) {
+                if (e.which == 13) {
+                    e.preventDefault();
+                    $(this).parent().next().find("input:first").focus().select();
+                }
+            });
+
+            $('#listOrderDetail').on('keypress', '.detail_item_qty', function (e) {
+                if (e.which == 13) {
+                    e.preventDefault();
+                    $(this).parent().next().find("input:first").focus().select();
+                }
+            });
+
+         
+            // xóa sản phẩm
+            $('#listOrderDetail').on('click', '.btn-delete-item', function () {
+                //$(this).closest('tr').next('tr.template_location').remove();
+                $(this).closest('tr').remove();
+
+                var countItem = $('.detailList tr').length;
+                $('#ProductItemCount').val(countItem);
+
+                if (countItem == 0) {
+                    $('#ProductItemCount').val('');
+                    $('#TongSoLuong').text('');
+                    $('#TongThanhTien').text('');
+                }
+                calcTotalAmount();
+
+                $('.detailList tr').each(function (index, tr) {
+                    $(tr).attr('role', index).attr("id", "product_item_" + index).data("id", index);
+                    $(tr).find('td:first-child').text(index + 1);
+
+                    $(tr).find('.detail_item_id input').attr('name', 'DetailList[' + index + '].ProductId').attr('id', 'DetailList_' + index + '__ProductId');
+                    $(tr).find('.detail_item_qty').attr('name', 'DetailList[' + index + '].Quantity').attr('id', 'DetailList_' + index + '__Quantity');
+                    $(tr).find('.detail_item_price').last().attr('name', 'DetailList[' + index + '].Price').attr('id', 'DetailList_' + index + '__Price');
+                    $(tr).find('.detail_item_price').first().attr('id', 'mask-DetailList_' + index + '__Price');
+                    $(tr).find('.detail_item_discount').attr('name', 'DetailList[' + index + '].DisCount').attr('id', 'DetailList_' + index + '__DisCount');
+                    $(tr).find('.detail_item_discount_amount').attr('name', 'DetailList[' + index + '].DisCountAmount1').attr('id', 'DetailList_' + index + '__DisCountAmount1');
+                });
+            });
+
+            //tính giảm giá, thuế
+            $('#TaxFee, #Discount').change(function () {
+                calcTotalAmount();
+            });
+
+        }); // end document ready
+
+        function loadContact(customerId) {
+            $('#ContactId').html('');
+            $.getJSON('/Contact/GetContactListByCustomerId', { customerId: customerId }, function (res) {
+                for (var i in res) {
+                    var option = '<option value="' + res[i].Id + '" data-city="' + res[i].CityId + '" data-district="' + res[i].DistrictId + '" data-ward="' + res[i].WardId + '" data-address="/' + res[i].Address + '/" data-phone="' + res[i].Phone + '">' + res[i].LastName + ' ' + res[i].FirstName + '</option>';
+                    $('#ContactId').append($(option));
+                }
+
+                if (res.length == 0)
+                    $('#ContactId').html('<option value="">KH này không có liên hệ</option>');
+
+                $('#ContactId').trigger("chosen:updated");
+                $('#ContactId').trigger('change');
+            });
+
+            $.getJSON('/CustomerDiscount/GetDiscountLast', {
+                customerId: customerId
+            }, function (res) {
+                //console.log(res);
+                var percent = res.ValuePercent == null ? 0 : parseInt(res.ValuePercent);
+
+                $('#Discount').val(percent).trigger('change');
+                $('#CustomerDiscountId').val(res.Id);
+            });
+        }
+
+        function searchProductByBarCodeContain(barcode) {
+            barcode = barcode.toLowerCase();
+            //var $productSelect = $('.detail_item_id').first();
+
+            var $optionList = $("#productSelectList").find('option');
+
+            var arrResulft = [];
+            for (var i = 0; i < $optionList.length; i++) {
+                var data_code = $($optionList[i]).data('code') != undefined ? $($optionList[i]).data('code').toString().toLowerCase() : undefined;
+                if (barcode.indexOf(data_code) != -1)
+                    arrResulft.push($($optionList[i]).attr('value'));
+
+                if (arrResulft.length == 1) {
+                    return arrResulft[0];
+                }
+            }
+
+            return arrResulft[0];
+        };
+
+        function calcAmountItem(id) {
+            var input_price = $('#DetailList_' + id + '__Price');
+            var price = input_price.val() != '' ? input_price.val() : 0;
+
+            //Số lượng
+            var input_qty = $('tr#product_item_' + id).find('.detail_item_qty');
+            var qty = 1;
+            if (input_qty.val() == '') {
+                input_qty.val(1);
+            } else {
+                qty = parseInt(input_qty.val()) < 0 ? parseInt(input_qty.val()) * -1 : parseInt(input_qty.val());
+            }
+
+            //Chiết khấu
+            var input_discount = $('tr#product_item_' + id).find('.detail_item_discount');
+            var discount = 0;
+            if (input_discount.val() == '') {
+                input_discount.val(0);
+            } else {
+                discount = parseInt(input_discount.val());
+            }
+
+            //Thành tiền
+            var total = price * qty;
+            var discountAmount = discount * total / 100;
+            var totalAmount = total - discountAmount;
+
+            //console.log(price, qty);
+
+            $('tr#product_item_' + id).find('.detail_item_discount_amount').val(currencyFormat(discountAmount));
+            $('tr#product_item_' + id).find('.detail_item_total').text(currencyFormat(totalAmount));
+        };
+
+        function calcTotalAmount() {
+            var total = 0;
+            var total1 = 0;
+
+            var selector = '.detailList tr';
+            $(selector).each(function (index, elem) {
+                if ($(elem).find('.detail_item_total').text() != '') { // la số thì mới tính
+                    total += parseInt($(elem).find('.detail_item_total').text().replace(/\./g, ''));
+                    $("#TongThanhTien").text(currencyFormat(total));
+                }
+
+                if ($(elem).find('.detail_item_qty').val() != '') { // la số thì mới tính
+                    total1 += parseInt($(elem).find('.detail_item_qty').val().replace(/\./g, ''));
+                    $("#TongSoLuong").text(currencyFormat(total1));
+                }
+
+                if (index == $(selector).length - 1) {
+                    $('#mask-TotalAmount').val(currencyFormat(total));
+                    $('#TotalAmount').val(total);
+                }
+            });
+        };
+
+        //function findPromotion($detail_item_id) {
+        //    var categoryCode = $detail_item_id.closest('tr').find('.detail_item_category_type').val();
+        //    var productId = $detail_item_id.val();
+        //    var quantity = $detail_item_id.closest('tr').find('.detail_item_qty').val();
+        //    quantity = parseInt(quantity);
+
+        //    //1: ưu tiên cho sản phẩm
+        //    var promotion_product = promotion.productList.filter(function (obj) {
+        //        return obj.ProductId == productId && obj.QuantityFor >= quantity;
+        //    });
+
+        //    //promotion_product = promotion_product.sort(function (a, b) {
+        //    //    if (a.PercentValue > b.PercentValue && (a.QuantityFor > b.QuantityFor || a.QuantityFor == b.QuantityFor)) {
+        //    //        return 1;
+        //    //    } else {
+        //    //        if (a.PercentValue == b.PercentValue && (a.QuantityFor > b.QuantityFor || a.QuantityFor == b.QuantityFor)) {
+        //    //            return 0;
+        //    //        }
+        //    //        else
+        //    //            return -1;
+        //    //    }
+        //    //});
+        //    console.log('promotion_product', promotion_product);
+        //    if (promotion_product.length > 0) {
+        //        $detail_item_id.closest('tr').find('.detail_item_promotion .display-value').text(promotion_product[0].PercentValue + '%');
+        //        $detail_item_id.closest('tr').find('.detail_item_promotion_id').val(promotion_product[0].PromotionId);
+        //        $detail_item_id.closest('tr').find('.detail_item_promotion_detail_id').val(promotion_product[0].Id);
+        //        $detail_item_id.closest('tr').find('.detail_item_promotion_value').val(promotion_product[0].PercentValue);
+
+        //        var promotionItem = promotion.promotionList.find(function (obj) {
+        //            return obj.Id == promotion_product_category.PromotionId;
+        //        });
+        //        $detail_item_id.closest('tr').find('.detail_item_promotion .display-value').attr('title', promotionItem != undefined ? promotionItem.Name : "");
+
+        //        return;
+        //    }
+
+        //    //2: xét đến danh mục: tất cả sản phẩm (hàm find chỉ trả về phần tử đầu tiên tìm đc)
+        //    var promotion_product_category = promotion.productCategoryList.find(function (obj) {
+        //        return obj.ProductCategoryCode == categoryCode;
+        //    });
+        //    console.log('promotion_product_category', promotion_product_category);
+        //    if (promotion_product_category != undefined) {
+        //        $detail_item_id.closest('tr').find('.detail_item_promotion .display-value').text(promotion_product_category.PercentValue + '%');
+        //        $detail_item_id.closest('tr').find('.detail_item_promotion_id').val(promotion_product_category.PromotionId);
+        //        $detail_item_id.closest('tr').find('.detail_item_promotion_detail_id').val(promotion_product_category.Id);
+        //        $detail_item_id.closest('tr').find('.detail_item_promotion_value').val(promotion_product_category.PercentValue);
+
+        //        var promotionItem = promotion.promotionList.find(function (obj) {
+        //            return obj.Id == promotion_product_category.PromotionId;
+        //        });
+        //        $detail_item_id.closest('tr').find('.detail_item_promotion .display-value').attr('title', promotionItem != undefined ? promotionItem.Name : "");
+
+        //        return;
+        //    }
+
+        //    //3: xét đến cho tất cả sản phẩm
+        //    var promotion_all = promotion.promotionList.find(function (obj) {
+        //        return obj.IsAllProduct == true;
+        //    });
+
+        //    console.log('promotion_all', promotion_all);
+        //    if (promotion_all != undefined) {
+        //        $detail_item_id.closest('tr').find('.detail_item_promotion .display-value').text(promotion_all.PercentValue + '%');
+        //        $detail_item_id.closest('tr').find('.detail_item_promotion .display-value').attr('title', promotion_all.Name);
+
+        //        $detail_item_id.closest('tr').find('.detail_item_promotion_id').val(promotion_all.Id);
+        //        $detail_item_id.closest('tr').find('.detail_item_promotion_value').val(promotion_all.PercentValue);
+        //        return;
+        //    }
+
+        //    //nếu không có thì mặc định là 0
+        //    $detail_item_id.closest('tr').find('.detail_item_promotion .display-value').text('0%');
+        //    return;
+        //};
+
+        function checkChosenProductOnTable() {
+            var flag = true;
+            $('#detailList select.detail_item_id').each(function (index, elem) {
+                if ($(elem).val() == '') {
+                    var message = $(elem).data('val-required') != undefined ? $(elem).data('val-required') : 'Chưa chọn sản phẩm!';
+                    $(elem).next('span').text(message);
+                    flag = false;
+                }
+            });
+            return flag;
+        };
+        function AppendSearchProduct(CustomerId) {
+            ShowLoading();
+            $.get('/SalesReturns/SearchProductInvoice/?CustomerId=' + CustomerId, function (html) {
+                $("#Search_Product").html(html);
+                HideLoading();
+            });
+
+        };
+        //hàm gọi lại từ form tạo mới khách hàng
+        function ClosePopupAndDoSomethings(optionSelect) {
+            ClosePopup(false);
+           
+            $("#CustomerId").val($(optionSelect).val()).triggerHandler('change');
+            $("#CustomerId_DisplayText").val($(optionSelect).text()).triggerHandler('change');
+            var url = '/api/BackOfficeServiceAPI/FetchLocation';
+          
+        }
+
+        // cập nhật quận theo tp, và phường theo quận
+        $(function () {
+            var url = '/api/BackOfficeServiceAPI/FetchLocation';
+
+            city.change(function () {
+                var id = $(this).val(); // Use $(this) so you don't traverse the DOM again
+                $.getJSON(url, { parentId: id }, function (response) {
+                    districts.empty(); // remove any existing options
+                    ward.empty();
+                    $(document.createElement('option'))
+                            .attr('value', '')
+                            .text('- Rỗng -')
+                            .appendTo(ward);
+                    $(response).each(function () {
+                        $(document.createElement('option'))
+                            .attr('value', this.Id)
+                            .text(capitalizeFirstAllWords(this.Name.toLowerCase().replace('huyện', '').replace('quận', '')))
+                            .appendTo(districts);
+                    });
+                    var $option = $('#ContactId').find('option:selected');
+                    districts.val($option.data('district'));
+                    districts.trigger("chosen:updated");
+                    districts.trigger('change');
+                });
+            });
+
+            districts.change(function () {
+                var id = $(this).val(); // Use $(this) so you don't traverse the DOM again
+                $.getJSON(url, { parentId: id }, function (response) {
+                    ward.empty(); // remove any existing options
+                    $(response).each(function () {
+                        $(document.createElement('option'))
+                            .attr('value', this.Id)
+                            .text(capitalizeFirstAllWords(this.Name.toLowerCase()))
+                            .appendTo(ward);
+                    });
+                    var $option = $('#ContactId').find('option:selected');
+                    ward.val($option.data('ward'));
+                    ward.trigger("chosen:updated");
+                });
+            });
+
+        
+        });
+
+
+</script>
+
+}

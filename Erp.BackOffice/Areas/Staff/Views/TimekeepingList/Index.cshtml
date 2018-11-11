@@ -1,0 +1,269 @@
+﻿@model IEnumerable<TimekeepingListViewModel>
+
+@using Erp.BackOffice.App_GlobalResources
+@using Erp.BackOffice.Staff.Models
+@using Erp.BackOffice.Helpers
+@using GridMvc.Html
+
+@{
+    ViewBag.Title = Wording.PageIndex_TimekeepingList;
+    bool isPopup = Request["IsPopup"] != null && Request["IsPopup"].ToString().ToLower() == "true" ? true : false;
+    if (isPopup)
+    {
+        Layout = "~/Views/Shared/_PopupLayout.cshtml";
+    }
+    else
+    {
+        Layout = "~/Views/Shared/ACE_AdminLayout.cshtml";
+    }
+
+    Erp.BackOffice.Models.PageSetting pageSetting = new Erp.BackOffice.Models.PageSetting
+    {
+        ModuleName = "TimekeepingList",
+        ActionName = "Index",
+        PageTitle = ViewBag.Title,
+        DisplaySearchPanel = true,
+        IsPopup = false,
+        DisplayBackButton = false
+    };
+    string Month = Request["month"] != null ? Request["month"] : DateTime.Now.Month.ToString();
+    string Year = Request["year"] != null ? Request["year"] : DateTime.Now.Year.ToString();
+    string branch = (string.IsNullOrEmpty(Request["branchId"]) == false ? Request["branchId"] : "0");
+}
+
+<link href="@Url.Content("~/assets/css/Gridmvc.css")" rel="stylesheet" type="text/css" />
+<script src="@Url.Content("~/Scripts/gridmvc.min.js")" type="text/javascript"> </script>
+
+@helper GridColumnCommand(int id, string status)
+{
+    <p>
+        @if (Erp.BackOffice.Filters.SecurityFilter.AccessRight("Delete", "TimekeepingList", "Staff"))
+        {
+        <button name="Delete" value="Delete" type="submit" class="btn btn-mini btn-danger">
+            <i class="ace-icon fa fa-trash bigger-120"></i>
+        </button>
+        }
+        @if (status == "pending")
+        { 
+            if (Erp.BackOffice.Filters.SecurityFilter.AccessRight("Edit", "TimekeepingList", "Staff"))
+            {
+        <a class="btn btn-mini btn-success" href="@Url.Action("Edit", "TimekeepingList", new { Id = id })">
+            <i class="ace-icon fa fa-edit"></i>
+        </a>
+        }
+        }
+    </p>
+}
+<style>
+    .label-black.arrowed-in-right:after {
+        border-color: #666 transparent #666 #666;
+    }
+
+    .label-black.arrowed-in:before {
+        border-color: #666 #666 #666 transparent;
+    }
+</style>
+
+
+
+@helper GridColumnName(string name, int id, bool isPopup)
+{
+    if (isPopup)
+    {
+        <a onclick="parent.selectBranchItem(@id)">@name</a>
+    }
+    else
+    {
+        name = string.IsNullOrEmpty(name) ? "No Title" : name;
+        <a href="@Url.Action("Detail", "TimekeepingList" , new { Id= id })">@name</a>
+    }
+}
+
+@helper GridColumnCategoryValue(string value, string code)
+{
+    var attr = Common.GetCategoryByValueCodeOrId("value", value, code);
+    <span>@(attr != null ? attr.Name : "")</span>
+}
+
+@helper CheckDeleteColumns(int Id)
+{
+    <label>
+        <input class="ace class-delete-all" type="checkbox" name="DeleteId-checkbox" value="@Id">
+        <span class="lbl"></span>
+    </label>
+}
+
+@helper BuildCheckAll()
+{
+    <label>
+        <input class="ace" type="checkbox" name="checkAll" id="checkAll" />
+        <span class="lbl"></span>
+    </label>
+}
+
+@using (Html.BeginPageHeaderContainer(pageSetting))
+{
+    <p>
+        @Html.TextBox("Code", Request["Code"], new { @class = "", autocomplete = "off", placeholder = "Mã quyết định chấm công" })
+        <select name="month">
+            <option value="">- Chọn tháng -</option>
+            @for (int i = 1; i <= 12; i++)
+            {
+                <option @(Month == i.ToString() ? "Selected" : "") value="@i">Tháng @i</option>
+            }
+        </select>
+
+        <span class="field-validation-valid help-inline" data-valmsg-for="month" data-valmsg-replace="true"></span>
+        <select name="year">
+            <option value="">- Chọn năm -</option>
+            @for (int i = 2016; i <= DateTime.Now.Year; i++)
+            {
+                <option @(Year == i.ToString() ? "Selected" : "") value="@i">Năm @i</option>
+            }
+        </select>
+        <span class="field-validation-valid help-inline" data-valmsg-for="year" data-valmsg-replace="true"></span>
+        @Html.DropDownList("branchId", SelectListHelper.GetSelectList_Branch(Request["branchId"], "- Chi nhánh -"), new Dictionary<string, object> { { "class", "" }, { "data-val-required", "Bắt buộc chọn." } })
+        @Html.DropDownList("DepartmentId", SelectListHelper.GetSelectList_BranchDepartment(Request["DepartmentId"], Int32.Parse(branch), Wording.Department), new Dictionary<string, object> { { "class", "" }, { "data-val-required", "Bắt buộc chọn." } })
+        @Html.DropDownList("status", SelectListHelper.GetSelectList_Category("TimekeepingList_Status", Request["status"], "Value", null), "- Trạng thái -", new Dictionary<string, object> { { "class", "" }, { "data-val-required", "Bắt buộc chọn." } })
+        @Html.DropDownList("CategoryShifts", SelectListHelper.GetSelectList_Category("categoryShifts", Request["CategoryShifts"], "Value", null), "- Loại ca làm việc -", new Dictionary<string, object> { { "class", "" }, { "data-val-required", "Bắt buộc chọn." } })
+    </p>
+}
+@helper GridColumnStatus(string Status, string code)
+{
+    switch (Status)
+    {
+        case "assign":
+            <label class="label label-primary">@GridColumnCategoryValue(Status, code)</label>
+            break;
+        case "timekeeping":
+        <label class="label label-warning">@GridColumnCategoryValue(Status, code)</label>
+            break;
+        case "success":
+        <label class="label label-success">@GridColumnCategoryValue(Status, code)</label>
+            break;
+    }
+}
+@if (ViewBag.SuccessMessage != null && ViewBag.SuccessMessage != "")
+{
+    <div class="alert alert-block alert-success">
+        <button class="close" data-dismiss="alert" type="button">
+            <i class="ace-icon fa fa-times"></i>
+        </button>
+        <i class="ace-icon fa fa-check green"></i>
+        @ViewBag.SuccessMessage
+    </div>
+}
+
+@if (ViewBag.FailedMessage != null && ViewBag.FailedMessage != "")
+{
+    <div class="alert alert-block alert-danger">
+        <button class="close" data-dismiss="alert" type="button">
+            <i class="ace-icon fa fa-times"></i>
+        </button>
+        <i class="ace-icon fa fa-warning red"></i>
+        @ViewBag.FailedMessage
+    </div>
+}
+
+@if (!isPopup)
+{
+    using (Html.BeginForm("Delete", pageSetting.ModuleName, FormMethod.Post))
+    {
+        @Html.Grid(Model).Columns(columns =>
+   {
+       int index = 0;
+       columns.Add().Titled(BuildCheckAll().ToHtmlString()).SetWidth(20).Sanitized(false).Encoded(false).RenderValueAs(n => CheckDeleteColumns(n.Id));
+       columns.Add().Titled(Wording.OrderNo).SetWidth(30).RenderValueAs(n => (++index).ToString());
+       columns.Add().Titled(Wording.Status).Sortable(false).Sanitized(false).Encoded(false).RenderValueAs(u => GridColumnStatus(u.Status, "TimekeepingList_Status"));
+       columns.Add().Titled(Wording.Code).Sortable(false).Sanitized(false).Encoded(false).RenderValueAs(u => GridColumnName(u.Code, u.Id, isPopup));
+       columns.Add(u => u.Name).Titled(Wording.Name);
+       columns.Add().Titled(Wording.CategoryShifts).Sortable(false).Sanitized(false).Encoded(false).RenderValueAs(u => Common.GetCategoryByValueCodeOrId("value", u.CategoryShifts, "categoryShifts").Name);
+       //columns.Add(u => u.DepartmentName).Titled(Wording.Department);
+       //columns.Add(u => u.BranchName).Titled(Wording.BranchName);
+       //columns.Add(u => u.CreatedUserId).Titled(Wording.CreatedUserId).SetWidth(100).RenderValueAs(u => u.CreatedUserName);
+       columns.Add(u => u.CreatedDate).Titled(Wording.CreatedDate);
+       //columns.Add(u => u.ModifiedUserId).Titled(Html.DisplayNameFor(u => u.FirstOrDefault().ModifiedUserId).ToString()).SetWidth(100).RenderValueAs(u => u.ModifiedUserName);
+       columns.Add(u => u.ModifiedDate).Titled(Wording.ModifiedDate).Sortable(true);
+       columns.Add(u => u.Id).Titled(Wording.Action).Sanitized(false).Encoded(false).RenderValueAs(u => GridColumnCommand(u.Id, u.Status)).SetWidth(20);
+   }).WithPaging(20)
+
+        using (Html.BeginButtonContainer(pageSetting))
+        {
+                      if (Erp.BackOffice.Filters.SecurityFilter.AccessRight("Create", "TimekeepingList", "Staff"))
+                      {
+            @*@Html.Button(Wording.CreateNew, ButtonType.aTag, ButtonColor.Info, ButtonSize.Mini, true, IconType.Plus, IconSize.Default, false, new { @onclick = "OpenPopup('" + Url.Action("Create", pageSetting.ModuleName, new { area = "Staff", IsPopup = "true" }) + "', '" + Wording.PageCreate_TimekeepingList + "', 500, 500)" })*@
+            <a class="btn btn-info btn-mini" href="@Url.Action("Create", pageSetting.ModuleName)">
+                <i class="ace-icon fa fa-plus"></i>
+                @Wording.CreateNew
+            </a>
+            @*<button name="DeleteAll" value="DeleteAll" type="submit" class="btn btn-mini btn-danger" onclick="return CheckIsval();">
+                <i class="ace-icon fa fa-trash bigger-120"></i>
+                @Wording.Delete
+            </button>*@
+             }
+        }
+    }
+}
+else
+{
+    @Html.Grid(Model).Columns(columns =>
+    {
+        //columns.Add().Titled(BuildCheckAll().ToHtmlString()).SetWidth(20).Sanitized(false).Encoded(false).RenderValueAs(n => CheckDeleteColumns(n.Id));
+        columns.Add().Titled(Html.DisplayNameFor(u => u.FirstOrDefault().Code).ToString()).Sortable(false).Sanitized(false).Encoded(false).RenderValueAs(u => GridColumnName(u.Code, u.Id, isPopup));
+    }).WithPaging(10)
+}
+
+@section Scripts {
+    <script type="text/javascript">
+        function CheckIsval() {
+            if ($('[name="DeleteId-checkbox"]').is(':checked') == false) {
+                alert("Phải chọn ít nhất 1 item.");
+                return false;
+            }
+            else {
+                if (confirm('Bạn có chắc muốn xóa các item đã chọn ?')) {
+                    return true;
+                }
+                else {
+                    return false;
+                }
+            }
+        }
+
+        $('[name="Delete"]').click(function () {
+            if (confirm('Bạn có chắc muốn xóa item ?')) {
+                $(this).closest('tr').children('td').each(function (i, e) {
+                    $(this).find("input.class-delete-all").prop("checked", true);
+                    return true;
+                })
+            }
+            else {
+                return false;
+            }
+
+        })
+        //Fetch Department
+        var urDepartmentl = '/api/BackOfficeServiceAPI/FetchBranchDepartment';
+        var department = $('[name="DepartmentId"]'); // cache it
+
+        $('[name="branchId"]').change(function () {
+            ShowLoading();
+            department.empty(); // remove any existing options
+            $(document.createElement('option'))
+                        .attr('value', '')
+                        .text('- Rỗng -')
+                        .appendTo(department).trigger('chosen:updated');
+            var id = $(this).val(); // Use $(this) so you don't traverse the DOM again
+            $.getJSON(urDepartmentl, { BranchId: id }, function (response) {
+                department.empty(); // remove any existing options
+                $(response).each(function () {
+                    $(document.createElement('option'))
+                        .attr('value', this.Id)
+                        .text(this.Staff_DepartmentId)
+                        .appendTo(department).trigger('chosen:updated');
+                    HideLoading();
+                });
+            });
+        });
+    </script>
+}

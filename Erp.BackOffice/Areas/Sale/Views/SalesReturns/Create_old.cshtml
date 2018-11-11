@@ -1,0 +1,292 @@
+﻿@using Erp.BackOffice.App_GlobalResources
+@using Erp.BackOffice.Helpers
+@using Erp.BackOffice.Sale.Models
+
+@model SalesReturnsViewModel
+
+@{
+    ViewBag.Title = Wording.PageCreate_SalesReturns;
+
+    Layout = "~/Views/Shared/" + (Request["IsPopup"] == null ? "ACE_AdminLayout.cshtml" : "_PopupLayout.cshtml");
+    Erp.BackOffice.Models.PageSetting pageSetting = new Erp.BackOffice.Models.PageSetting
+    {
+        ModuleName = "SalesReturns",
+        ActionName = "Create",
+        PageTitle = ViewBag.Title,
+        DisplaySearchPanel = false,
+        IsPopup = false,
+        DisplayBackButton = true
+    };
+
+    IEnumerable<SelectListItem> warehouseList = (IEnumerable<SelectListItem>)ViewBag.warehouseList;
+}
+
+@section HeadOfPage {
+    @Html.ScriptTop_ChosenStyle()
+}
+<style type="text/css">
+    .has-error .field-validation-error, .has-error .field-validation-valid {
+        color: #de2a2a;
+    }
+</style>
+@using (Html.BeginPageHeaderContainer(pageSetting))
+{
+
+}
+@using (Html.BeginForm_AceStyle((string)ViewBag.Title, "Create", "SalesReturns", null, FormMethod.Post, new { id = "SalesReturns", @class = "form-horizontal clearfix" }))
+{
+    @Html.ValidationSummary(true)
+    @Html.HiddenFor(m => m.ProductInvoiceId)
+    @Html.HiddenFor(m => m.CustomerId)
+    @Html.HiddenFor(m => m.SalerId)
+    @Html.HiddenFor(m => m.BranchId)
+
+    <input type="hidden" value="@Request["IsPopup"]" name="IsPopup" />
+
+    <div class="row">
+        <div class="col-sm-7">
+            <div class="area-detail"></div>
+            <div id="listOrderDetail" class="table-responsive top-10">
+                <table class="table table-bordered bottom-5">
+                    <thead>
+                        <tr>
+                            <th class="detail-th-orderno">STT</th>
+                            <th class="detail-th-product-name">Tên sản phẩm</th>
+                            <th class="detail-th-quantity">Số lượng</th>
+                            <th class="detail-th-price">Đơn giá</th>
+                            <th class="detail-th-discount">% CK</th>
+                            <th class="detail-th-total">Thành tiền</th>
+                            <th class="detail-th-action">Khuyến mãi</th>
+                            <th class="detail-th-action"></th>
+                        </tr>
+                    </thead>
+                    <tbody class="detailList">
+                        @if (Model.DetailList.Count > 0)
+                        {
+                            int n = -1;
+                            foreach (var item in Model.DetailList)
+                            {
+                                n++;
+                                var thanh_tien = item.Quantity * item.Price;
+                                var thanh_tien_sau_ck = thanh_tien - item.DisCountAmount;
+                                item.OrderNo = n;
+
+                                <tr id="product_item_@item.OrderNo" data-id="@item.OrderNo">
+                                    <td class="text-center">
+                                        @(item.OrderNo + 1)
+                                    </td>
+                                    <td class="detail_item_id">
+                                        @Html.Hidden("DetailList[" + item.OrderNo + "].ProductId", item.ProductId)
+                                        @item.ProductCode - @item.ProductName
+                                    </td>
+                                    <td>
+                                        @Html.TextBox("DetailList[" + item.OrderNo + "].Quantity", item.Quantity, new { style = "width:50px", @class = "detail_item_qty", autocomplete = "off", data_max_quantity = item.Quantity })
+                                    </td>
+                                    <td>
+                                        @Html.TextBox("DetailList[" + item.OrderNo + "].Price", item.Price, new { style = "width:85px", @class = "detail_item_price", autocomplete = "off", @readonly = "readonly" })
+
+                                    </td>
+                                    <td>
+                                        @Html.TextBox("DetailList[" + item.OrderNo + "].DisCount", item.DisCount, new { style = "width:85px", @class = "detail_item_discount", autocomplete = "off", @readonly = "readonly" })
+                                        @Html.TextBox("DetailList[" + item.OrderNo + "].DisCountAmount", item.DisCountAmount, new { style = "width:85px;", @class = "detail_item_discount_amount", autocomplete = "off", @readonly = "readonly" })
+                                    </td>
+                                    <td class="detail_item_total">@Erp.BackOffice.Helpers.Common.PhanCachHangNgan(thanh_tien_sau_ck)</td>
+                                    <td class="text-center">
+                                        <label class="block">
+                                            <input disabled class="detail_item_check ace" type="checkbox" name="DetailList[@item.OrderNo].CheckPromotion" id="DetailList_@(item.OrderNo)__CheckPromotion" value="@item.CheckPromotion" data-orginal-price="@item.Price" readonly="readonly" />
+                                            <span class="lbl">
+                                            </span>
+                                        </label>
+                                    </td>
+                                    <td class="text-center">
+                                        <a class="btn-delete-item">
+                                            <i class="ace-icon fa fa-trash red bigger-120" style="cursor:pointer"></i>
+                                        </a>
+                                    </td>
+                                </tr>
+                            }
+                        }
+                    </tbody>
+                    <tfoot>
+                        <tr>
+                            <td>
+                                <input style="width:30px;" autocomplete="off" data-val="true" data-val-required="Vui lòng chọn sản phẩm!" id="ProductItemCount" name="ProductItemCount" type="text" value="@(Model.DetailList != null && Model.DetailList.Count > 0 ? Model.DetailList.Count.ToString() : "")" readonly="readonly" />
+                            </td>
+                            <td></td>
+                            <td id="TongSoLuong" align="right" style="font-weight:bold"></td>
+                            <td colspan="2"></td>
+                            <td id="TongThanhTien" align="right" style="font-weight:bold"></td>
+                            <td></td>
+                            <td></td>
+                        </tr>
+                    </tfoot>
+                </table>
+                <span style="color:red" class="field-validation-valid help-inline" data-valmsg-for="ProductItemCount" data-valmsg-replace="true"></span>
+            </div>
+        </div>
+        <div class="col-sm-5">
+            <div class="tabbable">
+                <ul class="nav nav-tabs padding-12 tab-color-blue background-blue" id="tabCustomer">
+                    <li class="active">
+                        <a data-toggle="tab" href="#tab1">Thông tin chi tiết</a>
+                    </li>
+                </ul>
+
+                <div class="tab-content">
+                    <div id="tab1" class="tab-pane in active">
+                        @Html.CustomDropDownListFor(model => model.WarehouseDestinationId, warehouseList, WidthType.span12, true, "- chọn -")
+                        <div class="detail-view">
+                            <div class="row control-group">
+                                @Html.DetailViewItemFor2(model => model.ProductInvoiceCode, null, null, "col-xs-4", "col-xs-8")
+                            </div>
+                            <div class="row control-group">
+                                @Html.DetailViewItemFor2(model => model.CustomerName, null, null, "col-xs-4", "col-xs-8")
+                            </div>
+                            <div class="row control-group">
+                                @Html.DetailViewItemFor2(model => model.SalerFullName, null, null, "col-xs-4", "col-xs-8")
+                            </div>
+                        </div>
+                        @Html.CustomTextboxFor(model => model.TotalAmount, null, null, WidthType.span12, true, new Dictionary<string, object> { { "class", "col-sm-12" }, { "readonly", "readonly" } })
+                        @Html.CustomDropDownListFor(model => model.PaymentMethod, SelectListHelper.GetSelectList_Category("SalesReturns_PaymentMethod", null, "Name", null), WidthType.span12, true, null, DropdownListStyle.DropdownListStyleDefault)
+                        @Html.CustomTextAreaFor(model => model.Note, "Ghi chú", WidthType.span12, false, null, "hide", "full-w")
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    using (Html.BeginButtonContainer(pageSetting))
+    {
+        <button class="btn btn-mini btn-primary" type="submit" name="Submit" value="Save">
+            <i class="ace-icon fa fa-save"></i>
+            @Wording.Save
+        </button>
+    }
+}
+
+@section Scripts {
+    <script type="text/javascript">
+        $(function () {
+            $('#TotalAmount').numberFormat();
+
+            $('.detail_item_qty').numberOnly();
+            $('.detail_item_price').numberFormat();
+            $('.detail_item_discount').numberOnly();
+            $('.detail_item_discount_amount').numberFormat();
+
+            //Thực hiện tính tổng
+            calcTotalAmount();
+
+            // xóa sản phẩm
+            $('#listOrderDetail').on('click', '.btn-delete-item', function () {
+                $(this).closest('tr').remove();
+
+                var countItem = $('.detailList tr').length;
+                $('#ProductItemCount').val(countItem);
+
+                if (countItem == 0) {
+                    $('#ProductItemCount').val('');
+                    $('#TongSoLuong').text('');
+                    $('#TongThanhTien').text('');
+                }
+                calcTotalAmount();
+
+                $('.detailList tr').each(function (index, tr) {
+                    $(tr).attr("id", "product_item_" + index).data("id", index);
+                    $(tr).find('td:first-child').text(index + 1);
+                    $(tr).find('.detail_item_id input').attr('name', 'DetailList[' + index + '].ProductId').attr('id', 'DetailList_' + index + '__ProductId');
+                    $(tr).find('.detail_item_qty').attr('name', 'DetailList[' + index + '].Quantity').attr('id', 'DetailList_' + index + '__Quantity');
+                    $(tr).find('.detail_item_price').filter(':not(.mask-format-currency)').attr('name', 'DetailList[' + index + '].Price').attr('id', 'DetailList_' + index + '__Price');
+                    $(tr).find('.detail_item_discount').attr('name', 'DetailList[' + index + '].DisCount').attr('id', 'DetailList_' + index + '__DisCount');
+                    $(tr).find('.detail_item_discount_amount').filter(':not(.mask-format-currency)').attr('name', 'DetailList[' + index + '].DisCountAmount').attr('id', 'DetailList_' + index + '__DisCountAmount');
+                    $(tr).find('.detail_item_discount_amount.mask-format-currency').attr('name', 'mask-DetailList[' + index + '].DisCountAmount').attr('id', 'mask-DetailList_' + index + '__DisCountAmount');
+                });
+            });
+
+            // tính thành tiền và tổng cộng
+            $('#listOrderDetail').on('change', '.detail_item_qty', function () {
+                if ($(this).val() > $(this).data("max-quantity")) {
+                    $(this).val($(this).data("max-quantity"));
+                }
+
+                var $this = $(this);
+                var id = $this.closest('tr').data('id');
+                //tính tổng cộng
+                calcAmountItem(id);
+                calcTotalAmount();
+            });
+
+            $('.detail_item_qty').focus(function () {
+                $(this).select();
+            });
+
+            $('#listOrderDetail').on('keypress', '.detail_item_qty', function (e) {
+                if (e.which == 13) {
+                    e.preventDefault();
+                }
+            });
+        });
+
+        function calcAmountItem(id) {
+            var input_price = $('#DetailList_' + id + '__Price');
+            var price = input_price.val() != '' ? input_price.val() : 0;
+
+            //Số lượng
+            var input_qty = $('tr#product_item_' + id).find('.detail_item_qty');
+            var qty = 1;
+            if (input_qty.val() == '') {
+                input_qty.val(1);
+            } else {
+                qty = parseInt(input_qty.val()) < 0 ? parseInt(input_qty.val()) * -1 : parseInt(input_qty.val());
+            }
+
+            //Chiết khấu
+            var input_discount = $('tr#product_item_' + id).find('.detail_item_discount');
+            var discount = 0;
+            if (input_discount.val() == '') {
+                input_discount.val(0);
+            } else {
+                discount = parseInt(input_discount.val());
+            }
+
+            //Thành tiền
+            var total = price * qty;
+            var discountAmount = discount * total / 100;
+            var totalAmount = total - discountAmount;
+
+            //console.log(price, qty, discount, discountAmount, totalAmount);
+
+            $('tr#product_item_' + id).find('#mask-DetailList_' + id + '__DisCountAmount').val(currencyFormat(discountAmount));
+            $('tr#product_item_' + id).find('#DetailList_' + id + '__DisCountAmount').val(discountAmount);
+            $('tr#product_item_' + id).find('.detail_item_total').text(currencyFormat(totalAmount));
+        };
+
+        function calcTotalAmount() {
+            var total = 0;
+            var total1 = 0;
+
+            var selector = '.detailList tr';
+            $(selector).each(function (index, elem) {
+                if ($(elem).find('.detail_item_total').text() != '') { // la số thì mới tính
+                    total += parseInt($(elem).find('.detail_item_total').text().replace(/\./g, ''));
+                    $("#TongThanhTien").text(currencyFormat(total));
+                }
+
+                if ($(elem).find('.detail_item_qty').val() != '') { // la số thì mới tính
+                    total1 += parseInt($(elem).find('.detail_item_qty').val().replace(/\./g, ''));
+                    $("#TongSoLuong").text(currencyFormat(total1));
+                }
+
+                if (index == $(selector).length - 1) {
+                    $('#mask-TotalAmount').val(currencyFormat(total));
+                    $('#TotalAmount').val(total);
+                }
+            });
+        };
+    </script>
+
+    @Html.ScriptBottom_ValidationMvc()
+    @Html.ScriptBottom_ChosenStyle()
+}
+

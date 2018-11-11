@@ -1,0 +1,195 @@
+﻿@using Erp.BackOffice.App_GlobalResources
+@using Erp.BackOffice.Sale.Models
+@using Erp.BackOffice.Helpers
+@model  List<spBaoCaoNhapXuatTon_TuanViewModel>
+@{
+    ViewBag.Title = "Báo cáo kho theo ngày";
+    Layout = "~/Views/Shared/ACE_AdminLayout.cshtml";
+    Erp.BackOffice.Models.PageSetting pageSetting = new Erp.BackOffice.Models.PageSetting
+    {
+        ModuleName = "SaleReport",
+        ActionName = "BaoCaoKhoTheoNgay",
+        PageTitle = ViewBag.Title,
+        DisplaySearchPanel = true,
+        IsPopup = false,
+        DisplayBackButton = false
+    };
+    List<Erp.BackOffice.Sale.Models.spBaoCaoXuatViewModel> productInvoiceDetailList = (List<Erp.BackOffice.Sale.Models.spBaoCaoXuatViewModel>)ViewBag.productInvoiceDetailList;
+    //IEnumerable<SelectListItem> branchList = (IEnumerable<SelectListItem>)ViewBag.branchList;
+    //string BranchId = Request["branch"] != null ? Request["branch"] : "0";
+    //var branchSelected = branchList.Where(x => x.Value == BranchId).FirstOrDefault();
+    //string branchName = branchSelected == null ? "Tất cả" : branchSelected.Text;
+
+    //string CustomerId = Request["customerId"] != null ? Request["customerId"] : "0";
+    //var customerSelected = SelectListHelper.GetSelectList_Customer(null, null).Where(x => x.Value == CustomerId).FirstOrDefault();
+    //string CompanyName = customerSelected == null ? "Tất cả" : customerSelected.Text;
+
+    //string SalerId = Request["salerId"] != null ? Request["salerId"] : "0";
+    //var salerSelected = SelectListHelper.GetSelectList_FullUserName(null, null).Where(x => x.Value == SalerId).FirstOrDefault();
+    //string SalerName = salerSelected == null ? "Tất cả" : salerSelected.Text;
+
+    string category = Request["category"] != null ? Request["category"] : "";
+    DateTime aDateTime = new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1);
+    // Cộng thêm 1 tháng và trừ đi một ngày.
+    DateTime retDateTime = aDateTime.AddMonths(1).AddDays(-1);
+    string group = Request["group"] != null ? Request["group"] : "";
+    string manufacturer = Request["manufacturer"] != null ? Request["manufacturer"] : "";
+    int index = 0;
+}
+
+<link href="@Url.Content("~/assets/css/Gridmvc.css")" rel="stylesheet" type="text/css" />
+<script src="@Url.Content("~/Scripts/gridmvc.min.js")" type="text/javascript"> </script>
+<style type="text/css">
+
+</style>
+
+@using (Html.BeginPageHeaderContainer(pageSetting))
+{
+    <p>
+        <span class="input-daterange input-group">
+            @Html.TextBox("StartDate", Request["StartDate"] != null ? Request["StartDate"] : aDateTime.ToString("dd/MM/yyyy"), new { autocomplete = "off", placeholder = "Từ ngày" })
+            <span class="input-group-addon">
+                <i class="fa fa-exchange"></i>
+            </span>
+            @Html.TextBox("EndDate", Request["EndDate"] != null ? Request["EndDate"] : retDateTime.ToString("dd/MM/yyyy"), new {autocomplete = "off", placeholder = "Đến ngày" })
+        </span>
+
+    </p>
+    <p>
+        @Html.DropDownList("manufacturer", SelectListHelper.GetSelectList_Category("manufacturerList", manufacturer, "- Nhà sản xuất -"))
+        @Html.DropDownList("group", SelectListHelper.GetSelectList_Category("Categories_product", group, "- Nhóm sản phẩm -"))
+        @Html.DropDownList("category", SelectListHelper.GetSelectList_Category("product", category, "- Danh mục sản phẩm -"))
+        @Html.DropDownList("WarehouseId", SelectListHelper.GetSelectList_Warehouse(Request["WarehouseId"], null))
+    </p>
+}
+
+@if(Model.Count()>0)
+{ 
+<div class="table-responsive" id="BCTonKho">
+    <table id="CTable" class="table table-bordered">
+        <thead>
+            <tr>
+                <th rowspan="2" style="width:40px;">Nhóm</th>
+                <th rowspan="2" style="width:40px;">STT</th>
+                <th rowspan="2" style="width:100px;">Mã sản phẩm</th>
+                @*<th class="grid-header" style="width:300px;"><div class="grid-header-title"><span>Danh mục</span></div></th>*@
+                <th rowspan="2" style="min-width:200px;">Tên sản phẩm</th>
+                <th rowspan="2" style="min-width:100px;">Kho</th>
+                <th rowspan="2" style="width:100px;">Số Lô</th>
+                <th rowspan="2" style="width:100px;">Hạn dùng</th>
+                <th rowspan="2" style="width:80px;">Đơn vị</th>
+                <th style="width:80px;">Tồn cũ</th>
+                <th style="width:80px;">Nhập mới</th>
+                <th style="width:80px;">Tổng tồn đầu</th>
+
+                @foreach (var item in productInvoiceDetailList.GroupBy(x => x.ProductOutboundCode).OrderBy(x => x.Key))
+                {
+                    <th style="width:100px;">@item.Key <br> @item.FirstOrDefault().CreatedDate.Value.ToString("dd/MM/yyyy HH:mm")</th>
+                }
+                <th style="width:80px;">Tổng xuất</th>
+                <th style="width:80px;">Tổng tồn cuối tuần</th>
+                <th rowspan="2" style="width:80px;">Báo động < 30 sản phẩm </th>
+            </tr>
+            <tr>
+                <th  style="width:80px;">@Model.Sum(x => x.First_Remain)</th>
+                <th style="width:80px;">@Model.Sum(x => x.Last_InboundQuantity)</th>
+                <th style="width:80px;">@(Model.Sum(x => x.Last_InboundQuantity) + Model.Sum(x => x.First_Remain))</th>
+                @foreach (var item in productInvoiceDetailList.GroupBy(x => x.ProductOutboundCode).OrderBy(x => x.Key))
+                {
+                    <th style="width:100px;"> @item.Sum(x=>x.Quantity)</th>
+                }
+                <th style="width:80px;">@Model.Sum(x => x.Last_OutboundQuantity)</th>
+                <th style="width:80px;">@Model.Sum(x => x.Remain)</th>
+            </tr>
+            @*<tr>
+                @foreach (var item in productInvoiceDetailList.GroupBy(x =>x.ProductOutboundCode).OrderBy(x => x.Key))
+                {
+                    <th style="width:100px;">@item.Key <br> @item.FirstOrDefault().CreatedDate.Value.ToString("dd/MM/yyyy HH:mm")</th>
+                }
+            </tr>*@
+        </thead>
+        <tbody>
+
+            @foreach (var qq in Model.GroupBy(x => x.CategoryCode))
+            {
+                var row_count = 0;
+                foreach (var item in Model.Where(x => x.CategoryCode == qq.Key))
+                {
+                    index++;
+
+                    <tr class="@(index%2==0?"alert-warning":"")">
+                        @if (row_count == 0)
+                        {
+                            row_count++;
+                            <td rowspan="@Model.Where(x=>x.CategoryCode==qq.Key).Count()" data-name="" style="width:40px;">@item.CategoryCode</td>
+                        }
+                        <td style="width:40px;">@(index)</td>
+                        <td style="width:100px;">@item.ProductCode</td>
+                        @*<td class="grid-cell" data-name="" style="width:300px;">@item.CategoryCode</td>*@
+                        <td style="min-width:200px;">@item.ProductName</td>
+                        <td style="min-width:200px;">@item.WarehouseName</td>
+                        <td style="width:100px;">@item.LoCode</td>
+                        <td style="width:100px;">@(item.ExpiryDate == null ? "" : item.ExpiryDate.Value.ToString("dd/MM/yyyy"))</td>
+                        <td style="width:80px;">@item.ProductUnit</td>
+                        <td style="width:80px;text-align:right;">@(Common.PhanCachHangNgan(item.First_Remain))</td>
+                        <td style="width:80px;text-align:right;">@(Common.PhanCachHangNgan(item.Last_InboundQuantity))</td>
+                        <td style="width:80px;text-align:right;">@(Common.PhanCachHangNgan(item.Last_InboundQuantity + item.First_Remain))</td>
+                        @foreach (var ii in productInvoiceDetailList.GroupBy(x =>x.ProductOutboundCode).OrderBy(x => x.Key))
+                        {
+                            if (ii.Where(x => x.LoCode == item.LoCode && x.ExpiryDate == item.ExpiryDate && x.ProductId == item.ProductId && x.WarehouseSourceId == item.WarehouseId).Count() > 0)
+                            {
+                                <td class="text-right" style="width:100px; font-weight:bold">@(Common.PhanCachHangNgan(ii.Where(x => x.LoCode == item.LoCode && x.ExpiryDate == item.ExpiryDate && x.ProductId == item.ProductId && x.WarehouseSourceId == item.WarehouseId).Sum(x=>x.Quantity)))</td>
+                            }
+                            else
+                            {
+                                <td class="text-right red" style="width:100px; font-weight:bold"></td>
+                            }
+                        }
+                        <td class="text-right" data-name="" style="width:80px; font-weight:bold">@(Common.PhanCachHangNgan(item.Last_OutboundQuantity))</td>
+                        <td class="text-right" data-name="" style="width:80px; font-weight:bold">@(Common.PhanCachHangNgan(item.Remain))</td>
+                        <td class="text-right" data-name="" style="width:80px; font-weight:bold">
+                            @if (30 >= item.Remain)
+                            {<span style="color:red">BĐ</span>}
+                        </td>
+                    </tr>
+
+                }
+            }
+        </tbody>
+    </table>
+
+</div>
+}
+else
+{
+    <div class="alert alert-block alert-info">
+        Không có dữ liệu
+    </div>
+}
+@using (Html.BeginButtonContainer(pageSetting))
+{
+    <button onclick="tableToExcel('CTable', 'BaoCaoKho')" class=" btn btn-primary btn-sm btn-white btn-success">
+        <i class="ace-icon fa fa-download"></i>
+        Xuất Excel
+    </button>
+}
+@section Scripts {
+    <script type="text/javascript">
+
+        var tableToExcel = (function () {
+            var uri = 'data:application/vnd.ms-excel;base64,'
+              , template = '<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40"><head><!--[if gte mso 9]><xml><x:ExcelWorkbook><x:ExcelWorksheets><x:ExcelWorksheet><x:Name>{worksheet}</x:Name><x:WorksheetOptions><x:DisplayGridlines/></x:WorksheetOptions></x:ExcelWorksheet></x:ExcelWorksheets></x:ExcelWorkbook></xml><![endif]--></head><body><table>{table}</table></body></html>'
+              , base64 = function (s) { return window.btoa(unescape(encodeURIComponent(s))) }
+              , format = function (s, c) { return s.replace(/{(\w+)}/g, function (m, p) { return c[p]; }) }
+            return function (table, name) {
+                if (!table.nodeType) table = document.getElementById(table)
+                var ctx = { worksheet: name || 'Worksheet', table: table.innerHTML }
+                window.location.href = uri + base64(format(template, ctx))
+            }
+        })()
+    </script>
+
+
+    @Html.ScriptBottom_ValidationMvc()
+    @Html.ScriptBottom_DatePicker("dd/MM/yyyy")
+}

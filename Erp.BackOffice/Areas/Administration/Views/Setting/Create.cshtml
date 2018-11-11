@@ -1,0 +1,56 @@
+﻿@model Erp.BackOffice.Areas.Administration.Models.SettingViewModel
+
+@using Erp.BackOffice.App_GlobalResources
+@using Erp.BackOffice.Helpers
+
+@{
+    ViewBag.Title = Resources.Wording.CreateSetting;
+    Layout = "~/Views/Shared/" + (Request["IsPopup"] == null ? "ACE_AdminLayout.cshtml" : "_PopupLayout.cshtml");
+
+    Erp.BackOffice.Models.PageSetting pageSetting = new Erp.BackOffice.Models.PageSetting
+    {
+        ModuleName = "Setting",
+        ActionName = "Create",
+        PageTitle = ViewBag.Title,
+        DisplaySearchPanel = false,
+        IsPopup = true,
+        DisplayBackButton = false
+    };
+}
+
+@using (Html.BeginPageHeaderContainer(pageSetting))
+{
+
+}
+
+@using (Html.BeginForm_AceStyle((string)ViewBag.Title, "Create", "Setting", new { @area = "Administration" }, FormMethod.Post, new { @class = "form-horizontal" }))
+{
+    @Html.ValidationSummary(true)
+
+    @Html.HiddenFor(m => m.Id)
+    
+    <input type="hidden" value="@Request["IsPopup"]" name="IsPopup" />
+
+    @Html.CustomTextboxFor(m => m.Key, null, null, WidthType.span6, true)
+    @Html.CustomTextboxFor(m => m.Value, null, null, WidthType.span6, true)
+    @Html.CustomTextboxFor(m => m.Code, null, null, WidthType.span6, true)
+
+    @Html.CustomTextAreaFor(m => m.Note, null, WidthType.span6, true)
+
+    if (ViewBag.CurrentUser == "host")
+    {
+        @Html.CustomSwitchesFor(m => m.IsLocked, SwitchesStyle.SwitchesStyle6, true, WidthType.none)
+    }
+
+    using (Html.BeginButtonContainer(pageSetting))
+    {
+        <button class="btn btn-mini btn-primary" type="submit" name="Submit" value="Save">
+            <i class="ace-icon fa fa-save"></i>
+            @Wording.Save
+        </button>
+    }
+}
+
+@section Scripts {
+    @Html.ScriptBottom_ValidationMvc()
+}

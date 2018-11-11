@@ -1,0 +1,67 @@
+@using Erp.BackOffice.App_GlobalResources
+@using Erp.BackOffice.Helpers
+@using Erp.BackOffice.Staff.Models
+
+@model WelfareProgramsDetailViewModel
+
+@{
+    ViewBag.Title = Wording.PageCreate_WelfareProgramsDetail;
+
+    Layout =null;
+
+    Erp.BackOffice.Models.PageSetting pageSetting = new Erp.BackOffice.Models.PageSetting
+    {        
+        ModuleName = "WelfareProgramsDetail",
+        ActionName = "Create",
+        PageTitle = ViewBag.Title,
+        DisplaySearchPanel = false,
+        IsPopup = false,
+        DisplayBackButton = true
+    };
+}
+<style>
+.input-group>.btn {
+    line-height: 26px!important;
+}
+    </style>
+@using (Html.BeginForm_AceStyle((string)ViewBag.Title, pageSetting.ActionName, pageSetting.ModuleName, null, FormMethod.Post, new { @class = "form-horizontal" }))
+{
+    @Html.ValidationSummary(true)
+
+    <input type="hidden" value="@Request["IsPopup"]" name="IsPopup" />
+    @Html.HiddenFor(model => model.WelfareProgramsId)
+    @Html.HiddenFor(model => model.StaffId)
+    @Html.DatePicker(model => model.RegistrationDate, "dd/MM/yyyy", "99/99/9999", true, true)
+    <div id="" class="control-group form-group ">
+        <label class="control-label col-lg-5 col-md-4 col-sm-4" for="StaffId">Nhân viên</label>
+        <div class="control-value col-lg-7 col-md-8 col-sm-8">
+            <div class="clearfix">
+                <div class="input-group">
+                    @Html.TextBox("StaffName", Model.StaffName, new { style = "width:85%", @readonly = "readonly" })
+                    <a class="btn btn-mini btn-white" style="height:26px!important;margin-top:-2px;width:15%"  onclick="OpenPopup('/Staffs/Search?IsPopup=true&OrderNo=1', 'Tìm kiếm dữ liệu', 800, 600)"
+                       data-rel="tooltip" title="" data-placement="bottom" data-original-title="Tìm kiếm nhân viên">
+                        <i class="fa fa-search"></i>
+                    </a>
+                </div>
+            </div>
+            <div class="clearfix">
+                <span class="field-validation-valid help-inline" data-valmsg-for="StaffId" data-valmsg-replace="true"></span>
+            </div>
+        </div>
+    </div>
+    @Html.CustomTextAreaFor(model => model.Note, null, WidthType.span12)
+    <div class="search-view col-sm-12 top-10">
+        <a class="btn btn-danger btn-mini pull-right" style="height:27px" onclick="CloseSetting()"
+           data-rel="tooltip" title="" data-placement="bottom" data-original-title="Đóng">
+            <i class="fa fa-close"></i>
+            Đóng
+        </a>
+        <button class="btn btn-mini btn-primary pull-right" style="height:27px;margin-right:5px" type="submit" name="Submit" value="Save">
+            <i class="ace-icon fa fa-save"></i>
+            @Wording.Save
+        </button>
+
+    </div>
+      
+}
+@Html.ScriptBottom_DatePicker("dd/mm/yyyy")

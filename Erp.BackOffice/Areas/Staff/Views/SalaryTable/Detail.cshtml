@@ -1,0 +1,386 @@
+﻿@using Erp.BackOffice.App_GlobalResources
+@using Erp.BackOffice.Helpers
+@using Erp.BackOffice.Staff.Models
+@using System.Linq
+
+@model SalaryTableViewModel
+
+@{
+    ViewBag.Title = Wording.PageDetail_SalaryTable;
+  
+    Layout = "~/Views/Shared/" + (Request["IsPopup"] == null ? "ACE_AdminLayout.cshtml" : "_PopupLayout.cshtml");
+    Erp.BackOffice.Models.PageSetting pageSetting = new Erp.BackOffice.Models.PageSetting
+    {
+        ModuleName = "SalaryTable",
+        ActionName = "Detail",
+        PageTitle = ViewBag.Title,
+        DisplaySearchPanel = false,
+        IsPopup = false,
+        DisplayBackButton = true
+    };
+
+    var timIsum = Model.ListAllColumns.Where(n => n.IsSum != null && n.IsSum == true);
+    var count = Model.ListAllColumns.Where(item => item.IsGroup == false).Count() + 1;
+    bool Tontai_iSum = timIsum != null && timIsum.Count() > 0 ? true : false;
+}
+
+@section HeadOfPage {
+
+    <style type="text/css">
+        table thead td {
+            text-align: center;
+            vertical-align: middle !important;
+        }
+
+        #SalaryTable_wrapper .dt-buttons, #SalaryTable_wrapper #SalaryTable_filter, #SalaryTable_wrapper #SalaryTable_info, #SalaryTable_wrapper #SalaryTable_paginate {
+            display: none;
+        }
+
+
+    </style>
+}
+
+@if (Request["IsPopup"] == null)
+{
+    using (Html.BeginPageHeaderContainer(pageSetting))
+    {
+
+    }
+}
+
+<h4><b>@ViewBag.BranchName</b></h4>
+<h4 class="green"><b>@Model.Name @((Model.HiddenForMonth ? "" : (Model.TargetMonth) + "/") + Model.TargetYear)</b></h4>
+
+
+@if (ViewBag.SuccessMessage != null && ViewBag.SuccessMessage != "")
+{
+    <div class="alert alert-block alert-success">
+        <button class="close" data-dismiss="alert" type="button">
+            <i class="ace-icon fa fa-times"></i>
+        </button>
+        <i class="ace-icon fa fa-check green"></i>
+        @ViewBag.SuccessMessage
+    </div>
+}
+
+@if (ViewBag.FailedMessage != null && ViewBag.FailedMessage != "")
+{
+    <div class="alert alert-block alert-danger">
+        <button class="close" data-dismiss="alert" type="button">
+            <i class="ace-icon fa fa-times"></i>
+        </button>
+        <i class="ace-icon fa fa-warning red"></i>
+        @ViewBag.FailedMessage
+    </div>
+}
+@if (ViewBag.Error != null)
+{
+    <div class="alert alert-block alert-danger">
+        <button class="close" data-dismiss="alert" type="button">
+            <i class="ace-icon fa fa-times"></i>
+        </button>
+        <i class="ace-icon fa fa-warning red"></i>
+        @ViewBag.Error
+    </div>
+}
+else
+{
+
+    <div id="SalaryTable" class="table-responsive">
+        <table id="cTable" class="table table-bordered table-responsive">
+            <thead>
+                <tr class="" style="display:none">
+                    <th class="" colspan="@count" style="text-align:center"><h4>@Model.Name @((Model.HiddenForMonth ? "" : (Model.TargetMonth) + "/") + Model.TargetYear)</h4></th>
+                </tr>
+                <tr>
+
+                    <th rowspan="2">
+                        <b>STT</b>
+                    </th>
+
+                    @foreach (var group in Model.ListAllColumns.Where(g => g.ParentId == null && g.IsDisplay).OrderBy(g => g.OrderNo))
+                    {
+                        if (group.HasSubList)
+                        {
+                            <th colspan=@group.NumberOfSubList style="text-align:center">
+                                <b>@group.Name</b>
+                            </th>
+                        }
+                        else
+                        {
+                            <th rowspan=2 style="text-align:center">
+                                <b>@group.Name</b>
+                            </th>
+                        }
+                       
+                    }
+                    @if (Model.Status == "Đã khóa")
+                    {
+                        <th rowspan=2 style="text-align:center">
+                           Trạng thái
+                        </th>
+                    <th rowspan=2 style="text-align:center">
+                        Hành động
+                    </th>
+                    }
+                </tr>
+                <tr>
+                    @foreach (var group in Model.ListAllColumns.Where(g => g.ParentId == null && g.IsDisplay).OrderBy(g => g.OrderNo))
+                    {
+                        foreach (var item in Model.ListAllColumns.Where(i => i.ParentId == group.Id && i.IsDisplay).OrderBy(i => i.OrderNo))
+                        {
+                            <th style="text-align:center">
+                                <b>@item.Name</b>
+                            </th>
+                        }
+                    }
+                   
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (System.Data.DataRow row in Model.SalaryTableData.Rows)
+                {
+                    var index = 0;
+                    
+                    <tr>
+                       
+                        @foreach (System.Data.DataColumn col in Model.SalaryTableData.Columns)
+                        {
+                            index++;
+                           if (Model.Status == "Đã khóa")
+                            {
+                                if (Model.SalaryTableData.Columns.Count - 1 == index || Model.SalaryTableData.Columns.Count == index)
+                                {
+                                    <td>
+                                        @Html.Raw(row[col.ColumnName])
+                                    </td>
+                                }
+                                else
+                                {
+                                 
+                                <td class="@Erp.BackOffice.Helpers.Common.CanhLeTungDongTable(row[col.ColumnName])">
+                                    <span> @Erp.BackOffice.Helpers.Common.PhanCachHangNgan_string_number(row[col.ColumnName])</span>
+                                    <input class="hidden" style="width:100%!important;" type="text" id="form-field-4" placeholder="null" value="@row[col.ColumnName]" >
+                                </td>
+
+                                }
+                            }
+                           else
+                           {
+                               // StaffId: Controller : ->Id | new {id=0}
+                               string change = Model.SalaryTableLink.Rows[Model.SalaryTableData.Rows.IndexOf(row)][col.ColumnName].ToString();
+                               if (!string.IsNullOrWhiteSpace(change) && change!= Wording.NoneSelect)
+                               {
+                                 string[] actionChange = change.Split(':');
+                                <td class="@Erp.BackOffice.Helpers.Common.CanhLeTungDongTable(row[col.ColumnName])">
+                                    
+                                    @if (actionChange[2] != "0")
+                                    {
+                                        <a onclick="OpenPopup('/@(actionChange[1])/Edit?IsPopup=true&Id=@(actionChange[2])', 'Thiết lập', 800, 600)" class="ace">
+                                            @Erp.BackOffice.Helpers.Common.PhanCachHangNgan_string_number(row[col.ColumnName])
+                                            
+                                        </a>
+                                    }
+                                    else
+                                    {
+                                        <a onclick="OpenPopup('/@(actionChange[1])/Create?IsPopup=true&Id=@(actionChange[0])&TargetMonth=@(Model.TargetMonth)&TargetYear=@(Model.TargetYear)', 'Thiết lập', 800, 600)" class="ace">
+                                            @*@Erp.BackOffice.Helpers.Common.PhanCachHangNgan_string_number(row[col.ColumnName])*@
+                                            +Thêm
+                                        </a>
+                                    }
+                                    
+                                   
+                                </td>
+                               }
+                               else
+                               {
+                                <td class="@Erp.BackOffice.Helpers.Common.CanhLeTungDongTable(row[col.ColumnName])">
+                                    @Erp.BackOffice.Helpers.Common.PhanCachHangNgan_string_number(row[col.ColumnName])
+                                </td>
+                               }
+                           }
+                        }
+                        
+
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+    using (Html.BeginButtonContainer(pageSetting))
+    {
+        if (Request["IsPopup"] == null)
+        {
+            if (Model.Status == Wording.SalaryTableStatus_InProcess)
+            {
+                using (Html.BeginForm("Edit", pageSetting.ModuleName, null, FormMethod.Post, new { @class = "inline" }))
+                {
+
+                <button class="btn btn-primary btn-mini" type="submit" name="Submit" value="Save">
+                    <i class="ace-icon fa fa-save"></i>
+                    Lưu trữ & Khóa bảng lương
+                </button>
+                @Html.HiddenFor(m => m.Id);
+                }
+            }
+            else
+            {
+            @*if (!Model.Submitted)
+            {
+                <a class="btn btn-primary btn-mini" href="@Url.Action("Edit", pageSetting.ModuleName, new { Id = Model.Id, Status = Wording.SalaryTableStatus_InProcess })">
+                    <i class="ace-icon fa fa-edit"></i>
+                    @Wording.Edit
+                </a>
+            }*@
+            @*if (Model.IsSend && !Model.Submitted)
+            {
+                <a class="btn btn-warning btn-mini" data-toggle="modal" data-target="#myModal_Submit" style="margin-right:5px">
+                    <i class="ace-icon fa fa-envelope"></i>
+                    Gửi
+                </a>
+            }*@
+using (Html.BeginForm("Export", pageSetting.ModuleName, null, FormMethod.Post, new { id = "ExportForm", @class = "no_show_loading inline", target = "_blank" }))
+{
+                <button class="btn btn-white btn-success btn-sm" type="submit" name="Submit" value="Export">
+                    <i class="ace-icon fa fa-file-excel-o"></i>
+                    Xuất excel
+                </button>
+                @Html.HiddenFor(m => m.Id);
+}
+            @*<a class="btn btn-white btn-success btn-sm" onclick="exportTableToExcel('SalaryTable')">
+                    <i class="ace-icon fa fa-file-excel-o"></i>
+                    Xuất excel
+                </a>*@
+            }
+        }
+
+        if (Model.IsSend && !Model.Submitted)
+        {
+            using (Html.BeginForm("Submit", pageSetting.ModuleName, null, FormMethod.Post, new { id = "SubmitForm", @class = "inline" }))
+            {
+    <!-- Modal -->
+            <div id="myModal_Submit" class="modal" role="dialog">
+                <div class="modal-dialog">
+                    <!-- Modal content-->
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal">&times;</button>
+                            <h4 class="modal-title">Gửi bảng lương</h4>
+                        </div>
+                        <div class="modal-body">
+                            <div class="clearfix" style="padding:10px">
+                                <div class="alert alert-warning">
+                                    <p>
+                                        <i class="ace-icon fa fa-exclamation-triangle"></i>
+                                        Vui lòng kiểm tra dữ liệu bảng lương trước khi gửi để tránh sai xót!
+                                    </p>
+                                </div>
+                                @Html.HiddenFor(m => m.Id)
+                                @Html.TextBox("SubmitNote", null, new { placeholder = "Nhập ghi chú ...", style = "width:100%" })
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button class="btn btn-primary btn-mini" type="submit" name="Submit" value="Submit">
+                                <i class="ace-icon fa fa-envelope"></i>
+                                Gửi
+                            </button>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+            }
+        }
+    }
+}
+
+
+@section Scripts {
+
+
+    <script type="text/javascript">
+        function CheckIsval() {
+            if ($('[name="DeleteAll-checkbox"]').is(':checked') == false) {
+                alert("Phải chọn ít nhất 1 item.");
+                return false;
+            }
+            else {
+                if (confirm('Bạn có chắc muốn xóa các item đã chọn ?')) {
+                    return true;
+                }
+                else {
+                    return false;
+                }
+            }
+        }
+
+        $('[name="Delete"]').click(function () {
+            if (confirm('Bạn có chắc muốn xóa item ?')) {
+                $(this).closest('tr').children('td').each(function (i, e) {
+                    $(this).find("input.class-delete-all").prop("checked", true);
+                    return true;
+                })
+            }
+            else {
+                return false;
+            }
+        })
+        function Archive(TargetId, TargetMonth, TargetYear) {
+            if (confirm('Bạn có chắc muốn ghi sổ cho item đã chọn ?')) {
+                ShowLoading();
+                $.post("@Url.Action("Archive", "Payment", new { area = "Account" })", { TargetId: TargetId, TargetMonth: TargetMonth, TargetYear: TargetYear })
+            .done(function (data) {
+                if (data == "success") {
+                    location.reload();
+                }
+                else {
+                    alert("Lỗi! Không thể ghi sổ");
+                }
+                HideLoading();
+            });
+            return false;
+        }
+        else {
+                return false;
+        }
+        };
+        function UnArchive(TargetId, TargetMonth, TargetYear) {
+            if (confirm('Bạn có chắc muốn bỏ ghi sổ cho item đã chọn ?')) {
+                ShowLoading();
+                $.post("@Url.Action("UnArchive", "Payment", new { area = "Account" })", { TargetId: TargetId, TargetMonth: TargetMonth, TargetYear: TargetYear })
+            .done(function (data) {
+                if (data == "success") {
+                    location.reload();
+                }
+                else {
+                    alert("Lỗi! Không thể bỏ ghi sổ");
+                }
+                HideLoading();
+            });
+            return false;
+        }
+        else {
+                return false;
+        }
+        };
+
+        //function activeEdit(ele) {
+        //    console.log(ele);
+        //    var tr = ele.closest('tr');
+        //    $(tr).css("background-color", "#c5d0dc");
+        //    var input_for_tr = tr.getElementsByTagName('input');
+        //    $.each(input_for_tr, function (key, value) {
+        //        var input = $(value);
+        //        input.removeClass("hidden");
+        //    });
+
+        //    var span_for_tr = tr.getElementsByTagName('span');
+        //    $.each(span_for_tr, function (key, value) {
+        //        var span = $(value);
+        //        span.addClass("hidden");
+        //    });
+        //};
+    </script>
+}
+@Html.ScriptBottom_ValidationMvc()
+@Html.ScriptBottom_DatePicker("dd/MM/yyyy")

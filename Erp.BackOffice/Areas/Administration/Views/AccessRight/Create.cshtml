@@ -1,0 +1,153 @@
+﻿@using Erp.BackOffice.Helpers
+@using Erp.BackOffice.Areas.Administration.Models
+
+@model Erp.BackOffice.Areas.Administration.Models.AccessRightViewModel
+
+@{
+    ViewBag.Title = "Quyền truy cập - Loại user - Trang";
+    Layout = "~/Views/Shared/ACE_AdminLayout.cshtml";
+    Erp.BackOffice.Models.PageSetting pageSetting = new Erp.BackOffice.Models.PageSetting
+    {
+        ModuleName = "AccessRight",
+        ActionName = "Create",
+        PageTitle = ViewBag.Title,
+        DisplaySearchPanel = false,
+        IsPopup = false,
+        DisplayBackButton = false
+    };
+}
+
+@if (ViewBag.AlertMessage != null && ViewBag.AlertMessage != "")
+{
+    <div class="alert alert-block alert-success">
+        <button class="close" data-dismiss="alert" type="button">
+            <i class="icon-remove"></i>
+        </button>
+        <i class="ace-icon fa fa-check green"></i>
+        @ViewBag.AlertMessage
+    </div>
+}
+
+@using (Html.BeginPageHeaderContainer(pageSetting))
+{
+
+}
+@using (Html.BeginForm("Create", "AccessRight", null, FormMethod.Post, new { id = "accessRight", @class = "form-horizontal" }))
+{
+    using (Html.BeginButtonContainer(pageSetting))
+    {
+        <button class="btn btn-mini btn-primary" type="submit" name="Submit" value="Save">
+            <i class="ace-icon fa fa-save"></i>
+            @Resources.Wording.Save
+        </button>
+    }
+    if (Model.ListPages != null)
+    {
+        var areaList = Model.ListPages.GroupBy(
+                                            p => p.AreaName,
+                                            (key, g) => new
+                                            {
+                                                AreaName = key,
+                                                List = g.ToList()
+                                            }
+                                            );
+        foreach (var area in areaList)
+        {
+            var controllerList = area.List.GroupBy(
+                                            p => p.ControllerName,
+                                            (key, g) => new
+                                            {
+                                                ControllerName = key,
+                                                ActionList = g.ToList()
+                                            }
+                                            );
+            <div class="widget-box collapsed">
+                <div class="widget-header">
+                    <h5 class="widget-title">@area.AreaName</h5>
+                    <div class="widget-toolbar">
+                        <a href="#" data-action="collapse">
+                            <i class="ace-icon fa fa-chevron-down"></i>
+                        </a>
+                    </div>
+                </div>
+                <div class="widget-body" style="display:none">
+                    <div class="widget-main clearfix">
+                        <table class="table table-striped table-bordered table-hover">
+                            <thead>
+                                <tr>
+                                    <th>@Resources.Wording.MenuName</th>
+                                    @foreach (var userType in Model.UserTypes)
+                                    {
+                                        <th width="150">@userType.Name</th>
+                                    }
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var controller in controllerList)
+                                {
+                                    <tr>
+                                        <td>
+                                            <i style="cursor:pointer" class="btn-group fa fa-plus-square-o bigger-120" data-controller="@controller.ControllerName">
+                                                <b style="font-family:'Open Sans'"> @controller.ControllerName</b>
+                                            </i>
+                                        </td>
+                                        <td colspan="@Model.UserTypes.Count"></td>
+                                    </tr>
+                                    foreach (var page in controller.ActionList.OrderBy(item => item.OrderNo))
+                                    {
+                                        <tr class="item_of_@page.ControllerName" style="display:none">
+                                            <td style="padding-left:34px">
+                                                <a onclick="OpenPopup('@Url.Action("Edit", "Page", new { id = page.Id, languageId = "vi-VN", IsPopup = true })', 'Chỉnh sửa trang', 700, 800)">@page.ActionName</a>
+                                            </td>
+                                            @{int j = 1;
+                                            foreach (var userType in Model.UserTypes)
+                                            {
+                                                var accessRight = Model.UserType_AccessRightPageViewModel.Any(item => item.UserTypeId == userType.Id && item.ListAccessRightPage != null && item.ListAccessRightPage.Any(i => i == page.Id));
+                                                <td width="150">
+                                                    <label>
+                                                        <input class="ace" type="checkbox" id="UserTypePage" name="UserTypePage" value="@page.Id-@userType.Id" @( accessRight ? "checked=\"checked\"" : "") />
+                                                        <span class="lbl"></span>
+                                                    </label>
+                                                </td>
+                                                j++;
+                                            }
+                                            }
+                                        </tr>
+                                    }
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        }
+    }
+}
+
+@section Scripts {
+    <script type="text/javascript">
+        $(function () {
+            $(".btn-group").click(function () {
+                var id = $(this).data("controller");
+                var on = $(this).hasClass("on");
+                if (on) {
+                    $(".item_of_" + id).hide();
+                    $(this).removeClass("on");
+                    $(this).removeClass("fa-minus-square-o");
+                    $(this).addClass("fa-plus-square-o");
+                }
+                else {
+                    $(".item_of_" + id).show();
+                    $(this).addClass("on");
+                    $(this).removeClass("fa-plus-square-o");
+                    $(this).addClass("fa-minus-square-o");
+                }
+            });
+
+            //$('.input-edit-inline').editInlineInput({ id: null, url: '/Page/EditInline', disabled: true, dataId: 'id' });
+        });
+    </script>
+@Html.ScriptBottom_ValidationMvc()
+
+
+}

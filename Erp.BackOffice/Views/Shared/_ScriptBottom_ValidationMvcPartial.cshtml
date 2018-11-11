@@ -1,0 +1,15 @@
+﻿@*@Scripts.Render("~/bundles/jqueryval")*@
+<script src="@Url.Content("~/Scripts/jquery.unobtrusive-ajax.js")"></script>
+<script src="@Url.Content("~/Scripts/jquery.validate.js")"></script>
+<script src="@Url.Content("~/Scripts/jquery.validate.unobtrusive.js")"></script>
+<script type="text/javascript">
+    // >>>>> VALIDATION <<<<<
+    $.validator.setDefaults({
+        highlight: function (element) {
+            $(element).closest(".control-group, .from-group").addClass("has-error");
+        },
+        unhighlight: function (element) {
+            $(element).closest(".control-group, .from-group").removeClass("has-error");
+        }
+    });
+</script>

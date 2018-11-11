@@ -1,0 +1,59 @@
+@using Erp.BackOffice.App_GlobalResources
+@using Erp.BackOffice.Helpers
+@using Erp.BackOffice.Crm.Models
+
+@model ProcessStepViewModel
+
+@{
+    ViewBag.Title = Wording.PageDetail_ProcessStep;
+
+    Layout = "~/Views/Shared/ACE_AdminLayout.cshtml";
+}
+<div class="page-header">
+    <h1>
+        @ViewBag.Title
+    </h1>
+</div>
+
+<p>@Html.Button(Wording.Edit, ButtonType.aTag, ButtonColor.Info, ButtonSize.Mini, true, IconType.Edit, IconSize.Default, false, new { @href = Url.Action("Edit", "ProcessStep", new { Id = Model.Id }) })</p>
+
+<div class="detail-view">
+    <div class="row control-group">
+        @Html.DetailViewItemFor2(model => model.Name)
+    </div>
+</div>
+<p></p>
+@*@{Html.RenderAction("SubList", "");}*@
+
+@section Scripts {
+    <script type="text/javascript">
+        function CheckIsval() {
+            if ($('[name="DeleteAll-checkbox"]').is(':checked') == false) {
+                alert("Phải chọn ít nhất 1 item.");
+                return false;
+            }
+            else {
+                if (confirm('Bạn có chắc muốn xóa các item đã chọn ?')) {
+                    return true;
+                }
+                else {
+                    return false;
+                }
+            }
+        }
+
+        $('[name="Delete"]').click(function () {
+            if (confirm('Bạn có chắc muốn xóa item ?')) {
+                $(this).closest('tr').children('td').each(function (i, e) {
+                    $(this).find("input.class-delete-all").prop("checked", true);
+                    return true;
+                })
+            }
+            else {
+                return false;
+            }
+
+        })
+
+    </script>
+}

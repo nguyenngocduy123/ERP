@@ -1,0 +1,206 @@
+﻿@using Erp.BackOffice.App_GlobalResources
+@using Erp.BackOffice.Sale.Models
+@using Erp.BackOffice.Helpers
+@using System.Globalization;
+@{
+    ViewBag.Title = "Nhân sự";
+    Layout = "~/Views/Shared/ACE_AdminLayout.cshtml";
+    Erp.BackOffice.Models.PageSetting pageSetting = new Erp.BackOffice.Models.PageSetting
+    {
+        ModuleName = "",
+        ActionName = "",
+        PageTitle = ViewBag.Title,
+        DisplaySearchPanel = true,
+        IsPopup = false,
+        DisplayBackButton = false,
+        HideClearButton = true,
+        SearchButtonText = "Lấy dữ liệu"
+    };
+
+    Calendar calendar = CultureInfo.InvariantCulture.Calendar;
+    var weekdefault = calendar.GetWeekOfYear(DateTime.Now, CalendarWeekRule.FirstFourDayWeek, DayOfWeek.Monday);
+    string Month = Request["month"] != null ? Request["month"] : DateTime.Now.Month.ToString();
+    string Year = Request["year"] != null ? Request["year"] : DateTime.Now.Year.ToString();
+    string week = Request["week"] != null ? Request["week"] : weekdefault.ToString();
+    string branchId = Request["branchId"] != null ? Request["branchId"] : "";
+    if (Request["branchId"] == null)
+    {
+        if (Erp.BackOffice.Filters.SecurityFilter.IsAdminDrugStore() || Erp.BackOffice.Filters.SecurityFilter.IsStaffDrugStore())
+        {
+            branchId = Erp.BackOffice.Helpers.Common.CurrentUser.DrugStore;
+        }
+    }
+    ViewData["branchId"] = branchId;
+    string TDVId = Request["TDVId"] != null ? Request["TDVId"] : "";
+    string hide = "none";
+    if (Erp.BackOffice.Filters.SecurityFilter.IsAdmin() || Erp.BackOffice.Filters.SecurityFilter.IsAdminSystemManager())
+    {
+        hide = "initial";
+    }
+}
+
+@using (Html.BeginPageHeaderContainer(pageSetting))
+{
+    @Html.Partial("_PartialSearchDrugStore", ViewData["branchId"])
+    <p>
+        Xem dữ liệu theo
+        <label>
+            <input id="single3" name="single" type="radio" class="ace" value="week">
+            <span class="lbl"> Tuần</span>
+        </label>
+        <label>
+            <input id="single1" name="single" type="radio" class="ace" value="month" checked="checked">
+            <span class="lbl"> Tháng</span>
+        </label>
+
+        <label>
+            <input id="single2" name="single" type="radio" class="ace" value="quarter">
+            <span class="lbl"> Quý</span>
+        </label>
+
+        <select id="month" name="month">
+            @for (int i = 1; i <= 12; i++)
+            {
+                <option @(Month == i.ToString() ? "Selected" : "") value="@i">Tháng @i</option>
+            }
+        </select>
+        <select id="quarter" name="quarter" style="display:none">
+            <option value="1">Quý I</option>
+            <option value="2">Quý II</option>
+            <option value="3">Quý III</option>
+            <option value="4">Quý IV</option>
+        </select>
+        <select id="week" name="week" style="display:none">
+            @for (int i = 1; i <= 52; i++)
+            {
+                //int year=Convert.ToInt32(Year);
+                //var first_day = Erp.BackOffice.Helpers.Common.FirstDateOfWeekISO8601(year, i);
+                //DateTime end_day = first_day.AddDays(6);
+                <option @(week == i.ToString() ? "Selected" : "") value="@i">Tuần @i</option>
+            }
+        </select>
+        <select id="year" name="year">
+            @for (int i = 2016; i <= DateTime.Now.Year; i++)
+            {
+                <option @(Year == i.ToString() ? "Selected" : "") value="@i">Năm @i</option>
+            }
+        </select>
+        <select id="TDVId" name="TDVId" style="display:@hide">
+            @foreach (var item in SelectListHelper.GetSelectList_Staff(null, "Trình dược viên","TDV"))
+            {
+                <option @(TDVId == item.Value.ToString() ? "Selected" : "") value="@item.Value">@item.Text</option>
+            }
+        </select>
+
+        @*@Html.DropDownList("TDVId", SelectListHelper.GetSelectList_Staff(Request["TDVId"], "Trình dược viên"), new Dictionary<string, object> { { "class", "" }, { "data-val-required", "Bắt buộc chọn." } })*@
+    </p>
+}
+<style>
+    .btn-group + .btn-mini, .btn-group + .btn-minier, .btn-group + .btn-xs, .btn-group > .btn-mini, .btn-group > .btn-minier, .btn-group > .btn-xs, .btn.btn-white {
+        border-width: 0px;
+    }
+
+    .btn.btn-white {
+        /*border-color: rgba(204, 204, 204, 0)!important;*/
+        border-width: 1px !important;
+        height: inherit;
+    }
+
+        .btn.btn-white:hover, .btn.btn-white:focus, .btn.btn-white.active,
+        .btn.btn-white:active, .open > .btn.btn-white.dropdown-toggle,
+        .open > .btn.btn-white.active.dropdown-toggle {
+            background-color: rgba(59, 183, 51, 0.46) !important;
+            /*border-color: #629959;*/
+            color: #3a3434 !important;
+        }
+
+    .label-header {
+        height: 18px !important;
+    }
+
+    .page-content > .row .col-lg-12, .page-content > .row .col-md-12, .page-content > .row .col-sm-12, .page-content > .row .col-xs-12 {
+        float: none;
+    }
+
+    select {
+        padding: 0px 4px !important;
+    }
+
+    .SearchChartYearInPayment {
+        border: 1px solid #ccc;
+        padding: 8px;
+    }
+
+    .itemdiv {
+        min-height: 10px !important;
+    }
+
+        .itemdiv > .body > .text {
+            padding-bottom: 0px !important;
+        }
+</style>
+<div class="row">
+    @if (Erp.BackOffice.Filters.SecurityFilter.AccessRight("SummaryStaff", "StaffReport", "Staff"))
+    {
+    <div id="SummaryStaff" class="col-sm-6">
+        @{Html.RenderAction("SummaryStaff", "StaffReport", new { area = "Staff", single = "month", year = Year, month = Month, branchId = branchId });}
+    </div>
+    }
+</div>
+
+@section Scripts {
+
+    <script type="text/javascript">
+        $(function () {
+            $("#quarter").val(currentQuarter);
+
+            var single = "month";
+            $("#single1").change(function () {
+                if ($(this).val() == 'month') {
+                    $("#month").show();
+                    $("#week").hide();
+                    $("#quarter").hide();
+                    single = "month";
+                }
+            });
+
+            $("#single2").change(function () {
+                if ($(this).val() == 'quarter') {
+                    $("#month").hide();
+                    $("#week").hide();
+                    $("#quarter").show();
+                    single = "quarter";
+                }
+            });
+            $("#single3").change(function () {
+                if ($(this).val() == 'week') {
+                    $("#month").hide();
+                    $("#quarter").hide();
+                    $("#week").show();
+                    single = "week";
+                }
+            });
+            $("button[name='search']").click(function (e) {
+                e.preventDefault();
+                ShowLoading();
+                var CityId = $("#CityId option:selected").val();
+                var DistrictId = $("#DistrictId option:selected").val();
+                var month = $("#month option:selected").val();
+                var quarter = $("#quarter option:selected").val();
+                var year = $("#year option:selected").val();
+                var manufacturer = $("#manufacturer option:selected").val();
+                var group = $("#group option:selected").val();
+                var branchId = $("#branchId option:selected").val();
+                var week = $("#week option:selected").val();
+                var TDVId = $("#TDVId option:selected").val();
+                
+                $.get('@Url.Action("SummaryStaff", "StaffReport", new { area = "Staff" })/?single=' + single + '&year=' + year + '&month=' + month + '&quarter=' + quarter + '&week=' + week + '&group=' + group + '&branchId=' + branchId + '&Manufacturer=' + manufacturer + '&CityId=' + CityId + '&DistrictId=' + DistrictId + '&TDVId=' + TDVId, function (html) {
+                    $("#SummaryStaff").html(html);
+                    HideLoading();
+                });
+           
+                return false;
+            });
+        });
+    </script>
+}

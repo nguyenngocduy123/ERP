@@ -1,0 +1,99 @@
+﻿@model Erp.BackOffice.Areas.Administration.Models.PageMenuViewModel
+
+@using Erp.BackOffice.App_GlobalResources
+@using Erp.BackOffice.Helpers
+
+@{
+    ViewBag.Title = "Chỉnh sửa menu";
+    Layout = "~/Views/Shared/" + (Request["IsPopup"] == null ? "ACE_AdminLayout.cshtml" : "_PopupLayout.cshtml");
+
+    Erp.BackOffice.Models.PageSetting pageSetting = new Erp.BackOffice.Models.PageSetting
+    {
+        ModuleName = "PageMenu",
+        ActionName = "Edit",
+        PageTitle = ViewBag.Title,
+        DisplaySearchPanel = false,
+        IsPopup = false,
+        DisplayBackButton = true
+    };
+}
+
+@section HeadOfPage {
+    @Html.ScriptTop_ChosenStyle()
+}
+
+@using(Html.BeginPageHeaderContainer(pageSetting))
+{
+
+}
+
+@using (Html.BeginForm_AceStyle((string)ViewBag.Title, "Edit", "PageMenu", null, FormMethod.Post, new { @class = "form-horizontal", showButton = true }))
+{
+    @Html.ValidationSummary(true)
+
+    @Html.HiddenFor(model => model.Id)
+    @Html.HiddenFor(model => model.LanguageId)
+    
+    <input type="hidden" value="@Request["IsPopup"]" name="IsPopup" />
+
+    @Html.CustomTextboxFor(model => model.Name, null, null, WidthType.span6, true)
+
+    @Html.CustomDropDownListFor(model => model.ParentId, SelectListHelper.GetSelectList_PageMenu("vi-VN"), WidthType.span12, false, Resources.Wording.PleaseSelect, DropdownListStyle.DropdownListStyleChosen);
+
+    @Html.CustomDropDownListFor(model => model.AreaName, SelectListHelper.GetSelectList_Category("pageArea", null, "- Chọn Area -"), WidthType.span12, true, null, DropdownListStyle.DropdownListStyleChosen)
+    
+    @Html.CustomDropDownListFor(model => model.PageId, SelectListHelper.GetSelectList_Page(Model.AreaName), WidthType.span12, false, Resources.Wording.PleaseSelect, DropdownListStyle.DropdownListStyleChosen);
+
+    @Html.CustomTextboxFor(model => model.Url, null, null, WidthType.span6, true)
+
+    @Html.SpinnerFor(model => model.OrderNo, 100, 0, 1, SpinnerStyle.SpinnerStyle1, true)
+
+    @Html.CustomTextboxFor(model => model.CssClassIcon, null, null, WidthType.span6, true)
+
+    @Html.CustomSwitchesFor(model => model.IsVisible, SwitchesStyle.CheckboxStyle, true)
+    
+    @Html.CustomSwitchesFor(model => model.IsDashboard, SwitchesStyle.CheckboxStyle, true)
+    
+    @Html.CustomTextboxFor(model => model.DashboardView, null, null, WidthType.span6, true)
+    
+    using (Html.BeginButtonContainer(pageSetting))
+    {
+        <button class="btn btn-mini btn-primary" type="submit" name="Submit" value="Save">
+            <i class="ace-icon fa fa-save"></i>
+            @Wording.Save
+        </button>
+    }
+}
+
+@section Scripts {
+    @Html.ScriptBottom_ValidationMvc()
+    @Html.ScriptBottom_ChosenStyle()
+
+<script type="text/javascript">
+    $(function () {
+        var AreaNameDropdownlist = $("#AreaName");
+        var PageIdDropdownlist = $("#PageId");
+
+        AreaNameDropdownlist.change(function () {
+            ShowLoading();
+            var id = $(this).val(); // Use $(this) so you don't traverse the DOM again
+            $.getJSON("/Page/JsonList", { AreaName: id }, function (response) {
+                PageIdDropdownlist.empty(); // remove any existing options
+                $(response).each(function () {
+                    $(document.createElement('option'))
+                        .attr('value', this.Value)
+                        .text(this.Text)
+                        .appendTo(PageIdDropdownlist);
+                });
+
+                var $option = $('#PageId').find('option:selected');
+                PageIdDropdownlist.val($option.val());
+                PageIdDropdownlist.trigger("chosen:updated");
+
+                HideLoading();
+            });
+        });
+    });
+</script>
+
+}

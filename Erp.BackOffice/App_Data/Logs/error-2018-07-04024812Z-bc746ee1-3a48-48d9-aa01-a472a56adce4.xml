@@ -1,0 +1,168 @@
+﻿<error errorId="bc746ee1-3a48-48d9-aa01-a472a56adce4" application="/LM/W3SVC/2/ROOT" host="UTC2" type="System.Web.HttpException" message="A potentially dangerous Request.Path value was detected from the client (&amp;)." source="System.Web" detail="System.Web.HttpException (0x80004005): A potentially dangerous Request.Path value was detected from the client (&amp;).&#xD;&#xA;   at System.Web.HttpRequest.ValidateInputIfRequiredByConfig()&#xD;&#xA;   at System.Web.HttpApplication.PipelineStepManager.ValidateHelper(HttpContext context)" time="2018-07-04T02:48:12.9985379Z" statusCode="400">
+  <serverVariables>
+    <item name="ALL_HTTP">
+      <value string="HTTP_CONNECTION:keep-alive&#xD;&#xA;HTTP_ACCEPT:image/webp,image/apng,image/*,*/*;q=0.8&#xD;&#xA;HTTP_ACCEPT_ENCODING:gzip, deflate, br&#xD;&#xA;HTTP_ACCEPT_LANGUAGE:en-US,en;q=0.9&#xD;&#xA;HTTP_COOKIE:ASP.NET_SessionId=vd1mru5psjzwgjot2xbo2xqh; __RequestVerificationToken=HvPAJIMsfN0jfaPL-eR-wk4wjzNeNf4BZG9vDWt6QKGAxoVZTOFMqAzKKNfbeK5hJGN5DezR6kW-Tsz4dKo5vKYuI6aKrguFOB-_zunwbWc1; BO=06B2DE08B8B3B539AC36C14885F50DF59DC6098AA179E7445D6851A7FC360F890CF56FF091C93AC7814E34DC4941B2C2E0C4FC5BEA87FCF6DBBA7E2FE2BA155FB8995FF480C199FB2014CA3AE2A85FA87B3A1996CE47DD0C05C569D4041D6D9A&#xD;&#xA;HTTP_HOST:localhost:53200&#xD;&#xA;HTTP_REFERER:http://localhost:53200/RequestInbound/Detail/9&#xD;&#xA;HTTP_USER_AGENT:Mozilla/5.0 (Windows NT 6.3; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/67.0.3396.99 Safari/537.36&#xD;&#xA;" />
+    </item>
+    <item name="ALL_RAW">
+      <value string="Connection: keep-alive&#xD;&#xA;Accept: image/webp,image/apng,image/*,*/*;q=0.8&#xD;&#xA;Accept-Encoding: gzip, deflate, br&#xD;&#xA;Accept-Language: en-US,en;q=0.9&#xD;&#xA;Cookie: ASP.NET_SessionId=vd1mru5psjzwgjot2xbo2xqh; __RequestVerificationToken=HvPAJIMsfN0jfaPL-eR-wk4wjzNeNf4BZG9vDWt6QKGAxoVZTOFMqAzKKNfbeK5hJGN5DezR6kW-Tsz4dKo5vKYuI6aKrguFOB-_zunwbWc1; BO=06B2DE08B8B3B539AC36C14885F50DF59DC6098AA179E7445D6851A7FC360F890CF56FF091C93AC7814E34DC4941B2C2E0C4FC5BEA87FCF6DBBA7E2FE2BA155FB8995FF480C199FB2014CA3AE2A85FA87B3A1996CE47DD0C05C569D4041D6D9A&#xD;&#xA;Host: localhost:53200&#xD;&#xA;Referer: http://localhost:53200/RequestInbound/Detail/9&#xD;&#xA;User-Agent: Mozilla/5.0 (Windows NT 6.3; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/67.0.3396.99 Safari/537.36&#xD;&#xA;" />
+    </item>
+    <item name="APPL_MD_PATH">
+      <value string="/LM/W3SVC/2/ROOT" />
+    </item>
+    <item name="APPL_PHYSICAL_PATH">
+      <value string="D:\Projects\LUTOS.Warehouse\4.Source\ERP_LOTUS\src\Erp.BackOffice\" />
+    </item>
+    <item name="AUTH_TYPE">
+      <value string="" />
+    </item>
+    <item name="AUTH_USER">
+      <value string="" />
+    </item>
+    <item name="AUTH_PASSWORD">
+      <value string="*****" />
+    </item>
+    <item name="LOGON_USER">
+      <value string="" />
+    </item>
+    <item name="REMOTE_USER">
+      <value string="" />
+    </item>
+    <item name="CERT_COOKIE">
+      <value string="" />
+    </item>
+    <item name="CERT_FLAGS">
+      <value string="" />
+    </item>
+    <item name="CERT_ISSUER">
+      <value string="" />
+    </item>
+    <item name="CERT_KEYSIZE">
+      <value string="" />
+    </item>
+    <item name="CERT_SECRETKEYSIZE">
+      <value string="" />
+    </item>
+    <item name="CERT_SERIALNUMBER">
+      <value string="" />
+    </item>
+    <item name="CERT_SERVER_ISSUER">
+      <value string="" />
+    </item>
+    <item name="CERT_SERVER_SUBJECT">
+      <value string="" />
+    </item>
+    <item name="CERT_SUBJECT">
+      <value string="" />
+    </item>
+    <item name="CONTENT_LENGTH">
+      <value string="0" />
+    </item>
+    <item name="CONTENT_TYPE">
+      <value string="" />
+    </item>
+    <item name="GATEWAY_INTERFACE">
+      <value string="CGI/1.1" />
+    </item>
+    <item name="HTTPS">
+      <value string="off" />
+    </item>
+    <item name="HTTPS_KEYSIZE">
+      <value string="" />
+    </item>
+    <item name="HTTPS_SECRETKEYSIZE">
+      <value string="" />
+    </item>
+    <item name="HTTPS_SERVER_ISSUER">
+      <value string="" />
+    </item>
+    <item name="HTTPS_SERVER_SUBJECT">
+      <value string="" />
+    </item>
+    <item name="INSTANCE_ID">
+      <value string="2" />
+    </item>
+    <item name="INSTANCE_META_PATH">
+      <value string="/LM/W3SVC/2" />
+    </item>
+    <item name="LOCAL_ADDR">
+      <value string="::1" />
+    </item>
+    <item name="PATH_INFO">
+      <value string="/Uploads/Product/product_a-z_multivitamin_plus_q10_&amp;_lutein.png" />
+    </item>
+    <item name="PATH_TRANSLATED">
+      <value string="D:\Projects\LUTOS.Warehouse\4.Source\ERP_LOTUS\src\Erp.BackOffice\Uploads\Product\product_a-z_multivitamin_plus_q10_&amp;_lutein.png" />
+    </item>
+    <item name="QUERY_STRING">
+      <value string="" />
+    </item>
+    <item name="REMOTE_ADDR">
+      <value string="::1" />
+    </item>
+    <item name="REMOTE_HOST">
+      <value string="::1" />
+    </item>
+    <item name="REMOTE_PORT">
+      <value string="49866" />
+    </item>
+    <item name="REQUEST_METHOD">
+      <value string="GET" />
+    </item>
+    <item name="SCRIPT_NAME">
+      <value string="/Uploads/Product/product_a-z_multivitamin_plus_q10_&amp;_lutein.png" />
+    </item>
+    <item name="SERVER_NAME">
+      <value string="localhost" />
+    </item>
+    <item name="SERVER_PORT">
+      <value string="53200" />
+    </item>
+    <item name="SERVER_PORT_SECURE">
+      <value string="0" />
+    </item>
+    <item name="SERVER_PROTOCOL">
+      <value string="HTTP/1.1" />
+    </item>
+    <item name="SERVER_SOFTWARE">
+      <value string="Microsoft-IIS/10.0" />
+    </item>
+    <item name="URL">
+      <value string="/Uploads/Product/product_a-z_multivitamin_plus_q10_&amp;_lutein.png" />
+    </item>
+    <item name="HTTP_CONNECTION">
+      <value string="keep-alive" />
+    </item>
+    <item name="HTTP_ACCEPT">
+      <value string="image/webp,image/apng,image/*,*/*;q=0.8" />
+    </item>
+    <item name="HTTP_ACCEPT_ENCODING">
+      <value string="gzip, deflate, br" />
+    </item>
+    <item name="HTTP_ACCEPT_LANGUAGE">
+      <value string="en-US,en;q=0.9" />
+    </item>
+    <item name="HTTP_COOKIE">
+      <value string="ASP.NET_SessionId=vd1mru5psjzwgjot2xbo2xqh; __RequestVerificationToken=HvPAJIMsfN0jfaPL-eR-wk4wjzNeNf4BZG9vDWt6QKGAxoVZTOFMqAzKKNfbeK5hJGN5DezR6kW-Tsz4dKo5vKYuI6aKrguFOB-_zunwbWc1; BO=06B2DE08B8B3B539AC36C14885F50DF59DC6098AA179E7445D6851A7FC360F890CF56FF091C93AC7814E34DC4941B2C2E0C4FC5BEA87FCF6DBBA7E2FE2BA155FB8995FF480C199FB2014CA3AE2A85FA87B3A1996CE47DD0C05C569D4041D6D9A" />
+    </item>
+    <item name="HTTP_HOST">
+      <value string="localhost:53200" />
+    </item>
+    <item name="HTTP_REFERER">
+      <value string="http://localhost:53200/RequestInbound/Detail/9" />
+    </item>
+    <item name="HTTP_USER_AGENT">
+      <value string="Mozilla/5.0 (Windows NT 6.3; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/67.0.3396.99 Safari/537.36" />
+    </item>
+  </serverVariables>
+  <cookies>
+    <item name="ASP.NET_SessionId">
+      <value string="vd1mru5psjzwgjot2xbo2xqh" />
+    </item>
+    <item name="__RequestVerificationToken">
+      <value string="HvPAJIMsfN0jfaPL-eR-wk4wjzNeNf4BZG9vDWt6QKGAxoVZTOFMqAzKKNfbeK5hJGN5DezR6kW-Tsz4dKo5vKYuI6aKrguFOB-_zunwbWc1" />
+    </item>
+    <item name="BO">
+      <value string="06B2DE08B8B3B539AC36C14885F50DF59DC6098AA179E7445D6851A7FC360F890CF56FF091C93AC7814E34DC4941B2C2E0C4FC5BEA87FCF6DBBA7E2FE2BA155FB8995FF480C199FB2014CA3AE2A85FA87B3A1996CE47DD0C05C569D4041D6D9A" />
+    </item>
+  </cookies>
+</error>

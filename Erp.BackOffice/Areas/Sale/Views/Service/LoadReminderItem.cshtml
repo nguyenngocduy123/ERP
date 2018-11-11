@@ -1,0 +1,16 @@
+﻿@model Erp.BackOffice.Sale.Models.ServiceReminderGroupViewModel
+
+<tr role="@Model.OrderNo.Value" id="reminder_item_@Model.OrderNo" data-id="@Model.OrderNo">
+    <td class="text-center">
+        @(Model.OrderNo+1)
+    </td>
+    <td class="reminder_item_id">
+        @Html.Hidden("ReminderList[" + Model.OrderNo + "].ServiceReminderId", Model.ServiceReminderId)
+ @Model.Name
+    </td>
+    <td class="text-center">
+        <a class="btn-delete-reminder_item_id">
+            <i class="ace-icon fa fa-trash red bigger-120" style="cursor:pointer"></i>
+        </a>
+    </td>
+</tr>

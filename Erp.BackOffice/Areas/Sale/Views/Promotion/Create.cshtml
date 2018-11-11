@@ -1,0 +1,369 @@
+﻿@using Erp.BackOffice.App_GlobalResources
+@using Erp.BackOffice.Helpers
+@using Erp.BackOffice.Sale.Models
+
+@model PromotionViewModel
+
+@{
+    ViewBag.Title = Wording.PageCreate_Promotion;
+
+    Layout = "~/Views/Shared/" + (Request["IsPopup"] == null ? "ACE_AdminLayout.cshtml" : "_PopupLayout.cshtml");
+    Erp.BackOffice.Models.PageSetting pageSetting = new Erp.BackOffice.Models.PageSetting
+    {
+        ModuleName = "Promotion",
+        ActionName = "Create",
+        PageTitle = ViewBag.Title,
+        DisplaySearchPanel = false,
+        IsPopup = false,
+        DisplayBackButton = true
+    };
+    IEnumerable<SelectListItem> productCategoryList = Erp.BackOffice.Helpers.Common.GetSelectList_Category("product", null, "value");
+    IEnumerable<SelectListItem> serviceCategoryList = Erp.BackOffice.Helpers.Common.GetSelectList_Category("service", null, "value");
+    IEnumerable<ProductViewModel> productList = (IEnumerable<ProductViewModel>)ViewBag.productList;
+
+}
+
+@section HeadOfPage {
+    @Html.ScriptTop_ChosenStyle()
+}
+@using (Html.BeginPageHeaderContainer(pageSetting))
+{
+
+}
+@using (Html.BeginForm_AceStyle((string)ViewBag.Title, "Create", "Promotion", null, FormMethod.Post, new { @class = "form-horizontal clearfix", id = "Promotion" }))
+{
+    @Html.ValidationSummary(true)
+
+    <input type="hidden" value="@Request["IsPopup"]" name="IsPopup" />
+
+    <div class="col-sm-6">
+        @Html.CustomTextboxFor(model => model.Name, null, null, WidthType.span12)
+        @Html.CustomTextboxFor(model => model.Code, null, null, WidthType.span12)
+        
+        <div class="control-group form-group">
+            <label class="control-label no-padding-right col-lg-5 col-md-4 col-sm-4" for="IsAllProduct">@Wording.IsAllProduct</label>
+            <div class="control-value col-lg-7 col-md-8 col-sm-8">
+                <div class="clearfix">
+                    <label style="margin:4px 0 0">
+                        <input type="checkbox" class="ace" id="IsAllProduct" name="IsAllProduct" @(Model.IsAllProduct == true ? "checked" : "") value="True" />
+                        <span class="lbl"></span>
+                    </label>
+                </div>
+            </div>
+        </div>
+
+        <div class="control-group form-group">
+            <label class="control-label no-padding-right col-lg-5 col-md-4 col-sm-4" for="IsAllService">@Wording.IsAllService</label>
+            <div class="control-value col-lg-7 col-md-8 col-sm-8">
+                <div class="clearfix">
+                    <label style="margin:4px 0 0">
+                        <input type="checkbox" class="ace" id="IsAllService" name="IsAllService" @(Model.IsAllService == true ? "checked" : "") value="True" />
+                        <span class="lbl"></span>
+                    </label>
+                </div>
+            </div>
+        </div>
+
+        @Html.CustomTextboxFor(model => model.PercentValue, null, null, WidthType.span12, true, new Dictionary<string, object> { { "class", "col-sm-12 text-right" } }, null, "control-label no-padding-right col-lg-5 col-md-4 col-sm-4", "col-lg-7 col-md-8 col-sm-8", "hide", "group-PercentValue")
+
+    </div>
+    <div class="col-sm-6">
+        @Html.DateInput(model => model.StartDate, "dd/MM/yyyy", "99/99/9999", true)
+        @Html.DateInput(model => model.EndDate, "dd/MM/yyyy", "99/99/9999", true)
+        @Html.CustomTextAreaFor(model => model.Note, Wording.Note, WidthType.span12, true, null, "control-label no-padding-right col-lg-5 col-md-4 col-sm-4", "col-lg-7 col-md-8 col-sm-8")        
+    </div>
+
+    <div class="col-sm-12 box box-detail-list">
+        <p>Các sản phẩm khuyến mãi</p>
+        <a class="btn btn-xs btn-primary btn-add-detail-item" role="product">Thêm sản phẩm</a>
+        <a class="btn btn-xs btn-primary btn-add-detail-item" role="service">Thêm dịch vụ</a>
+
+        <div class="clearfix top-15"></div>
+        <input data-val="true" data-val-required="Chưa chọn sản phẩm" id="numOfdetailItem" name="numOfdetailItem" type="text" value="1" style="">
+        <span class="field-validation-valid help-inline" style="color:#F44336" data-valmsg-for="numOfdetailItem" data-valmsg-replace="true"></span>
+
+        <div class="box-body">
+            <div class="table-responsive">
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th style="width:40px">STT</th>
+                            <th style="width:100px">Loại</th>
+                            <th style="width:200px">Danh mục</th>
+                            <th>Tên sản phẩm</th>
+                            <th style="width:100px">Số lượng từ</th>
+                            <th style="width:200px">Giá trị</th>
+                            <th style="width:50px;"></th>
+                        </tr>
+                    </thead>
+
+                    <tbody id="detailList">
+                        <tr role="0">
+                            <td class="text-center">1</td>
+                            <td class="">
+                                <span class="type_product">Sản phẩm</span>
+                                <span class="type_service">Dịch vụ</span>
+                            </td>
+                            <td class="category-block">
+                                <input type="hidden" name="DetailList[0].Type" value="product" class="detail_item_type" />
+                                <select class="detail_item_category_type type_product" name="DetailList[0].CategoryCode" style="width:100%">
+                                    @foreach (var item in productCategoryList.OrderBy(x => x.Text))
+                                    {
+                                        <option value="@item.Value">@item.Text</option>
+                                    }
+                                </select>
+                                <select class="detail_item_category_type type_service" name="DetailList[0].CategoryCode" style="width:100%">
+                                    @foreach (var item in serviceCategoryList.OrderBy(x => x.Text))
+                                    {
+                                        <option value="@item.Value">@item.Text</option>
+                                    }
+                                </select>
+                            </td>
+                            
+                            <td class="has-error product-block">
+                                <div class="form-group control-group" style="margin:0">
+                                    <select id="DetailList_0_ProductId" name="DetailList[0].ProductId" class="detail_item_id type_product" style="width:100%">
+                                        <option value="">- Tất cả sản phẩm-</option>
+                                        @foreach (var item in productList.Where(x => x.Type == "product").OrderBy(x => x.Name))
+                                        {
+                                            <option value="@item.Id" data-value="@item.Id | @item.Name | @item.QuantityTotalInventory" data-code="@item.Code" data-barcode="@item.Barcode" data-product-type="@item.CategoryCode" data-price="@item.PriceOutbound" data-unit="@item.Unit">@item.Name</option>
+                                        }
+                                    </select>
+                                    <select id="DetailList_0_ProductId" name="DetailList[0].ProductId" class="detail_item_id type_service" style="width:100%">
+                                        <option value="">- Tất cả dịch vụ-</option>
+                                        @foreach (var item in productList.Where(x => x.Type == "service").OrderBy(x => x.Name))
+                                        {
+                                            <option value="@item.Id" data-value="@item.Id | @item.Name | @item.QuantityTotalInventory" data-code="@item.Code" data-barcode="@item.Barcode" data-product-type="@item.CategoryCode" data-price="@item.PriceOutbound" data-unit="@item.Unit">@item.Name</option>
+                                        }
+                                    </select>
+                                </div>
+                            </td>
+                            <td class="has-error">
+                                <div class="form-group">
+                                    <input type="number" style="width:100%" min="1" value="1" data-val-range="Số lượng phải lớn hơn 1" name="DetailList[0].QuantityFor" id="DetailList_0_QuantityFor" class="detail_item_qty" />
+                                    <span style="display:block" class="field-validation-valid help-inline" data-valmsg-for="DetailList[0].QuantityFor" data-valmsg-replace="true"></span>
+                                </div>
+                            </td>
+                            <td class="has-error">
+                                <div class="form-group">
+                                    <input type="number" style="width:100%" class="detail_item_percent text-right" value="0" data-val="true" name="DetailList[0].PercentValue" id="DetailList_0_PercentValue" data-val-number="Phải nhập số" data-val-range="Giá trị khuyến mãi từ 1 đến 100." data-val-range-max="100" data-val-range-min="1">
+                                    <span class="field-validation-valid help-inline" data-valmsg-for="DetailList[0].PercentValue" data-valmsg-replace="true"></span>
+                                </div>
+                            </td>
+                            <td class="text-center"><a class="btn btn-xs btn-danger">X</a></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="col-sm-12">
+       @using (Html.BeginButtonContainer(pageSetting))
+        {
+        <button class="btn btn-mini btn-primary" type="submit" name="Submit" value="Save">
+            <i class="ace-icon fa fa-save"></i>
+            @Wording.Save
+        </button>
+        }
+    </div>
+
+    
+}
+
+@section Scripts {    
+
+    @Html.ScriptBottom_ValidationMvc()    
+    @Html.ScriptBottom_ChosenStyle()
+    @Html.ScriptBottom_DatePicker("dd/mm/yyyy")
+
+
+    <script>
+        //truyền từ action create của controller qua khi thực hiện submit và return về lại view create, để nhận biết là được gọi theo dạng popup
+        var closePopup = '@ViewBag.closePopup';
+        $(document).ready(function () {
+            //nếu là được gọi theo dạng popup từ form khác thì chạy đoạn code bên dưới
+            if (closePopup != '') {
+                var option = '<option value="@Model.Id" >@Model.Name</option>';
+                //tên funtion có thể khác theo từng công việc riêng (đây chỉ là mẫu khi thêm mới sẽ gọi lại)
+                window.parent.ClosePopupAndAppendSelect(option);
+            }
+        });
+    </script>
+
+    <script>
+        var $tr_template = $('#detailList tr:first-child').clone();
+
+        $(document).ready(function () {
+            //mặc định cho chọn sản phẩm nên xóa selectbox dịch vụ
+            $('#detailList tr:first-child select.type_service, #detailList tr:first-child span.type_service').remove();
+
+            $('#PercentValue').val('0').numberOnly();
+
+            $('#IsAllProduct, #IsAllService').change(function () {
+                if ($(this).is(':checked')) {
+                    $('#group-PercentValue').removeClass('hide');
+                    $('.box-detail-list').hide();
+                    $('#detailList tbody tr').remove();
+                } else {
+                    $('#group-PercentValue').addClass('hide');
+                    $('.box-detail-list').show();
+                }
+            });
+
+            $('#detailList').on('change', '.detail_item_category_type', function () {
+                var $this = $(this);
+                var $item = $this.closest('tr').find('.detail_item_id');
+                var $option = $item.find('option:not([value=""])');
+                $option.css('display', 'block');
+                $item.val('').trigger('change');
+                if ($this.val() != '') {
+                    $.each($option, function (index, elem) {
+                        if ($(elem).data('product-type') != $this.val()) {
+                            $(elem).css('display', 'none');
+                        }
+                    });
+                }
+            });
+            
+            $('#detailList').on('change', '.detail_item_id', function () {
+                var categoryCode = $(this).find('option:selected').data('product-type');
+                if (categoryCode != undefined && categoryCode != '') {
+                    $(this).closest('tr').find('.detail_item_category_type').val(categoryCode);
+                }
+            });
+
+            //thêm mới sản phẩm
+            $('.btn-add-detail-item').click(function () {
+
+                var len = $('#detailList tr').length;
+                var tr_new = $tr_template.clone()[0].outerHTML;
+                tr_new = tr_new.replace(/\[0\]/g, "[" + len + "]").replace(/_0_/g, "_" + len + "_");
+                var $tr_new = $(tr_new);
+                $tr_new.attr('role', len);
+                $tr_new.find('td:first-child').text(len + 1);
+                //đưa về tùy chọn cho sản phẩm
+                $tr_new.find('select').val('');
+                $tr_new.find('select.detail_item_id option').show();
+                //nếu là nút bấm thêm sản phẩm
+                if ($(this).attr('role') == 'product') {
+                    $tr_new.find('select.type_service, span.type_service').remove();
+                    $tr_new.find('.detail_item_type').val('product');
+                } else {// nếu là nút bấm thêm dịch vụ
+                    $tr_new.find('select.type_product, span.type_product').remove();
+                    $tr_new.find('.detail_item_type').val('service');
+                }
+
+                var optionsSeletedValue = ',';
+                $('#detailList select.detail_item_id').each(function (index, elem) {
+                    if ($(elem).val() != '')
+                        optionsSeletedValue += $(elem).val() + ",";
+                });
+                $tr_new.find('select.detail_item_id option').each(function (index, elem) {
+                    var value = ',' + $(elem).attr('value') + ',';
+                    if (optionsSeletedValue.indexOf(value) != -1) {
+                        $(elem).attr('disabled', 'disabled');
+                    }
+                });
+
+                $('#detailList').append($tr_new);
+                var $tr_after_append = $('tr[role="' + len + '"]');
+
+                $('#numOfdetailItem').next('span').text('');
+                $('#numOfdetailItem').val(len);
+            });
+
+            // xóa sản phẩm
+            $('#detailList').on('click', '.btn-danger', function () {
+                $(this).closest('tr').remove();
+                if ($('#detailList tr').length == 0) {
+                    $('#numOfdetailItem').val('');
+                }
+
+                var indexOfTr = 0;
+                $('#detailList tr').each(function (index, tr) {
+
+                    $(tr).find('.detail_item_category_type').attr('name', 'DetailList[' + indexOfTr + '].ProductCategoryCode');
+                    $(tr).find('.detail_item_id').attr('name', 'DetailList[' + indexOfTr + '].ProductId').attr('id', 'DetailList_' + indexOfTr + '_ProductId');
+                    $(tr).find('.detail_item_qty').attr('name', 'DetailList[' + indexOfTr + '].QuantityFor').attr('id', 'DetailList_' + indexOfTr + '_QuantityFor');
+                    $(tr).find('.detail_item_value').attr('name', 'DetailList[' + indexOfTr + '].PercentValue').attr('id', 'DetailList_' + indexOfTr + '_PercentValue');
+                    $(tr).find('.detail_id').attr('name', 'DetailList[' + indexOfTr + '].Id');
+
+                    indexOfTr++;
+                });
+            });
+
+            resetLableRequired('#Promotion');
+            $('#Promotion').submit(function () {
+                ShowLoading();
+                if ($(this).valid()) {
+                    if (checkFieldLiveRequired($(this)) == true) {
+                        $('.help-inline').html('');
+
+                        var empty_row_product = $('#detailList tr').filter(function () {
+                            return $(this).find('.detail_item_category_type.type_product').val() == '';
+                        });
+                        var not_empty_row_product = $('#detailList tr').filter(function () {
+                            return $(this).find('.detail_item_category_type.type_product').val() != '' && $(this).find('.detail_item_id.type_product').val() == '';
+                        });
+
+                        var empty_row_service = $('#detailList tr').filter(function () {
+                            return $(this).find('.detail_item_category_type.type_service').val() == '';
+                        });
+                        var not_empty_row_service = $('#detailList tr').filter(function () {
+                            return $(this).find('.detail_item_category_type.type_service').val() != '' && $(this).find('.detail_item_id.type_service').val() == '';
+                        });
+
+                        var error_message = '';
+
+                        if (empty_row_product.length > 0) {
+                            if (not_empty_row_product.length > 0)
+                                error_message += 'Xin hãy xoá các dòng chưa chọn cả danh mục và sản phẩm. Hoặc chọn danh mục hay sản phẩm cho dòng đó.';
+                            else
+                                if (not_empty_row_service.length == 0)
+                                    error_message += 'Xin hãy chọn danh mục hoặc sản phẩm cho mỗi dòng.';
+                        }
+
+                        if (empty_row_service.length > 0) {
+                            if (not_empty_row_service.length > 0)
+                                error_message += (error_message != '' ? '</br>' : '') + 'Xin hãy xoá các dòng chưa chọn cả danh mục và dịch vụ. Hoặc chọn danh mục hay dịch vụ cho dòng đó.';
+                            else
+                                if (not_empty_row_product.length == 0)
+                                    error_message += (error_message != '' ? '</br>' : '') + 'Xin hãy chọn danh mục hoặc dịch vụ cho mỗi dòng.';
+                        }
+
+                        $('span[data-valmsg-for="numOfdetailItem"]').html(error_message);
+
+                        if (error_message == '') {
+                            var empty_row_percent = $('#detailList .detail_item_percent').filter(function () {
+                                return parseInt($(this).val()) < 1 ;
+                            });
+
+                            if (empty_row_percent.length == 0)
+                                return true;
+                            else {
+                                $.each(empty_row_percent, function (index, elem) {
+                                    $(elem).next('span').append($('<span>Giá trị khuyến mãi từ 1 đến 100.</span>'));
+                                });
+                            }
+                        }
+                      
+                        HideLoading();
+                        return false;
+                        
+                    } else {
+                        console.log('validate checkFieldLiveRequired');
+                    }
+                } else {
+                    console.log('validate mvc');
+                }
+
+                HideLoading(); return false;
+            });
+
+        }); // end document ready
+
+    </script>
+    
+}

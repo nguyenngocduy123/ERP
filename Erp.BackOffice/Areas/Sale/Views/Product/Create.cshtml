@@ -1,0 +1,184 @@
+﻿@using Erp.BackOffice.App_GlobalResources
+@using Erp.BackOffice.Helpers
+@using Erp.BackOffice.Sale.Models
+
+@model ProductViewModel
+
+@{
+    ViewBag.Title = Wording.PageCreate_Product;
+
+    Layout = "~/Views/Shared/" + (Request["IsPopup"] == null ? "ACE_AdminLayout.cshtml" : "_PopupLayout.cshtml");
+    Erp.BackOffice.Models.PageSetting pageSetting = new Erp.BackOffice.Models.PageSetting
+    {
+        ModuleName = "Product",
+        ActionName = "Create",
+        PageTitle = ViewBag.Title,
+        DisplaySearchPanel = false,
+        IsPopup = false,
+        DisplayBackButton = true
+    };
+
+    IEnumerable<SelectListItem> ManufacturerList = Erp.BackOffice.Helpers.Common.GetSelectList_Category("manufacturerList", null, "value");
+    IEnumerable<SelectListItem> CategoryList = Erp.BackOffice.Helpers.Common.GetSelectList_Category("product", null, "value");
+    IEnumerable<SelectListItem> productUnitList = Erp.BackOffice.Helpers.Common.GetSelectList_Category("productUnit", null, "value");
+    IEnumerable<SelectListItem> productGroupList = Erp.BackOffice.Helpers.Common.GetSelectList_Category("Categories_product", null, "value");
+}
+
+@section HeadOfPage {
+    @Html.ScriptTop_ChosenStyle()
+}
+
+@if (ViewBag.FailedMessage != null && ViewBag.FailedMessage != "")
+{
+    <div class="alert alert-block alert-danger">
+        <button class="close" data-dismiss="alert" type="button">
+            <i class="ace-icon fa fa-times"></i>
+        </button>
+        <i class="ace-icon fa fa-warning red"></i>
+        @ViewBag.FailedMessage
+    </div>
+}
+@using (Html.BeginPageHeaderContainer(pageSetting))
+{
+
+}
+
+@using (Html.BeginForm_AceStyle((string)ViewBag.Title, "Create", "Product", null, FormMethod.Post, new { id = "CreateProduct", @class = "form-horizontal clearfix", enctype = "multipart/form-data" }))
+{
+    //@Html.AntiForgeryToken()
+    @Html.ValidationSummary(true)
+    <input type="hidden" name="IsPopup" value="@Request["IsPopup"]" />
+    <input type="hidden" name="Type" value="product" />
+
+    <div class="row">
+        <div class="col-sm-6">
+            @Html.CustomTextboxFor(model => model.Name, null, null, WidthType.span12)
+            @Html.CustomTextboxFor(model => model.Code, null, null, WidthType.span12)
+            @Html.CustomDropDownListFor(model => model.Manufacturer, ManufacturerList, WidthType.span12, true, null, DropdownListStyle.DropdownListStyleDefault)
+            @Html.CustomDropDownListFor(model => model.CategoryCode, CategoryList, WidthType.span12, true, null, DropdownListStyle.DropdownListStyleDefault)
+            @Html.CustomDropDownListFor(model => model.ProductGroup, productGroupList, WidthType.span12, true, null, DropdownListStyle.DropdownListStyleDefault)
+            @Html.CustomDropDownListFor(model => model.Unit, productUnitList, WidthType.span12, true, null, DropdownListStyle.DropdownListStyleDefault)
+            @Html.CustomTextboxFor(model => model.Size, null, null, WidthType.span12)
+            <div id="" class="control-group form-group">
+                <label class="control-label col-lg-5 col-md-4 col-sm-4">Giá nhập</label>
+                <div class="control-value col-lg-7 col-md-8 col-sm-8">
+                    <div class="clearfix">
+                        <input class="numberinput2 col-sm-12 text-right" id="PriceInbound" name="PriceInbound" type="text" value="@Model.PriceInbound">
+                    </div>
+                </div>
+            </div>
+            <div id="" class="control-group form-group">
+                <label class="control-label col-lg-5 col-md-4 col-sm-4">Giá xuất</label>
+                <div class="control-value col-lg-7 col-md-8 col-sm-8">
+                    <div class="clearfix">
+                        <input class="numberinput2 col-sm-12 text-right" id="PriceOutbound" name="PriceOutbound" type="text" value="@Model.PriceOutbound">
+                    </div>
+                </div>
+            </div>
+            @Html.CustomTextboxFor(model => model.MinInventory, null, null, WidthType.span12, true, new Dictionary<string, object> { { "class", "col-sm-12 text-right" } })
+         </div>
+        <div class="col-sm-6">
+            <div class="wrap-btn-upload">
+                <a class="btn btn-primary btn-sm"><i class="fa fa-upload"></i><span>Tải hình mới</span></a>
+                <input type="file" id="file-image" name="file-image" class="file-image" onchange="previewFileImage(event, '#display-image img')" />
+            </div>
+            <div class="text-center" id="display-image">
+                <img src="/assets/css/images/noimage.gif" title="@Model.Name" id="" style="max-height:250px"/>
+            </div>
+        </div>
+    </div>
+
+    <div class="top-10">
+        <textarea class="ckeditor" cols="20" id="Description" name="Description" placeholder="" rows="2">@Model.Description</textarea>
+    </div>
+
+    using (Html.BeginButtonContainer(pageSetting))
+    {
+        <a class="btn btn-mini btn-primary" id="Save" name="Save" value="Save">
+            <i class="ace-icon fa fa-save"></i>
+            @Wording.Save
+        </a>
+    }
+
+}
+
+@section Scripts {
+    <link href="/Scripts/ckeditor/contents.css" rel="stylesheet" />
+    <script src="/Scripts/ckeditor/ckeditor.js"></script>
+    <script>
+        $(document).ready(function () {
+            LoadNumberInput();
+            $("#IsMoneyDiscount").on('change', function () {
+                if ($("#IsMoneyDiscount").is(':checked')) {
+                    $("#IsMoneyDiscount").val("true");
+                    $("#lb_IsCheck").text("VNĐ");
+                }
+                else {
+                    $("#IsMoneyDiscount").val("false");
+                    $("#lb_IsCheck").text("%");
+                }
+            });
+         //   $('#PriceInbound').priceFormat();
+            $('#MinInventory, #QuantityService').numberFormat();
+
+            $('#CategoryCode').change(function () {
+                var $this = $(this);
+                $('.list-attr-by-category').html('');
+                $.get('/ObjectAttribute/GetListByModuleCategory', { category: $this.val() }, function (res) {
+                    if (res.replace(/\s+/, '') != '') {
+                        $('.list-attr-by-category').html(res);
+                        initDataTypeInput($('.list-attr-by-category input'));
+                        $('.box-attr').show();
+                    }
+                });
+            });
+
+            resetLableRequired('#CreateProduct');
+            //parseValidatorForm('#ProductInBound');
+            $('#Save').click(function () {
+                ShowLoading();
+                ClearFormatBeforeSubmit($("#CreateProduct"));
+                $("#CreateProduct").submit();
+               // HideLoading();
+            });
+
+            $("#Code").change(function () {
+                $.get('/Product/CheckCodeExsist/', { id: @Model.Id, code: $(this).val() }, function (rs) {
+                    if (rs != '') {
+                        alert(rs);
+                    }
+                });
+            });
+
+        });
+
+        function initCkeditor() {
+            $('.ckeditor').ckeditor({
+                "extraPlugins": 'imagebrowser',
+                "imageBrowser_listUrl": "@Url.Action("ListJson","Images")",
+                // Define the toolbar groups as it is a more accessible solution.
+                toolbarGroups: [
+                    { "name": "document", "groups": ["mode", "document", "doctools"] },
+                    { "name": "editing", "groups": ["find", "selection", "spellchecker"] },
+                    { "name": "forms" },
+                    { "name": "tools" },
+                    { "name": "basicstyles", "groups": ["basicstyles", "cleanup"] },
+                    { "name": "clipboard", "groups": ["clipboar", "undo"] },
+                    { "name": "links", "groups": ["links"] },
+                    { "name": "paragraph", "groups": ["list", "blocks"] },
+                    { "name": "insert", "groups": ["insert"] },
+                    { "name": "styles", "groups": ["styles"] },
+                    //{ "name": "about", "groups": ["about"] },
+                    { "name": "styles" },
+                    { "name": "colors" },
+                    { "name": "align", "groups": ['JustifyLeft', 'JustifyCenter', 'JustifyRight', 'JustifyBlock'] }
+
+                ],
+                // Remove the redundant buttons from toolbar groups defined above.
+                removeButtons: 'Underline,Strike,Subscript,Superscript,Anchor,Styles,Specialchar'
+            });
+        }
+    </script>
+    @Html.ScriptBottom_ValidationMvc()
+    @Html.ScriptBottom_ChosenStyle()
+}

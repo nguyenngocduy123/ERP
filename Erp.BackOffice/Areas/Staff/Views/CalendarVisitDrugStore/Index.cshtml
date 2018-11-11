@@ -1,0 +1,300 @@
+@model CalendarVisitDrugStoreViewModel
+@using Erp.BackOffice.Areas.Cms.Models
+@using Erp.BackOffice.App_GlobalResources
+@using Erp.BackOffice.Staff.Models
+@using Erp.BackOffice.Helpers
+@using GridMvc.Html
+
+@{
+    ViewBag.Title = "Kế hoạch thăm nhà thuốc";
+    bool isPopup = Request["IsPopup"] != null && Request["IsPopup"].ToString().ToLower() == "true" ? true : false;
+    if (isPopup)
+    {
+        Layout = "~/Views/Shared/_PopupLayout.cshtml";
+    }
+    else
+    {
+        Layout = "~/Views/Shared/ACE_AdminLayout.cshtml";
+    }
+    Erp.BackOffice.Models.PageSetting pageSetting = new Erp.BackOffice.Models.PageSetting
+    {
+        ModuleName = "CalendarVisitDrugStore",
+        ActionName = "Index",
+        PageTitle = ViewBag.Title,
+        DisplaySearchPanel = true,
+        IsPopup = false,
+        DisplayBackButton = false
+    };
+    string month = Request["Month"] != null ? Request["Month"] : DateTime.Now.Month.ToString();
+    string year = Request["Year"] != null ? Request["Year"] : DateTime.Now.Year.ToString();
+    string branchId = Request["branchId"] != null ? Request["branchId"] : "";
+    if (Request["branchId"] == null)
+    {
+        if (Erp.BackOffice.Filters.SecurityFilter.IsAdminDrugStore() || Erp.BackOffice.Filters.SecurityFilter.IsStaffDrugStore())
+        {
+            branchId = Erp.BackOffice.Helpers.Common.CurrentUser.DrugStore;
+        }
+    }
+    ViewData["branchId"] = branchId;
+        string tdvId = Request["tdvId"] != null ? Request["tdvId"] : "";
+}
+<link href="~/Scripts/fullcalendar-3.6.1/fullcalendar.min.css" rel="stylesheet" />
+<link href="~/assets/css/jquery-ui.custom.min.css" rel="stylesheet" />
+<style>
+    .btn.active {
+        background-color: #428BCA !important;
+        border-color: #428BCA !important;
+    }
+</style>
+<style type="text/css">
+    /*.fc-day-grid-event .fc-time {
+        display: none;
+    }*/
+
+    .fc-day-grid-event > .fc-content {
+            white-space: normal;
+            overflow: auto;
+        }
+    .badge, .badge-red.label {
+        position: initial !important;
+    }
+
+    .fc-day-grid-event {
+        padding: 1px 1px !important;
+    }
+
+    .fc-event {
+        border: none !important;
+    }
+
+    .popover {
+        max-width: 350px !important;
+    }
+
+    .itemdiv > .body {
+        margin-left: 0px !important;
+    }
+
+    .itemdiv .tools {
+        left: inherit;
+    }
+
+    #external-events {
+        float: left;
+        width: 150px;
+        padding: 0 10px;
+        border: 1px solid #ccc;
+        background: #eee;
+        text-align: left;
+    }
+
+        #external-events h4 {
+            font-size: 16px;
+            margin-top: 0;
+            padding-top: 1em;
+        }
+
+        #external-events .fc-event {
+            margin: 10px 0;
+            cursor: pointer;
+        }
+
+        #external-events p {
+            margin: 1.5em 0;
+            font-size: 11px;
+            color: #666;
+        }
+
+            #external-events p input {
+                margin: 0;
+                vertical-align: middle;
+            }
+    /*#calendar {
+        float: right;
+        width: 900px;
+    }*/
+</style>
+@using (Html.BeginPageHeaderContainer(pageSetting))
+{
+    @Html.Partial("_PartialSearchDrugStore", ViewData["branchId"])
+    <select id="Month" name="Month">
+        @for (int i = 1; i <= 12; i++)
+        {
+            <option @(month == i.ToString() ? "selected" : "") value="@i">Tháng @i</option>
+        }
+    </select>
+    <select id="Year" name="Year">
+        @for (int i = 2016; i <= DateTime.Now.AddYears(1).Year; i++)
+        {
+            <option @(year == i.ToString() ? "selected" : "") value="@i">Năm @i</option>
+        }
+    </select>
+    <select id="tdvId" name="tdvId">
+        <option @(tdvId =="" ? "selected" : "") value="">Trình dược viên</option>
+        @foreach (var item in SelectListHelper.GetSelectTrinhDuocVien())
+        {
+            <option @(tdvId == item.Id.ToString() ? "selected" : "") value="@item.Id">@item.FullName</option>
+        }
+    </select>
+
+}
+@if (ViewBag.SuccessMessage != null && ViewBag.SuccessMessage != "")
+{
+    <div class="alert alert-block alert-success">
+        <button class="close" data-dismiss="alert" type="button">
+            <i class="ace-icon fa fa-times"></i>
+        </button>
+        <i class="ace-icon fa fa-check green"></i>
+        @ViewBag.SuccessMessage
+    </div>
+}
+
+@if (ViewBag.FailedMessage != null && ViewBag.FailedMessage != "")
+{
+    <div class="alert alert-block alert-danger">
+        <button class="close" data-dismiss="alert" type="button">
+            <i class="ace-icon fa fa-times"></i>
+        </button>
+        <i class="ace-icon fa fa-warning red"></i>
+        @ViewBag.FailedMessage
+    </div>
+}
+
+<div class="row">
+    @*<div class="col-sm-5">
+
+        </div>*@
+    <div class="col-sm-12" id="">
+        <div id="calendar"></div>
+    </div>
+</div>
+
+@section Scripts {
+    @*<script src="~/assets/js/locale-all.js"></script>*@
+    <script src="~/Scripts/fullcalendar-3.6.1/locale/vi.js"></script>
+    <script src="~/Scripts/fullcalendar-3.6.1/fullcalendar.min.js"></script>
+    <script src="~/assets/js/bootbox.min.js"></script>
+    <script src="~/assets/js/moment.min.js"></script>
+
+    <script>
+
+        jQuery(function ($) {
+
+
+            $('#external-events div.external-event').each(function () {
+
+                // create an Event Object (http://arshaw.com/fullcalendar/docs/event_data/Event_Object/)
+                // it doesn't need to have a start or end
+                var eventObject = {
+                    title: $.trim($(this).text()) // use the element's text as the event title
+                };
+
+                // store the Event Object in the DOM element so we can get to it later
+                $(this).data('eventObject', eventObject);
+
+                // make the event draggable using jQuery UI
+                $(this).draggable({
+                    zIndex: 999,
+                    revert: true,      // will cause the event to go back to its
+                    revertDuration: 0  //  original position after the drag
+                });
+
+            });
+
+            /* initialize the calendar
+            -----------------------------------------------------------------*/
+
+            var date = new Date();
+            var d = date.getDate();
+            var m = date.getMonth();
+            var y = date.getFullYear();
+            var dataEvents = @Html.Raw(ViewBag.dataEvent);
+
+            var calendar = $('#calendar').fullCalendar({
+                //isRTL: true,
+                //firstDay: 1,// >> change first day of week
+                header: {
+                   left: ' today',
+                    center: 'title',
+                    right: 'month,listMonth'
+                },
+
+                buttonHtml: {
+                    //prev: '<i class="ace-icon fa fa-chevron-left"></i>',
+                    //next: '<i class="ace-icon fa fa-chevron-right"></i>'
+                },
+                eventLimitText:"xem thêm" ,
+                events:dataEvents,
+                defaultDate: '@ViewBag.aDateTime',
+                navLinks: true, // can click day/week names to navigate views
+                eventLimit: true, // allow "more" link when too many events
+                slotEventOverlap:false,
+                locale: 'vi',
+                selectable: true,
+                selectHelper: true,
+                eventRender: function (event, element) {
+                    element.attr('title', event.tooltip);
+                },
+                select: function (date) {
+
+                    OpenPopup('/CalendarVisitDrugStore/Create/?date='+date.format()+'&IsPopup=true', 'Thêm mới kế hoạch thăm nhà thuốc', 0, 0);
+
+                    calendar.fullCalendar('unselect');
+                }
+        ,
+
+                eventClick: function (calEvent, jsEvent, view) {
+
+                    if (calEvent.url) {
+                        OpenPopup('/CalendarVisitDrugStore/Edit/?Id='+calEvent.url + '&IsPopup=true', 'Cập nhật kế hoạch thăm nhà thuốc', 900, 500);
+                        return false;
+                    }
+                },
+                eventAfterAllRender: function (view) {
+
+                },
+                editable: true,
+                @*eventDrop: function(event,dayDelta,minuteDelta,allDay,revertFunc) {
+                    if (!confirm("Are you sure about this change?")) {
+                        ShowLoading();
+                        $.post("@Url.Action("UpdateDate", "CalendarVisitDrugStore", new { area = "Staff" })", { Id: event.url,date:event.start.format() })
+                        .done(function (data) {
+                            //$("#item_" + id).closest('div').remove();
+                            HideLoading();
+                            //revertFunc();
+                            if(data=="success")
+                            {
+                                alertPopup("Thông báo","Lưu thành công","success");
+                            }
+                            if(data=="error")
+                            {
+                                revertFunc();
+                                alertPopup("Thông báo","Lưu không thành công","danger");
+                            }
+                        });
+
+                    }
+
+                }*@
+            })
+
+        })
+     
+        $(document).ready(function () {
+            $('[data-rel=popover]').popover({ html: true });
+
+        });
+
+        function EditNote() {
+            $('[data-rel=popover]').popover('hide');
+        }
+        function ClosePopupAndRedirectToURL(url) {
+            ClosePopup(true);
+            location.href = url;
+        }
+        function ClosePopupAndDoSomething() {
+            ShowLoading();
+            ClosePopup(true);
+        }
+    </script>
+}

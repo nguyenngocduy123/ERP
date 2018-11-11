@@ -1,0 +1,41 @@
+@using Erp.BackOffice.App_GlobalResources
+@using Erp.BackOffice.Helpers
+@using Erp.BackOffice.Staff.Models
+@using GridMvc.Html
+@model IQueryable<LogDocumentAttributeViewModel>
+
+@{
+    ViewBag.Title = Wording.PageIndex_LogDocumentAttribute;
+
+    Layout = "~/Views/Shared/_PopupLayout.cshtml";
+    Erp.BackOffice.Models.PageSetting pageSetting = new Erp.BackOffice.Models.PageSetting
+    {
+        ModuleName = "LogDocumentAttribute",
+        ActionName = "Index",
+        PageTitle = ViewBag.Title,
+        DisplaySearchPanel = false,
+        IsPopup = false,
+        DisplayBackButton = false
+    };
+}
+@using (Html.BeginPageHeaderContainer(pageSetting))
+{
+
+}
+<div class="table-responsive">
+@Html.Grid(Model).Columns(columns =>
+        {
+            columns.Add(u => u.CreatedDate).Format("{0:HH:mm dd/MM/yyyy}").Titled(Wording.DayDownload).SetWidth(200);
+            columns.Add(u => u.FullName).Titled(Wording.FullName).SetWidth(100).RenderValueAs(u => u.FullName);
+            columns.Add(u => u.UserName).Titled(Wording.Username).SetWidth(100).RenderValueAs(u => u.UserName);
+        }).WithPaging(10)
+    </div>
+<p></p>
+@*@{Html.RenderAction("SubList", "");}*@
+
+@section Scripts {
+    <script type="text/javascript">
+      
+
+    </script>
+}

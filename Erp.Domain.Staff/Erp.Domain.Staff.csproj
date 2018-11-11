@@ -1,0 +1,394 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{7A22FD5F-0538-4CF7-8ED8-E878E54D5612}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Erp.Domain.Staff</RootNamespace>
+    <AssemblyName>Erp.Domain.Staff</AssemblyName>
+    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="DotNetOpenAuth.OpenId">
+      <HintPath>..\packages\DotNetOpenAuth.OpenId.Core.4.0.3.12153\lib\net40-full\DotNetOpenAuth.OpenId.dll</HintPath>
+    </Reference>
+    <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <HintPath>..\packages\EntityFramework.6.1.3\lib\net45\EntityFramework.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="EntityFramework.SqlServer, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <HintPath>..\packages\EntityFramework.6.1.3\lib\net45\EntityFramework.SqlServer.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
+    <Reference Include="System.Configuration" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Web" />
+    <Reference Include="System.Web.Extensions" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+    <Reference Include="WebMatrix.WebData, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Entities\Bank.cs" />
+    <Compile Include="Entities\BonusDiscipline.cs" />
+    <Compile Include="Entities\Branch.cs" />
+    <Compile Include="Entities\CalendarVisitDrugStore.cs" />
+    <Compile Include="Entities\CheckInOut.cs" />
+    <Compile Include="Entities\DotBCBHXH.cs" />
+    <Compile Include="Entities\DotBCBHXHDetail.cs" />
+    <Compile Include="Entities\DotGQCDBHXH.cs" />
+    <Compile Include="Entities\DotGQCDBHXHDetail.cs" />
+    <Compile Include="Entities\FingerPrint.cs" />
+    <Compile Include="Entities\DayOff.cs" />
+    <Compile Include="Entities\DocumentAttribute.cs" />
+    <Compile Include="Entities\DocumentField.cs" />
+    <Compile Include="Entities\DocumentType.cs" />
+    <Compile Include="Entities\FPMachine.cs" />
+    <Compile Include="Entities\GiamTruThueTNCN.cs" />
+    <Compile Include="Entities\HistoryCommissionStaff.cs" />
+    <Compile Include="Entities\Holidays.cs" />
+    <Compile Include="Entities\InternalNotifications.cs" />
+    <Compile Include="Entities\KPICatalog.cs" />
+    <Compile Include="Entities\KPIItem.cs" />
+    <Compile Include="Entities\KPILog.cs" />
+    <Compile Include="Entities\KPILogDetail.cs" />
+    <Compile Include="Entities\KPILogDetail_Item.cs" />
+    <Compile Include="Entities\Mapping\CalendarVisitDrugStoreMap.cs" />
+    <Compile Include="Entities\Mapping\CheckInOutMap.cs" />
+    <Compile Include="Entities\Mapping\DotBCBHXHDetailMap.cs" />
+    <Compile Include="Entities\Mapping\DotBCBHXHMap.cs" />
+    <Compile Include="Entities\Mapping\DotGQCDBHXHDetailMap.cs" />
+    <Compile Include="Entities\Mapping\DotGQCDBHXHMap.cs" />
+    <Compile Include="Entities\Mapping\GiamTruThueTNCNMap.cs" />
+    <Compile Include="Entities\Mapping\HistoryCommissionStaffMap.cs" />
+    <Compile Include="Entities\Mapping\KPICatalogMap.cs" />
+    <Compile Include="Entities\Mapping\KPIItemMap.cs" />
+    <Compile Include="Entities\Mapping\KPILogDetailMap.cs" />
+    <Compile Include="Entities\Mapping\KPILogDetail_ItemMap.cs" />
+    <Compile Include="Entities\Mapping\KPILogMap.cs" />
+    <Compile Include="Entities\Mapping\PositionMap.cs" />
+    <Compile Include="Entities\Mapping\ProcessPayDetailMap.cs" />
+    <Compile Include="Entities\Mapping\SalarySettingDetailMap.cs" />
+    <Compile Include="Entities\Mapping\SalarySettingMap.cs" />
+    <Compile Include="Entities\Mapping\SalaryTableDetailMap.cs" />
+    <Compile Include="Entities\Mapping\SalaryTableMap.cs" />
+    <Compile Include="Entities\Mapping\StaffAllowanceMap.cs" />
+    <Compile Include="Entities\Mapping\StaffLuongGiuHopDongMap.cs" />
+    <Compile Include="Entities\Mapping\TaxIncomePersonDetailMap.cs" />
+    <Compile Include="Entities\Mapping\TaxIncomePersonMap.cs" />
+    <Compile Include="Entities\Mapping\TaxMap.cs" />
+    <Compile Include="Entities\Mapping\TaxRateMap.cs" />
+    <Compile Include="Entities\Mapping\ThuNhapChiuThueMap.cs" />
+    <Compile Include="Entities\Mapping\vwCalendarVisitDrugStoreMap.cs" />
+    <Compile Include="Entities\Mapping\vwDotBCBHXHDetailMap.cs" />
+    <Compile Include="Entities\Mapping\vwDotGQCDBHXHDetailMap.cs" />
+    <Compile Include="Entities\Mapping\vwFingerPrintMap.cs" />
+    <Compile Include="Entities\Mapping\vwKPILogDetailMap.cs" />
+    <Compile Include="Entities\Mapping\vwTaxIncomePersonDetailMap.cs" />
+    <Compile Include="Entities\Mapping\vwTaxMap.cs" />
+    <Compile Include="Entities\Mapping\vwWelfareProgramsDetailMap.cs" />
+    <Compile Include="Entities\Mapping\WelfareProgramsDetailMap.cs" />
+    <Compile Include="Entities\Mapping\WelfareProgramsMap.cs" />
+    <Compile Include="Entities\Position.cs" />
+    <Compile Include="Entities\ProcessPayDetail.cs" />
+    <Compile Include="Entities\SalarySetting.cs" />
+    <Compile Include="Entities\SalarySettingDetail.cs" />
+    <Compile Include="Entities\SalaryTable.cs" />
+    <Compile Include="Entities\SalaryTableDetail.cs" />
+    <Compile Include="Entities\StaffAllowance.cs" />
+    <Compile Include="Entities\StaffLuongGiuHopDong.cs" />
+    <Compile Include="Entities\Tax.cs" />
+    <Compile Include="Entities\TaxIncomePerson.cs" />
+    <Compile Include="Entities\TaxIncomePersonDetail.cs" />
+    <Compile Include="Entities\TaxRate.cs" />
+    <Compile Include="Entities\ThuNhapChiuThue.cs" />
+    <Compile Include="Entities\vwCalendarVisitDrugStore.cs" />
+    <Compile Include="Entities\vwDotBCBHXHDetail.cs" />
+    <Compile Include="Entities\vwDotGQCDBHXHDetail.cs" />
+    <Compile Include="Entities\vwFingerPrint.cs" />
+    <Compile Include="Entities\vwKPILogDetail.cs" />
+    <Compile Include="Entities\LabourContract.cs" />
+    <Compile Include="Entities\LabourContractType.cs" />
+    <Compile Include="Entities\LogDocumentAttribute.cs" />
+    <Compile Include="Entities\Mapping\BankMap.cs" />
+    <Compile Include="Entities\Mapping\BonusDisciplineMap.cs" />
+    <Compile Include="Entities\Mapping\BranchMap.cs" />
+    <Compile Include="Entities\Mapping\FingerPrintMap.cs" />
+    <Compile Include="Entities\Mapping\DayOffMap.cs" />
+    <Compile Include="Entities\Mapping\DocumentAttributeMap.cs" />
+    <Compile Include="Entities\Mapping\DocumentFieldMap.cs" />
+    <Compile Include="Entities\Mapping\DocumentTypeMap.cs" />
+    <Compile Include="Entities\Mapping\FPMachineMap.cs" />
+    <Compile Include="Entities\Mapping\HolidaysMap.cs" />
+    <Compile Include="Entities\Mapping\LabourContractMap.cs" />
+    <Compile Include="Entities\Mapping\LabourContractTypeMap.cs" />
+    <Compile Include="Entities\Mapping\LogDocumentAttributeMap.cs" />
+    <Compile Include="Entities\Mapping\NotificationsDetailMap.cs" />
+    <Compile Include="Entities\Mapping\ProcessPayMap.cs" />
+    <Compile Include="Entities\Mapping\RegisterForOvertimeMap.cs" />
+    <Compile Include="Entities\Mapping\SalaryAdvanceMap.cs" />
+    <Compile Include="Entities\Mapping\SalarySettingDetail_StaffMap.cs" />
+    <Compile Include="Entities\Mapping\SalaryTableDetailReportMap.cs" />
+    <Compile Include="Entities\Mapping\SalaryTableDetail_StaffMap.cs" />
+    <Compile Include="Entities\Mapping\ShiftsMap.cs" />
+    <Compile Include="Entities\Mapping\StaffSocialInsuranceMap.cs" />
+    <Compile Include="Entities\Mapping\SymbolTimekeepingMap.cs" />
+    <Compile Include="Entities\Mapping\TechniqueMap.cs" />
+    <Compile Include="Entities\Mapping\TimekeepingListMap.cs" />
+    <Compile Include="Entities\Mapping\TimekeepingMap.cs" />
+    <Compile Include="Entities\Mapping\TimekeepingSynthesisMap.cs" />
+    <Compile Include="Entities\Mapping\TransferWorkMap.cs" />
+    <Compile Include="Entities\Mapping\vwBonusDisciplineMap.cs" />
+    <Compile Include="Entities\Mapping\vwBranchMap.cs" />
+    <Compile Include="Entities\Mapping\vwCheckInOutMap.cs" />
+    <Compile Include="Entities\Mapping\vwDayOffMap.cs" />
+    <Compile Include="Entities\Mapping\vwDocumentFieldMap.cs" />
+    <Compile Include="Entities\Mapping\vwInternalNotificationsMap.cs" />
+    <Compile Include="Entities\Mapping\vwLabourContractMap.cs" />
+    <Compile Include="Entities\Mapping\vwLogDocumentAttributeMap.cs" />
+    <Compile Include="Entities\Mapping\vwNotificationsDetailMap.cs" />
+    <Compile Include="Entities\Mapping\vwRegisterForOvertimeMap.cs" />
+    <Compile Include="Entities\Mapping\vwSalaryAdvanceMap.cs" />
+    <Compile Include="Entities\Mapping\vwStaffsMap.cs" />
+    <Compile Include="Entities\Mapping\vwStaffSocialInsuranceMap.cs" />
+    <Compile Include="Entities\Mapping\vwTimekeepingListMap.cs" />
+    <Compile Include="Entities\Mapping\vwTimekeepingMap .cs" />
+    <Compile Include="Entities\Mapping\vwTimekeepingSynthesisMap.cs" />
+    <Compile Include="Entities\Mapping\vwTotalTimekeepingMap.cs" />
+    <Compile Include="Entities\Mapping\vwTransferWorkMap.cs" />
+    <Compile Include="Entities\Mapping\vwWorkSchedulesMap.cs" />
+    <Compile Include="Entities\Mapping\WorkingProcessMap.cs" />
+    <Compile Include="Entities\Mapping\WorkSchedulesMap.cs" />
+    <Compile Include="Entities\NotificationsDetail.cs" />
+    <Compile Include="Entities\ProcessPay.cs" />
+    <Compile Include="Entities\RegisterForOvertime.cs" />
+    <Compile Include="Entities\SalaryAdvance.cs" />
+    <Compile Include="Entities\SalarySettingDetail_Staff.cs" />
+    <Compile Include="Entities\SalaryTableDetailReport.cs" />
+    <Compile Include="Entities\SalaryTableDetail_Staff.cs" />
+    <Compile Include="Entities\Shifts.cs" />
+    <Compile Include="Entities\StaffSocialInsurance.cs" />
+    <Compile Include="Entities\SymbolTimekeeping.cs" />
+    <Compile Include="Entities\Technique.cs" />
+    <Compile Include="Entities\Timekeeping.cs" />
+    <Compile Include="Entities\TimekeepingList.cs" />
+    <Compile Include="Entities\TimekeepingSynthesis.cs" />
+    <Compile Include="Entities\TransferWork.cs" />
+    <Compile Include="Entities\vwBonusDiscipline.cs" />
+    <Compile Include="Entities\vwBranch.cs" />
+    <Compile Include="Entities\vwBranchDepartment.cs" />
+    <Compile Include="Entities\BranchDepartment.cs" />
+    <Compile Include="Entities\Mapping\vwBranchDepartmentMap.cs" />
+    <Compile Include="Entities\Mapping\BranchDepartmentMap.cs" />
+    <Compile Include="Entities\Mapping\StaffFamilyMap.cs" />
+    <Compile Include="Entities\Mapping\StaffsMap.cs" />
+    <Compile Include="Entities\StaffFamily.cs" />
+    <Compile Include="Entities\Staffs.cs" />
+    <Compile Include="Entities\vwCheckInOut.cs" />
+    <Compile Include="Entities\vwDayOff.cs" />
+    <Compile Include="Entities\vwDocumentField.cs" />
+    <Compile Include="Entities\vwInternalNotifications.cs" />
+    <Compile Include="Entities\vwLabourContract.cs" />
+    <Compile Include="Entities\vwLogDocumentAttribute.cs" />
+    <Compile Include="Entities\vwNotificationsDetail.cs" />
+    <Compile Include="Entities\vwRegisterForOvertime.cs" />
+    <Compile Include="Entities\vwSalaryAdvance.cs" />
+    <Compile Include="Entities\vwStaffs.cs" />
+    <Compile Include="Entities\vwStaffSocialInsurance.cs" />
+    <Compile Include="Entities\vwTax.cs" />
+    <Compile Include="Entities\vwTaxIncomePersonDetail.cs" />
+    <Compile Include="Entities\vwTimekeeping.cs" />
+    <Compile Include="Entities\vwTimekeepingList.cs" />
+    <Compile Include="Entities\vwTimekeepingSynthesis.cs" />
+    <Compile Include="Entities\vwTotalTimekeeping.cs" />
+    <Compile Include="Entities\vwTransferWork.cs" />
+    <Compile Include="Entities\vwWelfareProgramsDetail.cs" />
+    <Compile Include="Entities\vwWorkSchedules.cs" />
+    <Compile Include="Entities\WelfarePrograms.cs" />
+    <Compile Include="Entities\WelfareProgramsDetail.cs" />
+    <Compile Include="Entities\WorkingProcess.cs" />
+    <Compile Include="Entities\WorkSchedules.cs" />
+    <Compile Include="ErpStaffDbContext.cs" />
+    <Compile Include="Interfaces\IBankRepository.cs" />
+    <Compile Include="Interfaces\IBonusDisciplineRepository.cs" />
+    <Compile Include="Interfaces\IBranchDepartmentRepository.cs" />
+    <Compile Include="Interfaces\IBranchRepository.cs" />
+    <Compile Include="Interfaces\ICalendarVisitDrugStoreRepository.cs" />
+    <Compile Include="Interfaces\ICheckInOutRepository.cs" />
+    <Compile Include="Interfaces\IDayOffRepository.cs" />
+    <Compile Include="Interfaces\IDocumentAttributeRepository.cs" />
+    <Compile Include="Interfaces\IDocumentFieldRepository.cs" />
+    <Compile Include="Interfaces\IDocumentTypeRepository.cs" />
+    <Compile Include="Interfaces\IDotBCBHXHDetailRepository.cs" />
+    <Compile Include="Interfaces\IDotBCBHXHRepository.cs" />
+    <Compile Include="Interfaces\IDotGQCDBHXHDetailRepository.cs" />
+    <Compile Include="Interfaces\IDotGQCDBHXHRepository.cs" />
+    <Compile Include="Interfaces\IFPMachineRepository.cs" />
+    <Compile Include="Interfaces\IGiamTruThueTNCNRepository.cs" />
+    <Compile Include="Interfaces\IHistoryCommissionStaffRepository.cs" />
+    <Compile Include="Interfaces\IHolidaysRepository.cs" />
+    <Compile Include="Interfaces\IInternalNotificationsRepository.cs" />
+    <Compile Include="Interfaces\IKPICatalogRepository.cs" />
+    <Compile Include="Interfaces\IKPIItemRepository.cs" />
+    <Compile Include="Interfaces\IKPILogDetailRepository.cs" />
+    <Compile Include="Interfaces\IKPILogDetail_ItemRepository.cs" />
+    <Compile Include="Interfaces\IKPILogRepository.cs" />
+    <Compile Include="Interfaces\ILabourContractRepository.cs" />
+    <Compile Include="Interfaces\ILabourContractTypeRepository.cs" />
+    <Compile Include="Interfaces\ILogDocumentAttributeRepository.cs" />
+    <Compile Include="Interfaces\INotificationsDetailRepository.cs" />
+    <Compile Include="Interfaces\IPositionRepository.cs" />
+    <Compile Include="Interfaces\IProcessPayDetailRepository.cs" />
+    <Compile Include="Interfaces\IProcessPayRepository.cs" />
+    <Compile Include="Interfaces\IRegisterForOvertimeRepository.cs" />
+    <Compile Include="Interfaces\ISalaryAdvanceRepository.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Interfaces\ISalarySettingDetailRepository.cs" />
+    <Compile Include="Interfaces\ISalarySettingDetail_StaffRepository.cs" />
+    <Compile Include="Interfaces\ISalarySettingRepository.cs" />
+    <Compile Include="Interfaces\ISalaryTableDetailReportRepository.cs" />
+    <Compile Include="Interfaces\ISalaryTableDetailRepository.cs" />
+    <Compile Include="Interfaces\ISalaryTableDetail_StaffRepository.cs" />
+    <Compile Include="Interfaces\ISalaryTableRepository.cs" />
+    <Compile Include="Interfaces\IShiftsRepository.cs" />
+    <Compile Include="Interfaces\IStaffAllowanceRepository.cs" />
+    <Compile Include="Interfaces\IStaffFamilyRepository.cs" />
+    <Compile Include="Interfaces\IStaffLuongGiuHopDongRepository.cs" />
+    <Compile Include="Interfaces\IStaffReportRepository.cs" />
+    <Compile Include="Interfaces\IStaffSocialInsuranceRepository.cs" />
+    <Compile Include="Interfaces\IStaffsRepository.cs" />
+    <Compile Include="Interfaces\ISymbolTimekeepingRepository.cs" />
+    <Compile Include="Interfaces\ITaxIncomePersonDetailRepository.cs" />
+    <Compile Include="Interfaces\ITaxIncomePersonRepository.cs" />
+    <Compile Include="Interfaces\ITaxRateRepository.cs" />
+    <Compile Include="Interfaces\ITaxRepository.cs" />
+    <Compile Include="Interfaces\ITechniqueRepository.cs" />
+    <Compile Include="Interfaces\IThuNhapChiuThueRepository.cs" />
+    <Compile Include="Interfaces\ITimekeepingListRepository.cs" />
+    <Compile Include="Interfaces\ITimekeepingRepository.cs" />
+    <Compile Include="Interfaces\ITimekeepingSynthesisRepository.cs" />
+    <Compile Include="Interfaces\ITransferWorkRepository.cs" />
+    <Compile Include="Interfaces\IWelfareProgramsDetailRepository.cs" />
+    <Compile Include="Interfaces\IWelfareProgramsRepository.cs" />
+    <Compile Include="Interfaces\IWorkingProcessRepository.cs" />
+    <Compile Include="Interfaces\IWorkSchedulesRepository.cs" />
+    <Compile Include="Interfaces\_IGenericRepository.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Repositories\BankRepository.cs" />
+    <Compile Include="Repositories\BonusDisciplineRepository.cs" />
+    <Compile Include="Repositories\BranchDepartmentRepository.cs" />
+    <Compile Include="Repositories\BranchRepository.cs" />
+    <Compile Include="Repositories\CalendarVisitDrugStoreRepository.cs" />
+    <Compile Include="Repositories\CheckInOutRepository.cs" />
+    <Compile Include="Repositories\DayOffRepository.cs" />
+    <Compile Include="Repositories\DocumentAttributeRepository.cs" />
+    <Compile Include="Repositories\DocumentFieldRepository.cs" />
+    <Compile Include="Repositories\DocumentTypeRepository.cs" />
+    <Compile Include="Repositories\DotBCBHXHDetailRepository.cs" />
+    <Compile Include="Repositories\DotBCBHXHRepository.cs" />
+    <Compile Include="Repositories\DotGQCDBHXHDetailRepository.cs" />
+    <Compile Include="Repositories\DotGQCDBHXHRepository.cs" />
+    <Compile Include="Repositories\FPMachineRepository.cs" />
+    <Compile Include="Repositories\GiamTruThueTNCNRepository.cs" />
+    <Compile Include="Repositories\HistoryCommissionStaffRepository.cs" />
+    <Compile Include="Repositories\HolidaysRepository.cs" />
+    <Compile Include="Repositories\InternalNotificationsRepository.cs" />
+    <Compile Include="Repositories\KPICatalogRepository.cs" />
+    <Compile Include="Repositories\KPIItemRepository.cs" />
+    <Compile Include="Repositories\KPILogDetailRepository.cs" />
+    <Compile Include="Repositories\KPILogDetail_ItemRepository.cs" />
+    <Compile Include="Repositories\KPILogRepository.cs" />
+    <Compile Include="Repositories\LabourContractRepository.cs" />
+    <Compile Include="Repositories\LabourContractTypeRepository.cs" />
+    <Compile Include="Repositories\LogDocumentAttributeRepository.cs" />
+    <Compile Include="Repositories\NotificationsDetailRepository.cs" />
+    <Compile Include="Repositories\PositionRepository.cs" />
+    <Compile Include="Repositories\ProcessPayDetailRepository.cs" />
+    <Compile Include="Repositories\ProcessPayRepository.cs" />
+    <Compile Include="Repositories\RegisterForOvertimeRepository.cs" />
+    <Compile Include="Repositories\SalaryAdvanceRepository.cs" />
+    <Compile Include="Repositories\SalarySettingDetailRepository.cs" />
+    <Compile Include="Repositories\SalarySettingDetail_StaffRepository.cs" />
+    <Compile Include="Repositories\SalarySettingRepository.cs" />
+    <Compile Include="Repositories\SalaryTableDetailReportRepository.cs" />
+    <Compile Include="Repositories\SalaryTableDetailRepository.cs" />
+    <Compile Include="Repositories\SalaryTableDetail_StaffRepository.cs" />
+    <Compile Include="Repositories\SalaryTableRepository.cs" />
+    <Compile Include="Repositories\ShiftsRepository.cs" />
+    <Compile Include="Repositories\StaffAllowanceRepository.cs" />
+    <Compile Include="Repositories\StaffFamilyRepository.cs" />
+    <Compile Include="Repositories\StaffLuongGiuHopDongRepository.cs" />
+    <Compile Include="Repositories\StaffReportRepository.cs" />
+    <Compile Include="Repositories\StaffSocialInsuranceRepository.cs" />
+    <Compile Include="Repositories\StaffsRepository.cs" />
+    <Compile Include="Repositories\SymbolTimekeepingRepository.cs" />
+    <Compile Include="Repositories\TaxIncomePersonDetailRepository.cs" />
+    <Compile Include="Repositories\TaxIncomePersonRepository.cs" />
+    <Compile Include="Repositories\TaxRateRepository.cs" />
+    <Compile Include="Repositories\TaxRepository.cs" />
+    <Compile Include="Repositories\TechniqueRepository.cs" />
+    <Compile Include="Repositories\ThuNhapChiuThueRepository.cs" />
+    <Compile Include="Repositories\TimekeepingListRepository.cs" />
+    <Compile Include="Repositories\TimekeepingRepository.cs" />
+    <Compile Include="Repositories\TimekeepingSynthesisRepository.cs" />
+    <Compile Include="Repositories\TransferWorkRepository.cs" />
+    <Compile Include="Repositories\WelfareProgramsDetailRepository.cs" />
+    <Compile Include="Repositories\WelfareProgramsRepository.cs" />
+    <Compile Include="Repositories\WorkingProcessRepository.cs" />
+    <Compile Include="Repositories\WorkSchedulesRepository.cs" />
+    <Compile Include="Repositories\_GenericRepository.cs" />
+    <Compile Include="SqlHelper.cs" />
+    <Compile Include="SqlMapper.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="App.config" />
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <WCFMetadata Include="Service References\" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Erp.Utilities\Erp.Utilities.csproj">
+      <Project>{e85f6ece-9181-4ad6-8775-10893358602b}</Project>
+      <Name>Erp.Utilities</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup />
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

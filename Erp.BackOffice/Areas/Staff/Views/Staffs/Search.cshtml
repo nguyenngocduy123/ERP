@@ -1,0 +1,453 @@
+﻿
+    @using Erp.BackOffice.App_GlobalResources
+    @using Erp.BackOffice.Staff.Models
+    @using Erp.BackOffice.Helpers
+    @using GridMvc.Html
+@model IEnumerable<StaffsViewModel>
+
+    @{
+        ViewBag.Title = Wording.PageIndex_Staff;
+        bool isPopup = Request["IsPopup"] != null && Request["IsPopup"].ToString().ToLower() == "true" ? true : false;
+        bool? isLayout = Request["IsLayout"] != null && Request["IsLayout"].ToString().ToLower() == "true" ? true : false;
+        if (isLayout == true)
+        {
+            Layout = null;
+        }
+        else
+        {
+            if (isPopup)
+            {
+                Layout = "~/Views/Shared/_PopupLayout.cshtml";
+            }
+            else
+            {
+                Layout = "~/Views/Shared/ACE_AdminLayout.cshtml";
+            }
+        }
+        var jsCallback = Request["jsCallback"] == null ? "" : Request["jsCallback"].ToString();
+        Erp.BackOffice.Models.PageSetting pageSetting = new Erp.BackOffice.Models.PageSetting
+        {
+            ModuleName = "Staffs",
+            ActionName = "Search",
+            PageTitle = ViewBag.Title,
+            DisplaySearchPanel = true,
+            IsPopup = false,
+            DisplayBackButton = false
+        };
+        string branch = (string.IsNullOrEmpty(Request["branchId"]) == false ? Request["branchId"] : "");
+        string orderNo = (string.IsNullOrEmpty(Request["OrderNo"]) == false ? Request["OrderNo"] : "");
+        //var staff = Erp.BackOffice.Helpers.Common.GetStaffByCurrentUser();
+    }
+    @*<link href="~/assets/css/colorbox.min.css" rel="stylesheet" />*@
+    @section HeadOfPage {
+        @Html.ScriptTop_ChosenStyle()
+
+    }
+    @if (ViewBag.SuccessMessage != null && ViewBag.SuccessMessage != "")
+    {
+        <div class="alert alert-block alert-success">
+            <button class="close" data-dismiss="alert" type="button">
+                <i class="icon-remove"></i>
+            </button>
+            <i class="ace-icon fa fa-check green"></i>
+            @ViewBag.SuccessMessage
+        </div>
+    }
+
+    @if (ViewBag.FailedMessage != null && ViewBag.FailedMessage != "")
+    {
+        <div class="alert alert-danger">
+            <button type="button" class="close" data-dismiss="alert">
+                <i class="ace-icon fa fa-times"></i>
+            </button>
+            <i class="ace-icon fa fa-times"></i>
+            @Html.Raw(ViewBag.FailedMessage)
+        </div>
+    }
+    <link href="@Url.Content("~/assets/css/Gridmvc.css")" rel="stylesheet" type="text/css" />
+    <script src="@Url.Content("~/Scripts/gridmvc.min.js")" type="text/javascript"></script>
+
+@helper GridColumnName_Popup(string name, int id, string code, DateTime? birthday, bool gender,string Image, bool isPopup, string orderNo, string jsCallback = null)
+{
+
+    name = string.IsNullOrEmpty(name) == false ? name : "No Title";
+    <div class="itemdiv commentdiv">
+        <div class="user">
+            <div class="ace-thumbnails">
+                <a href="@(Erp.BackOffice.Helpers.Common.KiemTraTonTaiHinhAnh(Image,"Staff","user"))" title="@name" data-rel="colorbox" class="cboxElement">
+                    <img id="myImg" alt="@name" src="@(Erp.BackOffice.Helpers.Common.KiemTraTonTaiHinhAnh(Image, "Staff", "user"))">
+                </a>
+            </div>
+        </div>
+        <div class="body">
+            <div class="name" data-toggle="tooltip" title="Tên nhân viên">
+                @if (!isPopup)
+                {
+                    <a href="@Url.Action("DetailBasicFull", "Staff", new { Id = id, IsLayout=true })">@name</a>
+                }
+                else
+                {
+                    if (!string.IsNullOrEmpty(jsCallback))
+                    {
+                    <a onclick="parent.@(jsCallback)(@id, '@name')">@name</a>
+                    }
+                    else
+                    {
+                        <a onclick="parent.selectLocationItem(@id, '@code','@name','@orderNo')">@name</a>
+                    }
+                }
+        </div>
+            <div class="text" data-toggle="tooltip" title="Mã nhân viên">
+                @code
+            </div>
+        </div>
+    </div>
+}
+
+@helper GridColumnResidenceInfo_Popup(string position, DateTime? birthday)
+{
+    <p class="sum"><i class="glyphicon glyphicon-credit-card" data-rel="tooltip" title="" data-placement="bottom" data-original-title="Chức vụ"></i> @position</p>
+    <p><i class="fa fa-calendar" data-rel="tooltip" title="" data-placement="bottom" data-original-title="Ngày sinh"></i> @(birthday.HasValue ? birthday.Value.ToString("dd/MM/yyyy") : "chưa có")</p>
+}
+@helper GridColumnInfo_Popup(string phone, string email)
+{
+    <p class="sum"><i class="fa fa-phone" data-rel="tooltip" title="" data-placement="bottom" data-original-title="Số điện thoại"></i>  @phone </p>
+    <p class="sum"><i class="fa fa-envelope" data-rel="tooltip" title="" data-placement="bottom" data-original-title="Email"></i>  @email </p>
+}
+
+    @helper GridColumnName(string name, int id, string code, DateTime? birthday, bool? gender, bool isPopup, string orderNo, string jsCallback = null)
+        {
+            if (!isPopup)
+            {
+                if (string.IsNullOrEmpty(name))
+                {
+                    <p> <a href="@Url.Action("DetailBasicFull", "Staffs", new { area = "Staff", Id = id, IsLayout=true })" target="_blank"><b><i class="fa fa-user-circle-o"></i>  No Title</b></a></p>
+                }
+                else
+                {
+                    <p>
+                        <a href="@Url.Action("DetailBasicFull", "Staffs", new { area = "Staff", Id = id, IsLayout = true })" target="_blank">
+                            <b>
+                                @if (gender == true)
+                                {
+                                    <i style="color:#ff00dc" class="fa fa-female" data-rel="tooltip" title="" data-placement="bottom" data-original-title="Giới tính: Nữ"></i>
+                                }
+                                else
+                                {
+                                    <i class="fa fa-male" data-rel="tooltip" title="" data-placement="bottom" data-original-title="Giới tính: Nam"></i>
+                                }
+                                @name
+                            </b>
+                        </a>
+                    </p>
+                    <p><i class="fa fa-barcode" data-rel="tooltip" title="" data-placement="bottom" data-original-title="Mã nhân viên"></i> @code</p>
+                    <p><i class="fa fa-calendar" data-rel="tooltip" title="" data-placement="bottom" data-original-title="Ngày sinh"></i> @(birthday.HasValue ? birthday.Value.ToString("dd/MM/yyyy") : "chưa có")</p>
+                }
+            }
+            else
+            {
+                <p>
+                    @if (!string.IsNullOrEmpty(jsCallback))
+                    {
+                        <a onclick="parent.@(jsCallback)(@id, '@name')">
+                            <b>
+                                @if (gender == true)
+                                {
+                                    <i style="color:#ff00dc" class="fa fa-female" data-rel="tooltip" title="" data-placement="bottom" data-original-title="Giới tính: Nữ"></i>
+                                }
+                                else
+                                {
+                                    <i class="fa fa-male" data-rel="tooltip" title="" data-placement="bottom" data-original-title="Giới tính: Nam"></i>
+                                }
+                                @name
+                            </b>
+                        </a>
+                    }
+                    else
+                    {
+                        <a onclick="parent.selectLocationItem(@id, '@code','@name','@orderNo')">
+                            <b>
+                                @if (gender == true)
+                                {
+                                    <i style="color:#ff00dc" class="fa fa-female" data-rel="tooltip" title="" data-placement="bottom" data-original-title="Giới tính: Nữ"></i>
+                                }
+                                else
+                                {
+                                    <i class="fa fa-male" data-rel="tooltip" title="" data-placement="bottom" data-original-title="Giới tính: Nam"></i>
+                                }
+                                @name
+                            </b>
+                        </a>
+                    }
+                </p>
+                <p><i class="fa fa-barcode" data-rel="tooltip" title="" data-placement="bottom" data-original-title="Mã nhân viên"></i> @code</p>
+                <p><i class="fa fa-calendar" data-rel="tooltip" title="" data-placement="bottom" data-original-title="Ngày sinh"></i> @(birthday.HasValue ? birthday.Value.ToString("dd/MM/yyyy") : "chưa có")</p>
+            }
+}
+    @helper GridColumnResidenceInfo(string phone, string email, string Address, string Phone2, string Email2, string DistrictName, string WardName, string ProvinceName)
+        {
+            <p class="sum"><i class="fa fa-phone" data-rel="tooltip" title="" data-placement="bottom" data-original-title="Số điện thoại"></i>  @phone ; @Phone2</p>
+            <p class="sum"><i class="fa fa-envelope" data-rel="tooltip" title="" data-placement="bottom" data-original-title="Email"></i>  @email ; @Email2</p>
+            <p class="sum"><i class="fa fa-map-marker" data-rel="tooltip" title="" data-placement="bottom" data-original-title="Địa chỉ"></i>  @Address  - @WardName - @DistrictName - @ProvinceName</p>
+}
+    @helper GridColumnInfoStaff(string position, decimal? CommissionPercent, decimal? MinimumRevenue)
+        {
+           <p style="" class="sum"><i class="glyphicon glyphicon-credit-card" data-rel="tooltip" title="" data-placement="bottom" data-original-title="Chức vụ"></i>  @position</p>
+            <p class="sum"><i class="fa fa-money" data-rel="tooltip" title="" data-placement="bottom" data-original-title="Tỷ lệ hoa hồng"></i>  @CommissionPercent</p>
+            <p class="sum"><i class="fa fa-dollar" data-rel="tooltip" title="" data-placement="bottom" data-original-title="Doanh thu tối thiểu"></i>  @Common.PhanCachHangNgan2(MinimumRevenue)</p>
+}
+    @helper GridColumnProfileImage(string ProfileImage, string name)
+        {
+            <div class="ace-thumbnails clearfix">
+                    <a href="@(Erp.BackOffice.Helpers.Common.KiemTraTonTaiHinhAnh(ProfileImage,"Staff","user"))" title="@name" data-rel="colorbox" class="cboxElement">
+                        <img class="" src="@(Erp.BackOffice.Helpers.Common.KiemTraTonTaiHinhAnh(ProfileImage,"Staff","user"))" style="width:65px;height:75px;border:1px solid #808080" />
+                    </a>
+            </div>
+            @*<img  class="profile-picture" src="@(Erp.BackOffice.Helpers.Common.KiemTraTonTaiHinhAnh(ProfileImage,"Staff","user"))" width="65" height="80" alt="@name" />*@
+}
+    @helper GridColumnCommand(int id)
+        {
+            <p>
+                @if (Erp.BackOffice.Filters.SecurityFilter.AccessRight("DeleteAll", "Staffs", "Staff"))
+                {
+                    <button name="Delete" value="Delete" type="submit" id="btn_delete_staff_@id" class="btn btn-mini btn-danger" onclick="return StaffDelete(@id)">
+                        <i class="ace-icon fa fa-trash bigger-120"></i>
+                        @Wording.Delete
+                    </button>
+                }
+            </p>
+}
+    @helper GridColumnDate(object date)
+        {
+            string sOut = date != null ? ((DateTime)date).ToString("dd/MM/yyyy") : "01/01/1900";
+            if (sOut != "01/01/1900")
+            {
+                <span>@sOut</span>
+            }
+}
+    @helper CheckDeleteColumns(long Id)
+        {
+            <label>
+                <input class="ace class-delete-all" type="checkbox" name="staff-checkbox" id="staff-checkbox" value="@Id">
+                <span class="lbl"></span>
+            </label>
+}
+
+    @helper BuildCheckAll()
+        {
+            <label>
+                <input type="checkbox" name="checkAll" id="checkAll" class="ace" />
+                <span class="lbl"></span>
+            </label>
+}
+    @using (Html.BeginPageHeaderContainer(pageSetting))
+    {
+        <input type="hidden" value="@Request["IsPopup"]" name="IsPopup" />
+        <input type="hidden" value="@Request["module_list"]" name="module_list" />
+        <input type="hidden" value="@Request["OrderNo"]" name="OrderNo" />
+        <input type="hidden" value="@Request["jsCallback"]" name="jsCallback" />
+        <p>
+
+            @Html.TextBox("Code", Request["Code"], new { @class = "form-control", autocomplete = "off", placeholder = Wording.CodeStaff + "..." })
+            @Html.TextBox("Name", Request["Name"], new { @class = "form-control", autocomplete = "off", placeholder = Wording.NameStaff + "..." })
+            @Html.DropDownList("PositionId", SelectListHelper.GetSelectList_Position(Request["PositionId"], Wording.Position), new Dictionary<string, object> { { "class", "form-control" }, { "data-val-required", "Bắt buộc chọn." } })
+            @Html.DropDownList("branchId", SelectListHelper.GetSelectList_DepartmentAllNew(branch, Wording.BranchName), new Dictionary<string, object> { { "class", "form-control" }, { "data-val-required", "Bắt buộc chọn." } })
+           @if(isPopup!=true)
+           { 
+           
+            @Html.DropDownList("Ethnic", SelectListHelper.GetSelectList_Category("ethnic", Request["Ethnic"], "Name", Wording.Ethnic), new Dictionary<string, object> { { "class", "form-control" }, { "data-val-required", "Bắt buộc chọn." } })
+            @Html.DropDownList("Religion", SelectListHelper.GetSelectList_Category("religion", Request["Religion"], "Name", Wording.Religion), new Dictionary<string, object> { { "class", "form-control" }, { "data-val-required", "Bắt buộc chọn." } })
+            @Html.DropDownList("MaritalStatus", SelectListHelper.GetSelectList_Category("MaritalStatus", Request["MaritalStatus"], "Name", Wording.MaritalStatus), new Dictionary<string, object> { { "class", "form-control" }, { "data-val-required", "Bắt buộc chọn." } })
+            @Html.DropDownList("CountryId", (SelectList)ViewData["CountryList"], new Dictionary<string, object> { { "class", "form-control" }, { "data-val-required", "Bắt buộc chọn." } })
+            @Html.DropDownList("ProvinceId", (SelectList)ViewData["ProvinceList"], new Dictionary<string, object> { { "class", "form-control" }, { "data-val-required", "Bắt buộc chọn." } })
+            @Html.DropDownList("DistrictId", (SelectList)ViewData["DistrictList"], new Dictionary<string, object> { { "class", "form-control" }, { "data-val-required", "Bắt buộc chọn." } })
+            @Html.DropDownList("WardId", (SelectList)ViewData["WardList"], new Dictionary<string, object> { { "class", "form-control" }, { "data-val-required", "Bắt buộc chọn." } })
+           }
+        </p>
+    }
+
+    @if (!isPopup)
+    {
+        if (Model.Count()>0)
+        {
+
+            <div class="table-responsive">
+                @Html.Grid(Model).Columns(columns =>
+                                              {
+                                             //columns.Add().Titled(BuildCheckAll().ToHtmlString()).SetWidth(20).Sanitized(false).Encoded(false).RenderValueAs(n => CheckDeleteColumns(n.Id));
+                                             columns.Add().Titled(Wording.Image).SetWidth(20).Sanitized(false).Encoded(false).RenderValueAs(n => GridColumnProfileImage(n.ProfileImage, n.Name));
+                                                  columns.Add().Titled(Wording.PersonalInfo).Sortable(false).Sanitized(false).Encoded(false).RenderValueAs(u => GridColumnName(u.Name, u.Id, u.Code, u.Birthday, u.Gender.Value, isPopup, orderNo, jsCallback));
+                                                  columns.Add().Titled(Wording.InfoStaff).Sortable(false).Sanitized(false).Encoded(false).RenderValueAs(n => GridColumnInfoStaff(n.PositionName,n.CommissionPercent,n.MinimumRevenue));
+                                                  columns.Add().Titled(Wording.ResidenceInfo).Sortable(false).Sanitized(false).Encoded(false).RenderValueAs(n => GridColumnResidenceInfo(n.Phone, n.Email, n.Address, n.Phone2, n.Email2, n.DistrictName, n.WardName, n.ProvinceName));
+                                                  columns.Add(u => u.Id).Titled(Wording.Action).Sanitized(false).Encoded(false).RenderValueAs(u => GridColumnCommand(u.Id)).SetWidth(100);
+                                              }).WithPaging(10)
+
+            </div>
+        }
+        using (Html.BeginButtonContainer(pageSetting))
+        {
+            if (Erp.BackOffice.Filters.SecurityFilter.AccessRight("Create", "Staffs", "Staff"))
+            {
+                <a class="btn btn-info btn-mini" href="@Url.Action("Create", pageSetting.ModuleName)">
+                    <i class="ace-icon fa fa-plus"></i>
+                    @Resources.Wording.CreateNew
+                </a>
+            }
+            @*<a class="btn btn-info btn-mini" href="@Url.Action("Update", pageSetting.ModuleName)">
+                    <i class="ace-icon fa fa-plus"></i>
+                    @Resources.Wording.UpdatedUser
+                </a>*@
+        }
+    }
+    else
+    {
+        if (Model.Count()>0)
+        {
+            <div class="table-responsive">
+                @Html.Grid(Model.Where(x=>x.IsWorking==true)).Columns(columns =>
+                    {
+                    columns.Add().Titled("Thông tin cá nhân").Sanitized(false).Encoded(false).RenderValueAs(u => GridColumnName_Popup(u.Name, u.Id, u.Code, u.Birthday, u.Gender.Value,u.ProfileImage, isPopup, orderNo, jsCallback));
+                    columns.Add().Titled("Thông tin nhân viên").Sortable(false).Sanitized(false).Encoded(false).RenderValueAs(u => GridColumnResidenceInfo_Popup(u.PositionName,u.Birthday));
+                    columns.Add().Titled("Thông tin liên hệ").Sortable(false).Sanitized(false).Encoded(false).RenderValueAs(n => GridColumnInfo_Popup(n.Phone,n.Email));
+                    }).WithPaging(10)
+            </div>
+            @*if (staff.Id > 0)
+            {
+                using (Html.BeginButtonContainer(pageSetting))
+                {
+                    if (!string.IsNullOrEmpty(jsCallback))
+                    {
+                        <a onclick="parent.@(jsCallback)('@staff.Id', '@staff.Name')" class="btn btn-info btn-mini">
+                            <i class="ace-icon fa fa-check"></i>
+                            Lấy nhân viên đang đăng nhập
+                        </a>
+                    }
+                    else
+                    {
+                        <a onclick="parent.selectLocationItem('@staff.Id', '@staff.Code','@staff.Name','@orderNo')" class="btn btn-info btn-mini">
+                            <i class="ace-icon fa fa-check"></i>
+                            Lấy nhân viên đang đăng nhập
+                        </a>
+                    }
+                }
+            }*@
+        }
+
+    }
+    @section Scripts {
+        @*<script src="~/assets/js/jquery.colorbox.min.js"></script>*@
+
+        <script>
+        $(document).ready(function () {
+            $('[data-rel="tooltip"]').tooltip({ container: 'body' });
+        });
+        //    1.4 Xóa nhân viên
+        function StaffDelete(id) {
+            if (confirm('Bạn có chắc muốn xóa các item đã chọn ?')) {
+                ShowLoading();
+                $.post("@Url.Action("DeleteAll", "Staffs", new { area = "Staff" })", { id: id })
+            .done(function (data) {
+                $("#btn_delete_staff_" + id).closest('tr').remove();
+                HideLoading();
+            });
+                return false;
+            }
+            else {
+                return false;
+            }
+        };
+        function ClosePopupAndDoSomething() {
+            ClosePopup(true);
+        }
+
+        var url = '/api/BackOfficeServiceAPI/FetchLocation';
+        var districts = $("#DistrictId"); // cache it
+        var ward = $("#WardId");
+
+        $("#ProvinceId").change(function () {
+            ShowLoading();
+            var id = $(this).val(); // Use $(this) so you don't traverse the DOM again
+            if (id != "") {
+                $.getJSON(url, { parentId: id }, function (response) {
+                    districts.empty(); // remove any existing options
+                    ward.empty();
+                    $(document.createElement('option'))
+                        .attr('value', '')
+                        .text('Phường/Xã')
+                        .appendTo(ward).trigger('chosen:updated');
+                    $(response).each(function () {
+                        $(document.createElement('option'))
+                            .attr('value', this.Id)
+                            .text(capitalizeFirstAllWords(this.Name.toLowerCase().replace('huyện', '').replace('quận', '')))
+                            .appendTo(districts).trigger('chosen:updated');
+                        HideLoading();
+                    });
+                });
+            }
+            else {
+                districts.empty(); // remove any existing options
+                ward.empty();
+                $(document.createElement('option'))
+                    .attr('value', '')
+                    .text('Quận/Huyện')
+                    .appendTo(districts).trigger('chosen:updated');
+                $(document.createElement('option'))
+                    .attr('value', '')
+                    .text('Phường/Xã')
+                    .appendTo(ward).trigger('chosen:updated');
+                HideLoading();
+            }
+        });
+
+        $("#DistrictId").change(function () {
+            ShowLoading();
+            var id = $(this).val(); // Use $(this) so you don't traverse the DOM again
+            $.getJSON(url, { parentId: id }, function (response) {
+                ward.empty(); // remove any existing options
+                $(response).each(function () {
+                    $(document.createElement('option'))
+                        .attr('value', this.Id)
+                        .text(capitalizeFirstAllWords(this.Name.toLowerCase()))
+                        .appendTo(ward).trigger('chosen:updated');
+                    HideLoading();
+                });
+            });
+        });
+
+        //Fetch BranchDepartment of University
+        var urDepartmentl = '/api/BackOfficeServiceAPI/FetchBranchDepartment';
+        var department = $("#DepartmentId"); // cache it
+
+        $("#branchId").change(function () {
+            //console.log($(this).val());
+            ShowLoading();
+            department.empty(); // remove any existing options
+            $(document.createElement('option'))
+                        .attr('value', '')
+                        .text('Phòng ban')
+                        .appendTo(department).trigger('chosen:updated');
+            var id = $(this).val(); // Use $(this) so you don't traverse the DOM again
+            $.getJSON(urDepartmentl, { BranchId: id }, function (response) {
+                department.empty(); // remove any existing options
+                $(response).each(function () {
+                    $(document.createElement('option'))
+                        .attr('value', this.Id)
+                        .text(this.Staff_DepartmentId)
+                        .appendTo(department).trigger('chosen:updated');
+                    HideLoading();
+                });
+            });
+        });
+
+        //$(function () {
+        //    $('#form-staff').submit(function () {
+        //        if ($(this).valid()) {
+        //            ShowLoading();
+        //        }
+        //    });
+        //});
+
+        </script>
+        @Html.ScriptBottom_ValidationMvc()
+        @Html.ScriptBottom_ChosenStyle()
+    }

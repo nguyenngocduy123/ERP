@@ -1,0 +1,46 @@
+﻿@model IEnumerable<RegisterForOvertimeViewModel>
+
+@using Erp.BackOffice.App_GlobalResources
+@using Erp.BackOffice.Staff.Models
+@using Erp.BackOffice.Helpers
+@using GridMvc.Html
+@{
+    bool isPopup = Request["IsPopup"] != null && Request["IsPopup"].ToString().ToLower() == "true" ? true : false;
+    if (isPopup)
+    {
+        Layout = "~/Views/Shared/_PopupLayout.cshtml";
+    }
+    else
+    {
+        Layout = "~/Views/Shared/ACE_AdminLayout.cshtml";
+    }
+}
+@section HeadOfPage {
+    <style>
+        .label-black.arrowed-in-right:after {
+            border-color: #666 transparent #666 #666;
+        }
+
+        .label-black.arrowed-in:before {
+            border-color: #666 #666 #666 transparent;
+        }
+
+    </style>
+}
+
+<link href="@Url.Content("~/assets/css/Gridmvc.css")" rel="stylesheet" type="text/css" />
+<script src="@Url.Content("~/Scripts/gridmvc.min.js")" type="text/javascript"> </script>
+
+<div class="table-responsive">
+        @Html.Grid(Model).Columns(columns =>
+   {
+       int index = 0;
+       columns.Add().Titled(Wording.OrderNo).SetWidth(30).RenderValueAs(n => (++index).ToString());
+       columns.Add(u => u.CreatedDate).Titled(Wording.CreatedDate).SetWidth(150).Sortable(false).Sanitized(false).Encoded(false).RenderValueAs(u => u.CreatedDate.Value.ToString("dd/MM/yyyy HH:mm"));
+       columns.Add().Titled(Wording.Code).SetWidth(150).Sortable(false).Sanitized(false).Encoded(false).RenderValueAs(u =>u.Code);
+       columns.Add().Titled(Wording.DayOvertime).SetWidth(150).Sortable(false).Sanitized(false).Encoded(false).RenderValueAs(u => u.DayOvertime.Value.ToString("dd/MM/yyyy"));
+       columns.Add().Titled(Wording.TimeOverTime).SetWidth(150).Sortable(false).Sanitized(false).Encoded(false).RenderValueAs(u => u.StartHour.Value.ToString("HH:mm")+" - "+u.EndHour.Value.ToString("HH:mm"));
+       columns.Add(u => u.Note).Titled(Wording.Note);
+       columns.Add(u => u.ModifiedDate).Format("{0:HH:mm - dd/MM/yyyy}").Titled(Wording.ModifiedDate).SetWidth(150).Sortable(true);
+   }).WithPaging(30)
+    </div>

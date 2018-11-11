@@ -1,0 +1,35 @@
+﻿@using HierarchicalControls.Helpers
+@using Erp.BackOffice.Account.Models
+@using Erp.BackOffice.Helpers
+@model  ProcessPaymentViewModel
+    <tr id="room-@Model.OrderNo" class="grid-row">
+        @using (Html.BeginCollectionItem("ProcessPaymentViewModelList"))
+        {
+            <td class="grid-cell">
+                @Html.HiddenFor(m => m.OrderNo)
+                @Model.OrderNo
+            </td>
+            <td class="grid-cell">
+                @Html.HiddenFor(m => m.Name)
+                @Model.Name
+            </td>
+            <td class="grid-cell">
+                @Html.HiddenFor(m => m.DayPayment)
+                @Model.DayPayment.Value.ToString("dd/MM/yyyy")
+            </td>
+            <td class="grid-cell ProcessPayment_Money">
+                @Html.HiddenFor(m => m.MoneyPayment)
+                @Erp.BackOffice.Helpers.Common.PhanCachHangNgan(Model.MoneyPayment) đ
+            </td>
+            <td class="grid-cell">
+                <button type="button" class="btn btn-minier btn-danger remove-item" data-id="#room-@Model.OrderNo">
+                    <i class="ace-icon fa fa-times"></i>
+                </button>
+            </td>
+        }
+    </tr>
+<script type="text/javascript">
+    $(".remove-item").click(function () {
+        $($(this).data("id")).remove();
+    });
+</script>

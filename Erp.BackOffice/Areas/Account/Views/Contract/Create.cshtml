@@ -1,0 +1,338 @@
+﻿@using Erp.BackOffice.App_GlobalResources
+@using Erp.BackOffice.Helpers
+@using Erp.BackOffice.Account.Models
+
+@model ContractViewModel
+@{
+    ViewBag.Title = Wording.PageCreate_Contract;
+
+    Layout = "~/Views/Shared/" + (Request["IsPopup"] == null ? "ACE_AdminLayout.cshtml" : "_PopupLayout.cshtml");
+    IEnumerable<SelectListItem> customerList = (IEnumerable<SelectListItem>)ViewBag.customerList;
+    IEnumerable<SelectListItem> infoPartyAList = (IEnumerable<SelectListItem>)ViewBag.infoPartyAList;
+
+}
+<link href="~/assets/css/fileinput.css" rel="stylesheet" />
+<link href="~/Scripts/fileInput/themes/explorer/theme.css" rel="stylesheet" />
+<script src="~/Scripts/fileInput/js/fileinput.js"></script>
+<script src="~/Scripts/fileInput/themes/explorer/theme.js"></script>
+@section HeadOfPage {
+    @Html.ScriptTop_ChosenStyle()
+    <style type="text/css">
+        .chosen-search:after {
+            content: none !important;
+        }
+
+        .chosen-onthispage {
+            margin-right: 2px;
+        }
+
+            .chosen-onthispage label {
+                display: none;
+            }
+
+            .chosen-onthispage .control-group {
+                margin: 0px;
+                display: inline-block;
+            }
+
+        .chosen-single {
+            border-radius: 0px !important;
+            height: 34px !important;
+            line-height: 34px !important;
+            margin-top: -5px !important;
+        }
+
+        .form-search input {
+            padding: 0px 4px;
+            height: 34px;
+            line-height: 26px;
+        }
+
+        .chosen-container {
+            width: 300px !important;
+            max-width: 100%;
+        }
+
+        #ItemType_chosen {
+            width: 150px !important;
+        }
+
+        .radio {
+            margin-right: 5px;
+        }
+    </style>
+
+    <style type="text/css">
+        .has-error .field-validation-error, .has-error .field-validation-valid {
+            color: #de2a2a;
+        }
+    </style>
+}
+
+@using (Html.BeginForm_AceStyle((string)ViewBag.Title, "", "Create", "Contract", null, FormMethod.Post, new { @class = "form-horizontal clearfix" }))
+{
+    @Html.ValidationSummary(true)
+
+    <input type="hidden" value="@Request["IsPopup"]" name="IsPopup" />
+    //  @Html.CustomDropDownListFor(model => model.Type, SelectListHelper.GetSelectList_Category("ContractType",null), WidthType.span4, true, null, DropdownListStyle.DropdownListStyleDefault)
+    // @Html.CustomTextboxFor(model => model.Code, null, null, WidthType.span12)
+
+    // @Html.CustomTextboxFor(model => model.TemplateFile, null, null, WidthType.span12)
+    //thông tin bên A
+    <h3 class="header smaller lighter blue" style="padding-top:0px;"><span>Thông tin hợp đồng</span></h3>
+    <p></p>
+<div class="col-sm-6">
+<div class="">
+<div class="control-group form-group">
+    <label class="control-label no-padding-right col-sm-3" for="InfoPartyAId">Bên A</label>
+    <div class="control-value col-sm-9">
+        <div class="clearfix">
+            <select name="InfoPartyAId" id="InfoPartyAId" class="col-sm-6 chzn-select" data-val="true" data-val-required="Chưa chọn bên A">
+                <option value="">- chọn -</option>
+                @foreach (var item in infoPartyAList)
+                {
+                <option value="@item.Value">@item.Text</option>
+                }
+            </select>
+        </div>
+        <div class="clearfix">
+            <span class="field-validation-valid help-inline" data-valmsg-for="InfoPartyAId" data-valmsg-replace="true"></span>
+        </div>
+
+        @if (Request["IsPopup"] == null)
+        {
+        <div class="clearfix create-popup">
+            <a style="padding-top:5px" onclick="OpenPopup('/InfoPartyA/Create?IsPopup=true', 'Tạo mới thông tin bên A ', 1000, 500)">Tạo mới thông tin bên A</a>
+        </div>
+        }
+
+    </div>
+</div>
+<div class="control-group form-group">
+    <label class="control-label no-padding-right col-sm-3" for="CustomerId">Khách hàng</label>
+    <div class="control-value col-sm-9">
+        <div class="clearfix">
+            <select name="CustomerId" id="CustomerId" class="col-sm-6 chzn-select" data-val="true" data-val-required="Chưa chọn khách hàng">
+                <option value="">- chọn -</option>
+                @foreach (var item in customerList)
+                {
+                <option value="@item.Value">@item.Text</option>
+                }
+            </select>
+        </div>
+        <div class="clearfix">
+            <span class="field-validation-valid help-inline" data-valmsg-for="CustomerId" data-valmsg-replace="true"></span>
+        </div>
+
+        @if (Request["IsPopup"] == null)
+        {
+        <div class="clearfix create-popup">
+            <a style="padding-top:5px" onclick="OpenPopup('/Customer/Create?IsPopup=true', 'Tạo mới khách hàng', 1000, 500)">Tạo mới khách hàng</a>
+        </div>
+        }
+
+    </div>
+</div>
+@Html.CustomTextboxFor(model => model.Place, null, null, WidthType.span5)
+@Html.DatePicker(model => model.EffectiveDate, "dd/MM/yyyy", "99/99/9999", true, true, "col-sm-3", "col-sm-9", "col-sm-4")
+@Html.CustomTextboxFor(model => model.Quantity, null, null, WidthType.span2, true, new Dictionary<string, object> { { "class", "col-sm-3 text-right" } })
+<div class="row" style="margin-bottom:10px;">
+    <div class="col-sm-3 bottom-5">
+    </div>
+    <div class="col-sm-9 bottom-5">
+        <span class="control-group">
+            <label class="radio"><input type="radio" value="ContractLease" class="group_choice ace" data-target="#group_choice_wrap1" checked name="group_choice" />  <span class="lbl">Hợp đồng cho thuê</span></label>
+            <label class="radio"><input type="radio" value="ContractSell" class="group_choice ace" data-target="#group_choice_wrap2" name="group_choice" /> <span class="lbl">Hợp đồng bán</span></label>
+        </span>
+    </div>
+</div>
+</div>
+</div>
+
+<div class="col-sm-6">
+<div class="">
+<div id="group_choice_wrap1" class="group_choice_wrap clearfix top-5">
+    @Html.CustomDropDownListFor(model => model.ContractLeaseModel.CondosId, SelectListHelper.GetSelectList_Condos(null), WidthType.span6, true, null, DropdownListStyle.DropdownListStyleChosen)
+    @Html.CustomTextboxFor(model => model.ContractLeaseModel.Quantity, null, null, WidthType.span4, true, new Dictionary<string, object> { { "class", "col-sm-4 text-right" } })
+    @Html.CustomDropDownListFor(model => model.ContractLeaseModel.Unit, SelectListHelper.GetSelectList_Category("UnitContractLease", null, "Value", Wording.Empty), WidthType.span4, true, null, DropdownListStyle.DropdownListStyleDefault)
+    @Html.CustomTextboxFor(model => model.ContractLeaseModel.Price, null, null, WidthType.span3, true, new Dictionary<string, object> { { "class", "col-sm-6 text-right" } })
+    @Html.CustomDropDownListFor(model => model.ContractLeaseModel.UnitMoney, SelectListHelper.GetSelectList_Category("UnitMoney", null, "Value", Wording.Empty), WidthType.span3, true, null, DropdownListStyle.DropdownListStyleDefault)
+    @Html.DatePicker(model => model.ContractLeaseModel.DayHandOver, "dd/MM/yyyy", "99/99/9999", true, true, "col-sm-3", "col-sm-9", "col-sm-4")
+    @Html.DatePicker(model => model.ContractLeaseModel.EffectiveDate, "dd/MM/yyyy", "99/99/9999", true, true, "col-sm-3", "col-sm-9", "col-sm-4")
+    @Html.DatePicker(model => model.ContractLeaseModel.ExpiryDate, "dd/MM/yyyy", "99/99/9999", true, true, "col-sm-3", "col-sm-9", "col-sm-4")
+    @Html.DatePicker(model => model.ContractLeaseModel.DayPay, "dd/MM/yyyy", "99/99/9999", true, true, "col-sm-3", "col-sm-9", "col-sm-4")
+</div>
+
+<div id="group_choice_wrap2" class="group_choice_wrap clearfix top-5" style="height:0;overflow: hidden;">
+
+    @Html.HiddenFor(model => model.ContractSellModel.Quantity)
+    @Html.HiddenFor(model => model.ContractSellModel.Unit)
+    @Html.CustomDropDownListFor(model => model.ContractSellModel.CondosId, SelectListHelper.GetSelectList_Condos(null), WidthType.span6, true, null, DropdownListStyle.DropdownListStyleChosen)
+    @Html.CustomTextboxFor(model => model.ContractSellModel.Quantity, null, null, WidthType.span4, true, new Dictionary<string, object> { { "disabled", "disabled" } })
+    @Html.CustomTextboxFor(model => model.ContractSellModel.Unit, null, null, WidthType.span4, true, new Dictionary<string, object> { { "disabled", "disabled" } })
+    @*@Html.CustomTextboxFor(model => model.ContractSellModel.Quantity, null, null, WidthType.span2, true, new Dictionary<string, object> { { "class", "col-sm-3 text-right" } })
+    @Html.CustomDropDownListFor(model => model.ContractSellModel.Unit, SelectListHelper.GetSelectList_Category("UnitContractSell", null, "Value", false), WidthType.span3, true, null, DropdownListStyle.DropdownListStyleDefault)*@
+    @Html.CustomTextboxFor(model => model.ContractSellModel.Price, null, null, WidthType.span3, true, new Dictionary<string, object> { { "class", "col-sm-6 text-right" } })
+    @Html.CustomTextboxFor(model => model.ContractSellModel.VAT, null, null, WidthType.span3, true, new Dictionary<string, object> { { "class", "col-sm-6 text-right" } })
+    @Html.CustomTextboxFor(model => model.ContractSellModel.MaintenanceCosts, null, null, WidthType.span3, true, new Dictionary<string, object> { { "class", "col-sm-6 text-right" } })
+    @Html.CustomDropDownListFor(model => model.ContractSellModel.UnitMoney, SelectListHelper.GetSelectList_Category("UnitMoney", null, "Value", Wording.Empty), WidthType.span3, true, null, DropdownListStyle.DropdownListStyleDefault)
+    @Html.DatePicker(model => model.ContractSellModel.DayHandOver, "dd/MM/yyyy", "99/99/9999", true, true, "col-sm-3", "col-sm-9", "col-sm-4")
+    @Html.DatePicker(model => model.ContractSellModel.DayPay, "dd/MM/yyyy", "99/99/9999", true, true, "col-sm-3", "col-sm-9", "col-sm-4")
+
+</div>
+</div>
+</div>
+
+           
+<div class="col-sm-6">
+    <h3 class="header smaller lighter blue"><span>Tiến trình thanh toán</span></h3>
+    <p></p>
+    <div class="well" style="margin-bottom:0px;">
+        <div class="clearfix form-inline form-search">
+            <span class="control-group">
+                <input class="date-picker" style="margin-right:1px;" data-date-format="dd/mm/yyyy" placeholder="@Wording.DayPayment" value="@Request["DayPayment"]" name="DayPayment" />
+            </span>
+            <span class="control-group">
+                @Html.TextBox("MoneyPayment", null, new { placeholder = "Số tiền thanh toán", style = "width:150px", @class = "input-numberic", onkeyup = "textMaxPrice(this, event)" })
+            </span>
+            <a onclick="addProcessPayment()" class="btn btn-info btn-sm" style="margin-left:5px">
+                <i class="ace-icon fa fa-plus bigger-110"></i>
+                @Wording.Add
+            </a>
+        </div>
+    </div>
+        <div class="table-responsive">
+            <table class="table table-bordered top-20 ">
+                <thead>
+                    <tr>
+                        <th class="grid-header"><div class="grid-header-title"><span>STT</span></div></th>
+                        <th class="grid-header"><div class="grid-header-title"><span>@Wording.Name</span></div></th>
+                        <th class="grid-header"><div class="grid-header-title"><span>@Wording.DayPayment</span></div></th>
+                        <th class="grid-header"><div class="grid-header-title"><span>@Wording.MoneyPayment</span></div></th>
+                        <th class="grid-header" style="width:50px;"></th>
+                    </tr>
+                </thead>
+                <tbody id="ProcessPaymentList"></tbody>
+            </table>
+        </div>
+        <h5 style="font-weight:bold; text-align:right">Tổng tiền: <span id="ProcessPaymentTotal" style="color:red"></span> đ</h5>
+   
+</div>
+    <div class="col-sm-6">
+        @Html.Partial("_DocumentField")
+    </div>
+    <div class="col-sm-12">
+        <a href="@Url.Action("Index")" class="btn btn-prev btn-sm">
+            <i class="fa fa-arrow-left"></i>
+            Quay về
+        </a>
+
+        <button style="margin-left:10px" type="submit" id="btnSave" class="btn btn-success btn-sm" name="Submit" value="Save">
+            <i class="fa fa-save"></i>
+            @Wording.Save
+        </button>
+    </div>
+}
+@Html.Partial("_UploadDocumentField")
+@section Scripts {
+    <script>
+        //truyền từ action create của controller qua khi thực hiện submit và return về lại view create, để nhận biết là được gọi theo dạng popup
+        var closePopup = '@ViewBag.closePopup';
+        $(document).ready(function () {
+            //nếu là được gọi theo dạng popup từ form khác thì chạy đoạn code bên dưới
+            if (closePopup != '') {
+                var option = '<option value="@Model.Id" >@Model.Place</option>';
+                //tên funtion có thể khác theo từng công việc riêng (đây chỉ là mẫu khi thêm mới sẽ gọi lại)
+                window.parent.ClosePopupAndAppendSelect(option);
+            }
+        });
+        //định dạng kiểu số
+        $(document).ready(function () {
+
+            $('#Quantity').numberFormat();
+            $('#ContractLeaseModel_Quantity').numberFormat();
+            $('#ContractSellModel_Quantity').numberFormat();
+            $('#ContractLeaseModel_Price').numberFormat();
+            $('#ContractSellModel_Price').numberFormat();
+            $('#ContractSellModel_VAT').numberFormat();
+            $('#ContractSellModel_MaintenanceCosts').numberFormat();
+        });
+        //chọn loại hợp đồng
+        $(".group_choice").change(function () {
+            ShowLoading();
+            $(".group_choice_wrap").css('height', 'initial');
+            if ($(this).is(":checked")) {
+                $(".group_choice_wrap").hide();
+                $($(this).data("target")).show();
+            }
+            HideLoading();
+        });
+        //hàm đóng popup
+        function ClosePopupAndDoSomethings(optionSelect) {
+            ClosePopup(false);
+            $('#CustomerId').append($(optionSelect)).trigger("chosen:updated");
+        }
+        function ClosePopupAndAppendSelectInfoPartyA(optionSelect) {
+            ClosePopup(false);
+            $('#InfoPartyAId').append($(optionSelect)).trigger("chosen:updated");
+        }
+        //hàm load đơn giá khi chọn căn hộ
+        var url = '/api/BackOfficeServiceAPI/FetchPriceCondos';
+        var price = $('#ContractSellModel_Price'); // cache it
+
+        $("#ContractSellModel_CondosId").change(function () {
+            var id = $(this).val(); // Use $(this) so you don't traverse the DOM again
+            $.getJSON(url, { CondosId: id }, function (response) {
+                price.val(response).trigger('change');
+                $('#mask-ContractSellModel_Price').val(response).trigger('change');
+            });
+
+        });
+
+        //hàm thêm tiến độ thanh toán
+        function addProcessPayment() {
+            var dayPayment = $('[name="DayPayment"]').val();
+            var moneyPayment = $("#MoneyPayment").val();
+            if (dayPayment != "" && moneyPayment != "") {
+                var formData = {
+                    dayPayment: dayPayment,
+                    moneyPayment: moneyPayment,
+                    orderNo: $('#ProcessPaymentList tr').length
+                };
+
+                ClickEventHandler(true, "/Contract/AddProcessPayment", "#ProcessPaymentList", formData, sum);
+                $('[name="DayPayment"]').val("");
+                $("#MoneyPayment").val("");
+            }
+        }
+        function sum() {
+            var total = 0;
+            $(".ProcessPayment_Money").each(function (i) {
+                var value = $(this).text().replace(/\D+/g, '');
+                total += parseInt(value);
+            });
+
+            $("#ProcessPaymentTotal").text(currencyFormat(total));
+        }
+        function textMaxPrice(obj, evt) {
+            //  alert(1);
+            var maxPrice = $('#ContractSellModel_Price').val();
+            var Payment = $('#ProcessPaymentTotal').text().replace(/\D/g, '');
+            var q = Payment == '' ? 0 : Payment;
+            var charCode = (evt.which) ? evt.which : event.keyCode
+            var max = parseInt(maxPrice) - parseInt(q);
+            var text = obj.value.toString().replace(/\D/g, '');
+            if (parseInt(text) > max) {
+                alert("Nhập số tiền tối đa: " + max);
+                obj.value = max;
+                return false;
+            }
+            else {
+                return true;
+            }
+        }
+    </script>
+    @Html.ScriptBottom_ValidationMvc()
+    @Html.ScriptBottom_DatePicker("dd/mm/yyyy")
+    @Html.ScriptBottom_ChosenStyle()
+}

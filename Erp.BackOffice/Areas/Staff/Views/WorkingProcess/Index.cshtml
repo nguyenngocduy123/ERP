@@ -1,0 +1,92 @@
+@model IEnumerable<WorkingProcessViewModel>
+
+@using Erp.BackOffice.App_GlobalResources
+@using Erp.BackOffice.Staff.Models
+@using Erp.BackOffice.Helpers
+@using GridMvc.Html
+@{
+    ViewBag.Title = Wording.PageIndex_WorkingProcess;
+    bool isPopup = Request["IsPopup"] != null && Request["IsPopup"].ToString().ToLower() == "true" ? true : false;
+    if (isPopup)
+    {
+        Layout = "~/Views/Shared/_PopupLayout.cshtml";
+    }
+    else
+    {
+        Layout = "~/Views/Shared/ACE_AdminLayout.cshtml";
+    }
+}
+
+
+<link href="@Url.Content("~/assets/css/Gridmvc.css")" rel="stylesheet" type="text/css" />
+<script src="@Url.Content("~/Scripts/gridmvc.min.js")" type="text/javascript"> </script>
+
+@helper GridColumnCommand(int id)
+{
+    <button name="Delete" value="Delete" type="submit" id="btn_delete_workingprocess_@id" class="btn btn-mini btn-danger" onclick="return WorkingProcessDelete(@id)">
+        <i class="ace-icon fa fa-trash bigger-120"></i>
+    </button>
+}
+
+@helper GridColumnName(string name, int id)
+{
+    if (string.IsNullOrEmpty(name))
+    {
+        <span>NoTile</span>
+    }
+    else
+    {
+        <a onclick="OpenPopup('@Url.Action("Edit", "WorkingProcess", new { area = "Staff", Id = id, IsPopup = "true" })', '@Wording.PageEdit_WorkingProcess', 500, 500)">@name</a>
+    }
+}
+@*@helper GridColumnBonus(string name, int id)
+{
+if (string.IsNullOrEmpty(name))
+{
+        <span>NoTile</span>
+}
+else
+{
+        <a onclick="OpenPopup('@Url.Action("Edit", "BonusDiscipline", new { area = "Staff", Id = id, IsPopup = "true" })', '@Wording.PageEdit_BonusDiscipline', 500, 500)">@name</a>
+}
+}*@
+@helper GridColumnCategoryValue(object value)
+{
+    var attr = Erp.BackOffice.Helpers.Common.GetCategoryByValueOrId("value", value);
+    <span>@(attr != null ? attr.Name : "")</span>
+}
+@if (ViewBag.AccessRightCreate)
+{
+    <p>@Html.Button(Wording.PageCreate_WorkingProcess, ButtonType.aTag, ButtonColor.Success, ButtonSize.Mini, true, IconType.Plus, IconSize.Default, false, new { @class = "btn-WorkingProcessCreate", @onclick = "OpenPopup('" + Url.Action("Create", "WorkingProcess", new { area = "Staff", StaffId = ViewBag.StaffId, IsPopup = "true" }) + "', '" + Wording.PageCreate_WorkingProcess + "', 0, 0)" })</p>
+  @*<p>  @Html.Button(Wording.PageCreate_WorkingProcess, ButtonType.aTag, ButtonColor.Success, ButtonSize.Mini, true, IconType.Plus, IconSize.Default, false, new { @href = Url.Action("Create", "WorkingProcess",new { area="Staff", StaffId = ViewBag.StaffId }) })</p>*@
+}
+<div class="table-responsive">
+        @Html.Grid(Model).Columns(columns =>
+   {
+       int index = 0;
+       columns.Add().Titled(Wording.OrderNo).SetWidth(30).RenderValueAs(n => (++index).ToString());
+       columns.Add().Titled(Wording.WorkPlace).Sortable(false).Sanitized(false).Encoded(false).RenderValueAs(u => GridColumnName(u.WorkPlace, u.Id));
+       columns.Add(u => u.Position).Titled(Wording.Position);
+       columns.Add(u => u.DayStart).Format("{0:dd/MM/yyyy}").Titled(Wording.DayStart);
+       columns.Add(u => u.DayEnd).Format("{0:dd/MM/yyyy}").Titled(Wording.DayEnd);
+       columns.Add(u => u.Name).Titled(Wording.NameReference);
+       columns.Add(u => u.Email).Titled(Wording.EmailReference);
+       columns.Add(u => u.Phone).Titled(Wording.PhoneReference);
+       //columns.Add(u => u.BonusDisciplineId).Titled(Wording.BonusDiscipline);
+       columns.Add().Titled(Wording.BonusDiscipline).Sortable(false).Sanitized(false).Encoded(false).RenderValueAs(u => u.BonusDiscipline);
+
+       //columns.Add(u => u.CreatedDate).Titled(Wording.CreatedDate).SetWidth(100);
+       //columns.Add(u => u.ModifiedUserId).Titled(Html.DisplayNameFor(u => u.FirstOrDefault().ModifiedUserId).ToString()).SetWidth(100).RenderValueAs(u => u.ModifiedUserName);
+       //columns.Add(u => u.ModifiedDate).Titled(Wording.ModifiedDate).SetWidth(100).Sortable(true);
+       columns.Add(u => u.Id).Titled(Wording.Action).Sanitized(false).Encoded(false).RenderValueAs(u => GridColumnCommand(u.Id));
+   }).WithPaging(10)
+</div>
+@section Scripts {
+    <script type="text/javascript">
+        function ClosePopupAndReloadPageStaffDetail() {
+            ClosePopup(true);
+            ShowLoading();
+        };
+
+    </script>
+}

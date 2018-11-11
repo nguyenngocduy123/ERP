@@ -1,0 +1,244 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xs:schema xmlns:tns="http://impl.bulkSms.ws/" xmlns:ns1="http://smsbrand.viettel.com/" targetNamespace="http://impl.bulkSms.ws/" version="1.0" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <xs:import schemaLocation="http://125.235.4.202:8998/bulkapi?xsd=1" namespace="http://smsbrand.viettel.com/" />
+  <xs:element name="Exception" type="tns:Exception" />
+  <xs:element name="checkBalance" type="tns:checkBalance" />
+  <xs:element name="checkBalanceResponse" type="tns:checkBalanceResponse" />
+  <xs:element name="createMtResult" type="tns:createMtResult" />
+  <xs:element name="failSub" type="tns:failSub" />
+  <xs:element name="getFailSub" type="tns:getFailSub" />
+  <xs:element name="getFailSubResponse" type="tns:getFailSubResponse" />
+  <xs:element name="getIp" type="tns:getIp" />
+  <xs:element name="getIpResponse" type="tns:getIpResponse" />
+  <xs:element name="responseMt" type="tns:responseMt" />
+  <xs:element name="wsCpBatchMt" type="tns:wsCpBatchMt" />
+  <xs:element name="wsCpBatchMtResponse" type="tns:wsCpBatchMtResponse" />
+  <xs:element name="wsCpMt" type="tns:wsCpMt" />
+  <xs:element name="wsCpMtResponse" type="tns:wsCpMtResponse" />
+  <xs:element name="wsReportDaily" type="tns:wsReportDaily" />
+  <xs:element name="wsReportDailyResponse" type="tns:wsReportDailyResponse" />
+  <xs:element name="wsReportHour" type="tns:wsReportHour" />
+  <xs:element name="wsReportHourResponse" type="tns:wsReportHourResponse" />
+  <xs:element name="wsReportMonth" type="tns:wsReportMonth" />
+  <xs:element name="wsReportMonthResponse" type="tns:wsReportMonthResponse" />
+  <xs:complexType name="wsReportDaily">
+    <xs:sequence>
+      <xs:element minOccurs="0" name="User" type="xs:string" />
+      <xs:element minOccurs="0" name="Password" type="xs:string" />
+      <xs:element minOccurs="0" name="CPCode" type="xs:string" />
+      <xs:element minOccurs="0" name="startDate" type="xs:string" />
+      <xs:element minOccurs="0" name="endDate" type="xs:string" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="wsReportDailyResponse">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="return" type="tns:reportDailyBO" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="reportDailyBO">
+    <xs:sequence>
+      <xs:element minOccurs="0" name="cpAlias" type="xs:string" />
+      <xs:element minOccurs="0" name="cpCode" type="xs:string" />
+      <xs:element minOccurs="0" name="cpId" type="xs:long" />
+      <xs:element minOccurs="0" name="message" type="xs:string" />
+      <xs:element minOccurs="0" name="mtError" type="xs:long" />
+      <xs:element minOccurs="0" name="mtErrorAlias" type="xs:long" />
+      <xs:element minOccurs="0" name="mtFailure" type="xs:long" />
+      <xs:element minOccurs="0" name="mtSent" type="xs:long" />
+      <xs:element minOccurs="0" name="mtSentOut" type="xs:long" />
+      <xs:element minOccurs="0" name="mtSentVt" type="xs:long" />
+      <xs:element minOccurs="0" name="reportDailyId" type="xs:long" />
+      <xs:element minOccurs="0" name="reportDate" type="xs:string" />
+      <xs:element minOccurs="0" name="result" type="xs:long" />
+      <xs:element minOccurs="0" name="smsSent" type="xs:long" />
+      <xs:element minOccurs="0" name="smsSentOut" type="xs:long" />
+      <xs:element minOccurs="0" name="smsSentVt" type="xs:long" />
+      <xs:element minOccurs="0" name="sumMT" type="xs:long" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="Exception">
+    <xs:sequence>
+      <xs:element minOccurs="0" name="message" type="xs:string" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="wsCpMt">
+    <xs:sequence>
+      <xs:element minOccurs="0" name="User" type="xs:string" />
+      <xs:element minOccurs="0" name="Password" type="xs:string" />
+      <xs:element minOccurs="0" name="CPCode" type="xs:string" />
+      <xs:element minOccurs="0" name="RequestID" type="xs:string" />
+      <xs:element minOccurs="0" name="UserID" type="xs:string" />
+      <xs:element minOccurs="0" name="ReceiverID" type="xs:string" />
+      <xs:element minOccurs="0" name="ServiceID" type="xs:string" />
+      <xs:element minOccurs="0" name="CommandCode" type="xs:string" />
+      <xs:element minOccurs="0" name="Content" type="xs:string" />
+      <xs:element minOccurs="0" name="ContentType" type="xs:string" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="wsCpMtResponse">
+    <xs:sequence>
+      <xs:element minOccurs="0" name="return" type="tns:result" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="result">
+    <xs:sequence>
+      <xs:element minOccurs="0" name="message" type="xs:string" />
+      <xs:element minOccurs="0" name="result" type="xs:long" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="checkBalance">
+    <xs:sequence>
+      <xs:element minOccurs="0" name="User" type="xs:string" />
+      <xs:element minOccurs="0" name="Password" type="xs:string" />
+      <xs:element minOccurs="0" name="CPCode" type="xs:string" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="checkBalanceResponse">
+    <xs:sequence>
+      <xs:element minOccurs="0" name="return" type="ns1:cpBalance" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="wsCpBatchMt">
+    <xs:sequence>
+      <xs:element minOccurs="0" name="User" type="xs:string" />
+      <xs:element minOccurs="0" name="Password" type="xs:string" />
+      <xs:element minOccurs="0" name="CPCode" type="xs:string" />
+      <xs:element minOccurs="0" name="CommandCode" type="xs:string" />
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="requestMt" type="tns:requestMt" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="requestMt">
+    <xs:sequence>
+      <xs:element minOccurs="0" name="content" type="xs:string" />
+      <xs:element name="contentType" type="xs:long" />
+      <xs:element minOccurs="0" name="receiverID" type="xs:string" />
+      <xs:element minOccurs="0" name="requestID" type="xs:string" />
+      <xs:element minOccurs="0" name="serviceID" type="xs:string" />
+      <xs:element minOccurs="0" name="userID" type="xs:string" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="wsCpBatchMtResponse">
+    <xs:sequence>
+      <xs:element minOccurs="0" name="return" type="tns:createMtResult" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="createMtResult">
+    <xs:sequence>
+      <xs:element name="errCode" type="xs:long" />
+      <xs:element minOccurs="0" name="errDesc" type="xs:string" />
+      <xs:element minOccurs="0" maxOccurs="unbounded" ref="tns:responseMt" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="responseMt">
+    <xs:sequence>
+      <xs:element minOccurs="0" name="message" type="xs:string" />
+      <xs:element minOccurs="0" name="requestId" type="xs:string" />
+      <xs:element minOccurs="0" name="result" type="xs:long" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="wsReportHour">
+    <xs:sequence>
+      <xs:element minOccurs="0" name="User" type="xs:string" />
+      <xs:element minOccurs="0" name="Password" type="xs:string" />
+      <xs:element minOccurs="0" name="CPCode" type="xs:string" />
+      <xs:element minOccurs="0" name="timeReport" type="xs:string" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="wsReportHourResponse">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="return" type="tns:reportHourBO" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="reportHourBO">
+    <xs:sequence>
+      <xs:element minOccurs="0" name="cpAlias" type="xs:string" />
+      <xs:element minOccurs="0" name="cpCode" type="xs:string" />
+      <xs:element minOccurs="0" name="cpId" type="xs:long" />
+      <xs:element minOccurs="0" name="message" type="xs:string" />
+      <xs:element minOccurs="0" name="mtError" type="xs:long" />
+      <xs:element minOccurs="0" name="mtErrorAlias" type="xs:long" />
+      <xs:element minOccurs="0" name="mtFailure" type="xs:long" />
+      <xs:element minOccurs="0" name="mtSent" type="xs:long" />
+      <xs:element minOccurs="0" name="mtSentOut" type="xs:long" />
+      <xs:element minOccurs="0" name="mtSentVt" type="xs:long" />
+      <xs:element minOccurs="0" name="reportHour" type="xs:string" />
+      <xs:element minOccurs="0" name="reportHourId" type="xs:long" />
+      <xs:element minOccurs="0" name="result" type="xs:long" />
+      <xs:element minOccurs="0" name="smsSent" type="xs:long" />
+      <xs:element minOccurs="0" name="smsSentOut" type="xs:long" />
+      <xs:element minOccurs="0" name="smsSentVt" type="xs:long" />
+      <xs:element minOccurs="0" name="sumMT" type="xs:long" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="getIp">
+    <xs:sequence />
+  </xs:complexType>
+  <xs:complexType name="getIpResponse">
+    <xs:sequence>
+      <xs:element minOccurs="0" name="return" type="xs:string" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="wsReportMonth">
+    <xs:sequence>
+      <xs:element minOccurs="0" name="User" type="xs:string" />
+      <xs:element minOccurs="0" name="Password" type="xs:string" />
+      <xs:element minOccurs="0" name="CPCode" type="xs:string" />
+      <xs:element minOccurs="0" name="startMonth" type="xs:string" />
+      <xs:element minOccurs="0" name="endMonth" type="xs:string" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="wsReportMonthResponse">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="return" type="tns:reportMonthBO" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="reportMonthBO">
+    <xs:sequence>
+      <xs:element minOccurs="0" name="cpAlias" type="xs:string" />
+      <xs:element minOccurs="0" name="cpCode" type="xs:string" />
+      <xs:element minOccurs="0" name="cpId" type="xs:long" />
+      <xs:element minOccurs="0" name="message" type="xs:string" />
+      <xs:element minOccurs="0" name="mtError" type="xs:long" />
+      <xs:element minOccurs="0" name="mtErrorAlias" type="xs:long" />
+      <xs:element minOccurs="0" name="mtFailure" type="xs:long" />
+      <xs:element minOccurs="0" name="mtSent" type="xs:long" />
+      <xs:element minOccurs="0" name="mtSentOut" type="xs:long" />
+      <xs:element minOccurs="0" name="mtSentVt" type="xs:long" />
+      <xs:element minOccurs="0" name="reportMonth" type="xs:string" />
+      <xs:element minOccurs="0" name="reportMonthId" type="xs:long" />
+      <xs:element minOccurs="0" name="result" type="xs:long" />
+      <xs:element minOccurs="0" name="smsSent" type="xs:long" />
+      <xs:element minOccurs="0" name="smsSentOut" type="xs:long" />
+      <xs:element minOccurs="0" name="smsSentVt" type="xs:long" />
+      <xs:element minOccurs="0" name="sumMT" type="xs:long" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="getFailSub">
+    <xs:sequence>
+      <xs:element minOccurs="0" name="username" type="xs:string" />
+      <xs:element minOccurs="0" name="password" type="xs:string" />
+      <xs:element minOccurs="0" name="cpCode" type="xs:string" />
+      <xs:element minOccurs="0" name="alias" type="xs:string" />
+      <xs:element minOccurs="0" name="date" type="xs:string" />
+      <xs:element minOccurs="0" name="pageNumber" type="xs:string" />
+      <xs:element minOccurs="0" name="pageSize" type="xs:string" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="getFailSubResponse">
+    <xs:sequence>
+      <xs:element minOccurs="0" name="return" type="tns:failSubReponse" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="failSubReponse">
+    <xs:sequence>
+      <xs:element minOccurs="0" name="errorCode" type="xs:string" />
+      <xs:element minOccurs="0" name="message" type="xs:string" />
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="result" nillable="true" type="tns:failSub" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="failSub">
+    <xs:sequence />
+    <xs:attribute name="receiver" type="xs:string" />
+    <xs:attribute name="message" type="xs:string" />
+  </xs:complexType>
+</xs:schema>

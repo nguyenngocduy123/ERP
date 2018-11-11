@@ -1,0 +1,381 @@
+@using Erp.BackOffice.App_GlobalResources
+@using Erp.BackOffice.Helpers
+@using Erp.BackOffice.Staff.Models
+
+@model WelfareProgramsViewModel
+
+@{
+    ViewBag.Title = Wording.PageDetail_WelfarePrograms;
+
+    Layout = "~/Views/Shared/ACE_AdminLayout.cshtml";
+
+    Erp.BackOffice.Models.PageSetting pageSetting = new Erp.BackOffice.Models.PageSetting
+    {
+        ModuleName = "WelfarePrograms",
+        ActionName = "Detail",
+        PageTitle = ViewBag.Title,
+        DisplaySearchPanel = false,
+        IsPopup = false,
+        DisplayBackButton = true
+    };
+    int index = 1;
+}
+<link href="@Url.Content("~/assets/css/Gridmvc.css")" rel="stylesheet" type="text/css" />
+<script src="@Url.Content("~/Scripts/gridmvc.min.js")" type="text/javascript"> </script>
+
+@helper CheckDeleteColumns(int Id)
+{
+    <label>
+        <input class="ace class-delete-all" type="checkbox" name="DeleteId-checkbox" value="@Id">
+        <span class="lbl"></span>
+    </label>
+}
+
+@helper BuildCheckAll()
+{
+    <label>
+        <input class="ace" type="checkbox" name="checkAll" id="checkAll" />
+        <span class="lbl"></span>
+    </label>
+}
+@helper GridColumnCommand(int id)
+{
+    <div class="hidden-phone visible-desktop action-buttons" style="display: inline-block; float: left;">
+        <p>
+            <button name="Delete" value="Delete" type="submit" class="btn btn-mini btn-danger">
+                <i class="ace-icon fa fa-trash bigger-120"></i>
+            </button>
+        </p>
+    </div>
+}
+@helper GridColumnCategoryValue(string value, string code)
+{
+    var attr = Common.GetCategoryByValueCodeOrId("value", value, code);
+    <span>@(attr != null ? attr.Name : "")</span>
+}
+
+
+@helper GridColumnStatus(string Status, string code)
+{
+    switch (Status)
+    {
+        case "pending":
+            <label class="label label-info">@GridColumnCategoryValue(Status, code)</label>
+            break;
+        case "complete":
+        <label class="label label-success">@GridColumnCategoryValue(Status, code)</label>
+            break;
+        case "inprogress":
+        <label class="label label-warning">@GridColumnCategoryValue(Status, code)</label>
+            break;
+
+    }
+}
+@using (Html.BeginPageHeaderContainer(pageSetting))
+{
+
+}
+<div class="row">
+    <div class="col-sm-7">
+        @if (Model.Status != "complete")
+        {
+            <a class="btn btn-mini btn-primary" id="create_staff"
+               onclick="OpenCreateNV()">
+                <i class="ace-icon fa fa-plus"></i>
+                Thêm nhân viên tham gia
+            </a>
+            <div class="widget-box" style="display:none;" id="panel_create_staff">
+                <div class="widget-header">
+                    <h5 class="widget-title">Thêm nhân viên</h5>
+                </div>
+                <div class="widget-body">
+                    <div class="widget-main" id="Them_nhan_vien">
+
+                    </div>
+                </div>
+            </div>
+        }
+        @using (Html.BeginForm("Delete", "WelfareProgramsDetail", FormMethod.Post))
+        {
+            <input type="hidden" name="UrlReferrer" value="@Request.Url" />
+            <div class="table-responsive top-10" id="table_list_staff">
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            @if (Model.Status != "complete")
+                            {
+                                <th style="width:5%">@BuildCheckAll()</th>
+                            }
+                            <th style="width:5%">STT</th>
+                            <th style="width:250px">Tên nhân viên</th>
+                            <th style="width:180px">Ngày đăng ký</th>
+                            <th>Ghi chú</th>
+                            @if (Model.Status != "complete")
+                            {
+                                <th style="width:50px;"></th>
+                            }
+                        </tr>
+                    </thead>
+                    <tbody class="detailList">
+                        @foreach (var item in Model.ListStaff)
+                        {
+                            <tr>
+                                @if (Model.Status != "complete")
+                                {
+                                    <td>@CheckDeleteColumns(item.Id)</td>
+                                }
+                                <td>@(index++)</td>
+                                <td>@item.StaffName</td>
+                                <td>@item.RegistrationDate.Value.ToString("dd/MM/yyyy HH:mm")</td>
+                                <td>@item.Note</td>
+                                @if (Model.Status != "complete")
+                                {
+                                    <td>@GridColumnCommand(item.Id)</td>
+                                }
+                            </tr>
+                        }
+                    </tbody>
+
+                </table>
+
+            </div>
+        }
+    </div>
+    <div class="col-sm-5">
+        <div class="widget-box">
+            <div class="widget-header">
+                <h5 class="widget-title">Thông tin khởi tạo</h5>
+            </div>
+            <div class="widget-body">
+                <div class="widget-main">
+                    <div class="detail-view">
+                        <div class="row control-group">
+                            @Html.DetailViewItem(GridColumnStatus(Model.Status, "Status_WelfarePrograms"), "Status", Wording.Status, null, null, "col-xs-5", "col-xs-7")
+                        </div>
+                        <div class="row control-group">
+                            @Html.DetailViewItem(Model.Code, "Code", Wording.WelfareCode, null, null, "col-xs-5", "col-xs-7")
+                        </div>
+                        <div class="row control-group">
+                            @Html.DetailViewItem(Model.Name, "Name", Wording.WelfareName, null, null, "col-xs-5", "col-xs-7")
+                        </div>
+                        <div class="row control-group">
+                            @Html.DetailViewItem(Model.ProvideStartDate.Value.ToString("dd/MM/yyyy HH:mm"), "ProvideStartDate", Wording.ProvideStartDate, null, null, "col-xs-5", "col-xs-7")
+                        </div>
+                        <div class="row control-group">
+                            @Html.DetailViewItem(Model.ProvideEndDate.Value.ToString("dd/MM/yyyy HH:mm"), "ProvideEndDate", Wording.ProvideEndDate, null, null, "col-xs-5", "col-xs-7")
+                        </div>
+                        <div class="row control-group">
+                            @Html.DetailViewItem(Common.PhanCachHangNgan(Model.Quantity), "Quantity", Wording.QuantityStaff, null, null, "col-xs-5", "col-xs-7")
+                        </div>
+                        <div class="row control-group">
+                            @Html.DetailViewItem(Common.PhanCachHangNgan(Model.TotalEstimatedCost), "TotalEstimatedCost", Wording.TotalEstimatedCost, null, null, "col-xs-5", "col-xs-7")
+                        </div>
+                        <div class="row control-group">
+                            @Html.DetailViewItem(Model.Note, "Note", Wording.Note, null, null, "col-xs-5", "col-xs-7")
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="widget-box top-10">
+            <div class="widget-header">
+                <h5 class="widget-title">Thông tin kế hoạch</h5>
+            </div>
+            <div class="widget-body">
+                <div class="widget-main">
+                    <div class="detail-view">
+                        <div class="row control-group">
+                            @Html.DetailViewItem(Model.Category, "Category", Wording.Category, null, null, "col-xs-5", "col-xs-7")
+                        </div>
+                        <div class="row control-group">
+                            @Html.DetailViewItem(Model.RegistrationStartDate.Value.ToString("dd/MM/yyyy HH:mm"), "RegistrationStartDate", Wording.RegistrationStartDate, null, null, "col-xs-5", "col-xs-7")
+                        </div>
+                        <div class="row control-group">
+                            @Html.DetailViewItem(Model.RegistrationEndDate.Value.ToString("dd/MM/yyyy HH:mm"), "RegistrationEndDate", Wording.RegistrationEndDate, null, null, "col-xs-5", "col-xs-7")
+                        </div>
+                        <div class="row control-group">
+                            @Html.DetailViewItem(Model.ApplicationObject, "ApplicationObject", Wording.ApplicationObject, null, null, "col-xs-5", "col-xs-7")
+                        </div>
+                        <div class="row control-group">
+                            @Html.DetailViewItem(Model.Purpose, "Purpose", Wording.Purpose, null, null, "col-xs-5", "col-xs-7")
+                        </div>
+                        <div class="row control-group">
+                            @Html.DetailViewItem(Model.Formality, "Formality", Wording.Formality, null, null, "col-xs-5", "col-xs-7")
+                        </div>
+                        <div class="row control-group">
+                            @Html.DetailViewItem(Model.Address, "Address", Wording.Address, null, null, "col-xs-5", "col-xs-7")
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+        <div class="widget-box top-10">
+            <div class="widget-header">
+                <h5 class="widget-title">Chi phí dự kiến 1 nhân viên</h5>
+            </div>
+            <div class="widget-body">
+                <div class="widget-main">
+                    <div class="detail-view">
+                        <div class="row control-group">
+                            @Html.DetailViewItem(Common.PhanCachHangNgan(Model.MoneyStaff), "MoneyStaff", Wording.MoneyStaff, null, null, "col-xs-5", "col-xs-7")
+                        </div>
+                        <div class="row control-group">
+                            @Html.DetailViewItem(Common.PhanCachHangNgan(Model.MoneyCompany), "MoneyCompany", Wording.MoneyCompany, null, null, "col-xs-5", "col-xs-7")
+                        </div>
+                        <div class="row control-group">
+                            @Html.DetailViewItem(Common.PhanCachHangNgan(Model.TotalStaffCompany), "TotalStaffCompany", Wording.TotalStaffCompany, null, null, "col-xs-5", "col-xs-7")
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="widget-box top-10">
+            <div class="widget-header">
+                <h5 class="widget-title">Tổng chi phí dự kiến</h5>
+            </div>
+            <div class="widget-body">
+                <div class="widget-main">
+                    <div class="detail-view">
+                        <div class="row control-group">
+                            @Html.DetailViewItem(Common.PhanCachHangNgan(Model.TotalMoneyStaff), "TotalMoneyStaff", Wording.TotalMoneyStaff, null, null, "col-xs-5", "col-xs-7")
+                        </div>
+                        <div class="row control-group">
+                            @Html.DetailViewItem(Common.PhanCachHangNgan(Model.TotalMoneyCompany), "TotalMoneyCompany", Wording.TotalMoneyCompany, null, null, "col-xs-5", "col-xs-7")
+                        </div>
+                        <div class="row control-group">
+                            @Html.DetailViewItem(Common.PhanCachHangNgan(Model.TotalStaffCompanyAll), "TotalStaffCompanyAll", Wording.TotalStaffCompanyAll, null, null, "col-xs-5", "col-xs-7")
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        @if (Model.Status == "complete")
+        {
+            <div class="widget-box top-10">
+                <div class="widget-header">
+                    <h5 class="widget-title">Tổng kết hoàn thành</h5>
+                </div>
+                <div class="widget-body">
+                    <div class="widget-main">
+                        <div class="detail-view">
+                            <div class="row control-group">
+                                @Html.DetailViewItem(Model.ImplementationStartDate.Value.ToString("dd/MM/yyyy HH:mm"), "ImplementationStartDate", Wording.ImplementationStartDate, null, null, "col-xs-5", "col-xs-7")
+                            </div>
+                            <div class="row control-group">
+                                @Html.DetailViewItem(Model.ImplementationEndDate.Value.ToString("dd/MM/yyyy HH:mm"), "ImplementationEndDate", Wording.ImplementationEndDate, null, null, "col-xs-5", "col-xs-7")
+                            </div>
+                            <div class="row control-group">
+                                @Html.DetailViewItem(Common.PhanCachHangNgan(Model.TotalActualCosts), "TotalActualCosts", Wording.TotalActualCosts, null, null, "col-xs-5", "col-xs-7")
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+
+@using (Html.BeginButtonContainer(pageSetting))
+{
+    if (Model.Status == "pending")
+    {
+        if (Erp.BackOffice.Filters.SecurityFilter.AccessRight("Approval", "WelfarePrograms", "Staff"))
+        {
+            <a class="btn btn-warning btn-mini" href="@Url.Action("Approval", "WelfarePrograms", new { Id = Model.Id })">
+                <i class="ace-icon fa fa-hourglass-half"></i>
+                Đang tiến hành
+            </a>
+        }
+    }
+    if (Model.Status == "inprogress")
+    {
+        if (Erp.BackOffice.Filters.SecurityFilter.AccessRight("Complete", "WelfarePrograms", "Staff"))
+        {
+            <a class="btn btn-mini btn-success"
+               onclick="OpenPopup('@Url.Action("Complete", "WelfarePrograms", new { Id = Model.Id,IsPopup=true })', 'Hoàn thành', 500, 500)">
+                <i class="ace-icon fa fa-check-square-o"></i>
+                Hoàn thành
+            </a>
+        }
+    }
+    if (Erp.BackOffice.Filters.SecurityFilter.AccessRight("Print", "WelfarePrograms", "Staff"))
+    {
+        <a href="@Url.Action("Print", "WelfarePrograms" , new { Id = Model.Id })" target="_blank" class="btn btn-white btn-success btn-sm">
+            <i class="ace-icon fa fa-print"></i>
+            In danh sách nhân viên
+        </a>
+    }
+    if (Erp.BackOffice.Filters.SecurityFilter.AccessRight("Print", "WelfarePrograms", "Staff"))
+    {
+        <a class="btn btn-white btn-success btn-sm" title="xuất excel danh sách nhân viên" href="@Url.Action("Print", "WelfarePrograms", new { Id = Model.Id, ExportExcel = true })">
+            <i class="ace-icon fa fa-file-excel-o"></i>
+            Xuất excel
+        </a>
+    }
+}
+
+@section Scripts {
+    <script type="text/javascript">
+        function CheckIsval() {
+            if ($('[name="DeleteId-checkbox"]').is(':checked') == false) {
+                alert("Phải chọn ít nhất 1 item.");
+                return false;
+            }
+            else {
+                if (confirm('Bạn có chắc muốn xóa các item đã chọn ?')) {
+                    return true;
+                }
+                else {
+                    return false;
+                }
+            }
+        }
+
+        $('[name="Delete"]').click(function () {
+            if (confirm('Bạn có chắc muốn xóa item ?')) {
+                $(this).closest('tr').children('td').each(function (i, e) {
+                    $(this).find("input.class-delete-all").prop("checked", true);
+                    return true;
+                })
+            }
+            else {
+                return false;
+            }
+
+        })
+        function ClosePopupAndReloadPage(id, name) {
+            $("#StaffId").val(id);
+            $("#StaffId_DisplayText").val(name);
+            ClosePopup(true);
+
+        }
+        function OpenCreateNV() {
+            ShowLoading();
+            $.get('@Url.Action("Create", "WelfareProgramsDetail", new { area = "Staff",WelfareProgramsId=Model.Id })', function (html) {
+                $("#Them_nhan_vien").html(html);
+                HideLoading();
+            });
+            $("#panel_create_staff").show();
+            $('#create_staff').addClass("hidden");
+            $('#table_list_staff').addClass("hidden");
+
+        }
+        function selectLocationItem(id, code, name, orderNo) {
+
+            $("#StaffName").val(name);
+            $("#StaffId").val(id);
+            ClosePopup();
+        }
+        function CloseSetting() {
+            $("#panel_create_staff").hide();
+            $('#create_staff').removeClass("hidden");
+            $('#table_list_staff').removeClass("hidden");
+            $('#create_staff').show();
+        }
+    </script>
+    @Html.ScriptBottom_ValidationMvc()
+    @Html.ScriptBottom_DatePicker("dd/mm/yyyy")
+    @Html.ScriptBottom_ChosenStyle()
+}

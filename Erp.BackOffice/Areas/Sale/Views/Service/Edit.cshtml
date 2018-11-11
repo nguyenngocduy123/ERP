@@ -1,0 +1,491 @@
+﻿@using Erp.BackOffice.App_GlobalResources
+@using Erp.BackOffice.Helpers
+@using Erp.BackOffice.Sale.Models
+
+@model ServiceViewModel
+
+@{
+    ViewBag.Title = Wording.PageEdit_Service;
+
+    Layout = "~/Views/Shared/" + (Request["IsPopup"] == null ? "ACE_AdminLayout.cshtml" : "_PopupLayout.cshtml");
+    
+    Erp.BackOffice.Models.PageSetting pageSetting = new Erp.BackOffice.Models.PageSetting
+    {        
+        ModuleName = "Service",
+        ActionName = "Edit",
+        PageTitle = ViewBag.Title,
+        DisplaySearchPanel = false,
+        IsPopup = false,
+        DisplayBackButton = true
+    };
+    var path = Erp.BackOffice.Helpers.Common.GetSetting("service-image-folder");
+    IEnumerable<ServiceViewModel> serviceList = (IEnumerable<ServiceViewModel>)ViewBag.serviceList;
+    IEnumerable<SelectListItem> CategoryList = Erp.BackOffice.Helpers.Common.GetSelectList_Category("service", null, "value");
+    IEnumerable<SelectListItem> productUnitList = Erp.BackOffice.Helpers.Common.GetSelectList_Category("serviceUnit", null, "value");
+}
+
+@section HeadOfPage {
+    @Html.ScriptTop_ChosenStyle()
+<style>
+    #service_barcode {
+        width: 100px !important;
+    }
+
+    #serviceSelectList {
+        width: 293px !important;
+    }
+
+    .detail-th-quantity {
+        width: 61px !important;
+    }
+
+    .detail-th-orderno {
+        width: 20px !important;
+    }
+
+    .detail-th-action {
+        width: 20px !important;
+    }
+       #ReminderId.span.chzn-select {
+    display:none !important;
+    }
+    #ReminderId_chosen.chosen-container.chosen-container-single {
+    width:100%!important;
+    }
+    .chosen-single {
+    width:100%!important;
+    }
+    #panelReminder .widget-box .widget-body .widget-main .control-group .form-group .edit-view .control-value {
+    width:100%!important;
+    }
+</style>
+}
+
+@using(Html.BeginPageHeaderContainer(pageSetting))
+{
+
+}
+<div class="text-danger">@ViewBag.errors</div>
+@using (Html.BeginForm_AceStyle((string)ViewBag.Title, pageSetting.ActionName, pageSetting.ModuleName, null, FormMethod.Post, new { id = "EditService", @class = "form-horizontal clearfix", enctype = "multipart/form-data" }))
+{
+    @Html.ValidationSummary(true)
+    @Html.HiddenFor(model => model.Id)
+    @Html.HiddenFor(model => model.CreatedUserId)
+    @Html.HiddenFor(model => model.AssignedUserId)
+    @Html.HiddenFor(model => model.CreatedDate)
+    @Html.HiddenFor(model => model.IsDeleted)
+    <input type="hidden" name="IsPopup" value="@Request["IsPopup"]" />
+    <div class="row">
+        <div class="col-sm-6">
+            @Html.CustomTextboxFor(model => model.Name, null, null, WidthType.span12)
+            @Html.CustomTextboxFor(model => model.Code, null, null, WidthType.span12)
+
+            @Html.CustomDropDownListFor(model => model.CategoryCode, CategoryList, WidthType.span12, true, null, DropdownListStyle.DropdownListStyleDefault)
+
+            @Html.CustomDropDownListFor(model => model.Unit, productUnitList, WidthType.span12, true, null, DropdownListStyle.DropdownListStyleDefault)
+
+            @Html.CustomTextboxFor(model => model.PriceOutbound, null, null, WidthType.span12, true, new Dictionary<string, object> { { "class", "col-sm-12 text-right" } })
+            @Html.CustomSwitchesFor(model => model.IsCombo, SwitchesStyle.CheckboxStyle, true)
+            @Html.CustomTextboxFor(model => model.TimeForService, null, null, WidthType.span12)
+            @*<div id="" class="control-group form-group">
+                <label class="control-label col-lg-5 col-md-4 col-sm-4" for="DiscountStaff">Chiết khấu cho nhân viên</label>
+                <div class="control-value col-lg-7 col-md-8 col-sm-8">
+                    <div class="clearfix">
+                        <input autocomplete="off" class="col-xs-12" id="DiscountStaff" maskformat="" name="DiscountStaff" placeholder="" type="text" value="@Model.DiscountStaff">
+                        <label class="pull-left">
+
+                            <input class="detail_item_check ace ace-switch ace-switch-6" type="checkbox" name="IsMoneyDiscount" id="IsMoneyDiscount" value="@(Model.IsMoneyDiscount == true ? "true" : "false")" @(Model.IsMoneyDiscount != null && Model.IsMoneyDiscount == true ? "checked=\"checked\"" : "") />
+                            <span class="lbl" id="lb_IsCheck">
+                                @(Model.IsMoneyDiscount == true ? "VNĐ" : "%")
+                            </span>
+                        </label>
+                    </div>
+
+                </div>
+            </div>*@        
+        </div>
+        <div class="col-sm-6">
+            <div class="wrap-btn-upload">
+                <a class="btn btn-primary btn-white btn-sm"><i class="fa fa-upload"></i><span>Tải hình mới</span></a>
+                <input type="file" id="file-image" name="file-image" class="file-image" onchange="previewFileImage(event, '#display-image img')" />
+            </div>
+            <div class="text-center" id="display-image">
+                <img src="@Model.Image_Name" title="@Model.Name" id="" />
+            </div>
+        </div>
+      
+    </div>
+    <div id="panelReminder" class="top-10" style="display:none">
+        <div class="widget-box">
+            <div class="widget-header">
+                <h5 class="widget-title">Danh sách lời nhắc của dịch vụ</h5>
+            </div>
+
+            <div class="widget-body">
+                <div class="widget-main">
+                    <style>
+                        .edit-view .control-value {
+                            background: #fff;
+                            margin-bottom: 0px;
+                            line-height: 30px;
+                            padding: 2px 5px;
+                            width: 50% !important;
+                            float: left;
+                        }
+                    </style>
+
+                    @Html.CustomDropDownList("", "ReminderId", Request["ReminderId"], SelectListHelper.GetSelectList_ServiceReminder(null, "Nội dung lời nhắc"), WidthType.span12, DropdownListStyle.DropdownListStyleChosen, null, false, false, true)
+                    <div id="listReminder" class="table-responsive top-10">
+                        <table class="table table-bordered bottom-5">
+                            <thead>
+                                <tr>
+                                    <th class="detail-th-orderno">STT</th>
+                                    <th class="detail-th-product-name">Nội dung lời nhắc</th>
+                                    <th class="detail-th-action"></th>
+                                </tr>
+                            </thead>
+                            <tbody class="detailReminderList">
+                                @if (Model.IsCombo != true)
+                                {
+                                    if (Model.ReminderList.Count > 0)
+                                    {
+                                        foreach (var item in Model.ReminderList)
+                                        {
+                                            @Html.Partial("LoadReminderItem", item);
+                                        }
+                                    }
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+    <div id="panelCombo" style="display:none" class="top-10">
+        <div class="widget-box">
+            <div class="widget-header">
+                <h5 class="widget-title">Danh sách dịch vụ của gói</h5>
+            </div>
+
+            <div class="widget-body">
+                <div class="widget-main">
+                    <div class="service-search-box clearfix">
+                        <input id="service_barcode" type="text" placeholder="[F3] Mã DV..." autocomplete="off" />
+                        <select id="serviceSelectList" name="serviceSelectList">
+                            <option value="">- Tìm dịch vụ -</option>
+                            @foreach (var item in serviceList.OrderBy(x => x.Name))
+                            {
+                                <option value="@item.Id" data-selected="0" data-value="@item.Id |@item.Image_Name | @(item.Code + " - " + item.Name + " (" + Common.PhanCachHangNgan(item.PriceOutbound) + ")")" data-code="@item.Code" data-barcode="@item.Barcode" data-product-type="@item.CategoryCode" data-price="@(item.PriceOutbound)" data-unit="@item.Unit">@item.Name</option>
+                            }
+                        </select>
+                    </div>
+                    <div id="listServiceCombo" class="table-responsive top-10">
+                        <table class="table table-bordered bottom-5">
+                            <thead>
+                                <tr>
+                                    <th class="detail-th-orderno">STT</th>
+                                    <th class="detail-th-product-name">Tên dịch vụ</th>
+                                    <th class="detail-th-quantity">Số lần sử dụng</th>
+                                    <th class="detail-th-action"></th>
+                                </tr>
+                            </thead>
+                            <tbody class="detailList">
+                                @if (Model.IsCombo == true)
+                                {
+                                    if (Model.DetailList.Count > 0)
+                                    {
+                                        foreach (var item in Model.DetailList)
+                                        {
+                                            @Html.Partial("LoadServiceItem", item);
+                                        }
+                                    }
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+    <div class="top-10">
+        <textarea class="ckeditor" cols="20" id="Description" name="Description" placeholder="" rows="2">@Model.Description</textarea>
+    </div>
+
+    using (Html.BeginButtonContainer(pageSetting))
+    {
+        <button class="btn btn-mini btn-primary" type="submit" name="Submit" value="Save">
+            <i class="ace-icon fa fa-save"></i>
+            @Wording.Save
+        </button>
+    }
+}
+
+@section Scripts {
+<link href="/Scripts/ckeditor/contents.css" rel="stylesheet" />
+<script src="/Scripts/ckeditor/ckeditor.js"></script>
+<link href="/Scripts/RadCombobox_v1/RadComboBoxLite.css" rel="stylesheet" />
+<script src="/Scripts/RadCombobox_v1/rabCombobox.js"></script>
+<script>
+    $(document).ready(function () {
+
+        $("#IsMoneyDiscount").on('change', function () {
+            if ($("#IsMoneyDiscount").is(':checked')) {
+                $("#IsMoneyDiscount").val("true");
+                $("#lb_IsCheck").text("VNĐ");
+            }
+            else {
+                $("#IsMoneyDiscount").val("false");
+                $("#lb_IsCheck").text("%");
+            }
+        });
+
+        if ($('#IsCombo').is(':checked') == true) {
+            $('#panelCombo').show();
+            $('#panelReminder').hide();
+
+        } else {
+            $('#panelCombo').hide();
+            $('#panelReminder').show();
+
+        }
+    //init rcb chọn sản phẩm
+    $('#serviceSelectList').radComboBox({
+        colTitle: 'ID, Hình, Tên dịch vụ',
+        colValue: 1,
+        colImage: 2,
+        colHide: '1',
+        colSize: '0px,50px,',
+        colClass: ',,',
+        //width: 600,
+        height: 500,
+        boxSearch: true,
+        colSearch: 2
+    });
+    $('.detail_item_qty').numberOnly();
+    $('#Price, #Price').numberFormat();
+    $('#Quantity, #Quantity').numberFormat();
+    //Hiển thị giá và tính thành tiền khi chọn sản phẩm
+    $('#serviceSelectList').on('change', function () {
+        var $this = $(this);
+        var selected = $this.find("option:selected");
+
+        if (selected.val() == '')// || $('#product_item_' + selected.val()).length > 0)
+            return;
+
+        var OrderNo = $('.detailList tr').length;
+        var serviceId = selected.val();
+        var serviceName = selected.text();
+        var Unit = selected.data("unit");
+        var Quantity = 1;
+        var serviceCode = selected.data("code");
+        var formdata = {
+            OrderNo: OrderNo,
+            serviceId: serviceId,
+            serviceName: serviceName,
+            Quantity: Quantity,
+            serviceCode: serviceCode
+        };
+
+        //Thêm dòng mới
+        ClickEventHandler(true, "/Service/LoadServiceItem", ".detailList", formdata, function () {
+            //$('#ProductItemCount').val($('#listOrderDetail .detailList tr').length);
+
+            $('#DetailList_' + OrderNo + '__Quantity').numberOnly();
+            $("#DetailList_" + OrderNo + "__Quantity").focus().select();
+        });
+    });
+    $('#ReminderId').on('change', function () {
+        var $this = $(this);
+        var selected = $this.find("option:selected");
+
+        if (selected.val() == '')// || $('#product_item_' + selected.val()).length > 0)
+            return;
+
+        var OrderNo = $('.detailReminderList tr').length;
+        var reminderId = selected.val();
+        var reminderName = selected.text();
+        var formdata = {
+            OrderNo: OrderNo,
+            reminderId: reminderId,
+            reminderName: reminderName
+        };
+
+        //Thêm dòng mới
+        ClickEventHandler(true, "/Service/LoadReminderItem", ".detailReminderList", formdata, function () {
+        });
+    });
+    $('#service_barcode').keypress(function (e) {
+        if (e.which == 13) {
+            e.preventDefault();
+            $('#service_barcode').trigger('change');
+        }
+    });
+
+    $(window).keydown(function (e) {
+        if (e.which == 114) {
+            e.preventDefault();
+            $("#service_barcode").focus();
+        }
+    });
+
+    //khi nhập barcode
+    $('#service_barcode').change(function () {
+        var $this = $(this);
+        if ($this.val() != '') {
+
+            var barcode = $this.val();
+            //đặt lại giá trị rỗng
+            $this.val('').focus();
+
+            var valueSearch = searchProductByBarCodeContain(barcode);
+            if (valueSearch == undefined) {
+                alert('Không tìm thấy dịch vụ với mã code trên!');
+                return;
+            }
+
+            $('#serviceSelectList').val(valueSearch).trigger("change");
+
+            //kết thúc các lệnh của sự kiện
+        }
+    });
+
+    // xóa sản phẩm
+    $('#listServiceCombo').on('click', '.btn-delete-item', function () {
+        //$(this).closest('tr').next('tr.template_location').remove();
+        $(this).closest('tr').remove();
+
+        //var countItem = $('.detailList tr').length;
+        //$('#ProductItemCount').val(countItem);
+        $('.detailList tr').each(function (index, tr) {
+            $(tr).attr('role', index).attr("id", "service_item_" + index).data("id", index);
+            $(tr).find('td:first-child').text(index + 1);
+            //$(tr).find('.detail_item_id input').attr('name', 'DetailList[' + index + '].Id').attr('id', 'DetailList_' + index + '__Id');
+            $(tr).find('.detail_item_id input').attr('name', 'DetailList[' + index + '].ServiceId').attr('id', 'DetailList_' + index + '__ServiceId');
+            $(tr).find('.detail_item_qty').attr('name', 'DetailList[' + index + '].Quantity').attr('id', 'DetailList_' + index + '__Quantity');
+             
+        });
+    });
+        // xóa nội dung nhắc nhở
+    $('#listReminder').on('click', '.btn-delete-reminder_item_id', function () {
+        //$(this).closest('tr').next('tr.template_location').remove();
+        $(this).closest('tr').remove();
+
+        //var countItem = $('.detailReminderList tr').length;
+        //$('#ProductItemCount').val(countItem);
+        $('.detailReminderList tr').each(function (index, tr) {
+            $(tr).attr('role', index).attr("id", "reminder_item_" + index).data("id", index);
+            $(tr).find('td:first-child').text(index + 1);
+
+            //$(tr).find('.reminder_item_id input').attr('name', 'ReminderList[' + index + '].Id').attr('id', 'ReminderList_' + index + '__Id');
+            $(tr).find('.reminder_item_id input').attr('name', 'ReminderList[' + index + '].ServiceReminderId').attr('id', 'ReminderList_' + index + '__ServiceReminderId');
+        });
+    });
+    $('#CategoryCode').change(function () {
+        var $this = $(this);
+        $('.list-attr-by-category').html('');
+        $.get('/ObjectAttribute/GetListByModuleCategory', { category: $this.val() }, function (res) {
+            if (res.replace(/\s+/, '') != '') {
+                $('.list-attr-by-category').html(res);
+                initDataTypeInput($('.list-attr-by-category input'));
+                $('.box-attr').show();
+            }
+        });
+    });
+
+        resetLableRequired('#EditService');
+        //parseValidatorForm('#ProductInBound');
+        $('#EditService').submit(function () {
+            ShowLoading();
+            if ($(this).valid()) {
+                if (checkFieldLiveRequired($(this)) == true) {
+                    return true;
+                }
+            }
+            HideLoading(); return false;
+        });
+
+        //init
+        $('#CategoryCode').trigger('change');
+
+        $("#Code").change(function () {
+            $.get('/Service/CheckCodeExsist/?code=' + $(this).val(), function (rs) {
+                if(rs != '')
+                {
+                    alert(rs);
+                }
+            });
+        });
+        $('#IsCombo').change(function () {
+            if ($(this).is(':checked') == true) {
+                $('#panelCombo').show();
+                $('#panelReminder').hide();
+            } else {
+                $('#panelCombo').hide();
+                $('#panelReminder').show();
+            }
+        });
+    });
+    function initCkeditor() {
+        $('.ckeditor').ckeditor({
+            "extraPlugins": 'imagebrowser',
+            "imageBrowser_listUrl": "@Url.Action("ListJson","Images")",
+            // Define the toolbar groups as it is a more accessible solution.
+            toolbarGroups: [
+                { "name": "document", "groups": ["mode", "document", "doctools"] },
+                { "name": "editing", "groups": ["find", "selection", "spellchecker"] },
+                { "name": "forms" },
+                { "name": "tools" },
+                { "name": "basicstyles", "groups": ["basicstyles", "cleanup"] },
+                { "name": "clipboard", "groups": ["clipboar", "undo"] },
+                { "name": "links", "groups": ["links"] },
+                { "name": "paragraph", "groups": ["list", "blocks"] },
+                { "name": "insert", "groups": ["insert"] },
+                { "name": "styles", "groups": ["styles"] },
+                //{ "name": "about", "groups": ["about"] },
+                { "name": "styles" },
+                { "name": "colors" },
+                { "name": "align", "groups": ['JustifyLeft', 'JustifyCenter', 'JustifyRight', 'JustifyBlock'] }
+
+            ],
+            // Remove the redundant buttons from toolbar groups defined above.
+            removeButtons: 'Underline,Strike,Subscript,Superscript,Anchor,Styles,Specialchar'
+        });
+    }
+    function searchProductByBarCodeContain(barcode) {
+        barcode = barcode.toLowerCase();
+        //var $productSelect = $('.detail_item_id').first();
+
+        var $optionList = $("#serviceSelectList").find('option');
+
+        var arrResulft = [];
+        for (var i = 0; i < $optionList.length; i++) {
+            var data_code = $($optionList[i]).data('code') != undefined ? $($optionList[i]).data('code').toString().toLowerCase() : undefined;
+            if (barcode.indexOf(data_code) != -1)
+                arrResulft.push($($optionList[i]).attr('value'));
+
+            if (arrResulft.length == 1) {
+                return arrResulft[0];
+            }
+        }
+
+        return arrResulft[0];
+    };
+    function checkChosenProductOnTable() {
+        var flag = true;
+        $('#detailList select.detail_item_id').each(function (index, elem) {
+            if ($(elem).val() == '') {
+                var message = $(elem).data('val-required') != undefined ? $(elem).data('val-required') : 'Chưa chọn dịch vụ!';
+                $(elem).next('span').text(message);
+                flag = false;
+            }
+        });
+        return flag;
+    };
+   
+</script>
+@Html.ScriptBottom_ValidationMvc()
+@Html.ScriptBottom_ChosenStyle()
+}

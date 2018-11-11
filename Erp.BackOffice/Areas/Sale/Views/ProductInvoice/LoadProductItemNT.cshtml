@@ -1,0 +1,77 @@
+﻿@model Erp.BackOffice.Sale.Models.ProductInvoiceDetailViewModel
+@using Erp.BackOffice.Helpers
+@{
+    var thanh_tien = Model.Quantity * Model.Price;
+    var tien_ck = Convert.ToDecimal(Model.Price * Model.FixedDiscount) / 100;
+    var tien_ck2 = Convert.ToDecimal(Model.Price * Model.IrregularDiscount) / 100;
+    if (tien_ck == null)
+    {
+        Model.FixedDiscountAmount = 0;
+    }
+    else
+    {
+        Model.FixedDiscountAmount = tien_ck;
+    }
+    if (tien_ck2 == null)
+    {
+        Model.IrregularDiscountAmount = 0;
+    }
+    else
+    {
+        Model.IrregularDiscountAmount = tien_ck2;
+    }
+    var thanh_tien_sau_ck = thanh_tien;
+    var setting = Erp.BackOffice.Helpers.Common.GetSetting("hide_discount_product_invoice");
+    var user_type_onl = Erp.BackOffice.Helpers.Common.CurrentUser.UserTypeCode;
+    var setting_readonly = Erp.BackOffice.Helpers.Common.GetSetting("readonly_discount_product_invoice");
+    var _readonly = ("," + setting_readonly + ",").Contains("," + user_type_onl + ",") == false ? "true" : "false";
+}
+
+<tr role="@Model.OrderNo" id="product_item_@Model.OrderNo" data-id="@Model.OrderNo">
+    <td class="text-center">
+        @(Model.OrderNo + 1)
+        <input class="pricetest" type="text" id="DetailList_@(Model.OrderNo)__PriceTest" name="DetailList[@(Model.OrderNo)].PriceTest" value="@Model.PriceTest" data-val="true" autocomplete="off" hidden />
+        <input class="product_type" type="text" id="DetailList_@(Model.OrderNo)__ProductType" name="DetailList[@(Model.OrderNo)].ProductType" value="@Model.ProductType" data-val="true" autocomplete="off" hidden />
+    </td>
+    <td class="detail_item_id">
+        @Html.Hidden("DetailList[" + Model.OrderNo + "].ProductId", Model.ProductId)
+        @Model.ProductCode - @Model.ProductName
+    </td>
+    <td class="detail-locode">
+        @Html.TextBox("DetailList[" + Model.OrderNo + "].LoCode", Model.LoCode, new { @style = "width:100px;", @readonly = "readonly" })
+        <input class="form-control input-mask-date" type="text" id="DetailList_@(Model.OrderNo)__ExpiryDate" name="DetailList[@Model.OrderNo].ExpiryDate" value="@(Model.ExpiryDate==null?"":Model.ExpiryDate.Value.ToString("dd/MM/yyyy"))" style=" width:100px;" readonly="readonly">
+    </td>
+    <td>
+        @Html.TextBox("DetailList[" + Model.OrderNo + "].Quantity", Model.Quantity, new { style = "width:50px", @class = "numberinput1 detail_item_qty", data_quantity_inventory = Model.QuantityInInventory })
+    </td>
+    <td>
+        @Html.TextBox("DetailList[" + Model.OrderNo + "].Price", Model.Price, new { style = "width:85px", @class = "numberinput2 detail_item_price", autocomplete = "off", @readonly = _readonly })
+
+    </td>
+@if (("," + setting + ",").Contains("," + user_type_onl + ",") == false)
+{
+    <td>
+        @Html.TextBox("DetailList[" + Model.OrderNo + "].FixedDiscount", Model.FixedDiscount, new { style = "width:45px", @class = "numberinput1 detail_item_fixed_discount", autocomplete = "off", @readonly = _readonly })
+
+        @Html.TextBox("DetailList[" + Model.OrderNo + "].FixedDiscountAmount1", Model.FixedDiscountAmount, new { style = "width:85px;", @class = "numberinput2 detail_item_fixed_discount_amount", autocomplete = "off", @readonly = _readonly })
+    </td>
+    <td>
+        @Html.TextBox("DetailList[" + Model.OrderNo + "].IrregularDiscount", Model.IrregularDiscount, new { style = "width:45px", @class = "numberinput1 detail_item_discount", autocomplete = "off", @readonly = _readonly })
+
+        @Html.TextBox("DetailList[" + Model.OrderNo + "].IrregularDiscountAmount1", Model.IrregularDiscountAmount, new { style = "width:85px;", @class = "numberinput2 detail_item_discount_amount", autocomplete = "off", @readonly = _readonly })
+    </td>
+}
+    <td class="detail_item_total">@thanh_tien_sau_ck.ToCurrencyStr(null)</td>
+    @*<td class="text-center">
+        <label>
+            <input class="detail_item_check ace" type="checkbox" name="DetailList[@Model.OrderNo].CheckPromotion" id="DetailList_@(Model.OrderNo)__CheckPromotion" value="@(Model.CheckPromotion==true?"True":"False")" data-orginal-price="@Model.Price" @(Model.CheckPromotion != null && Model.CheckPromotion == true ? "checked=\"checked\"" : "") />
+            <span class="lbl">
+            </span>
+        </label>
+    </td>*@
+    <td class="text-center">
+        <a class="btn-delete-item">
+            <i class="ace-icon fa fa-trash red bigger-120" style="cursor:pointer"></i>
+        </a>
+    </td>
+</tr>

@@ -1,0 +1,235 @@
+﻿@model IQueryable<PaymentViewModel>
+
+@using Erp.BackOffice.App_GlobalResources
+@using Erp.BackOffice.Account.Models
+@using Erp.BackOffice.Helpers
+@using GridMvc.Html
+
+@{
+    ViewBag.Title = Wording.PageIndex_Payment;
+    bool isPopup = Request["popup"] != null && Request["popup"].ToString().ToLower() == "true" ? true : false;
+    if (isPopup)
+    {
+        Layout = "~/Views/Shared/_PopupLayout.cshtml";
+    }
+    else
+    {
+        Layout = "~/Views/Shared/ACE_AdminLayout.cshtml";
+    }
+    Erp.BackOffice.Models.PageSetting pageSetting = new Erp.BackOffice.Models.PageSetting
+    {
+        ModuleName = "Payment",
+        ActionName = "Index",
+        PageTitle = ViewBag.Title,
+        DisplaySearchPanel = true,
+        IsPopup = false,
+        DisplayBackButton = false
+    };
+}
+
+@if (ViewBag.SuccessMessage != null && ViewBag.SuccessMessage != "")
+{
+    <div class="alert alert-block alert-success">
+        <button class="close" data-dismiss="alert" type="button">
+            <i class="ace-icon fa fa-times"></i>
+        </button>
+        <i class="ace-icon fa fa-check green"></i>
+        @ViewBag.SuccessMessage
+    </div>
+}
+
+@if (ViewBag.FailedMessage != null && ViewBag.FailedMessage != "")
+{
+    <div class="alert alert-block alert-danger">
+        <button class="close" data-dismiss="alert" type="button">
+            <i class="ace-icon fa fa-times"></i>
+        </button>
+        <i class="ace-icon fa fa-warning red"></i>
+        @ViewBag.FailedMessage
+    </div>
+}
+
+<link href="@Url.Content("~/assets/css/Gridmvc.css")" rel="stylesheet" type="text/css" />
+<script src="@Url.Content("~/Scripts/gridmvc.min.js")" type="text/javascript"> </script>
+
+@helper GridColumnCommand(int id)
+{
+    @*<div class="hidden-phone visible-desktop action-buttons" style="display: inline-block; float: left;">*@
+    <p>
+        @if (Erp.BackOffice.Filters.SecurityFilter.AccessRight("Delete", "Payment", "Account"))
+        {
+            <button name="Delete" value="Delete" type="submit" class="btn btn-mini btn-danger">
+                <i class="ace-icon fa fa-trash bigger-120"></i>
+            </button>
+        }
+        @if (Erp.BackOffice.Filters.SecurityFilter.AccessRight("Print", "Payment", "Account"))
+        {
+            <a href="@Url.Action("Print", new { Id = id })" target="_blank" class="btn btn-primary btn-xs"><i class="fa fa-print"></i></a>
+        }
+    </p>
+    @*</div>*@
+}
+
+@helper GridColumnName(string name, int id, bool isPopup)
+{
+    if (isPopup)
+    {
+        <a onclick="parent.selectBranchItem(@id)">@name</a>
+    }
+    else
+    {
+        name = string.IsNullOrEmpty(name) ? "No Title" : name;
+        <a href="@Url.Action("Detail", "Payment" , new { Id= id })">@name</a>
+    }
+}
+
+@helper GridColumnCategoryValue(object value)
+{
+    var attr = Common.GetCategoryByValueOrId("value", value);
+    <span>@(attr != null ? attr.Name : "")</span>
+}
+
+@helper CheckDeleteColumns(int Id)
+{
+    <label>
+        <input class="ace class-delete-all" type="checkbox" name="DeleteId-checkbox" value="@Id">
+        <span class="lbl"></span>
+    </label>
+}
+
+@helper BuildCheckAll()
+{
+    <label>
+        <input class="ace" type="checkbox" name="checkAll" id="checkAll" />
+        <span class="lbl"></span>
+    </label>
+}
+
+@using (Html.BeginPageHeaderContainer(pageSetting))
+{
+    @Html.TextBox("Code", Request["Code"], new { autocomplete = "off", placeholder = "Mã chứng từ..." })
+    <span class="input-daterange input-group">
+        @Html.TextBox("startDate", Request["startDate"] != null ? Request["startDate"] : "", new { autocomplete = "off", placeholder = "Ngày ghi sổ từ..." })
+        <span class="input-group-addon">
+            <i class="fa fa-exchange"></i>
+        </span>
+        @Html.TextBox("endDate", Request["endDate"] != null ? Request["endDate"] : "", new { autocomplete = "off", placeholder = "đến ngày..." })
+    </span>
+    <span class="input-daterange input-group">
+        @Html.TextBox("start", Request["start"] != null ? Request["start"] : "", new { autocomplete = "off", placeholder = "Ngày chứng từ từ..." })
+        <span class="input-group-addon">
+            <i class="fa fa-exchange"></i>
+        </span>
+        @Html.TextBox("end", Request["end"] != null ? Request["end"] : "", new { autocomplete = "off", placeholder = "đến ngày..." })
+    </span>
+    <select class="form-control" name="SalerId">
+        <option value="">- Nhân viên -</option>
+        @foreach (var item in SelectListHelper.GetSelectList_FullUserName(null, null))
+        {
+            <option @(Request["SalerId"] == item.Value ? "Selected" : "") value="@item.Value">@item.Text</option>
+        }
+    </select>
+    @*<select class="form-control" name="CustomerId">
+            <option value="">- Khách hàng -</option>
+            @foreach (var item in SelectListHelper.GetSelectList_Customer(null, null))
+            {
+                <option @(Request["CustomerId"] == item.Value ? "Selected" : "") value="@item.Value">@item.Text</option>
+            }
+        </select>*@
+
+}
+@helper GridColumnChungTuGoc(string TransactionCode, string module, bool isPopup)
+{
+    if (isPopup)
+    {
+        <a onclick="parent.selectBranchItem()">@TransactionCode</a>
+    }
+    else
+    {
+        switch (module)
+        {
+            case "Customer":
+            case "SalesReturns":
+                <a onclick="OpenPopup('@Url.Action("Detail", "SalesReturns", new { area = "Sale", TransactionCode = TransactionCode, IsPopup = true })', 'Thông tin đơn hàng bán trả lại', 0, 500)">@TransactionCode</a>
+                break;
+            case "Supplier":
+            case "ProductInbound":
+            <a onclick="OpenPopup('@Url.Action("View", "ProductInbound", new { area = "Sale", TransactionCode = TransactionCode, IsPopup = true })', 'Thông tin phiếu nhập kho', 0, 500)">@TransactionCode</a>
+                break;
+            case "PurchaseOrder":
+            <a onclick="OpenPopup('@Url.Action("Detail", "PurchaseOrder", new { area = "Sale", TransactionCode = TransactionCode, IsPopup = true })', 'Thông tin đơn mua hàng', 0, 500)">@TransactionCode</a>
+                break;
+            default:
+                break;
+        }
+    }
+}
+@using (Html.BeginForm("Delete", "Payment", FormMethod.Post))
+{
+    @Html.Grid(Model).Columns(columns =>
+    {
+        columns.Add().Titled(BuildCheckAll().ToHtmlString()).SetWidth(20).Sanitized(false).Encoded(false).RenderValueAs(n => CheckDeleteColumns(n.Id));
+        columns.Add(u => u.CreatedDate).Titled("Ngày ghi sổ").SetWidth(100).Format("{0:dd/MM/yyyy HH:mm}").Sortable(true);
+        columns.Add(u => u.VoucherDate).Titled("Ngày chứng từ").Format("{0:dd/MM/yyyy}").SetWidth(100).Sortable(true);
+        columns.Add().Titled("Mã chứng từ").Sortable(false).Sanitized(false).Encoded(false).RenderValueAs(u => GridColumnName(u.Code, u.Id, isPopup)).SetWidth(100);
+        columns.Add().Titled("Chứng từ gốc").Sanitized(false).Encoded(false).RenderValueAs(u => GridColumnChungTuGoc(u.MaChungTuGoc, u.LoaiChungTuGoc, isPopup)).SetWidth(100);
+        //columns.Add(u => u.SalerName).Titled(Wording.Saler);
+        columns.Add(u => u.Receiver).Titled("Người nhận");
+        columns.Add(u => u.ReceiverUserName).Titled("Đối tượng");
+        columns.Add(u => u.Name).Titled("Lý do");
+        columns.Add(u => u.Note).Titled("Diễn giải").SetWidth(100);
+        columns.Add(u => u.Amount).Titled("Số tiền (VNĐ)").Sortable(false).Sanitized(false).Encoded(false).RenderValueAs(u => Erp.BackOffice.Helpers.CommonSatic.ToCurrencyStr(u.Amount,null));
+        columns.Add(u => u.Id).Titled(Wording.Action).Sanitized(false).Encoded(false).RenderValueAs(u => GridColumnCommand(u.Id)).SetWidth(20);
+    }).WithPaging(10)
+    using (Html.BeginButtonContainer(pageSetting))
+    {
+        if (Erp.BackOffice.Filters.SecurityFilter.AccessRight("Create", "Payment", "Account"))
+        {
+            <a class="btn btn-mini btn-primary" href="@Url.Action("Create", pageSetting.ModuleName)">
+                <i class="ace-icon fa fa-plus"></i>
+                Chi loại phí khác
+            </a>
+        }
+        if (Erp.BackOffice.Filters.SecurityFilter.AccessRight("Delete", "Payment", "Account"))
+        {
+            <button class="btn btn-mini btn-danger" type="submit" name="DeleteAll" value="DeleteAll" onclick="return CheckIsval();">
+                <i class="ace-icon fa fa-trash"></i>
+                @Wording.Delete
+            </button>
+        }
+    }
+}
+
+@section Scripts {
+    <script type="text/javascript">
+        function CheckIsval() {
+            if ($('[name="DeleteId-checkbox"]').is(':checked') == false) {
+                alert("Phải chọn ít nhất 1 item.");
+                return false;
+            }
+            else {
+                if (confirm('Bạn có chắc muốn xóa các item đã chọn ?')) {
+                    return true;
+                }
+                else {
+                    return false;
+                }
+            }
+        }
+
+        $('[name="Delete"]').click(function () {
+            if (confirm('Bạn có chắc muốn xóa item ?')) {
+                $(this).closest('tr').children('td').each(function (i, e) {
+                    $(this).find("input.class-delete-all").prop("checked", true);
+                    return true;
+                })
+            }
+            else {
+                return false;
+            }
+
+        })
+
+    </script>
+    @Html.ScriptBottom_DatePicker("dd/MM/yyyy")
+}

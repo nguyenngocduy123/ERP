@@ -1,0 +1,127 @@
+﻿@model  IEnumerable<SalaryAdvanceViewModel>
+
+@using Erp.BackOffice.App_GlobalResources
+@using Erp.BackOffice.Staff.Models
+@using Erp.BackOffice.Helpers
+@using GridMvc.Html
+
+@{
+    Layout = null;
+}
+
+<link href="@Url.Content("~/assets/css/Gridmvc.css")" rel="stylesheet" type="text/css" />
+<script src="@Url.Content("~/Scripts/gridmvc.min.js")" type="text/javascript"> </script>
+
+@helper GridColumnCategoryValue(object value)
+{
+    var attr = Common.GetCategoryByValueOrId("value", value);
+    <span>@(attr != null ? attr.Name : "")</span>
+}
+@section HeadOfPage {
+    @Html.ScriptTop_ChosenStyle()
+    <style>
+       .label-black.arrowed-in-right:after {
+            border-color: #666 transparent #666 #666;
+        }
+
+        .label-black.arrowed-in:before {
+            border-color: #666 #666 #666 transparent;
+        }
+         .itemdiv > .body > .text {
+        padding-bottom: 0px !important;
+        /* padding-left: 7px; */
+        /* font-size: 13px; */
+    }
+
+    .itemdiv {
+        padding-right: 3px;
+        min-height: 10px;
+    }
+    </style>
+}
+@helper GridColumnContact(string Code, int? Money)
+{
+    <p data-toggle="tooltip" title="Mã tạm ứng">
+        <i class="fa fa-barcode"></i> @Code
+    </p>
+    <span data-toggle="tooltip" title="Số tiền tạm ứng">
+        <i class="fa fa-money"></i> <b class="red">@Erp.BackOffice.Helpers.Common.PhanCachHangNgan(Money)</b>
+    </span>
+
+}
+@helper GridColumnNameStaff(string name, string Status, int id, string Image)
+{
+    <div class="itemdiv commentdiv">
+        <div class="user">
+            <div class="ace-thumbnails">
+                <a href="@(Erp.BackOffice.Helpers.Common.KiemTraTonTaiHinhAnh(Image,"Staff","user"))" title="@name" data-rel="colorbox" class="cboxElement">
+                    <img id="myImg" alt="@name" src="@(Erp.BackOffice.Helpers.Common.KiemTraTonTaiHinhAnh(Image,"Staff", "user"))">
+                </a>
+            </div>
+        </div>
+        <div class="body">
+            <div class="name" data-toggle="tooltip" title="Tên nhân viên">
+                @if (string.IsNullOrEmpty(name))
+            {
+                <span>NoTile</span>
+        }
+        else
+        {
+            <a href="@Url.Action("Detail", "Staffs", new { area = "Staff", Id = id })" target="_blank"><b>@name</b></a>
+    }
+            </div>
+            <div class="text" data-toggle="tooltip" title="Trạng thái">
+                @GridColumnStatus(Status)
+            </div>
+        </div>
+    </div>
+}
+@helper GridColumnDateName(DateTime? CreateDate, DateTime? DateOfIssue)
+{
+    <p data-toggle="tooltip" title="Ngày gửi yêu cầu">
+        <i class="fa fa-calendar-plus-o"></i> @CreateDate.Value.ToString("dd/MM/yyyy HH:mm")
+    </p>
+    <span data-toggle="tooltip" title="Ngày duyệt yêu cầu"><i class="fa fa-calendar-check-o"></i> @(DateOfIssue.HasValue ? DateOfIssue.Value.ToString("dd/MM/yyyy HH:mm") : "chưa có")</span>
+}
+@helper GridColumnStatus(string Status)
+{
+    switch (Status)
+    {
+        case "Chờ duyệt":
+            <label class="label label-info arrowed-in-right">@Status</label>
+            break;
+        case "Được duyệt":
+        <label class="label label-warning arrowed-in-right">@Status</label>
+            break;
+        case "Hủy":
+        <label class="label label-black arrowed-in-right">@Status</label>
+            break;
+        case "Từ chối":
+        <label class="label label-danger arrowed-in-right">@Status</label>
+            break;
+        case "Đã trả tiền":
+        <label class="label label-success arrowed-in-right">@Status</label>
+            break;
+    }
+}
+<div class="widget-box">
+    <div class="widget-header">
+        <h4 class="widget-title">
+            <i class="ace-icon fa fa-money"></i>
+            Danh sách tạm ứng lương mới nhất
+        </h4>
+    </div>
+    <div class="widget-body">
+        <div class="widget-main clearfix">
+            <div class="table-responsive">
+                @Html.Grid(Model).Columns(columns =>
+   {
+     
+       columns.Add().Titled(Wording.InfoStaff).Sortable(false).Sanitized(false).Encoded(false).RenderValueAs(u => GridColumnNameStaff(u.Name, u.Status, u.StaffId.Value, u.ProfileImage));
+       columns.Add().Titled("Thông tin tạm ứng").Sortable(false).Sanitized(false).Encoded(false).SetWidth(150).RenderValueAs(u => GridColumnContact(u.CodeAdvance, u.Pay));
+       columns.Add().Titled("Thời gian").Sortable(false).Sanitized(false).Encoded(false).RenderValueAs(u => GridColumnDateName(u.CreatedDate, u.ModifiedDate));
+   }).WithPaging(10)
+            </div>
+        </div>
+    </div>
+</div>

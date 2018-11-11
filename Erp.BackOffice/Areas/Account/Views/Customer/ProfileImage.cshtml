@@ -1,0 +1,313 @@
+﻿@using Erp.BackOffice.App_GlobalResources
+@using Erp.BackOffice.Helpers
+@using Erp.BackOffice.Account.Models
+
+@model CustomerViewModel
+
+@{
+    ViewBag.Title = "Chụp hình khách hàng: " + Model.CompanyName;
+    Layout = "~/Views/Shared/ACE_ClientLayout.cshtml";
+
+    Erp.BackOffice.Models.PageSetting pageSetting = new Erp.BackOffice.Models.PageSetting
+    {
+        ModuleName = "Customer",
+        ActionName = "ProfileImage",
+        PageTitle = ViewBag.Title,
+        DisplaySearchPanel = false,
+        IsPopup = false,
+        DisplayBackButton = true,
+        AdvancedSearch = false,
+    };
+}
+
+@section HeadOfPage {
+    <link href="/assets/css/cropper.min.css" rel="stylesheet" />
+    @Html.ScriptTop_ChosenStyle()
+    <style>
+        audio,
+        video {
+            -moz-transition: all 1s ease;
+            -ms-transition: all 1s ease;
+            -o-transition: all 1s ease;
+            -webkit-transition: all 1s ease;
+            transition: all 1s ease;
+            vertical-align: top;
+            width: 100%;
+            margin: 0 auto;
+            height: 100%;
+        }
+
+        @@media screen and (min-width: 768px) {
+            video {
+                margin: 0 auto;
+            }
+        }
+
+        #video-container {
+            background: white;
+            border: 1px solid #999;
+            border-radius: 4px;
+            display: inline-block;
+            padding: 1px;
+            vertical-align: top;
+        }
+
+        .takeSnapshot,
+        .takeSnapshot:hover,
+        .takeSnapshot:active {
+            background-color: transparent;
+            background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAYAAACqaXHeAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAAYdEVYdFNvZnR3YXJlAHBhaW50Lm5ldCA0LjAuM4zml1AAAAO1SURBVHhe7VpNixNBEN17focevewP3IMIgiDeBT2IoIgoIoJ40IMigoh48CQLwiZZkaCbZLNfCfG93pqme6Yyk5mepbPTPnhUp7pnmHrd1R8z2Voul0lTdaZE1ZkSVWdKVJ0pUXWmRNWZElVnSlSdKVF1rsEeeEW4syavbm9vb7VN3DeIqrOCvfF4/BG2FnDNV5jWRcA9g6g6K8heb4odLYgQ4p5BVJ0VTEYAN88tF4vFA9imuAdq80MIC8+4goynEGfBAfZOTk5uHh4e/kW5M5jNZlN03nUUPSHcwMnewcHBd9jOQkSwMXvBTyaTD7AWmLn3jo+Pn8vPTmA6nY5g7ChwBWCeWJydnT2CyeaBroExrRYA+f8GJlOpsQDIu1cwO7Cvzz3tQCbiykkQI/gzrAbWrxYAsA2kXBtIp/cwZuND27IIdjlFuYy9FSl88QJwsskeUh6UvdUW1hWA1J7/4gXAavINxo4ADMcfpqIdbL4ABILeRSrcgf0prlYgE3QmbhXjCXCRgKg8kK2zE7wG5kG/iS8LMh+obSDlruG/AKCJLwsyH2gUATCsfw2Hw6f7+/uPaQeDwTPsSSZS3SY2SwBZq5nPhRcm9LEuv00PxGYIgB7/AqMGnifbsC2uGcKGIr4Ask22gbMMUgyNXjuIwNdrIYgrgCxhXlA4pb01lQpQ9w7Ga4+UGJjKZognAF9MwOSD+W0qSwAR/sC413FkNEU8AU5PT2+4wWMCnJ3XVEPO8kYEWhkZTRBHAAnWBoDzwidTUQNyqszu0XQUxBGAa7vT+yFD2ByGYDkKOCrqIo4AueEfLADZ7/dfiK8O4ggA2AdHz90WXxPY+4xGo7viq4P4AvDVu/ia4HIK4L4lws9WUgDzyhPx1UEcAXjICRVADkd2JWm4NY4jgLsJom3yohTX3AoVEYgjgMAOX5TZg3vn7mrIVysrYMBHm3gCSMAmCEeEXVNZAjd4uS5kDoknAHF0dPQSxhOBy6KkiAfk/FiWTK99k12kg7gCEPP5/CGMDSoLDGTPuiy0gVA8SocgvgCE5LAXYBnZVo7SodgMAQgExG8GhZ52g2a9/GdhjHIbKBdAcjT442gdMP+xq7uPopcCECj07Y+GcgEIWaOT+jzOP0h4r5l4fhchOgOkEf/6o/5Bguxib3so+4sMaYb8OhuTywb2PN9HoGh7n3SDd5nl/jr0Jq0I1J5Joxd4xoIjNarOlKg6U6LqTImqMyWqzpSoOlOi6kyJqjMlqs6UqDrT4XLrH5iAs+/bwo6TAAAAAElFTkSuQmCC') !important;
+            background-position: center center !important;
+            background-repeat: no-repeat !important;
+            height: 44px;
+            margin: .2em;
+            position: absolute;
+            width: 63px;
+            z-index: 200;
+            border: 0;
+            cursor: pointer;
+        }
+
+        #snapshots-container canvas {
+            max-width: 100%;
+        }
+
+        .container {
+            max-width: 720px;
+            margin: 20px auto;
+        }
+
+        img {
+            max-width: 100%;
+        }
+        .fa-150 {
+    font-size: 1.5em;
+}
+    </style>
+
+}
+@if (ViewBag.SuccessMessage != null && ViewBag.SuccessMessage != "")
+{
+    <div class="alert alert-block alert-success">
+        <button class="close" data-dismiss="alert" type="button">
+            <i class="ace-icon fa fa-times"></i>
+        </button>
+        <i class="ace-icon fa fa-check green"></i>
+        @ViewBag.SuccessMessage
+    </div>
+}
+
+@if (ViewBag.FailedMessage != null && ViewBag.FailedMessage != "")
+{
+    <div class="alert alert-block alert-danger">
+        <button class="close" data-dismiss="alert" type="button">
+            <i class="ace-icon fa fa-times"></i>
+        </button>
+        <i class="ace-icon fa fa-warning red"></i>
+        @ViewBag.FailedMessage
+    </div>
+}
+
+@if (Model != null)
+{
+    using (Html.BeginForm("ProfileImage", "Customer", null, FormMethod.Post, new { @id = "form-profileimage", @class = "form-horizontal", enctype = "multipart/form-data" }))
+    {
+        @Html.ValidationSummary(true)
+        @Html.HiddenFor(model => model.Id)
+        @Html.HiddenFor(m => m.Image_File)
+        @Html.HiddenFor(m => m.Image)
+    <input type="hidden" value="@Request["ProductInvoiceId"]" name="ProductInvoiceId" />
+        <div class="row">
+            <div class="col-sm-4 pull-left" style="padding:0px">
+                <div id="tool_camera">
+                    <div class="select" style="display:none">
+                        <label for="audioSource">Audio input source: </label><select id="audioSource"></select>
+                    </div>
+                    <div class="select" style="display:none">
+                        <label for="audioOutput">Audio output destination: </label><select id="audioOutput"></select>
+                    </div>
+                    <div class="select">
+                        <label for="videoSource"></label><select id="videoSource"></select>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row" id="height_camera" style="text-align:center">
+
+            <div id="chup_hinh" style="height:100%">
+                <video id="video" autoplay></video>
+            </div>
+            <div id="xem_hinh" style="display:none">
+                <div id="snapshots-container" class="clearfix">
+                    <canvas></canvas>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <footer class="btn-default">
+                <div class="row">
+                    <div class="col-xs-4">
+                        <a title="Trở về trang trước" class="btn btn-white btn-default btn-sm" style="border-radius:100%;width:37px;height:37px;line-height:2.5!important" href="/Customer/ClientListProductInvoice">
+                            <i class="ace-icon fa-150 fa fa-arrow-left"></i>
+                        </a>
+                    </div>
+                    <div class="col-xs-4" style="text-align:center">
+                        <a title="Chụp ảnh" id="btn-take-photo" class="btn btn-sm btn-warning btn-white" style="border-radius:100%;width:37px;height:37px;line-height:2.5!important">
+                            <i class="ace-icon fa-150 fa fa-camera"></i>
+                        </a>
+                        <button title="Lưu ảnh" class="btn btn-sm btn-white btn-primary" style="display:none;border-radius:100%;height:37px;width:37px;line-height:2.5!important" type="submit" name="Submit" value="Save" onclick="return FormSubmit()" id="luu">
+                            <i class="ace-icon fa fa-save fa-150"></i>
+                        </button>
+                    </div>
+                    <div class="col-xs-4" style="text-align:right">
+                        <a id="btn_prev_chup_hinh" title="Xóa ảnh, chụp lại" class="btn btn-white btn-danger btn-sm" style="display:none;width:37px;border-radius:100%;height:37px;line-height:2.5!important" onclick="get_prev_chup_hinh()">
+                            <i class="ace-icon fa-150 fa fa-times"></i>
+                        </a>
+                    </div>
+                </div>
+            </footer>
+        </div>
+    }
+}
+
+@section Scripts {
+    <script>
+        var profile_image_width = @ViewBag.profile_image_width;
+        var profile_image_height = @ViewBag.profile_image_height;
+        var camera_w = 540;
+        var camera_h = 720;
+    </script>
+
+    <script src="/Scripts/adapter-latest.js"></script>
+    <script src="/Scripts/main.js"></script>
+    <script src="/assets/js/cropper.min.js"></script>
+
+    <script type="text/javascript">
+        var cropper = null;
+        $(function () {
+
+            var w = Math.max(document.documentElement.clientWidth, window.innerWidth || 0);
+            var h = Math.max(document.documentElement.clientHeight, window.innerHeight || 0);
+            var h_page_toolbar= Math.max($("#page_toolbar").height()||0);
+            //$("#height_camera").css({ 'height':h-h_page_toolbar+'px' });
+            if(w>h)
+            {
+                $("#video").css({ 'height':h-h_page_toolbar+'px' });
+                $("#snapshots-container").css({ 'height':h-h_page_toolbar+'px' });
+
+            }
+            else
+            {
+                $("#video").css({ 'width':w+'px' });
+                $("#snapshots-container").css({ 'width':w+'px' });
+            }
+            var c = window.canvas = document.querySelector('canvas');
+            var ctx = c.getContext("2d");
+            var img = new Image();
+            img.onload = function () {
+                c.width = profile_image_width;
+                c.height = profile_image_height;
+                ctx.drawImage(img, 0, 0, profile_image_width, profile_image_height, 0, 0, profile_image_width, profile_image_height);
+                ctx.drawImage(img, 0, 0, w, h, 0, 0, w, h);
+            };
+            img.src = '@(Model.Image_Path)';
+        });
+
+        $("#btn-take-photo").click(function () {
+            var canvas = window.canvas = document.querySelector('canvas');
+            canvas.width = camera_w;//camera_w;//video.videoWidth;
+            canvas.height = camera_h ;//camera_h;//video.videoHeight;
+            canvas.getContext('2d').drawImage(video, 0, 0, canvas.width, canvas.height);
+            var dataURL = canvas.toDataURL();
+            $("#Image_File").val(dataURL);
+            //cropper.replace(dataURL);
+            $("#chup_hinh").addClass("hidden");
+            $("#btn-take-photo").addClass("hidden");
+            $("#xem_hinh").show();
+            $("#luu").show();
+            //$("#btn_crop_photo").show();
+            $("#btn_prev_chup_hinh").show();
+            $("#tool_camera").addClass("hidden");
+
+
+        });
+
+        function FormSubmit() {
+            var Image = $("#Image_File");
+
+            return true;
+        }
+        //     function getCrop() {
+        //         var canvas = cropper.getCroppedCanvas({
+        //             width: profile_image_width,
+        //             height: profile_image_height,
+        //             fillColor: '#ccc',
+        //             imageSmoothingEnabled: false,
+        //             imageSmoothingQuality: 'high',
+        //         });
+
+        //         $("#snapshots-container").html(canvas);
+        //         var dataURL = canvas.toDataURL();
+        //         $("#Image_File").val(dataURL);
+        //         get_prev_xem_hinh();
+        //     }
+        //function getOpenCrop() {
+
+        //    //$("#cat_hinh").show();
+        //     //$("#luu_crop").show();
+        //     $("#xem_hinh").hide();
+        //     //$("#chup_hinh").addClass("hidden");
+        //     //$("#btn-take-photo").addClass("hidden");
+        //     $("#luu").addClass("hidden");
+        //     //$("#btn_crop_photo").addClass("hidden");
+        //     //$("#btn_prev_xem_hinh").show();
+        //     $("#btn_prev_chup_hinh").hide();
+        //     }
+        function get_prev_xem_hinh() {
+            //$("#cat_hinh").hide();
+            //$("#luu_crop").hide();
+
+            $("#xem_hinh").show();
+            $("#luu").removeClass("hidden");
+            //$("#btn_crop_photo").removeClass("hidden");
+            //$("#btn_prev_xem_hinh").hide();
+            $("#btn_prev_chup_hinh").show();
+        }
+        function get_prev_chup_hinh() {
+            $("#xem_hinh").hide();
+            $("#btn_prev_chup_hinh").hide();
+            $("#chup_hinh").removeClass("hidden");
+            $("#btn-take-photo").removeClass("hidden");
+            $("#luu").hide();
+            $("#tool_camera").removeClass("hidden");
+            //$("#btn_crop_photo").hide();
+        }
+    </script>
+
+    <script>
+        //$(function () {
+        //    var image = document.querySelector('#image-crop');
+        //    var minAspectRatio = 1;
+        //    var maxAspectRatio = 1;
+        //    cropper = new Cropper(image,
+        //        {
+        //            minContainerWidth: camera_w,
+        //            minContainerHeight: camera_h,
+        //            minCropBoxWidth: profile_image_width,
+        //            minCropBoxHeight: profile_image_height,
+        //            dragMode: 'move',
+        //            aspectRatio: 480 / 640,
+        //            restore: false,
+        //            guides: false,
+        //            center: false,
+        //            highlight: false,
+        //            cropBoxMovable: false,
+        //            cropBoxResizable: false,
+        //            toggleDragModeOnDblclick: false,
+        //            //zoomable:false
+        //        });
+
+
+        //});
+    </script>
+}

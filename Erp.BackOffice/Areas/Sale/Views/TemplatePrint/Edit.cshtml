@@ -1,0 +1,101 @@
+﻿@using Erp.BackOffice.App_GlobalResources
+@using Erp.BackOffice.Helpers
+@using Erp.BackOffice.Sale.Models
+
+@model TemplatePrintViewModel
+
+@{
+    ViewBag.Title = Wording.PageEdit_TemplatePrint;
+
+    Layout = "~/Views/Shared/" + (Request["IsPopup"] == null ? "ACE_AdminLayout.cshtml" : "_PopupLayout.cshtml");
+    
+    Erp.BackOffice.Models.PageSetting pageSetting = new Erp.BackOffice.Models.PageSetting
+    {        
+        ModuleName = "TemplatePrint",
+        ActionName = "Edit",
+        PageTitle = ViewBag.Title,
+        DisplaySearchPanel = false,
+        IsPopup = false,
+        DisplayBackButton = true
+    };
+  
+}
+
+@section HeadOfPage {
+    @Html.ScriptTop_ChosenStyle()
+}
+
+@using(Html.BeginPageHeaderContainer(pageSetting))
+{
+
+}
+
+    @using (Html.BeginForm_AceStyle((string)ViewBag.Title, pageSetting.ActionName, pageSetting.ModuleName, null, FormMethod.Post, new { @class = "form-horizontal" }))
+    {
+    @Html.ValidationSummary(true)
+    @Html.HiddenFor(model => model.Id)
+    @Html.HiddenFor(model => model.CreatedUserId)
+    @*@Html.HiddenFor(model => model.AssignedUserId)*@
+    @Html.HiddenFor(model => model.CreatedDate)
+    @Html.HiddenFor(model => model.IsDeleted)
+
+    @Html.CustomTextboxFor(model => model.Title, null, null, WidthType.span12)
+    @Html.CustomTextboxFor(model => model.Code, null, null, WidthType.span12)
+        
+    <textarea class="ckeditor" cols="30" id="Content" name="Content" placeholder="" rows="2">@Model.Content</textarea>
+
+
+    using (Html.BeginButtonContainer(pageSetting))
+    {
+        <button class="btn btn-mini btn-primary" type="submit" name="Submit" value="Save">
+            <i class="ace-icon fa fa-save"></i>
+            @Wording.Save
+        </button>
+    }
+}
+
+@section Scripts {
+    <link href="/Scripts/ckeditor/contents.css" rel="stylesheet" />
+<script src="/Scripts/ckeditor/ckeditor.js"></script>
+<script>
+    //truyền từ action create của controller qua khi thực hiện submit và return về lại view create, để nhận biết là được gọi theo dạng popup
+    var closePopup = '@ViewBag.closePopup';
+    $(document).ready(function () {
+        //nếu là được gọi theo dạng popup từ form khác thì chạy đoạn code bên dưới
+        if (closePopup != '') {
+            var option = '<option value="@Model.Id" >@Model.Title</option>';
+            //tên funtion có thể khác theo từng công việc riêng (đây chỉ là mẫu khi thêm mới sẽ gọi lại)
+            window.parent.ClosePopupAndAppendSelect(option);
+        }
+    });
+    function initCkeditor() {
+        $('.ckeditor').ckeditor({
+            "extraPlugins": 'imagebrowser',
+            "imageBrowser_listUrl": "@Url.Action("ListJson","Images")",
+            // Define the toolbar groups as it is a more accessible solution.
+            toolbarGroups: [
+                { "name": "document", "groups": ["mode", "document", "doctools"] },
+                { "name": "editing", "groups": ["find", "selection", "spellchecker"] },
+                { "name": "forms" },
+                { "name": "tools" },
+                { "name": "basicstyles", "groups": ["basicstyles", "cleanup"] },
+                { "name": "clipboard", "groups": ["clipboar", "undo"] },
+                { "name": "links", "groups": ["links"] },
+                { "name": "paragraph", "groups": ["list", "blocks"] },
+                { "name": "insert", "groups": ["insert"] },
+                { "name": "styles", "groups": ["styles"] },
+                //{ "name": "about", "groups": ["about"] },
+                { "name": "styles" },
+                { "name": "colors" },
+                { "name": "align", "groups": ['JustifyLeft', 'JustifyCenter', 'JustifyRight', 'JustifyBlock'] }
+
+            ],
+            // Remove the redundant buttons from toolbar groups defined above.
+            removeButtons: 'Underline,Strike,Subscript,Superscript,Anchor,Styles,Specialchar'
+        });
+    }
+</script>
+
+    @Html.ScriptBottom_ValidationMvc()
+    @Html.ScriptBottom_ChosenStyle()
+}

@@ -1,0 +1,357 @@
+﻿@using Erp.BackOffice.App_GlobalResources
+@using Erp.BackOffice.Helpers
+@using Erp.BackOffice.Sale.Models
+@using Erp.BackOffice.Account.Models
+
+@model ProductInvoiceViewModel
+
+@{
+    if (Model.Id > 0)
+    {
+        ViewBag.Title = Wording.PageEdit_ProductInvoice;
+    }
+    else
+    {
+        ViewBag.Title = Wording.PageCreate_ProductInvoice;
+    }
+
+    Layout = "~/Views/Shared/ACE_AdminLayout.cshtml";
+
+    IEnumerable<ProductViewModel> productList = (IEnumerable<ProductViewModel>)ViewBag.productList;
+    IEnumerable<CustomerViewModel> customerList = (IEnumerable<CustomerViewModel>)ViewBag.customerList;
+    IEnumerable<SelectListItem> staffList = (IEnumerable<SelectListItem>)ViewBag.staffList;
+    IEnumerable<SelectListItem> categoryList = (IEnumerable<SelectListItem>)ViewBag.categoryList;
+
+    Erp.BackOffice.Models.PageSetting pageSetting = new Erp.BackOffice.Models.PageSetting
+    {
+        ModuleName = "ProductInvoice",
+        ActionName = "Create",
+        PageTitle = ViewBag.Title,
+        DisplaySearchPanel = false,
+        IsPopup = false,
+        DisplayBackButton = true
+    };
+    IEnumerable<SelectListItem> drugStoreList = Erp.BackOffice.Helpers.SelectListHelper.GetSelectList_DepartmentAllNew(Model.BranchId, Wording.Empty);
+}
+
+@section HeadOfPage {
+    @Html.ScriptTop_ChosenStyle()
+    <style type="text/css">
+        #product_search_control {
+            display: inline-block;
+            position: relative;
+            float: left;
+        }
+
+            #product_search_control .result {
+                position: absolute;
+                width: 300px;
+                max-height:300px;
+                overflow-y:scroll;
+                background: #fff;
+                border: 1px solid #ddd;
+                border-top: none;
+                display: none;
+            }
+
+                #product_search_control .result .item {
+                    padding: 2px 5px;
+                    border-bottom: 1px solid #ddd;
+                    cursor: pointer;
+                    display: block;
+                    text-decoration: none;
+                }
+
+                    #product_search_control .result .item:hover, #product_search_control .result .item.selected {
+                        background: #eee;
+                        font-weight: bold;
+                    }
+
+        #categorySelectList_chosen {
+            height: 29px !important;
+            float: left;
+            width: 250px !important;
+        }
+
+        #categorySelectList_chosen .chosen-single {
+            width: 100%;
+            height: 29px !important;
+        }
+
+
+        .mini-popup {
+            position: relative;
+            display: inline;
+        }
+
+        #popup_archive {
+            position: absolute;
+            bottom: 34px;
+            left: -154px;
+            width: 410px;
+            height: 235px;
+            max-width: inherit;
+            top: inherit;
+        }
+    </style>
+}
+
+@using (Html.BeginPageHeaderContainer(pageSetting))
+{
+
+}
+@using (Html.BeginForm_AceStyle((string)ViewBag.Title, "Create", "ProductInvoice", null, FormMethod.Post, new { id = "SaleOrder", @class = "form-horizontal clearfix" }))
+{
+    @Html.ValidationSummary(true)
+
+    if (Model.Id == 0)
+    {
+        @Html.HiddenFor(model => model.CreatedUserName)
+        @Html.HiddenFor(model => model.CustomerDiscountId)
+    }
+    else
+    {
+        @Html.HiddenFor(model => model.Id)
+        @Html.HiddenFor(model => model.CreatedUserId)
+        @Html.HiddenFor(model => model.CreatedDate)
+        @Html.HiddenFor(model => model.IsDeleted)
+        @Html.HiddenFor(model => model.Code)
+        @Html.HiddenFor(model => model.CustomerDiscountId)
+        @Html.HiddenFor(model => model.Status)
+        @Html.HiddenFor(model => model.BranchId)
+    }
+
+    <div class="row">
+        <div class="col-sm-7 ">
+            <div class="listsearch" style="@(Model.Id == 0 ? "display: none;" : "")">
+                <div class="product-search-box clearfix ">
+                    <span class=" label label-warning" style="padding: 6px; float: left; height: 29px; ">
+                        [F2]
+                    </span>
+                    @Html.DropDownList("categorySelectList", categoryList, new { @class = "chzn-select", style = "width:250px !important; float:left" })
+                    <span class="label label-warning" style="padding: 6px; float: left; height: 29px; margin-left: 3px;">[F3]</span>
+                    @Html.TextBox("productCode", "", new { placeholder = "Nhập mã", autocomplete = "off", style = "width:80px; height: 29px !important; float:left" })
+
+                    <span class="label label-warning" style="padding: 6px; float: left; height: 29px; margin-left: 3px;">[F4]</span>
+                    <div id="product_search_control">
+                        @Html.TextBox("productName", "", new { placeholder = "Tên sản phẩm/dịch vụ", autocomplete = "off", style = "width:300px; height: 29px !important" })
+                        <div class="result"></div>
+                    </div>
+                </div>
+                <div id="listOrderDetail" class="table-responsive top-10 ">
+                    <table class="table table-bordered bottom-5">
+                        <thead>
+                            <tr>
+                                <th width="50">STT</th>
+                                <th>Tên sản phẩm</th>
+                                <th width="60">SL</th>
+                                <th width="100">Đơn giá</th>
+                                <th width="100">% CK cố định @Html.TextBox("InputFixedDiscount", 0, new { style = "width:50px; text-align:right" })</th>
+                                <th width="100">% CK đột xuất @Html.TextBox("InputDiscount", 0, new { style = "width:50px; text-align:right" })</th>
+                                <th width="90">Thành tiền</th>
+
+                                <th width="20"></th>
+                            </tr>
+                        </thead>
+                        <tbody class="detailList">
+                            @if (Model.DetailList.Count > 0)
+                            {
+                                foreach (var item in Model.DetailList)
+                                {
+                                    @Html.Partial("LoadProductItemNT", item);
+                                }
+                            }
+                        </tbody>
+                        <tfoot>
+                            <tr>
+                                <td>
+                                    <input style="width:30px;" autocomplete="off" data-val="true" data-val-required="Vui lòng chọn sản phẩm!" id="ProductItemCount" name="ProductItemCount" type="text" value="@(Model.DetailList != null && Model.DetailList.Count > 0 ? Model.DetailList.Count.ToString() : "")" readonly="readonly" />
+                                </td>
+                                <td></td>
+                                <td id="TongSoLuong" align="right" style="font-weight:bold"></td>
+                                <td colspan="3"></td>
+                                <td id="TongThanhTien" align="right" style="font-weight:bold"></td>
+                                <td></td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                    <span style="color:red" class="field-validation-valid help-inline" data-valmsg-for="ProductItemCount" data-valmsg-replace="true"></span>
+                </div>
+            </div>
+
+            @if (Model.Id == 0)
+            {
+                <div class="alert alert-warning alw">
+                    <strong>Vui lòng chọn khách hàng!</strong>
+                </div>
+            }
+        </div>
+
+        <div class="col-sm-5">
+            <div class="widget-box">
+                <div class="widget-header">
+                    <h5 class="widget-title">Tổng quan</h5>
+                </div>
+                <div class="widget-body">
+                    <div class="widget-main">
+                        @if (Model.Id > 0)
+                        {
+                            <div class="detail-view">
+                                <div class="row control-group">
+                                    @Html.DetailViewItemFor2(m => m.Code)
+                                </div>
+                            </div>
+                        }
+                        @Html.CustomDropDownListFor(model => model.BranchId, drugStoreList, WidthType.span4, true, null, DropdownListStyle.DropdownListStyleChosen)
+                        @Html.ModulePopupFor(m => m.CustomerId, "Customer", Model.CustomerName, false, true)
+                        @*@Html.ModulePopupFor(m => m.StaffCreateId, "Staffs", Model.StaffCreateName, false, false,false,null,null,"Search")*@
+                        @Html.CustomTextAreaFor(model => model.Note, Wording.Note, WidthType.span12, true, null, "hide", "full-w")
+                    </div>
+                </div>
+            </div>
+            <p></p>
+            <div class="widget-box">
+                <div class="widget-header">
+                    <h5 class="widget-title">Thông tin giao hàng</h5>
+                </div>
+                <div class="widget-body">
+                    <div class="widget-main">
+                        @Html.CustomTextboxFor(model => model.ShipName, null, null, WidthType.span12)
+                        @Html.CustomTextboxFor(model => model.CustomerPhone, null, null, WidthType.span12)
+                        @Html.CustomDropDownListFor(model => model.ShipCityId, SelectListHelper.GetSelectList_Location("0", null, "- Tỉnh/Thành phố -"), WidthType.span12, true, null, DropdownListStyle.DropdownListStyleChosen)
+                        @Html.CustomDropDownListFor(model => model.ShipDistrictId, new List<SelectListItem> { new SelectListItem { Text = "- Quận/Huyện -", Value = "" } }, WidthType.span12, true, null, DropdownListStyle.DropdownListStyleChosen)
+                        @Html.CustomDropDownListFor(model => model.ShipWardId, new List<SelectListItem> { new SelectListItem { Text = "- Xã/Phường -", Value = "" } }, WidthType.span12, true, null, DropdownListStyle.DropdownListStyleChosen)
+                        @Html.CustomTextboxFor(model => model.ShipAddress, null, null, WidthType.span12)
+                    </div>
+                </div>
+            </div>
+            <p></p>
+            <div class="widget-box">
+                <div class="widget-header">
+                    <h5 class="widget-title">Thông tin thanh toán</h5>
+                </div>
+                <div class="widget-body">
+                    <div class="widget-main">
+                        @Html.CustomTextboxFor(model => model.TotalAmount, null, null, WidthType.span12, true, new Dictionary<string, object> { { "class", "text-right" }, { "readonly", "readonly" } })
+                        @Html.CustomTextboxFor(model => model.TaxFee, null, null, WidthType.span12, true, new Dictionary<string, object> { { "class", "text-right" } })
+                        @Html.CustomTextboxFor(model => model.TongTienSauVAT, null, null, WidthType.span12, true, new Dictionary<string, object> { { "class", "text-right" }, { "readonly", "readonly" } })
+
+                        <p class="top-10"></p>
+
+                        <div class="mini-popup">
+                            <button id="btnShowPayment" class="btn btn-mini btn-primary" type="button" data-toggle="collapse" data-target="#popup_archive">
+                                <i class="fa fa-usd" aria-hidden="true"></i>
+                                Thu tiền [F9]
+                            </button>
+                            <div id="popup_archive" class="popover fade top">
+                                <div class="arrow" style="left: 50%;"></div>
+                                <h3 class="popover-title"><i class="ace-icon fa fa-save"></i> Thu tiền</h3>
+                                <div class="popover-content">
+                                    @Html.HiddenFor(model => model.ReceiptViewModel.Name)
+                                    @Html.CustomTextboxFor(model => model.ReceiptViewModel.Amount, null, null, WidthType.span12, false, new Dictionary<string, object> { { "class", "col-sm-12 text-right" } })
+
+                                    <div class="NextPaymentDate-container" style="display:none">
+                                        <div class="control-group form-group" style="border-top:0px">
+                                            <label class="control-label no-padding-right col-lg-5 col-md-4 col-sm-4" for="AmountRemain">Số tiền còn lại</label>
+                                            <div class="control-value col-lg-7 col-md-8 col-sm-8">
+                                                <div class="clearfix">
+                                                    @Html.TextBox("AmountRemain", 0, new { disabled = "disabled", @class = "col-sm-12 text-right" })
+                                                </div>
+                                            </div>
+                                        </div>
+                                        @Html.DateInput(model => model.NextPaymentDate_Temp, "dd/MM/yyyy", "99/99/9999", true, WidthType.span12, "col-lg-5 col-md-4 col-sm-4", "col-lg-7 col-md-8 col-sm-8")
+                                    </div>
+
+                                    @Html.CustomDropDownListFor(model => model.ReceiptViewModel.PaymentMethod, SelectListHelper.GetSelectList_Category("FormPayment", null, "Name",null), WidthType.span12, true, null, DropdownListStyle.DropdownListStyleDefault)
+
+                                    <p class="top-10">
+                                        <button class="btn btn-mini btn-primary" type="submit" name="Submit" value="Save" onclick="return Check();">
+                                            Đồng ý
+                                        </button>
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    //using (Html.BeginButtonContainer(pageSetting))
+    //{
+
+    //}
+}
+
+@section Scripts {
+
+    @Html.ScriptBottom_ValidationMvc()
+    @Html.ScriptBottom_ChosenStyle()
+    @Html.ScriptBottom_DatePicker("dd/MM/yyyy")
+
+    <script type="text/javascript">
+        var list = @Html.Raw(ViewBag.json);
+        function ClosePopupAndReloadPage(id,name) {
+            $("#CustomerId").val(id);
+            $("#CustomerId_DisplayText").val(name);
+            ClosePopup(false);
+
+        }
+        function selectLocationItem(id, code, name, orderNo) {
+
+            $("#DetailList_"+orderNo+"__SalerName").val(name);
+            $("#DetailList_"+orderNo+"__StaffId").val(id);
+            ClosePopup();
+        }
+
+        $('#CustomerId').change(function () {
+            var $this = $(this);
+            var $option = $this.find('#CustomerId_DisplayText');
+            if ($option.val() != '') {
+                $('.listsearch').show();
+                $('.alw').hide();
+            }
+            else {
+                alert("Vui lòng chọn khác hàng");
+            }
+        });
+        function Check() {
+                ShowLoading();
+                var customer=$("#CustomerId").val();
+                var StaffCreate=$("#StaffCreateId").val();
+                var OrderNo = $('.detailList tr').length;
+                var messagge="";
+                //for (var i = 0; i <OrderNo; i++) {
+                //    var staff=$("#DetailList_" + i + "__StaffId").val();
+                //    console.log(staff);
+                //    var stt=parseInt(i)+1;
+                //    if(staff=='')
+                //    {
+                //        var s="Dòng "+stt+" chưa có nhân viên <br>";
+                //        messagge+=s;
+                //    }
+                //    console.log(messagge);
+                //}
+                if(StaffCreate=='')
+                {
+                    messagge+="Người lập phiếu chưa có <br>";
+                }
+                if(customer=='')
+                {
+                    messagge+="Khách hàng chưa có <br>";
+                }
+
+                if (messagge!='') {
+                    alertPopup('Lỗi!',messagge, 'error');
+                    HideLoading();
+                    return false;
+                }
+                else {
+                    return true;
+                }
+        }
+    </script>
+    <script src="~/Scripts/area_sale/product_invoice.js"></script>
+
+}

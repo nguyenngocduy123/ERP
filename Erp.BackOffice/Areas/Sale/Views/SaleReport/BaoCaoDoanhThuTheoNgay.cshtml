@@ -1,0 +1,186 @@
+﻿@using Erp.BackOffice.App_GlobalResources
+@using Erp.BackOffice.Sale.Models
+@using Erp.BackOffice.Helpers
+@model List<ProductInvoiceViewModel>
+@{
+    ViewBag.Title = "Báo cáo doanh số theo ngày";
+    Layout = "~/Views/Shared/ACE_AdminLayout.cshtml";
+    Erp.BackOffice.Models.PageSetting pageSetting = new Erp.BackOffice.Models.PageSetting
+    {
+        ModuleName = "SaleReport",
+        ActionName = "BaoCaoDoanhThuTheoNgay",
+        PageTitle = ViewBag.Title,
+        DisplaySearchPanel = true,
+        IsPopup = false,
+        DisplayBackButton = false
+    };
+    List<Erp.BackOffice.Staff.Models.BranchViewModel> branchList = (List<Erp.BackOffice.Staff.Models.BranchViewModel>)ViewBag.branchList;
+    DateTime aDateTime = new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1);
+    // Cộng thêm 1 tháng và trừ đi một ngày.
+    DateTime retDateTime = aDateTime.AddMonths(1).AddDays(-1);
+    int index = 0;
+    string branchId = Request["branchId"] != null ? Request["branchId"] : "";
+    if (Request["branchId"] == null)
+    {
+        if (Erp.BackOffice.Filters.SecurityFilter.IsAdminDrugStore() || Erp.BackOffice.Filters.SecurityFilter.IsStaffDrugStore())
+        {
+            branchId = Erp.BackOffice.Helpers.Common.CurrentUser.DrugStore;
+        }
+    }
+    ViewData["branchId"] = branchId;
+}
+
+<style>
+    #cTable table tbody, #cTable table thead {
+        display: block !important;
+    }
+
+    #cTable table tbody {
+        overflow: auto;
+        height: calc(100vh - 360px) !important;
+    }
+
+    #cTable table {
+        width: 1520px !important; /* can be dynamic */
+    }
+
+    #cTable th {
+        width: 100px;
+    }
+
+    #cTable td {
+        width: 100px;
+    }
+
+    #cTable > thead > tr > th {
+        vertical-align: middle;
+        text-align: center;
+    }
+
+
+    #cTable > tbody > tr > td {
+        vertical-align: middle;
+        /*text-align: center;*/
+    }
+</style>
+
+@using (Html.BeginPageHeaderContainer(pageSetting))
+{
+    @Html.Partial("_PartialSearchDrugStore", ViewData["branchId"])
+    <p>
+        <span class="input-daterange input-group">
+            @Html.TextBox("StartDate", Request["StartDate"] != null ? Request["StartDate"] : aDateTime.ToString("dd/MM/yyyy"), new { autocomplete = "off", placeholder = "Từ ngày" })
+            <span class="input-group-addon">
+                <i class="fa fa-exchange"></i>
+            </span>
+            @Html.TextBox("EndDate", Request["EndDate"] != null ? Request["EndDate"] : retDateTime.ToString("dd/MM/yyyy"), new { autocomplete = "off", placeholder = "Đến ngày" })
+        </span>
+
+    </p>
+}
+
+
+<div class="table-responsive" id="BaoCaoDoanhThu">
+    <table id="cTable" class="table table-bordered">
+        <thead>
+            <tr class="">
+                <th class="text-center" style="width:40px;">STT</th>
+                @*<th class="grid-header text-center" style="width:100px;">Ngày</th>*@
+                <th style="min-width:200px" class="text-center">Nhà thuốc</th>
+                @for (DateTime dt = ViewBag.aDateTime; dt <= ViewBag.retDateTime; dt = dt.AddDays(1))
+                {
+                    <th class="text-center" style="width:100px;">@dt.ToString("dd/MM/yyyy")</th>
+                }
+                <th class="text-center" style="width:80px;">Số ngày</th>
+                <th class="text-center" style="width:80px;">Tổng tiền</th>
+            </tr>
+
+        </thead>
+        <tbody>
+            @foreach (var item in branchList.OrderBy(x => x.Name))
+            {
+
+                index++;
+
+                <tr class="@(index%2==0?"alert-warning":"")">
+                    <td>@(index)</td>
+                    <td>@(item.Name)</td>
+                    @for (DateTime dt = ViewBag.aDateTime; dt <= ViewBag.retDateTime; dt = dt.AddDays(1))
+                    {
+                        var date = dt.ToString("dd/MM/yyyy");
+                        var list = Model.Where(x => x.CreatedDate.Value.ToString("dd/MM/yyyy") == dt.ToString("dd/MM/yyyy") && x.BranchId == item.Id);
+                        if (list.Count() > 0)
+                        {
+                            <td class="text-right">
+                                <a onclick="OpenPopup('@Url.Action("DoanhThuNgay", "SaleReport", new { area = "Sale", startDate = date, endDate = date, branchId = item.Id, IsPopup = "true" })', 'Trang doanh thu theo ngày', 0, 500)">
+                                    @(CommonSatic.ToCurrencyStr(list.Sum(a => a.TotalAmount),null))
+                                    @*(@(CommonSatic.ToCurrencyStr(list.Sum(a => a.PaidAmount),null)))*@
+                                </a>
+                            </td>
+                        }
+                        else
+                        {
+                            <td class="text-right">0</td>
+                        }
+                    }
+                    <td class="text-right">
+                        @(Common.PhanCachHangNgan(Model.Where(x => x.BranchId == item.Id).GroupBy(x => new { x.Day, x.Month, x.Year }).Count()))
+                    </td>
+                    <td class="text-right">
+                        @(CommonSatic.ToCurrencyStr(Model.Where(x => x.BranchId == item.Id).Sum(x => x.TotalAmount),null))
+                        @*(@(CommonSatic.ToCurrencyStr(Model.Where(x => x.BranchId == item.Id).Sum(x => x.PaidAmount),null)))*@
+                    </td>
+                </tr>
+            }
+
+        </tbody>
+        <thead>
+            <tr class="">
+                <td class="text-center" style="font-weight:bold" colspan="2">Tổng</td>
+                @for (DateTime dt = ViewBag.aDateTime; dt <= ViewBag.retDateTime; dt = dt.AddDays(1))
+                {
+                    var list = Model.Where(x => x.CreatedDate.Value.ToString("dd/MM/yyyy") == dt.ToString("dd/MM/yyyy"));
+                    if (list.Count() > 0)
+                    {
+                        <td class="text-right" style="font-weight:bold">@(CommonSatic.ToCurrencyStr(list.Sum(x => x.TotalAmount),null)) </td>
+                    }
+                    else
+                    {
+                        <td class="text-right red" style="font-weight:bold">0</td>
+                    }
+                }
+                <td class="text-right" style="font-weight:bold"></td>
+                <td class="text-right" style="font-weight:bold">@(CommonSatic.ToCurrencyStr(Model.Sum(x => x.TotalAmount),null))</td>
+            </tr>
+        </thead>
+    </table>
+
+</div>
+
+@using (Html.BeginButtonContainer(pageSetting))
+{
+    <button onclick="tableToExcel('cTable', 'BaoCaoDoanhThu')" class=" btn btn-primary btn-sm btn-white btn-success">
+        <i class="ace-icon fa fa-download"></i>
+        Xuất Excel
+    </button>
+}
+@section Scripts {
+    <script type="text/javascript">
+
+        var tableToExcel = (function () {
+            var uri = 'data:application/vnd.ms-excel;base64,'
+                , template = '<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40"><head><!--[if gte mso 9]><xml><x:ExcelWorkbook><x:ExcelWorksheets><x:ExcelWorksheet><x:Name>{worksheet}</x:Name><x:WorksheetOptions><x:DisplayGridlines/></x:WorksheetOptions></x:ExcelWorksheet></x:ExcelWorksheets></x:ExcelWorkbook></xml><![endif]--></head><body><table>{table}</table></body></html>'
+                , base64 = function (s) { return window.btoa(unescape(encodeURIComponent(s))) }
+                , format = function (s, c) { return s.replace(/{(\w+)}/g, function (m, p) { return c[p]; }) }
+            return function (table, name) {
+                if (!table.nodeType) table = document.getElementById(table)
+                var ctx = { worksheet: name || 'Worksheet', table: table.innerHTML }
+                window.location.href = uri + base64(format(template, ctx))
+            }
+        })()
+    </script>
+
+
+    @Html.ScriptBottom_ValidationMvc()
+    @Html.ScriptBottom_DatePicker("dd/MM/yyyy")
+}

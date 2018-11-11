@@ -1,0 +1,163 @@
+﻿@model IEnumerable<CategoryViewModel>
+@using Erp.BackOffice.App_GlobalResources
+@using Erp.BackOffice.Areas.Cms.Models
+@using Erp.BackOffice.Helpers
+@using GridMvc.Html
+
+@{
+    ViewBag.Title = Wording.Categories;
+    Layout = "~/Views/Shared/ACE_AdminLayout.cshtml";
+
+    Erp.BackOffice.Models.PageSetting pageSetting = new Erp.BackOffice.Models.PageSetting
+    {
+        ModuleName = "Category",
+        ActionName = "Index",
+        PageTitle = ViewBag.Title,
+        DisplaySearchPanel = true,
+        IsPopup = false,
+        DisplayBackButton = false
+    };
+}
+
+<link href="@Url.Content("~/assets/css/Gridmvc.css")" rel="stylesheet" type="text/css" />
+<script src="@Url.Content("~/Scripts/gridmvc.min.js")" type="text/javascript"> </script>
+
+@helper GridColumnCommand(int id)
+{
+    <div class="hidden-phone visible-desktop action-buttons" style="display: inline-block; float: left;">
+        <p>
+            <button name="Delete" value="Delete" type="submit" class="btn btn-mini btn-danger">
+                <i class="ace-icon fa fa-trash bigger-120"></i>
+            </button>
+        </p>
+    </div>
+}
+
+@helper GridColumnName(string name, int id, string code)
+{
+    name = string.IsNullOrEmpty(name) ? "No Title" : name;
+    <a href="@Url.Action("EditCategory", "Category", new { categoryId = id, Code = code })">@name</a>
+}
+
+@helper GridColumnChild(string name, int id, string code)
+{
+    name = string.IsNullOrEmpty(name) ? "No Title" : name;
+    <a href="@Url.Action("Index", "Category", new { parentId = id, Code = code })">@name</a>
+}
+
+@helper CheckDeleteColumns(int Id)
+{
+    <label>
+        <input class="ace class-delete-all" type="checkbox" name="DeleteAll-checkbox" value="@Id">
+        <span class="lbl"></span>
+    </label>
+}
+
+@helper BuildCheckAll()
+{
+    <label>
+        <input type="checkbox" name="checkAll" id="checkAll" class="ace" />
+        <span class="lbl"></span>
+    </label>
+}
+
+@using (Html.BeginPageHeaderContainer(pageSetting))
+{
+
+        <p>
+        @Html.DropDownList("Code", (SelectList)ViewData["CodeList"], new { @class = "form-control" })
+            </p>
+}
+
+@if (ViewBag.SuccessMessage != null && ViewBag.SuccessMessage != "")
+{
+    <div class="alert alert-block alert-success">
+        <button class="close" data-dismiss="alert" type="button">
+            <i class="icon-remove"></i>
+        </button>
+        <i class="ace-icon fa fa-check green"></i>
+        @ViewBag.SuccessMessage
+    </div>
+}
+
+@if (ViewBag.FailedMessage != null && ViewBag.FailedMessage != "")
+{
+    <div class="alert alert-block alert-error">
+        <button class="close" data-dismiss="alert" type="button">
+            <i class="icon-remove"></i>
+        </button>
+        <i class="icon-warning-sign red"></i>
+        @ViewBag.FailedMessage
+    </div>
+}
+
+@using (Html.BeginForm("DeleteAll", "Category", FormMethod.Post))
+{
+    <p>
+        @Html.Hidden("Code", Request["Code"] != null && Request["Code"] != "" ? Request["Code"] : "")
+    </p>
+
+    @Html.Grid(Model).Columns(columns =>
+    {
+        columns.Add().Titled(BuildCheckAll().ToHtmlString()).SetWidth(20).Sanitized(false).Encoded(false).RenderValueAs(n => CheckDeleteColumns(n.Id));
+        columns.Add(u => u.OrderNo).Titled(Html.DisplayNameFor(u => u.OrderNo).ToString()).SetWidth(50).Sortable(false);
+        columns.Add().Titled(Html.DisplayNameFor(u => u.Name).ToString()).SetWidth(220).Sanitized(false).Encoded(false).RenderValueAs(u => GridColumnName(u.Name, u.Id, u.Code));
+        columns.Add(u => u.Value).Titled(Html.DisplayNameFor(u => u.Value).ToString());
+        columns.Add().Titled(Wording.ChildCategory).Sanitized(false).Encoded(false).RenderValueAs(n => GridColumnChild(Wording.View, n.Id, n.Value));
+        //columns.Add(u => u.CreatedUserId).Titled(Html.DisplayNameFor(u => u.CreatedUserId).ToString()).SetWidth(50).RenderValueAs(u => u.NameCreateUser);
+        //columns.Add(u => u.CreatedDate).Titled(Html.DisplayNameFor(u => u.CreatedDate).ToString()).SetWidth(100);
+        //columns.Add(u => u.ModifiedUserId).Titled(Html.DisplayNameFor(u => u.ModifiedUserId).ToString()).SetWidth(50).RenderValueAs(u => u.NameModifiedUser);
+        //columns.Add(u => u.ModifiedDate).Titled(Html.DisplayNameFor(u => u.ModifiedDate).ToString()).SetWidth(100);
+        columns.Add(u => u.Id).Titled(Wording.Action).Sanitized(false).Encoded(false).RenderValueAs(u => GridColumnCommand(u.Id)).SetWidth(50);
+    })
+
+    using (Html.BeginButtonContainer(pageSetting))
+    {
+        if (Request["parentId"] != null)
+        {
+            @Html.Button(Wording.CreateNew, ButtonType.aTag, ButtonColor.Primary, ButtonSize.Mini, true, IconType.Plus, IconSize.Default, false, new { @href = Url.Action("CreateCategory", "Category", new { Code = Request["Code"], parentId = Request["parentId"] }) })
+        }
+        else
+        {
+            @Html.Button(Wording.CreateNew, ButtonType.aTag, ButtonColor.Primary, ButtonSize.Mini, true, IconType.Plus, IconSize.Default, false, new { @href = Url.Action("CreateCategory", "Category", new { Code = Request["Code"] }) })
+        }
+
+        <button name="DeleteAll" value="DeleteAll" type="submit" class="btn btn-mini btn-danger" onclick="return CheckIsval();">
+            <i class="ace-icon fa fa-trash bigger-120"></i>
+            @Wording.Delete
+        </button>
+    }
+}
+
+@section Scripts {
+    <script type="text/javascript">
+        function CheckIsval() {
+            if ($('[name="DeleteAll-checkbox"]').is(':checked') == false) {
+                alert("Phải chọn ít nhất 1 item.");
+                return false;
+            }
+            else {
+                if (confirm('Bạn có chắc muốn xóa các item đã chọn ?')) {
+                    return true;
+                }
+                else {
+                    return false;
+                }
+            }
+        }
+
+        $('[name="Delete"]').click(function () {
+            if (confirm('Bạn có chắc muốn xóa item ?')) {
+                $(this).closest('tr').children('td').each(function (i, e) {
+                    $(this).find("input.class-delete-all").prop("checked", true);
+                    return true;
+                })
+            }
+            else {
+                return false;
+            }
+
+        })
+
+    </script>
+}

@@ -1,0 +1,133 @@
+@model IQueryable<ProcessStepViewModel>
+
+@using Erp.BackOffice.App_GlobalResources
+@using Erp.BackOffice.Crm.Models
+@using Erp.BackOffice.Helpers
+@using GridMvc.Html
+
+@{
+    Layout = null;
+}
+
+@helper GridColumnCommand(int id)
+{
+    <div class="hidden-phone visible-desktop action-buttons" style="display: inline-block; float: left;">
+        <p>
+            @if (Erp.BackOffice.Filters.SecurityFilter.AccessRight("Delete", "ProcessStep", "Crm"))
+            {
+                <button name="Delete" value="Delete" type="submit" class="btn btn-mini btn-danger">
+                    <i class="ace-icon fa fa-trash bigger-120"></i>
+                </button>
+            }
+        </p>
+    </div>
+}
+
+@helper GridColumnName(string name, int id)
+{
+    name = string.IsNullOrEmpty(name) ? "No Title" : name;
+    <a onclick="OpenPopup('@Url.Action("Edit", "ProcessStep", new { area = "Crm", Id = id, ProcessEntity = ViewBag.ProcessEntity, IsPopup = true })', 'Edit step', 500, 500)">@name</a>
+}
+
+@helper GridColumnCategoryValue(object value)
+{
+    var attr = Erp.BackOffice.Helpers.Common.GetCategoryByValueOrId("value", value);
+    <span>@(attr != null ? attr.Name : "")</span>
+}
+
+@helper CheckDeleteColumns(int Id)
+{
+    <label>
+        <input class="ace class-delete-all" type="checkbox" name="DeleteId-checkbox" value="@Id">
+        <span class="lbl"></span>
+    </label>
+}
+
+@helper BuildCheckAll()
+{
+    <label>
+        <input class="ace" type="checkbox" name="checkAll" id="checkAll" />
+        <span class="lbl"></span>
+    </label>
+}
+
+@helper ColumnsDisplayCheckbox(bool value)
+{
+    <label>
+        <input class="ace class-delete-all" type="checkbox" name="DeleteId-checkbox" @(value ? "checked" : "") disabled />
+        <span class="lbl"></span>
+    </label>
+}
+
+@using (Html.BeginForm("Delete", "ProcessStep", FormMethod.Post))
+{
+    <p>
+        @if (Erp.BackOffice.Filters.SecurityFilter.AccessRight("Create", "ProcessStep", "Crm"))
+        {
+            <a class="btn btn-minier btn-info" onclick="OpenPopup('@Url.Action("Create", "ProcessStep", new { area = "Crm", StageId = ViewBag.StageId, ProcessEntity = ViewBag.ProcessEntity, IsPopup = true })', 'Add step', 500, 600)">
+                <i class="ace-icon fa fa-plus bigger-120"></i>
+                Add step
+            </a>
+        }
+    </p>
+
+    @Html.Grid(Model).Columns(columns =>
+    {
+        columns.Add().Titled(Wording.Name).Sortable(false).Sanitized(false).Encoded(false).RenderValueAs(u => GridColumnName(u.Name, u.Id));
+        columns.Add(m => m.StepValue).Titled(Wording.StepValue);
+        columns.Add(m => m.IsRequired).Titled(Wording.IsRequired).Sanitized(false).Encoded(false).RenderValueAs(u => ColumnsDisplayCheckbox(u.IsRequired.Value));
+        columns.Add(m => m.IsSequential).Titled(Wording.IsSequential).Sanitized(false).Encoded(false).RenderValueAs(u => ColumnsDisplayCheckbox(u.IsSequential.Value));
+        columns.Add(m => m.OrderNo).Titled(Wording.OrderNo);
+        columns.Add(m => m.EditControl).Titled(Wording.EditControl);
+        columns.Add(u => u.Id).Titled(Wording.Action).Sanitized(false).Encoded(false).RenderValueAs(u => GridColumnCommand(u.Id)).SetWidth(20);
+    }).WithPaging(10).Selectable(false)
+}
+
+@*<div class="table-div">
+        <div class="row">
+            <div class="col-sm-2">Step name</div>
+            <div class="col-sm-2">Step value</div>
+            <div class="col-sm-1">Required</div>
+            <div class="col-sm-1">Sequential</div>
+            <div class="col-sm-2">Order no</div>
+            <div class="col-sm-2">Edit control</div>
+            <div class="col-sm-2"></div>
+        </div>
+        @foreach(var item in  Model)
+        {
+            Html.RenderPartial("Edit", item);
+        }
+    </div>*@
+
+@*@section Scripts {
+        <script type="text/javascript">
+            function CheckIsval() {
+                if ($('[name="DeleteId-checkbox"]').is(':checked') == false) {
+                    alert("Phải chọn ít nhất 1 item.");
+                    return false;
+                }
+                else {
+                    if (confirm('Bạn có chắc muốn xóa các item đã chọn ?')) {
+                        return true;
+                    }
+                    else {
+                        return false;
+                    }
+                }
+            }
+
+            $('[name="Delete"]').click(function () {
+                if (confirm('Bạn có chắc muốn xóa item ?')) {
+                    $(this).closest('tr').children('td').each(function (i, e) {
+                        $(this).find("input.class-delete-all").prop("checked", true);
+                        return true;
+                    })
+                }
+                else {
+                    return false;
+                }
+
+            })
+
+        </script>
+    }*@

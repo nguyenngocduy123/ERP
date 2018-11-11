@@ -1,0 +1,105 @@
+@using Erp.BackOffice.App_GlobalResources
+@using Erp.BackOffice.Helpers
+@using Erp.BackOffice.Account.Models
+
+@model ContractLeaseViewModel
+
+@{
+    ViewBag.Title = Wording.PageCreate_ContractLease;
+
+    Layout = "~/Views/Shared/" + (Request["IsPopup"] == null ? "ACE_AdminLayout.cshtml" : "_PopupLayout.cshtml");
+
+}
+
+@section HeadOfPage {
+    @Html.ScriptTop_ChosenStyle()
+<style type="text/css">
+    .chosen-search:after {
+        content: none !important;
+    }
+
+    .chosen-onthispage {
+        margin-right: 2px;
+    }
+
+        .chosen-onthispage label {
+            display: none;
+        }
+
+        .chosen-onthispage .control-group {
+            margin: 0px;
+            display: inline-block;
+        }
+
+    .chosen-single {
+        border-radius: 0px !important;
+        height: 34px !important;
+        line-height: 34px !important;
+        margin-top: -5px !important;
+    }
+
+    .form-search input {
+        padding: 0px 4px;
+        height: 34px;
+        line-height: 26px;
+    }
+
+    .chosen-container {
+        width: 300px !important;
+        max-width: 100%;
+    }
+
+    #ItemType_chosen {
+        width: 150px !important;
+    }
+
+    .radio {
+        margin-right: 5px;
+    }
+</style>
+}
+
+@using (Html.BeginForm_AceStyle((string)ViewBag.Title, "Create", "ContractLease", null, FormMethod.Post, new { @class = "form-horizontal" }))
+{
+    @Html.ValidationSummary(true)
+
+    <input type="hidden" value="@Request["IsPopup"]" name="IsPopup" />
+
+    @Html.CustomDropDownListFor(model => model.CondosId, SelectListHelper.GetSelectList_Condos(null), WidthType.span12, true, null, DropdownListStyle.DropdownListStyleChosen)
+    @Html.CustomTextboxFor(model => model.Quantity, null, null, WidthType.span3, true, new Dictionary<string, object> { { "class", "col-sm-6 text-right" } })
+    @Html.CustomTextboxFor(model => model.Price, null, null, WidthType.span3, true, new Dictionary<string, object> { { "class", "col-sm-6 text-right" } })
+    @Html.CustomTextboxFor(model => model.Unit, null, null, WidthType.span4)
+    @Html.CustomTextboxFor(model => model.UnitMoney, null, null, WidthType.span4)
+    @Html.DatePicker(model => model.DayHandOver, "dd/MM/yyyy", "99/99/9999", true, true, "col-sm-3", "col-sm-9", "col-sm-4")
+    @Html.DatePicker(model => model.EffectiveDate, "dd/MM/yyyy", "99/99/9999", true, true, "col-sm-3", "col-sm-9", "col-sm-4")
+    @Html.DatePicker(model => model.ExpiryDate, "dd/MM/yyyy", "99/99/9999", true, true, "col-sm-3", "col-sm-9", "col-sm-4")
+    @Html.DatePicker(model => model.DayPay, "dd/MM/yyyy", "99/99/9999", true, true, "col-sm-3", "col-sm-9", "col-sm-4")
+
+    <button style="margin-top:10px" type="submit" class="btn btn-info" name="Submit" value="Save">
+        <i class="ace-icon fa fa-save bigger-110"></i>
+        @Wording.Save
+    </button>
+}
+
+@section Scripts {    
+    <script>
+        //truyền từ action create của controller qua khi thực hiện submit và return về lại view create, để nhận biết là được gọi theo dạng popup
+        var closePopup = '@ViewBag.closePopup';
+        $(document).ready(function () {
+            //nếu là được gọi theo dạng popup từ form khác thì chạy đoạn code bên dưới
+            if (closePopup != '') {
+                var option = '<option value="@Model.Id" >@Model.CondosId</option>';
+                //tên funtion có thể khác theo từng công việc riêng (đây chỉ là mẫu khi thêm mới sẽ gọi lại)
+                window.parent.ClosePopupAndAppendSelect(option);
+            }
+        });
+        $(document).ready(function () {
+
+            $('#Quantity').numberFormat();
+            $('#Price').numberFormat();
+        });
+    </script>
+    @Html.ScriptBottom_ValidationMvc()    
+@Html.ScriptBottom_DatePicker("dd/mm/yyyy")
+    @Html.ScriptBottom_ChosenStyle()
+}

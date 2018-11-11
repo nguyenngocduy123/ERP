@@ -1,0 +1,74 @@
+﻿<div class="row">
+    <div class="col-sm-7">
+    </div>
+    <div class="col-sm-5">
+	</div>
+</div>
+========================================= widget-box ==================================
+<div class="widget-box">
+    <div class="widget-header">
+        <h5 class="widget-title"></h5>
+    </div>
+    <div class="widget-body">
+        <div class="widget-main">
+        </div>
+    </div>
+</div>
+
+========================================= tabbable ==================================
+<div class="tabbable">
+    <ul class="nav nav-tabs padding-12 tab-color-blue background-blue" id="tab">
+        <li class="active">
+            <a data-toggle="tab" href="#tab1"></a>
+        </li>
+        <li>
+            <a data-toggle="tab" href="#tab2"></a>
+        </li>
+    </ul>
+
+    <div class="tab-content">
+        <div id="tab1" class="tab-pane in active">
+        </div>
+        <div id="tab2" class="tab-pane">
+        </div>
+    </div>
+</div>
+
+====================================== modal =======================================
+<div class="modal" id="modalPayment" tabindex="-1" role="dialog" aria-labelledby="modalPaymentLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="modalPaymentLabel"></h4>
+            </div>
+            <div class="modal-body">
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-mini btn-primary" type="submit" name="Submit" value="Save">
+                    <i class="ace-icon fa fa-save"></i>
+                    @Wording.Save
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Buttons -->
+<button type="button" data-toggle="modal" data-target="#myModal">Open Modal</button>
+
+<!-- Links -->
+<a data-toggle="modal" href="#myModal">Open Modal</a>
+
+<!-- Other elements -->
+<p data-toggle="modal" data-target="#myModal">Open Modal</p>
+
+=====================================================
+<script type="text/javascript">
+    $(function () {
+        $(".AchieveScore").numberFormat();
+        $(".AchieveScore").focus(function () {
+            $(this).select();
+        });
+    });
+</script>

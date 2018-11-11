@@ -1,0 +1,111 @@
+﻿@using Erp.BackOffice.App_GlobalResources
+@using Erp.BackOffice.Helpers
+@using Erp.BackOffice.Staff.Models
+
+@model DayOffViewModel
+
+@{
+    ViewBag.Title = Wording.PageEdit_DayOff;
+
+    Layout = "~/Views/Shared/" + (Request["IsPopup"] == null ? "ACE_AdminLayout.cshtml" : "_PopupLayout.cshtml");
+    Erp.BackOffice.Models.PageSetting pageSetting = new Erp.BackOffice.Models.PageSetting
+    {
+        ModuleName = "DayOff",
+        ActionName = "Edit",
+        PageTitle = ViewBag.Title,
+        DisplaySearchPanel = false,
+        IsPopup = false,
+        DisplayBackButton = false
+    };
+}
+
+@section HeadOfPage {
+    @Html.ScriptTop_ChosenStyle()
+
+}
+@using (Html.BeginPageHeaderContainer(pageSetting))
+{
+
+}
+@using (Html.BeginForm_AceStyle((string)ViewBag.Title, "Edit", "DayOff", null, FormMethod.Post, new { @class = "form-horizontal" }))
+{
+    @Html.ValidationSummary(true)
+    @Html.HiddenFor(model => model.Id)
+    @Html.HiddenFor(model => model.CreatedUserId)
+    @Html.HiddenFor(model => model.CreatedDate)
+    @Html.HiddenFor(model => model.IsDeleted)
+    @Html.HiddenFor(model => model.StaffId)
+    @Html.HiddenFor(model => model.Code)
+    <input type="hidden" value="@Request["IsPopup"]" name="IsPopup" />
+    <input type="hidden" name="UrlReferrer" value="@Request.UrlReferrer" />
+    <div class="row" style="text-align:center">
+        <div class="col-xs-12">
+            <div class="widget-box">
+                <div class="widget-body">
+                    <div class="widget-main" style="background: #f7f7f7;">
+                        <div class="row">
+                            <div class="col-sm-5">
+                                <img id="avatar" alt="@Model.NameStaff" src="@(Erp.BackOffice.Helpers.Common.KiemTraTonTaiHinhAnh(Model.ProfileImage,"Staff","user"))" style="width:130px;height:130px;border-radius:100%;border:1px solid #ccc" />
+                            </div>
+                            <div class="col-sm-7">
+                                <div style="color:#337ab7;border-bottom:3px solid" class="top-20"><h3><b>@Model.NameStaff</b></h3></div>
+                                <div style="color:#337ab7">@Model.CodeStaff</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row top-10">
+        <div class="col-xs-12">
+            <div class="widget-box">
+                <div class="widget-body">
+                    <div class="widget-main">
+                        @Html.DatePicker(model => model.DayStart, "dd/MM/yyyy", "99/99/9999", true, true, "control-label col-lg-5 col-md-4 col-sm-4", "col-lg-7 col-md-8 col-sm-8", "col-xs-12")
+                        @Html.DatePicker(model => model.DayEnd, "dd/MM/yyyy", "99/99/9999", true, true, "control-label col-lg-5 col-md-4 col-sm-4", "col-lg-7 col-md-8 col-sm-8", "col-xs-12")
+                        @*@Html.SpinnerFor(model => model.Quantity, 9999999, 0, 1, SpinnerStyle.SpinnerStyle1, true)*@
+                        @Html.CustomDropDownListFor(model => model.TypeDayOffId, SelectListHelper.GetSelectList_SymbolTimekeeping(Model.TypeDayOffId, Wording.Empty, true), WidthType.span12, true, null, DropdownListStyle.DropdownListStyleChosen)
+                        @*@Html.SpinnerFor(model => model.QuantityNotUsed, 9999999, 0, 1, SpinnerStyle.SpinnerStyle1, true)*@
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    using (Html.BeginButtonContainer(pageSetting))
+    {
+        <button class="btn btn-mini btn-primary" type="submit" name="Submit" value="Save">
+            <i class="ace-icon fa fa-save"></i>
+            @Wording.Save
+        </button>
+    }
+}
+
+@section Scripts {
+    <script>
+     var urlRefer = '@ViewBag.urlRefer';
+        //truyền từ action create của controller qua khi thực hiện submit và return về lại view create, để nhận biết là được gọi theo dạng popup
+        var closePopup = '@ViewBag.closePopup';
+        $(document).ready(function () {
+            //nếu là được gọi theo dạng popup từ form khác thì chạy đoạn code bên dưới
+            if (closePopup != '') {
+                var option = '<option value="@Model.Id" >@Model.Code</option>';
+                //tên funtion có thể khác theo từng công việc riêng (đây chỉ là mẫu khi thêm mới sẽ gọi lại)
+                window.parent.ClosePopupAndDoSomething(option);
+            }
+
+            //nếu có url thì gọi hàm này để trang ngoài iframe nhảy trang
+            if (urlRefer != '') {
+                window.parent.ClosePopupAndRedirectToURL(urlRefer);
+            }
+        });
+        $(document).ready(function () {
+            $('[data-rel="tooltip"]').tooltip({ container: 'body' });
+
+        });
+    </script>
+    @Html.ScriptBottom_ValidationMvc()
+    @Html.ScriptBottom_DatePicker("dd/mm/yyyy")
+    @Html.ScriptBottom_ChosenStyle()
+}

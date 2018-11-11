@@ -1,0 +1,184 @@
+﻿@using Erp.BackOffice.App_GlobalResources
+@using Erp.BackOffice.Helpers
+@using Erp.BackOffice.Sale.Models
+@model List<UsingServiceLogDetailViewModel>
+    @{
+        ViewBag.Title = Wording.PageIndex_UsingServiceLog;
+
+        Layout = null;
+        Erp.BackOffice.Models.PageSetting pageSetting = new Erp.BackOffice.Models.PageSetting
+        {
+            ModuleName = "ServiceInvoice",
+            ActionName = "UsingServiceLog",
+            PageTitle = ViewBag.Title,
+            DisplaySearchPanel = false,
+            IsPopup = false,
+            DisplayBackButton = false
+        };
+        var index = 1;
+        var userid = SelectListHelper.GetSelectList_UserbyType("MayTinhBang", null, null).FirstOrDefault();
+    }
+
+    @section HeadOfPage {
+
+        @Html.ScriptTop_ChosenStyle()
+
+<style>
+    .fa-150 {
+        font-size: 1.5em;
+    }
+</style>
+        @*<style type="text/css">
+            table input {
+                padding: 2px 5px !important;
+            }
+
+            table select {
+                height: 25px;
+                font-size: 12px;
+            }
+            
+    .img_user {
+        width: 40px !important;
+        height: 40px !important;
+        margin: 0 auto;
+        /* display: block; */
+        border-radius: 100%;
+        border: 2px solid;
+    }
+
+    .user_check {
+        width: 30px !important;
+    }
+        </style>*@
+        }
+      
+        @helper GridColumnStatus(int id, string status)
+        {
+    <div class="modal" id="myModal_@id" tabindex="-1" role="dialog" aria-labelledby="modalPaymentLabel">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="modalPaymentLabel">Cập nhật hiện trạng</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="edit-view clearfix">
+                        <div id="" class="control-group form-group clearfix ">
+                            <label class="control-label col-lg-5 col-md-4 col-sm-4 control-label-textarea" for="status_@id">Hiện trạng</label>
+                            <div class="control-value col-lg-7 col-md-8 col-sm-8">
+                                <div class="clearfix">
+                                    <textarea class="col-xs-12" cols="20" id="status_@id" placeholder="" rows="2">@status</textarea>
+                                </div>
+                                <div class="clearfix">
+                                    <span class="field-validation-valid help-inline" data-valmsg-for="status_@id" data-valmsg-replace="true"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-mini btn-primary" onclick="UpdateNote(@id)">
+                        <i class="ace-icon fa fa-save"></i>
+                        @Wording.Save
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <a data-toggle="modal" href="#myModal_@id" id="status__@id">@status</a>
+}
+        @helper renderItem(Erp.BackOffice.Sale.Models.UsingServiceLogDetailViewModel item, int index)
+        {
+            <tr>
+        <td>@index</td>
+        <td>
+            @if (item.Type == "usedservice")
+            {
+                <span class="label label-yellow label-white middle">Sử dụng dịch vụ</span>
+            }
+            else
+            {
+                <span class="label label-success label-white middle">Tái khám</span>
+            }
+        </td>
+        <td>@item.CreatedDate.Value.ToString("dd/MM/yyyy HH:mm") </td>
+
+        <td>
+            <a href="@Url.Action("Detail", "Staffs", new { area = "Staff", Id = item.StaffId })" target="_blank">@item.Name</a>
+
+        </td>
+        <td>
+            @GridColumnStatus(item.Id, item.Status)
+        </td>
+        <td>
+            <p>
+               
+                <a class="btn btn-white btn-success btn-mini" onclick="OpenPopup('@Url.Action("DocumentFieldList", "DocumentField", new { area = "Staff", IsPopup = true, category="UsingServiceLogDetail", CategoryId = item.Id })', 'Danh sách hình ảnh', 0, 0);"
+                  title="Xem ảnh trước và sau khi tái khám/sử dụng dịch vụ của khách hàng">
+                    <i class="ace-icon fa fa-image"></i>
+                </a>
+            </p>
+        </td>
+    </tr>
+        }
+
+    @*<div class="row">
+        <div class="col-sm-12 table-responsive">
+            <h4 style="color:green;">@Model.FirstOrDefault().ItemCode - @Model.FirstOrDefault().ItemName (Sử dụng: @Model.Where(x=>x.CheckUsed==true).Count()/@Model.Count())</h4>
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <td><b>STT</b></td>
+                        <th style="width:40px;"><b>Loại</b></th>
+                        <th style="width:130px;"><b>Ngày TH</b></th>
+                        <th style="width:150px;"><b>Nhân viên thực hiện</b></th>
+                        <th style="max-width:150px;"><b>Hiện trạng</b></th>
+                        <th style="width:120px;"></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var i in Model)
+                    {
+                        @renderItem(i, index++)
+                    }
+                </tbody>
+            </table>
+        </div>
+
+    </div>*@
+
+<div class="row" style="margin-bottom:50px">
+    <input type="hidden" id="UsingServiceLogDetailId" />
+    @foreach (var item in Model)
+    {
+        <div class="col-xs-12">
+            <div class="ui-ribbon-wrapper">
+                @if (item.Type == "usedservice")
+                {
+                    <div class="ui-ribbon" style="background-color:#FEE188">
+                        <span>Sử dụng DV</span>
+                    </div>
+                }
+                else
+                {
+                    <div class="ui-ribbon" style="background-color:#87B87F;">
+                        <span>Tái khám</span>
+                    </div>
+                }
+            </div>
+            <div class="btn btn-white btn-primary btn-bold" style="text-align: left;  white-space: normal; width: 100%; margin-bottom: 10px;">
+                <h4>
+                    <i style="font-size:13px;">Ngày tạo: @item.CreatedDate.Value.ToString("dd/MM/yyyy HH:mm")</i>
+                </h4>
+                <p>Hiện trạng: @GridColumnStatus(item.Id, item.Status)</p>
+                <i class="fa fa-user-circle-o"> <a href="@Url.Action("Detail", "Staffs", new { area = "Staff", Id = item.StaffId })" target="_blank">@item.Name</a></i>
+                <i><a class="pull-right" onclick="OpenPopup('@Url.Action("DocumentFieldList", "DocumentField", new { area = "Staff", IsPopup = true, category="UsingServiceLogDetail", CategoryId = item.Id })', 'Danh sách hình ảnh', 0, 0);"
+                   title="Xem ảnh trước và sau khi tái khám/sử dụng dịch vụ của khách hàng">
+                   Xem ảnh
+                </a>
+                </i>
+            </div>
+        </div>
+    }
+</div>

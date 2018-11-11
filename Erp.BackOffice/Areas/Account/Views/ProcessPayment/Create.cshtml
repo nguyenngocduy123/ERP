@@ -1,0 +1,77 @@
+﻿@using Erp.BackOffice.App_GlobalResources
+@using Erp.BackOffice.Helpers
+@using Erp.BackOffice.Account.Models
+
+@model ProcessPaymentViewModel
+
+@{
+    ViewBag.Title = Wording.PageCreate_ProcessPayment;
+
+    Layout = "~/Views/Shared/" + (Request["IsPopup"] == null ? "ACE_AdminLayout.cshtml" : "_PopupLayout.cshtml");
+
+}
+
+@section HeadOfPage {
+    @Html.ScriptTop_ChosenStyle()
+}
+
+@using (Html.BeginForm_AceStyle((string)ViewBag.Title, "Create", "ProcessPayment", null, FormMethod.Post, new { @class = "form-horizontal" }))
+{
+    @Html.ValidationSummary(true)
+    @Html.HiddenFor(model => model.OrderNo)
+    @Html.HiddenFor(model => model.ContractId)
+    <input type="hidden" value="@Request["IsPopup"]" name="IsPopup" />
+    <input type="hidden" name="UrlReferrer" value="@Request.UrlReferrer" />
+    @Html.CustomTextboxFor(model => model.Name, null, null, WidthType.span5)
+    @Html.DatePicker(model => model.DayPayment, "dd/MM/yyyy", "99/99/9999", true, true, "col-sm-3", "col-sm-9", "col-sm-4")
+    @Html.CustomTextboxFor(model => model.MoneyPayment, null, null, WidthType.span2, true, new Dictionary<string, object> { { "class", "col-sm-3 text-right" },{ "onkeyup", "textMaxPrice(this, " + @ViewBag.Price + ", " + @ViewBag.Payment + ", event)" } })
+    @*@Html.CustomDropDownListFor(model => model.FormPayment, SelectListHelper.GetSelectList_Category("FormPayment", null, "Name", false), WidthType.span6, true, null, DropdownListStyle.DropdownListStyleDefault)
+    @Html.CustomTextboxFor(model => model.CodeTrading, null, null, WidthType.span5)
+    @Html.CustomDropDownListFor(model => model.Bank, SelectListHelper.GetSelectList_Category("bank", null, "Name", false), WidthType.span6, true, null, DropdownListStyle.DropdownListStyleDefault)
+    @Html.CustomTextboxFor(model => model.Payer, null, null, WidthType.span6)*@
+    @*<input class="form-control" id="MoneyPayment" name="MoneyPayment" type="text" onkeyup="return textMaxPrice(this, @ViewBag.Price, @ViewBag.Payment, event);" />*@
+    @*@Html.TextBoxFor(model => model.MoneyPayment, new { id = "MoneyPayment", onkeyup = "textMaxPrice(this, @ViewBag.Price, @ViewBag.Payment, event)", onkeypress = "textMaxPrice(this, @ViewBag.Price, @ViewBag.Payment, event)" })*@
+    <button style="margin-top:10px" type="submit" class="btn btn-info" name="Submit" value="Save">
+        <i class="ace-icon fa fa-save bigger-110"></i>
+        @Wording.Save
+    </button>
+}
+
+@section Scripts {    
+    <script>
+        var urlRefer = '@ViewBag.urlRefer';
+        //truyền từ action create của controller qua khi thực hiện submit và return về lại view create, để nhận biết là được gọi theo dạng popup
+        var closePopup = '@ViewBag.closePopup';
+        $(document).ready(function () {
+            //nếu là được gọi theo dạng popup từ form khác thì chạy đoạn code bên dưới
+            if (closePopup != '') {
+                var option = '<option value="@Model.Id" >@Model.Name</option>';
+                //tên funtion có thể khác theo từng công việc riêng (đây chỉ là mẫu khi thêm mới sẽ gọi lại)
+                window.parent.ClosePopupAndAppendSelect(option);
+            }
+            //nếu có url thì gọi hàm này để trang ngoài iframe nhảy trang
+            if (urlRefer != '') {
+                window.parent.ClosePopupAndRedirectToURL(urlRefer);
+            }
+        });
+        $(document).ready(function () {
+            $('#MoneyPayment').numberFormat();
+        });
+        function textMaxPrice(obj, maxPrice, Payment, evt) {
+            var charCode = (evt.which) ? evt.which : event.keyCode
+            var max = parseInt(maxPrice) - parseInt(Payment);
+            var text = obj.value.toString().replace(/\D/g, '');
+            if (parseInt(text)>max) {
+                alert("Nhập số tiền tối đa: " + max);
+                obj.value = max;
+                return false;
+            }
+            else {
+                return true;
+            }
+        }
+    </script>
+    @Html.ScriptBottom_ValidationMvc()    
+@Html.ScriptBottom_DatePicker("dd/mm/yyyy")
+    @Html.ScriptBottom_ChosenStyle()
+}

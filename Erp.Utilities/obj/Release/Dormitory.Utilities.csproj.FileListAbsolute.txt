@@ -1,0 +1,18 @@
+D:\02. Solutions\Z. Company\07.QTS\05.KTX\src\Dormitory.Utilities\bin\Release\Dormitory.Utilities.dll
+D:\02. Solutions\Z. Company\07.QTS\05.KTX\src\Dormitory.Utilities\bin\Release\Dormitory.Utilities.pdb
+D:\02. Solutions\Z. Company\07.QTS\05.KTX\src\Dormitory.Utilities\bin\Release\Newtonsoft.Json.dll
+D:\02. Solutions\Z. Company\07.QTS\05.KTX\src\Dormitory.Utilities\bin\Release\System.Net.Http.Formatting.dll
+D:\02. Solutions\Z. Company\07.QTS\05.KTX\src\Dormitory.Utilities\bin\Release\Newtonsoft.Json.xml
+D:\02. Solutions\Z. Company\07.QTS\05.KTX\src\Dormitory.Utilities\bin\Release\System.Net.Http.Formatting.xml
+D:\02. Solutions\Z. Company\07.QTS\05.KTX\src\Dormitory.Utilities\obj\Release\Dormitory.Utilities.dll
+D:\02. Solutions\Z. Company\07.QTS\05.KTX\src\Dormitory.Utilities\obj\Release\Dormitory.Utilities.pdb
+D:\02. Solutions\Z. Company\07.QTS\05.KTX\src\Dormitory.Utilities\obj\Release\Dormitory.Utilities.csprojResolveAssemblyReference.cache
+D:\00.Solutions\01.Dormitory\src\Dormitory.Utilities\bin\Release\Dormitory.Utilities.dll
+D:\00.Solutions\01.Dormitory\src\Dormitory.Utilities\bin\Release\Dormitory.Utilities.pdb
+D:\00.Solutions\01.Dormitory\src\Dormitory.Utilities\bin\Release\Newtonsoft.Json.dll
+D:\00.Solutions\01.Dormitory\src\Dormitory.Utilities\bin\Release\System.Net.Http.Formatting.dll
+D:\00.Solutions\01.Dormitory\src\Dormitory.Utilities\bin\Release\Newtonsoft.Json.xml
+D:\00.Solutions\01.Dormitory\src\Dormitory.Utilities\bin\Release\System.Net.Http.Formatting.xml
+D:\00.Solutions\01.Dormitory\src\Dormitory.Utilities\obj\Release\Dormitory.Utilities.csprojResolveAssemblyReference.cache
+D:\00.Solutions\01.Dormitory\src\Dormitory.Utilities\obj\Release\Dormitory.Utilities.dll
+D:\00.Solutions\01.Dormitory\src\Dormitory.Utilities\obj\Release\Dormitory.Utilities.pdb

@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ExceptionActionsModel xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <ExceptionActions>
+    <ExceptionActionModel ActionName="Index" ControllerName="Home" AreaName="" />
+    <ExceptionActionModel ActionName="Upload" ControllerName="Uploads" AreaName="" />
+    <ExceptionActionModel ActionName="Browse" ControllerName="Uploads" AreaName="" />
+    <ExceptionActionModel ActionName="UpdateStudentInfo" ControllerName="Home" AreaName="" />
+    <ExceptionActionModel ActionName="CaptchaImage" ControllerName="Home" AreaName=""/>
+    <ExceptionActionModel ActionName="Breadcrumb" ControllerName="Home" AreaName="" />
+    <ExceptionActionModel ActionName="BreadcrumbParentPage" ControllerName="Home" AreaName="" />
+    <ExceptionActionModel ActionName="Search" ControllerName="" AreaName="" />    
+    <ExceptionActionModel ActionName="CreateImage" ControllerName="Image" AreaName=""/>
+    <ExceptionActionModel ActionName="EditImage" ControllerName="Image" AreaName=""/>
+    <ExceptionActionModel ActionName="DemoImage" ControllerName="Image" AreaName=""/>
+    <ExceptionActionModel ActionName="UploadFile" ControllerName="Image" AreaName=""/>
+    <ExceptionActionModel ActionName="CropImage" ControllerName="Image" AreaName=""/>
+    <ExceptionActionModel ActionName="Index" ControllerName="ErrorPage" AreaName="" />
+    <ExceptionActionModel ActionName="Page404" ControllerName="ErrorPage" AreaName="" />
+    <ExceptionActionModel ActionName="Page500" ControllerName="ErrorPage" AreaName="" />
+
+    <ExceptionActionModel ActionName="GetDataTypeFromTable" ControllerName="Module" AreaName="Administration" />
+    <ExceptionActionModel ActionName="GetListProductJsonBySupplierId" ControllerName="Supplier" AreaName="Sale" />
+    <ExceptionActionModel ActionName="GetListProductJsonByWarehouseId" ControllerName="Inventory" AreaName="Sale" />
+    <ExceptionActionModel ActionName="GetListJsonCategoryByParentId" ControllerName="Category" AreaName="Cms" />
+    <ExceptionActionModel ActionName="GetListJsonCategoryByCode" ControllerName="Category" AreaName="Cms" />
+  
+    <ExceptionActionModel ActionName="CreateDemo" ControllerName="Timekeeping" AreaName="Staff" />
+   <ExceptionActionModel ActionName="CheckWorkSchedules" ControllerName="WorkSchedules" AreaName="Staff" />
+    <ExceptionActionModel ActionName="UpdateTimekeeping" ControllerName="Timekeeping" AreaName="Staff" />
+    <ExceptionActionModel ActionName="Notifications" ControllerName="Home" AreaName="" />
+  <ExceptionActionModel ActionName="UpdateAll" ControllerName="ProductInvoice" AreaName="Sale" />
+  </ExceptionActions>
+</ExceptionActionsModel>

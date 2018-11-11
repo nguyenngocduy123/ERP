@@ -1,0 +1,233 @@
+﻿@using Erp.BackOffice.App_GlobalResources
+@using Erp.BackOffice.Sale.Models
+@using Erp.BackOffice.Helpers
+@using System.Globalization;
+@model List<ProductInvoiceViewModel>
+@{
+    ViewBag.Title = "Báo cáo doanh số theo theo tháng";
+    if (Request["IsPopup"] == "true")
+    {
+        Layout = "~/Views/Shared/_PopupLayout.cshtml";
+    }
+    else
+    {
+        if (Request["IsPopup"] == "null")
+        {
+            Layout = null;
+        }
+        else
+        {
+            Layout = "~/Views/Shared/ACE_AdminLayout.cshtml";
+        }
+    }
+    bool IsDisplaySearchPanel = Request["IsPopup"] != null && Request["IsPopup"].ToString().ToLower() == "true" ? false : true;
+    Erp.BackOffice.Models.PageSetting pageSetting = new Erp.BackOffice.Models.PageSetting
+    {
+        ModuleName = "SaleReport",
+        ActionName = "DoanhSoThang",
+        PageTitle = ViewBag.Title,
+        DisplaySearchPanel = IsDisplaySearchPanel,
+        IsPopup = false,
+        DisplayBackButton = false
+    };
+    int index = 1;
+    Calendar calendar = CultureInfo.InvariantCulture.Calendar;
+    var weekdefault = calendar.GetWeekOfYear(DateTime.Now, CalendarWeekRule.FirstFourDayWeek, DayOfWeek.Monday);
+    string Month = Request["month"] != null ? Request["month"] : DateTime.Now.Month.ToString();
+    string Year = Request["year"] != null ? Request["year"] : DateTime.Now.Year.ToString();
+    string week = Request["week"] != null ? Request["week"] : weekdefault.ToString();
+    string branchId = Request["branchId"] != null ? Request["branchId"] : "";
+    if (Request["branchId"] == null)
+    {
+        if (Erp.BackOffice.Filters.SecurityFilter.IsAdminDrugStore() || Erp.BackOffice.Filters.SecurityFilter.IsStaffDrugStore())
+        {
+            branchId = Erp.BackOffice.Helpers.Common.CurrentUser.DrugStore;
+        }
+    }
+    ViewData["branchId"] = branchId;
+}
+
+
+<script type="text/javascript">
+    var exportThis = (function () {
+        var uri = 'data:application/vnd.ms-excel;base64,',
+            template = '<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel"  xmlns="http://www.w3.org/TR/REC-html40"><head> <!--[if gte mso 9]><xml><x:ExcelWorkbook><x:ExcelWorksheets> <x:ExcelWorksheet><x:Name>{worksheet}</x:Name> <x:WorksheetOptions><x:DisplayGridlines/></x:WorksheetOptions> </x:ExcelWorksheet></x:ExcelWorksheets></x:ExcelWorkbook> </xml><![endif]--></head><body> <table>{table}</table></body></html>',
+            base64 = function (s) {
+                return window.btoa(unescape(encodeURIComponent(s)))
+            },
+            format = function (s, c) {
+                return s.replace(/{(\w+)}/g, function (m, p) { return c[p]; })
+            }
+        return function () {
+            var ctx = { worksheet: '@ViewBag.Title' || 'Worksheet', table: document.getElementById("cTable").innerHTML }
+            window.location.href = uri + base64(format(template, ctx))
+        }
+    })()
+
+    var exportThisWithParameter = (function () {
+        var uri = 'data:application/vnd.ms-excel;base64,',
+            template = '<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel"  xmlns="http://www.w3.org/TR/REC-html40"><head> <!--[if gte mso 9]><xml><x:ExcelWorkbook><x:ExcelWorksheets> <x:ExcelWorksheet><x:Name>{worksheet}</x:Name> <x:WorksheetOptions><x:DisplayGridlines/></x:WorksheetOptions> </x:ExcelWorksheet></x:ExcelWorksheets></x:ExcelWorkbook> </xml><![endif]--></head><body> <table>{table}</table></body></html>',
+            base64 = function (s) {
+                return window.btoa(unescape(encodeURIComponent(s)))
+            },
+            format = function (s, c) {
+                return s.replace(/{(\w+)}/g, function (m, p) { return c[p]; })
+            }
+        return function (tableID, excelName) {
+            tableID = document.getElementById(tableID)
+            var ctx = { worksheet: excelName || 'Worksheet', table: tableID.innerHTML }
+            window.location.href = uri + base64(format(template, ctx))
+        }
+    })()
+</script>
+
+@using (Html.BeginPageHeaderContainer(pageSetting))
+{
+    @Html.Partial("_PartialSearchDrugStore", ViewData["branchId"])
+    <p>
+        Xem dữ liệu theo
+        <label>
+            <input id="single3" name="single" type="radio" class="ace" value="week">
+            <span class="lbl"> Tuần</span>
+        </label>
+        <label>
+            <input id="single1" name="single" type="radio" class="ace" value="month" checked="checked">
+            <span class="lbl"> Tháng</span>
+        </label>
+
+        <label>
+            <input id="single2" name="single" type="radio" class="ace" value="quarter">
+            <span class="lbl"> Quý</span>
+        </label>
+
+        <select id="month" name="month">
+            @for (int i = 1; i <= 12; i++)
+            {
+                <option @(Month == i.ToString() ? "Selected" : "") value="@i">Tháng @i</option>
+            }
+        </select>
+        <select id="quarter" name="quarter" style="display:none">
+            <option value="1">Quý I</option>
+            <option value="2">Quý II</option>
+            <option value="3">Quý III</option>
+            <option value="4">Quý IV</option>
+        </select>
+        <select id="week" name="week" style="display:none">
+            @for (int i = 1; i <= 52; i++)
+            {
+                //int year=Convert.ToInt32(Year);
+                //var first_day = Erp.BackOffice.Helpers.Common.FirstDateOfWeekISO8601(year, i);
+                //DateTime end_day = first_day.AddDays(6);
+                <option @(week == i.ToString() ? "Selected" : "") value="@i">Tuần @i</option>
+            }
+        </select>
+        <select id="year" name="year">
+            @for (int i = 2016; i <= DateTime.Now.Year; i++)
+            {
+                <option @(Year == i.ToString() ? "Selected" : "") value="@i">Năm @i</option>
+            }
+        </select>
+    </p>
+}
+
+    <div class="table-responsive" id="BCDoanhthu" style="margin-bottom:40px">
+        <table id="cTable" class="table table-bordered">
+            <thead>
+                @*<tr class="">
+                    <th class="" colspan="11" style="text-align:center"><h4>BÁO CÁO DOANH SỐ TỪ @startDate ĐẾN @endDate</h4></th>
+                </tr>*@
+                <tr>
+                    <th style="width:40px;text-align:center">STT</th>
+                    <th style="width:120px;text-align:center">Ngày tạo</th>
+                    <th style="min-width:100px;text-align:center">Nhà thuốc</th>
+                    <th style="min-width:100px;text-align:center">Mã đơn hàng</th>
+                    <th style="text-align:center">Tên khách hàng</th>
+                    <th style="width:100px;text-align:center">SĐT</th>
+                    <th style="width:100px;text-align:center">Chiết khấu cố định</th>
+                    <th style="width:100px;text-align:center">Chiết khấu đột xuất</th>
+                    <th style="width:100px;text-align:center">Doanh số</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr class="@(index%2==0?"alert-warning":"")">
+                        <td>
+                            <span>@(index++)</span>
+                        </td>
+                        <td>@(item.CreatedDate.Value.ToString("dd/MM/yyyy HH:mm"))</td>
+                        <td>@(item.BranchName)</td>
+                        <td>
+                            <a onclick="OpenPopup('@Url.Action("Detail", "ProductInvoice", new { area = "Sale", Id = item.Id, IsPopup = "true" })', 'Trang chi tiết bán hàng', 0, 500)">
+                                @(item.Code)
+                            </a>
+                        </td>
+                        <td>
+                            <a onclick="OpenPopup('@Url.Action("Detail", "Customer", new { area = "Account", Id = item.CustomerId, IsPopup = "true" })', 'Trang chi tiết khách hàng', 0, 500)">
+                                @(item.CustomerName)
+                            </a>
+                        </td>
+                        <td>@(item.CustomerPhone)</td>
+                       
+                        <td style="text-align:right">@(CommonSatic.ToCurrencyStr(item.FixedDiscount,null))</td>
+                        <td style="text-align:right">@(CommonSatic.ToCurrencyStr(item.IrregularDiscount,null))</td>
+                        <td style="text-align:right">@(CommonSatic.ToCurrencyStr(item.TotalAmount,null))</td>
+                    </tr>
+                }
+            </tbody>
+            <thead>
+                <tr>
+                    <td colspan="6" style="text-align:right"><b>Tổng</b></td>
+                    <td style="text-align:right"><b>@(CommonSatic.ToCurrencyStr(Model.Sum(x => x.FixedDiscount), null))</b></td>
+                    <td style="text-align:right"><b>@(CommonSatic.ToCurrencyStr(Model.Sum(x => x.IrregularDiscount), null))</b></td>
+                    <td style="text-align:right"><b>@(CommonSatic.ToCurrencyStr(Model.Sum(x => x.TotalAmount), null))</b></td>
+                </tr>
+            </thead>
+        </table>
+
+    </div>
+@using (Html.BeginButtonContainer(pageSetting))
+{
+    <button class="btn btn-white btn-success btn-sm" type="button" value="Export" onclick="exportThis()">
+        <i class="ace-icon fa fa-file-excel-o"></i>
+        Xuất excel
+    </button>
+}
+
+@section Scripts {
+   <script>
+       $(function () {
+       $("#quarter").val(currentQuarter);
+
+       var single = "month";
+
+       $("#single1").change(function () {
+           if ($(this).val() == 'month') {
+               $("#month").show();
+               $("#week").hide();
+               $("#quarter").hide();
+               single = "month";
+           }
+       });
+
+       $("#single2").change(function () {
+           if ($(this).val() == 'quarter') {
+               $("#month").hide();
+               $("#week").hide();
+               $("#quarter").show();
+               single = "quarter";
+           }
+       });
+       $("#single3").change(function () {
+           if ($(this).val() == 'week') {
+               $("#month").hide();
+               $("#quarter").hide();
+               $("#week").show();
+               single = "week";
+           }
+       });
+       });
+       </script>
+    @Html.ScriptBottom_ValidationMvc()
+    @Html.ScriptBottom_DatePicker("dd/MM/yyyy")
+}

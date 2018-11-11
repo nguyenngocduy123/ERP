@@ -1,0 +1,159 @@
+﻿@model Erp.BackOffice.Account.Models.ClientVoteViewModel
+
+@using Erp.BackOffice.App_GlobalResources
+@using Erp.BackOffice.Sale.Models
+@using Erp.BackOffice.Helpers
+@using Erp.Domain.Account.Entities
+@using Erp.Domain.Sale.Entities
+@using GridMvc.Html
+
+@{
+    Layout = "~/Views/Shared/ACE_ClientLayout.cshtml";
+
+    ViewBag.Title = "Khách hàng đánh giá";
+
+    Erp.BackOffice.Models.PageSetting pageSetting = new Erp.BackOffice.Models.PageSetting
+    {
+        ModuleName = "Vote",
+        ActionName = "Create",
+        PageTitle = ViewBag.Title,
+        DisplaySearchPanel = false,
+        IsPopup = false,
+        DisplayBackButton = false
+    };
+
+    int QuestionOrderNo = 0;
+    int detailId = 0;
+    if (Model.UsingServiceLogDetail != null)
+    {
+        detailId = Model.UsingServiceLogDetail.Id;
+    }
+    int userId = Erp.BackOffice.Helpers.Common.CurrentUser.Id;
+}
+
+@section HeadOfPage {
+}
+
+@using (Html.BeginPageHeaderContainer(pageSetting))
+{
+
+}
+
+@using (Html.BeginForm_AceStyle((string)ViewBag.Title, "Create", "Vote", null, FormMethod.Post, new { @class = "form-horizontal" }))
+{
+    <div class="row">
+        <div class="col-sm-7">
+            <div class="clearfix">
+                <h4 class="green" style="margin-top:0px">
+                    <span>Đơn hàng: @Model.ProductInvoice.Code (@Model.ProductInvoice.CreatedDate.Value.ToString("dd/MM/yyyy HH:mm"))</span>
+                    @if (Model.UsingServiceLogDetail != null)
+                    {
+                        <span class="pull-right">Nhân viên: @Model.UsingServiceLogDetail.Name</span>
+                    }
+                </h4>
+                @if (Model.UsingServiceLogDetail != null)
+                {
+                    <h5 class="red">
+                        <span>Dịch vụ: @Model.UsingServiceLogDetail.ServiceName</span>
+                    </h5>
+                }
+
+            </div>
+            <div class="clearfix top-10">
+                @foreach (var question in Model.ListQuestion)
+    {
+        QuestionOrderNo++;
+           
+                <div class="question alert alert-success">
+                    <h4><b>@(QuestionOrderNo). @question.Name</b></h4>
+                    @if (QuestionOrderNo == 3)
+                    {
+                    <input class="" type="text" id="Note_@question.Id" value="" placeholder="ý kiến khác (lưu ý nhập trước khi chọn)..." style="width:100%!important">
+                    }
+                    <div class="answer top-5">
+                        @foreach (var answer in question.DetailList)
+        {
+                <label style="margin-right:30px !important">
+                    <input name="AnswerList[@(QuestionOrderNo - 1)].AnswerId" type="radio" class="ace" data-question-id="@question.Id" value="@answer.Id" />
+                    <span class="lbl"> @answer.Content</span>
+                </label>
+}
+                    </div>
+
+                </div>
+            <p></p>
+}
+            </div>
+            <a class="btn btn-app btn-primary" onclick="OpenClient()">
+                <i class="ace-icon fa fa-thumbs-up bigger-230"></i>
+                Xong
+            </a>
+        </div>
+        <div class="col-sm-5">
+            <div class="widget-box">
+                <div class="widget-header">
+                    <h5 class="widget-title">Thông tin khách hàng</h5>
+                </div>
+                <div class="widget-body">
+                    <div class="widget-main">
+                        @Html.Partial("~/Areas/Account/Views/Customer/DetailSidebar.cshtml", Model.Customer)
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @*using (Html.BeginButtonContainer(pageSetting))
+        {
+            <button class="btn btn-mini btn-primary" type="submit" name="Submit" value="Save">
+                <i class="ace-icon fa fa-save"></i>
+                @Wording.Save
+            </button>
+        }*@
+}
+
+@Html.ScriptBottom_ValidationMvc()
+@Html.ScriptBottom_DatePicker("dd/MM/yyyy")
+
+<script src="~/Scripts/jquery.signalR-2.2.1.min.js" type="text/javascript"></script>
+<script src="~/signalr/hubs"></script>
+
+<script type="text/javascript">
+    $(function () {
+        var erpHub = $.connection.erpHub;
+        //Start the connection.
+        $.connection.hub.start().done(function () {
+            //erpHub.server.SendAlert(userId,userId,"Kết nối đánh giá khách hàng thành công!!!");
+        });
+
+        erpHub.client.loadUrl = function (url) {
+            window.location = url;
+        };
+
+        $(".answer input").change(function () {
+            ShowLoading();
+            var url = "/Vote/Create";
+            var CustomerId = '@Model.Customer.Id';
+            var InvoiceId = '@Model.ProductInvoice.Id';
+            var QuestionId = $(this).data("question-id");
+            var AnswerId = $(this).val();
+            var UsingServiceLogDetailId = '@detailId';
+            var Note = $("#Note_" + QuestionId).val();
+            $.post(url, { CustomerId: CustomerId, InvoiceId: InvoiceId, QuestionId: QuestionId, AnswerId: AnswerId, UsingServiceLogDetailId: UsingServiceLogDetailId, Note: Note }, function (res) {
+                if (res.status == 'success') {
+
+                }
+
+                HideLoading();
+            });
+        });
+    });
+    function OpenClient() {
+        alertPopup("Thông báo", "Đánh giá thành công", "success");
+        @*erpHub.server.SendAlert(userId,@userId,"Khách hàng "+@Model.Customer.CompanyName+" vừa đánh giá xong!!!");*@
+        setTimeout(do_alert, 2000);
+    }
+    var do_alert = function () {
+        window.location = "/Customer/Client";
+    }
+</script>

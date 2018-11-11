@@ -1,0 +1,162 @@
+﻿@using Erp.BackOffice.App_GlobalResources
+@using Erp.BackOffice.Helpers
+@{
+    ViewBag.Title = "Tài chính khách hàng";
+    Layout = "~/Views/Shared/ACE_AdminLayout.cshtml";
+
+    Erp.BackOffice.Models.PageSetting pageSetting = new Erp.BackOffice.Models.PageSetting
+    {
+        ModuleName = "",
+        ActionName = "",
+        PageTitle = ViewBag.Title,
+        DisplaySearchPanel = true,
+        IsPopup = false,
+        DisplayBackButton = false,
+        HideClearButton = true,
+        SearchButtonText = "Lấy dữ liệu"
+    };
+}
+
+<div class="row">
+    <div class="col-sm-12">
+        <label class="pos-rel">
+            <input type="radio" class="ace" name="type" value="Customer" checked onclick="loadCheck()">
+            <span class="lbl">Khách hàng</span>
+        </label>
+        <label class="pos-rel">
+            <input type="radio" class="ace" name="type" value="Supplier" onclick="loadCheck()">
+            <span class="lbl">Nhà cung cấp</span>
+        </label>
+    </div>
+    </div>
+<div class="row">
+    <div class="col-sm-5">
+        <div class="widget-box">
+            <div class="widget-header widget-header">
+                <h4 class="widget-title lighter"><i class="ace-icon fa fa-calendar"></i> Thống kê công nợ hiện tại</h4>
+            </div>
+            <div class="widget-body">
+                <div class="widget-main" id="TrackLiabilitiesTK">
+
+                </div><!-- /.widget-main -->
+            </div><!-- /.widget-body -->
+        </div>
+
+
+        <div class="widget-box top-10">
+            <div class="widget-header widget-header">
+                <h4 class="widget-title lighter">
+                    <i class="ace-icon fa fa-calendar-times-o"></i>
+                    Công nợ quá hạn
+                </h4>
+            </div>
+
+            <div class="widget-body">
+                <div class="widget-main" id="TrackLiabilitiesExpireQH">
+
+                </div><!-- /.widget-main -->
+            </div><!-- /.widget-body -->
+        </div>
+
+        <div class="widget-box top-10">
+            <div class="widget-header widget-header">
+                <h4 class="widget-title lighter">
+                    <i class="ace-icon fa fa-calendar-check-o"></i>
+                    Công nợ đến hạn
+                </h4>
+            </div>
+
+            <div class="widget-body">
+                <div class="widget-main">
+                    <select id="dateRange" name="dateRange">
+                        <option selected value="30">30 ngày</option>
+                        <option value="60">60 ngày</option>
+                    </select>
+                    <div id="TrackLiabilitiesExpire" class="top-10">
+                        @*@{Html.RenderAction("TrackLiabilitiesExpire", "TransactionLiabilities", new { area = "Account", DateRange = 30 });}*@
+                    </div>
+                </div><!-- /.widget-main -->
+            </div><!-- /.widget-body -->
+        </div>
+    </div>
+    <div class="col-sm-7">
+        <div id="TrackLiabilities">
+            @*@{Html.RenderAction("TrackLiabilities", "TransactionLiabilities", new { area = "Account" });}*@
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="/assets/js/jquery.easypiechart.min.js"></script>
+    <script type="text/javascript">
+        $(function () {
+            loadCheck();
+            $("#dateRange").change(function () {
+                ShowLoading();
+                var check = $('input[name="type"]:checked').map(function () {
+                    return $(this).val();
+                }).get().join(',');
+                var dateRange = $("#dateRange option:selected").val();
+                $.get('@Url.Action("TrackLiabilitiesExpire", "TransactionLiabilities", new { area = "Account" })?DateRange=' + dateRange + '&type=' + check, function (html) {
+                    $("#TrackLiabilitiesExpire").html(html);
+                        HideLoading();
+                });
+            });
+        });
+
+        function loadData() {
+            ShowLoading();
+            var check = $('input[name="type"]:checked').map(function () {
+                return $(this).val();
+            }).get().join(',');
+            var moment = $('#calendar').fullCalendar('getDate');
+            var year = moment.format('YYYY');
+            var month = moment.format('M');
+            $.get('@Url.Action("TrackLiabilities", "TransactionLiabilities", new { area = "Account" })?year=' + year + '&month=' + month + '&type=' + check, function (html) {
+                $("#TrackLiabilities").html(html);
+                HideLoading();
+            });
+        }
+
+        function loadCheck() {
+            ShowLoading();
+            var check = $('input[name="type"]:checked').map(function () {
+                return $(this).val();
+            }).get().join(',');
+            var done1 = 0, done2 = 0, done3 = 0; done4 = 0;
+            var dateRange = $("#dateRange option:selected").val();
+            $.get('@Url.Action("TrackLiabilitiesExpire", "TransactionLiabilities", new { area = "Account" })?DateRange=' + dateRange+'&type='+check, function (html) {
+                $("#TrackLiabilitiesExpire").html(html);
+                done1 = 1;
+                if (done1 == 1 && done2 == 1 && done3 == 1 &&done4==1) {
+                    HideLoading();
+                }
+            });
+
+            $.get('@Url.Action("TrackLiabilities", "TransactionLiabilities", new { area = "Account" })?type=' + check, function (html) {
+                $("#TrackLiabilities").html(html);
+                done2 = 1;
+                if (done1 == 1 && done2 == 1 && done3 == 1 && done4 == 1) {
+                    HideLoading();
+                }
+            });
+
+            var dateRange = $("#dateRange option:selected").val();
+            $.get('@Url.Action("TrackLiabilitiesExpire", "TransactionLiabilities", new { area = "Account" })?type=' + check, function (html) {
+                $("#TrackLiabilitiesExpireQH").html(html);
+                done3 = 1;
+                if (done1 == 1 && done2 == 1 && done3 == 1 && done4 == 1) {
+                    HideLoading();
+                }
+            });
+
+            $.get('@Url.Action("TrackLiabilities", "AccountReport", new { area = "Account" })?type=' + check, function (html) {
+                $("#TrackLiabilitiesTK").html(html);
+                done4 = 1;
+                if (done1 == 1 && done2 == 1 && done3 == 1 && done4 == 1) {
+                    HideLoading();
+                }
+            });
+        }
+    </script>
+}

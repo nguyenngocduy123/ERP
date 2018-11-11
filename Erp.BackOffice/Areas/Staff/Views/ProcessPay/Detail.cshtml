@@ -1,0 +1,122 @@
+﻿@using Erp.BackOffice.App_GlobalResources
+@using Erp.BackOffice.Helpers
+
+@model Erp.BackOffice.Staff.Models.ProcessPayViewModel
+@{
+    ViewBag.Title =Wording.PageDetail_ProcessPay;
+    Layout = "~/Views/Shared/" + (Request["IsPopup"] == null ? "ACE_AdminLayout.cshtml" : "_PopupLayout.cshtml");
+  
+    Erp.BackOffice.Models.PageSetting pageSetting = new Erp.BackOffice.Models.PageSetting
+    {
+        ModuleName = "ProcessPay",
+        ActionName = "Detail",
+        PageTitle = ViewBag.Title,
+        DisplaySearchPanel = false,
+        IsPopup = false,
+        DisplayBackButton = false
+    };
+}
+@helper GridColumnCategoryValue(string value, string Code)
+{
+    var attr = Erp.BackOffice.Helpers.Common.GetCategoryByValueCodeOrId("value", value, Code);
+    @(attr != null ? attr.Name : "")
+
+}
+@using (Html.BeginPageHeaderContainer(pageSetting))
+{
+
+}
+
+<div class="row" style="margin-bottom:60px;">
+    <div class="col-sm-4">
+        <div class="row" style="text-align:center">
+            <div class="col-xs-12">
+                <div class="widget-box">
+                    <div class="widget-body">
+                        <div class="widget-main" style="background: #f7f7f7;">
+                            <div class="row">
+                                <div class="col-sm-5">
+                                    <img id="avatar" alt="@Model.model_Staff.Name" src="@(Erp.BackOffice.Helpers.Common.KiemTraTonTaiHinhAnh(Model.model_Staff.ProfileImage,"Staff","user"))" style="width:130px;height:130px;border-radius:100%;border:1px solid #ccc" />
+                                </div>
+                                <div class="col-sm-7">
+                                    <div style="color:#337ab7;border-bottom:3px solid" class="top-20"><h3><b>@Model.model_Staff.Name</b></h3></div>
+                                    <div style="color:#337ab7">@(Model.model_Staff.Birthday.HasValue ? Model.model_Staff.Birthday.Value.ToString("dd-MM-yyyy") : "")</div>
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row top-10">
+            <div class="col-xs-12">
+                <div class="widget-box">
+                    <div class="widget-header">
+                        <h5 class="widget-title">Thông tin quyết định</h5>
+                    </div>
+                    <div class="widget-body">
+                        <div class="widget-main">
+                            <div class="detail-view">
+                                <div class="row control-group">
+                                    @Html.DetailViewItem(Model.CodePay, "Code", "Mã quyết định", null, null, "col-xs-4", "col-xs-8")
+                                </div>
+                                <div class="row control-group">
+                                    @Html.DetailViewItem(Model.DayDecision, "DayDecision", "Ngày quyết định", null, null, "col-xs-4", "col-xs-8")
+                                </div>
+                                <div class="row control-group">
+                                    @Html.DetailViewItem(Model.DayEffective, "DayEffective", "Ngày hiệu lực", null, null, "col-xs-4", "col-xs-8")
+                                </div>
+                                <div class="row control-group">
+                                    @Html.DetailViewItem(Common.PhanCachHangNgan(Model.BasicPay), "BasicPay", "Tiền lương", null, null, "col-xs-4", "col-xs-8")
+                                </div>
+                               
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+     
+    </div>
+    <div class="col-sm-8">
+        <div class="widget-box">
+            <div class="widget-header">
+                <h5 class="widget-title">Nội dung chính của quyết định</h5>
+            </div>
+            <div class="widget-body">
+                <div class="widget-main table-responsive" id="printme">
+                    @Html.Raw(Model.Content)
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+@using (Html.BeginButtonContainer(pageSetting))
+{
+    if (Erp.BackOffice.Filters.SecurityFilter.AccessRight("Print", "ProcessPay", "Staff"))
+    {
+        <a class="btn btn-mini btn-info hidden-print" href="@Url.Action("Print", pageSetting.ModuleName, new { Id = Model.Id })" target="_blank">
+            <i class="ace-icon fa fa-print"></i>
+            @Wording.Print
+        </a>
+    }
+}
+@*@section Scripts {
+        <script>
+            function printDiv(divID) {
+                var divElements = document.getElementById(divID).innerHTML;
+                var oldPage = document.body.innerHTML;
+
+                document.body.innerHTML =
+                  "<html><head><title></title></head><body>" +
+                  divElements + "</body>";
+                window.print();
+                document.body.innerHTML = oldPage;
+            }
+            //$("[name='Print']").click(function () {
+            //    window.print();
+            //});
+
+        </script>
+    }*@

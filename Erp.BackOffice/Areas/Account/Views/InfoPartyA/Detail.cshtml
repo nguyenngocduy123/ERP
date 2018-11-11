@@ -1,0 +1,99 @@
+﻿@using Erp.BackOffice.App_GlobalResources
+@using Erp.BackOffice.Helpers
+@using Erp.BackOffice.Account.Models
+@using GridMvc.Html
+@model InfoPartyAViewModel
+
+@{
+    //Model.Type = GridColumnCategoryValue(Model.Type, "ContractType").ToString();
+    //Model.InfoPartyAViewModel.Position = GridColumnCategoryValue(Model.InfoPartyAViewModel.Position, "position").ToString();
+    Layout = "~/Views/Shared/" + (Request["IsPopup"] == null ? "ACE_AdminLayout.cshtml" : "_PopupLayout.cshtml");
+    ViewBag.Title = Wording.PageDetailInfoPartyA;
+}
+@helper GridColumnCategoryValue(object value, string code)
+{
+    var attr = Erp.BackOffice.Helpers.Common.GetCategoryByValueCodeOrId("value", value, code);
+    @(attr != null ? attr.Name : "");
+}
+
+<input type="hidden" value="@Request["IsPopup"]" name="IsPopup" />
+        <div class="widget-box">
+            <div class="widget-header">
+                <h5 class="widget-title">@ViewBag.Title</h5>
+            </div>
+            <div class="widget-body">
+                <div class="widget-main clearfix">
+                    <div class="col-sm-12">
+
+                            <div class="detail-view">
+
+                                <div class="row control-group">
+                                    @Html.DetailViewItemFor2(model => model.CompanyName, null, null, "col-sm-3", "col-sm-9")
+                                </div>
+
+                                <div class="row control-group">
+                                    @Html.DetailViewItemFor2(model => model.TaxCode, null, null, "col-sm-3", "col-sm-9")
+                                </div>
+                                <div class="row control-group">
+                                    @Html.DetailViewItemFor2(model => model.Name, null, null, "col-sm-3", "col-sm-9")
+                                </div>
+                                <div class="row control-group">
+                                    @Html.DetailViewItemFor2(model => model.Birthday, null, null, "col-sm-3", "col-sm-9")
+                                </div>
+                                <div class="row control-group">
+                                    @Html.DetailViewItemFor2(model => model.Position, null, null, "col-sm-3", "col-sm-9")
+                                </div>
+                                <div class="row control-group">
+                                    @Html.DetailViewItemFor2(model => model.Phone, null, null, "col-sm-3", "col-sm-9")
+                                </div>
+                                <div class="row control-group">
+                                    @Html.DetailViewItemFor2(model => model.Fax, null, null, "col-sm-3", "col-sm-9")
+                                </div>
+                                <div class="row control-group">
+                                    @Html.DetailViewItemFor2(model => model.AccountNumber, null, null, "col-sm-3", "col-sm-9")
+                                </div>
+                                <div class="row control-group">
+                                    @Html.DetailViewItemFor2(model => model.Bank, null, null, "col-sm-3", "col-sm-9")
+                                </div>
+                                <div class="row control-group">
+                                    @Html.DetailViewItemFor2(model => model.IdCardNumber, null, null, "col-sm-3", "col-sm-9")
+                                </div>
+                                <div class="row control-group">
+                                    @Html.DetailViewItemFor2(model => model.IdCardIssued, null, null, "col-sm-3", "col-sm-9")
+                                </div>
+                                <div class="row control-group">
+                                    @Html.DetailViewItemFor2(model => model.IdCardDate, null, null, "col-sm-3", "col-sm-9")
+                                </div>
+
+                                <div class="row control-group">
+                                    @Html.DetailViewItemFor2(model => model.ProvinceName, null, null, "col-sm-3", "col-sm-9")
+                                </div>
+                                <div class="row control-group">
+                                    @Html.DetailViewItemFor2(model => model.DistrictName, null, null, "col-sm-3", "col-sm-9")
+                                </div>
+                                <div class="row control-group">
+                                    @Html.DetailViewItemFor2(model => model.WardName, null, null, "col-sm-3", "col-sm-9")
+                                </div>
+                                <div class="row control-group">
+                                    @Html.DetailViewItemFor2(model => model.Address, null, null, "col-sm-3", "col-sm-9")
+                                </div>
+                            </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+@section Scripts {
+    <script type="text/javascript">
+       
+        //truyền từ action create của controller qua khi thực hiện submit và return về lại view create, để nhận biết là được gọi theo dạng popup
+        var closePopup = '@ViewBag.closePopup';
+        $(document).ready(function () {
+            //nếu là được gọi theo dạng popup từ form khác thì chạy đoạn code bên dưới
+            if (closePopup != '') {
+                var option = '<option value="@Model.Id" >@Model.Name</option>';
+                //tên funtion có thể khác theo từng công việc riêng (đây chỉ là mẫu khi thêm mới sẽ gọi lại)
+                window.parent.ClosePopupAndAppendSelectInfoPartyA(option);
+            }
+        });
+    </script>
+}

@@ -1,0 +1,188 @@
+﻿@model List<UserViewModel>
+    @using Erp.BackOffice.App_GlobalResources
+    @using Erp.BackOffice.Helpers
+    @using Erp.BackOffice.Areas.Administration.Models
+    @using GridMvc.Html
+
+    @{
+        ViewBag.Title = Wording.Users;
+        bool isPopup = Request["IsPopup"] != null && Request["IsPopup"].ToString().ToLower() == "true" ? true : false;
+        if (isPopup)
+        {
+            Layout = "~/Views/Shared/_PopupLayout.cshtml";
+        }
+        else
+        {
+            Layout = "~/Views/Shared/ACE_AdminLayout.cshtml";
+        }
+        //List<SelectListItem> listCategories = ViewBag.listCategories;
+        //List<SelectListItem> listUserTypes = new SelectList(ViewBag.listUserTypes, "Id", "Name").ToList();
+        List<SelectListItem> listSts = ViewBag.listStatus;
+        List<SelectListItem> listUserType = ViewBag.listUserTypes;
+        Erp.BackOffice.Models.PageSetting pageSetting = new Erp.BackOffice.Models.PageSetting
+        {
+            ModuleName = "User",
+            ActionName = "Index",
+            PageTitle = ViewBag.Title,
+            DisplaySearchPanel = true,
+            IsPopup = false,
+            DisplayBackButton = false
+        };
+        int rowNumber = 0;
+        int numberOfItem = 10;
+        int currentPage = Request["grid-page"] != null ? Convert.ToInt32(Request["grid-page"]) : 1;
+    }
+    <style>
+        .grid-cell a {
+            box-shadow: 0px 0px 3px #fff !important;
+        }
+    </style>
+    @if (ViewBag.AlertMessage != null && ViewBag.AlertMessage != "")
+    {
+        <div class="alert alert-block alert-success">
+            <button class="close" data-dismiss="alert" type="button">
+                <i class="icon-remove"></i>
+            </button>
+            <i class="ace-icon fa fa-check green"></i>
+            @ViewBag.AlertMessage
+        </div>
+    }
+
+    <!--Grid.Mvc style-->
+    <link href="@Url.Content("~/assets/css/Gridmvc.css")" rel="stylesheet" type="text/css" />
+    <script src="@Url.Content("~/Scripts/gridmvc.min.js")" type="text/javascript"></script>
+
+
+    @helper GridColumnCommand(int id)
+        {
+            @Html.Partial("_DeleteUserPartial", new ViewDataDictionary { { "DeleteUserId", id } })
+    <a class="btn btn-mini btn-danger margin-left-5" title="@Wording.ResetLoginFailedCount" href="@Url.Action("ResetLoginFailed", "User", new { resetUserId = id })"><i class="ace-icon fa fa-unlock"></i> </a>
+    <a class="btn btn-mini btn-primary margin-left-5" title="@Wording.ResetPassword" onclick="OpenPopup('/User/ChangePasswordForUsers/@id', '@Wording.ResetLoginFailedCount', 1000, 500, 'm')"><i class="ace-icon fa fa-key"></i></a>
+}
+
+    @helper GridColumnReset(int id)
+        {
+            <input class="btn btn-mini btn-danger" type="reset" value="@Wording.ResetLoginFailedCount" onclick="location.href = '@Url.Action("ResetLoginFailed", "User", new { resetUserId = id })';" />
+            @* <a href="@Url.Action("ResetLoginFailed", "User", new { resetUserId = id })" >
+                    @*<input class="btn btn-mini btn-danger" type="reset" value="Reset">reset
+                </a>*@
+}
+    @helper GridColumnName(string userName, int id, bool isPopup = false, string jsCallback = null)
+        {
+            userName = string.IsNullOrEmpty(userName) == false ? userName : "No Title";
+            if (!isPopup)
+            {
+                <a href="@Url.Action("EditUser", "User", new { userId = id })">@userName</a>
+            }
+            else
+            {
+                <a onclick="parent.selectLocationItem(@id, '@userName')">@userName</a>
+            }
+}
+    @helper CheckDeleteColumns(int Id)
+        {
+            <label>
+                <input class="ace class-delete-all" type="checkbox" name="DeleteAll-checkbox" value="@Id">
+                <span class="lbl"></span>
+            </label>
+
+}
+
+    @helper GridColumnGetTypeName(Erp.Domain.Entities.UserType userType)
+        {
+            if (userType != null)
+            {
+                @userType.Name
+            }
+}
+
+    @helper BuildCheckAll()
+        {
+            <label>
+                <input type="checkbox" name="checkAll" id="checkAll" class="ace" />
+                <span class="lbl"></span>
+            </label>
+}
+
+    @using (Html.BeginPageHeaderContainer(pageSetting))
+    {
+        <p>
+            @Html.DropDownList("TypeId", listUserType, "Loại", new { @class = "dropdown-type" })
+            @Html.DropDownList("StatusId", listSts, "Trạng thái", new { @class = "" })
+            @Html.TextBox("txtSearch", Request["txtSearch"], new { @class = "", autocomplete = "off", placeholder = "" })
+        </p>
+    }
+
+
+    <p class="top-10">
+        <label class="lable-statistic">Total User: @ViewBag.Sum | Active: @ViewBag.Active | Pending: @ViewBag.Pending | Deleted: @ViewBag.Deleted</label>
+    </p>
+    @if (!isPopup)
+    {
+        using (Html.BeginForm("DeleteAll", "User", FormMethod.Post))
+        {
+            @Html.Grid(Model).Columns(columns =>
+            {
+                columns.Add().Titled(BuildCheckAll().ToHtmlString()).SetWidth(20).Sanitized(false).Encoded(false).RenderValueAs(n => CheckDeleteColumns(n.Id));
+                columns.Add().Titled("#").SetWidth(50).RenderValueAs(o =>
+   {
+                rowNumber++;
+                return @<text> @(rowNumber + ((currentPage - 1) * numberOfItem)) </text>;
+                     });
+
+                         columns.Add(u => u.UserName).Titled(Wording.Username).Sortable(true).SetWidth(150).Sanitized(false).Encoded(false).RenderValueAs(u => GridColumnName(u.UserName, u.Id));
+                         columns.Add(u => u.FullName).Titled(Wording.FullName).Sortable(true).SetWidth(250).Sanitized(false).Encoded(false).RenderValueAs(u => u.FullName);
+                         columns.Add(u => u.LoginFailedCount).Titled(Wording.LoginFailedCount).Sortable(true).SetWidth(120).Css("text-center");
+                         columns.Add(u => u.UserTypeName).Titled(Wording.UserType).SetWidth(200);
+                         columns.Add(u => u.Status).Titled(Wording.Status).Sortable(true).SetWidth(100);
+                         columns.Add(u => u.Id).Titled(Wording.Action).Sanitized(false).Encoded(false).RenderValueAs(u => GridColumnCommand(u.Id)).SetWidth(300);
+                     }).WithPaging(50).Selectable(false)
+        }
+        using (Html.BeginButtonContainer(pageSetting))
+        {
+            @Html.Button(Wording.CreateNew, ButtonType.aTag, ButtonColor.Primary, ButtonSize.Mini, true, IconType.Plus, IconSize.Default, false, new { @href = Url.Action("CreateUser", "User") })
+            @Html.Button(Wording.Export, ButtonType.aTag, ButtonColor.Primary, ButtonSize.Mini, true, IconType.Share, IconSize.Default, false, new { @href = Url.Action("ExportExcel", "User", new { txtSearch = Request.QueryString["txtSearch"], CategoryId = Request.QueryString["CategoryId"], TypeId = Request.QueryString["TypeId"], Status = Request.QueryString["StatusId"] }) })
+            <button class="btn btn-mini btn-danger" type="submit" name="DeleteAll" value="DeleteAll" onclick="return CheckIsval();">
+                <i class="ace-icon fa fa-trash"></i>
+                @Wording.Delete
+            </button>
+        }
+    }
+    else
+    {
+        @Html.Grid(Model).Columns(columns =>
+                 {
+                     columns.Add(m => m.UserName).Titled(Wording.Username).Sortable(false);
+                     columns.Add().Titled(Wording.Name).Sortable(false).Sanitized(false).Encoded(false).RenderValueAs(u => GridColumnName(u.FullName, u.Id, isPopup));
+                 }).WithPaging(10)
+    }
+
+    <script type="text/javascript">
+        function CheckIsval() {
+            if ($('[name="DeleteAll-checkbox"]').is(':checked') == false) {
+                alert("Phải chọn ít nhất 1 item.");
+                return false;
+            }
+            else {
+                if (confirm('Bạn có chắc muốn xóa các item đã chọn ?')) {
+                    return true;
+                }
+                else {
+                    return false;
+                }
+            }
+        }
+
+        $('[name="Delete"]').click(function () {
+            if (confirm('Bạn có chắc muốn xóa item ?')) {
+                $(this).closest('tr').children('td').each(function (i, e) {
+                    $(this).find("input.class-delete-all").prop("checked", true);
+                    return true;
+                })
+            }
+            else {
+                return false;
+            }
+
+        })
+    </script>

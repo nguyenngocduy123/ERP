@@ -1,0 +1,149 @@
+﻿@model List<PageMenuViewModel>
+
+@using Erp.BackOffice.Areas.Administration.Models;
+@using Erp.BackOffice.App_GlobalResources
+@using Erp.BackOffice.Helpers
+
+@{
+    ViewBag.Title = ViewBag.PageName;
+    Layout = "~/Views/Shared/ACE_AdminLayout.cshtml";
+
+    string data = "", dataChildren = "";
+    foreach (var item in Model)
+    {
+        data += string.Format("'{0}' : {{text: '{1}', type: 'folder'}},\r\n", item.Id, item.Name);
+        dataChildren += "tree_data['" + item.Id + "']['additionalParameters'] = {\r\n";
+        dataChildren += "'children': {\r\n";
+        foreach (var report in item.SubMenu)
+        {
+            dataChildren += "    'report-" + report.Id + "': { text: '<i class=\"ace-icon fa fa-book blue\"></i>" + report.Name + "', type: 'item', link : '/" + report.ControllerName + "/" + report.ActionName + "'},\r\n";
+        }
+        dataChildren += "}\r\n";
+        dataChildren += "}\r\n";
+    }
+}
+
+<link href="@Url.Content("~/assets/css/Gridmvc.css")" rel="stylesheet" type="text/css" />
+<script src="@Url.Content("~/Scripts/gridmvc.min.js")" type="text/javascript"> </script>
+
+@helper GridColumnName(string name, string controllerName, string actionName)
+{
+    <a href="/@controllerName/@actionName" target="_blank">@name</a>
+}
+
+<div class="row">
+    <div class="col-sm-3">
+        <div class="widget-box">
+            <div class="widget-header">
+                <h5>@ViewBag.PageName</h5>
+            </div>
+            <div class="widget-body">
+                <div class="widget-main padding-8 scrollable widget-main-tree">
+                    <ul id="tree1"></ul>
+                </div>
+                @*<div class="widget-main clearfix">
+                        @foreach (var item in Model)
+                        {
+                            <div class="clearfix">
+                                <h4>@item.Name</h4>
+                                @Html.Partial("SubList", item.SubMenu)
+                            </div>
+                        }
+                    </div>*@<!-- /.widget-main -->
+            </div><!-- /.widget-body -->
+        </div>
+    </div>
+    <div id="ReportContainer" class="col-sm-9" style="margin-top:4px">
+        <iframe src="" style="width:100%; height:100%; border:none"></iframe>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="/assets/js/fuelux.tree.min.js"></script>
+    <script type="text/javascript">
+        var selectedLink = null;
+        jQuery(function ($) {
+            var h = Math.max(document.documentElement.clientHeight, window.innerHeight || 0);
+            //console.log($(".scrollable").offset().top);
+            $(".widget-main-tree").height(h - $(".widget-main-tree").offset().top - 50);
+            $("#ReportContainer").height(h - $(".widget-main-tree").offset().top + 6);
+
+            var data = initiateData();//see below
+
+            $('#tree1').ace_tree({
+                dataSource: data,
+                multiSelect: false,
+                cacheItems: true,
+                'open-icon': 'ace-icon tree-minus',
+                'close-icon': 'ace-icon tree-plus',
+                'selectable': true,
+                'folder-select': true,
+                'selected-icon': null,//'ace-icon fa fa-check',
+                'unselected-icon': null,//'ace-icon fa fa-book blue',
+                loadingHTML: '<div class="tree-loading"><i class="ace-icon fa fa-refresh fa-spin blue"></i></div>'
+            });
+
+
+            //please refer to docs for more info
+            $('#tree1')
+            .on('loaded.fu.tree', function (e) {
+                //console.log(e);
+            })
+            .on('updated.fu.tree', function (e, result) {
+                
+            })
+            .on('selected.fu.tree', function (e, data) {
+                var obj = data.target;
+                //console.log(obj);
+                if (obj != undefined && selectedLink != obj.link) {
+                    ShowLoading();
+                    selectedLink = obj.link;
+                    $("#ReportContainer iframe").attr("src", selectedLink + "?popup=true");
+                }
+            })
+            .on('deselected.fu.tree', function (e) {
+                //console.log(e);
+                //$(this).addClass("tree-selected");
+            })
+            .on('opened.fu.tree', function (e) {
+                //console.log(e);
+            })
+            .on('closed.fu.tree', function (e) {
+                //console.log(e);
+            });
+
+            function initiateData() {
+                var tree_data = {
+                    @Html.Raw(data)
+                }
+
+                @Html.Raw(dataChildren)
+
+                var dataSource = function (options, callback) {
+                    var $data = null
+                    if (!("text" in options) && !("type" in options)) {
+                        $data = tree_data;//the root tree
+                        callback({ data: $data });
+                        return;
+                    }
+                    else if ("type" in options && options.type == "folder") {
+                        if ("additionalParameters" in options && "children" in options.additionalParameters)
+                            $data = options.additionalParameters.children || {};
+                        else $data = {}//no data
+                    }
+
+                    if ($data != null)//this setTimeout is only for mimicking some random delay
+                        callback({ data: $data });
+                    //setTimeout(function () { callback({ data: $data }); }, parseInt(Math.random() * 500) + 200);
+
+                    //we have used static data here
+                    //but you can retrieve your data dynamically from a server using ajax call
+                    //checkout examples/treeview.html and examples/treeview.js for more info
+                }
+
+                return dataSource;
+            }
+
+        });
+    </script>
+}

@@ -1,0 +1,36 @@
+@model IQueryable<ProcessStageViewModel>
+
+@using Erp.BackOffice.App_GlobalResources
+@using Erp.BackOffice.Crm.Models
+@using Erp.BackOffice.Helpers
+@using GridMvc.Html
+
+@{
+    Layout = null;
+}
+
+<p>
+    <a class="btn btn-mini btn-info" onclick="OpenPopup('@Url.Action("Create", "ProcessStage", new { area = "Crm", ProcessId = Request["ProcessId"], IsPopup = true })', 'Add stage', 500, 500)">
+        <i class="ace-icon fa fa-plus bigger-120"></i>
+        Add stage
+    </a>
+</p>
+
+@foreach (var item in Model)
+{
+    <div class="widget-box widget-color-green">
+        <div class="widget-header widget-header-small">
+            <h6 class="widget-title smaller">
+                <b>Stage @item.OrderNo:</b> @item.Name
+                <a style="color:white" onclick="OpenPopup('@Url.Action("Edit", "ProcessStage", new { area = "Crm", Id = item.Id, IsPopup = true })', 'Edit stage', 500, 500)">
+                    <i class="ace-icon fa fa-edit"></i>
+                </a>
+            </h6>
+        </div>
+        <div class="widget-body">
+            <div class="widget-main">
+                @{Html.RenderAction("Index", "ProcessStep", new { StageId = item.Id, ProcessEntity = ViewBag.ProcessEntity });}
+            </div>
+        </div>
+    </div>
+}

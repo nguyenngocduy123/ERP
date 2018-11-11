@@ -1,0 +1,301 @@
+﻿@model List<ModuleViewModel>
+
+@using Erp.BackOffice.App_GlobalResources
+@using Erp.BackOffice.Administration.Models
+@using Erp.BackOffice.Helpers
+@using GridMvc.Html
+
+@{
+    ViewBag.Title = Wording.PageIndex_Module;
+    bool isPopup = Request["popup"] != null && Request["popup"].ToString().ToLower() == "true" ? true : false;
+    if (isPopup)
+    {
+        Layout = "~/Views/Shared/_PopupLayout.cshtml";
+    }
+    else
+    {
+        Layout = "~/Views/Shared/ACE_AdminLayout.cshtml";
+    }
+
+    string data = "", dataChildren = "";
+    foreach (var item in Model)
+    {
+        data += string.Format("'{0}' : {{text: '{1}', type: 'folder'}},\r\n", item.Id, item.Name);
+        dataChildren += "tree_data['" + item.Id + "']['additionalParameters'] = {\r\n";
+        dataChildren += "'children': {\r\n";
+        dataChildren += "    'meta-field-" + item.Id + "': { text: '<i class=\"ace-icon fa fa-book blue\"></i>Meta Fields', type: 'item', id : '" + @item.Id + "'},\r\n";
+        dataChildren += "}\r\n";
+        dataChildren += "}\r\n";
+    }
+}
+
+<style type="text/css">
+    .tree-item-selected {
+        background-color: rgba(98,168,209,.1);
+    }
+</style>
+
+@if (ViewBag.SuccessMessage != null && ViewBag.SuccessMessage != "")
+{
+    <div class="alert alert-block alert-success">
+        <button class="close" data-dismiss="alert" type="button">
+            <i class="ace-icon fa fa-times"></i>
+        </button>
+        <i class="ace-icon fa fa-check green"></i>
+        @ViewBag.SuccessMessage
+    </div>
+}
+
+@if (ViewBag.FailedMessage != null && ViewBag.FailedMessage != "")
+{
+    <div class="alert alert-block alert-danger">
+        <button class="close" data-dismiss="alert" type="button">
+            <i class="ace-icon fa fa-times"></i>
+        </button>
+        <i class="ace-icon fa fa-warning red"></i>
+        @ViewBag.FailedMessage
+    </div>
+}
+
+<link href="@Url.Content("~/assets/css/Gridmvc.css")" rel="stylesheet" type="text/css" />
+<script src="@Url.Content("~/Scripts/gridmvc.min.js")" type="text/javascript"> </script>
+
+@helper GridColumnCommand(int id)
+{
+    <div class="hidden-phone visible-desktop action-buttons" style="display: inline-block; float: left;">
+        <p>
+            <button name="Delete" value="Delete" type="submit" class="btn btn-mini btn-danger">
+                <i class="ace-icon fa fa-trash bigger-120"></i>
+            </button>
+        </p>
+    </div>
+}
+
+@helper GridColumnName(string name, int id, bool isPopup)
+{
+    if (isPopup)
+    {
+        <a onclick="parent.selectBranchItem(@id)">@name</a>
+    }
+    else
+    {
+        name = string.IsNullOrEmpty(name) ? "No Title" : name;
+        <a href="@Url.Action("Detail", "Module" , new { Id= id })">@name</a>
+    }
+}
+
+@helper GridColumnCategoryValue(object value)
+{
+    var attr = Erp.BackOffice.Helpers.Common.GetCategoryByValueOrId("value", value);
+    <span>@(attr != null ? attr.Name : "")</span>
+}
+
+@helper CheckDeleteColumns(int Id)
+{
+    <label>
+        <input class="ace class-delete-all" type="checkbox" name="DeleteId-checkbox" value="@Id">
+        <span class="lbl"></span>
+    </label>
+}
+
+@helper BuildCheckAll()
+{
+    <label>
+        <input class="ace" type="checkbox" name="checkAll" id="checkAll" />
+        <span class="lbl"></span>
+    </label>
+}
+
+@if (!isPopup)
+{
+    <div class="page-header">
+        <h1>
+            @ViewBag.Title
+            @*<small><i class="ace-icon fa fa-angle-double-right"></i>...</small>*@
+        </h1>
+    </div>
+
+    using (Html.BeginForm("Index", "Module", FormMethod.Post))
+    {
+        <p>
+            @Html.Button(Wording.CreateNew, ButtonType.aTag, ButtonColor.Info, ButtonSize.Mini, true, IconType.Plus, IconSize.Default, false, new { @href = Url.Action("Create", "Module") })
+            <button name="Update" value="Update" type="submit" class="btn btn-mini btn-success">
+                <i class="ace-icon fa fa-refresh bigger-120"></i>
+                Cập nhật
+            </button>
+        </p>
+    }
+
+    <div class="row">
+        <div id="widget-tree" class="col-sm-3">
+            <div class="widget-box widget-color-blue2">
+                <div class="widget-header">
+                    <h4 class="widget-title lighter smaller">Danh sách</h4>
+                </div>
+
+                <div class="widget-body">
+                    <div class="widget-main padding-8 scrollable widget-main-tree">
+                        <ul id="tree1"></ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="module-detail-container" class="col-sm-9" style="overflow:hidden">
+            
+        </div>
+    </div>
+}
+else
+{
+    @Html.Grid(Model).Columns(columns =>
+    {
+        //columns.Add().Titled(BuildCheckAll().ToHtmlString()).SetWidth(20).Sanitized(false).Encoded(false).RenderValueAs(n => CheckDeleteColumns(n.Id));
+        columns.Add().Titled(Html.DisplayNameFor(u => u.FirstOrDefault().Name).ToString()).Sortable(false).Sanitized(false).Encoded(false).RenderValueAs(u => GridColumnName(u.Name, u.Id, isPopup));
+    }).WithPaging(10)
+}
+
+@section Scripts {
+    <script src="/assets/js/fuelux.tree.min.js"></script>
+    <script type="text/javascript">
+        var moduleSelectedId = null;
+        jQuery(function ($) {
+            var h = Math.max(document.documentElement.clientHeight, window.innerHeight || 0);
+            //console.log($(".scrollable").offset().top);
+            $(".widget-main-tree").height(h - $(".widget-main-tree").offset().top - 50);
+
+            var data = initiateData();//see below
+            
+            $('#tree1').ace_tree({
+                dataSource: data,
+                multiSelect: false,
+                cacheItems: true,
+                'open-icon': 'ace-icon tree-minus',
+                'close-icon': 'ace-icon tree-plus',
+                'selectable': true,
+                'folder-select': true,
+                'selected-icon': null,//'ace-icon fa fa-check',
+                'unselected-icon': null,//'ace-icon fa fa-book blue',
+                loadingHTML: '<div class="tree-loading"><i class="ace-icon fa fa-refresh fa-spin blue"></i></div>'
+            });
+
+
+            //please refer to docs for more info
+            $('#tree1')
+            .on('loaded.fu.tree', function (e) {
+                //console.log(e);
+            })
+            .on('updated.fu.tree', function (e, result) {
+                var obj = result.selected[0];
+                //console.log(id);
+                if (obj != undefined && moduleSelectedId != obj.id) {
+                    moduleSelectedId = obj.id;
+                    loadModuleDetail();
+                }
+            })
+            .on('selected.fu.tree', function (e) {
+                //console.log(e);
+            })
+            .on('deselected.fu.tree', function (e) {
+                //console.log(e);
+                //$(this).addClass("tree-selected");
+            })
+            .on('opened.fu.tree', function (e) {
+                //console.log(e);
+            })
+            .on('closed.fu.tree', function (e) {
+                //console.log(e);
+            });            
+
+            function initiateData() {
+                var tree_data = {
+                    @Html.Raw(data)
+                }
+
+                @Html.Raw(dataChildren)
+
+                var dataSource = function (options, callback) {
+                    var $data = null
+                    if (!("text" in options) && !("type" in options)) {
+                        $data = tree_data;//the root tree
+                        callback({ data: $data });
+                        return;
+                    }
+                    else if ("type" in options && options.type == "folder") {
+                        if ("additionalParameters" in options && "children" in options.additionalParameters)
+                            $data = options.additionalParameters.children || {};
+                        else $data = {}//no data
+                    }
+
+                    if ($data != null)//this setTimeout is only for mimicking some random delay
+                        callback({ data: $data });
+                    //setTimeout(function () { callback({ data: $data }); }, parseInt(Math.random() * 500) + 200);
+
+                    //we have used static data here
+                    //but you can retrieve your data dynamically from a server using ajax call
+                    //checkout examples/treeview.html and examples/treeview.js for more info
+                }
+
+                return dataSource;
+            }
+
+        });
+    </script>
+
+    <script type="text/javascript">
+        function CheckIsval() {
+            if ($('[name="DeleteId-checkbox"]').is(':checked') == false) {
+                alert("Phải chọn ít nhất 1 item.");
+                return false;
+            }
+            else {
+                if (confirm('Bạn có chắc muốn xóa các item đã chọn ?')) {
+                    return true;
+                }
+                else {
+                    return false;
+                }
+            }
+        }
+
+        $('[name="Delete"]').click(function () {
+            if (confirm('Bạn có chắc muốn xóa item ?')) {
+                $(this).closest('tr').children('td').each(function (i, e) {
+                    $(this).find("input.class-delete-all").prop("checked", true);
+                    return true;
+                })
+            }
+            else {
+                return false;
+            }
+
+        })
+
+        function loadModuleDetail()
+        {
+            ShowLoading();
+            $.ajax({
+                method: "GET",
+                url: "@Url.Action("Detail", "Module")",
+                data: { Id: moduleSelectedId }
+            })
+            .done(function (rs) {
+                $('#module-detail-container').html(rs)
+                var h = Math.max(document.documentElement.clientHeight, window.innerHeight || 0);
+                $('#module-detail-container').find("#tab1").height(h - $(".tab-content").offset().top - 80);
+                HideLoading();
+            });
+        }
+
+        function FormEdit_OnSuccess(rs) {
+            loadModuleDetail();
+        }
+
+        function ModuleRelationshipFormEdit_OnSuccess(rs) {
+            loadModuleDetail();
+        }
+
+    </script>
+
+    @Html.ScriptBottom_ValidationMvc()
+    @Html.ScriptBottom_ChosenStyle()
+}

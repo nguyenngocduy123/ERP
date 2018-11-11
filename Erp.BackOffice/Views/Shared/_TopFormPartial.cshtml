@@ -1,0 +1,68 @@
+﻿@{
+    string box_header = (string)ViewData["box_header"];
+    string form_header = (string)ViewData["form_header"];
+    string action = (string)ViewData["action"];
+    string controller = (string)ViewData["controller"];
+    FormMethod method = (FormMethod)ViewData["method"];
+    var routeValues = ViewData["routeValues"];
+    IDictionary<string, object> htmlAttributes = new RouteValueDictionary(ViewData["htmlAttributes"]);
+
+    string methodString = string.Empty;
+    switch (method)
+    {
+        case FormMethod.Get:
+            methodString = "get";
+            break;
+        case FormMethod.Post:
+            methodString = "post";
+            break;
+        default:
+            methodString = "get";
+            break;
+    }
+
+    string _htmlAttributes = string.Empty;
+    string _buttonContainer = string.Empty;
+    bool showButton = false;
+
+    foreach (var item in htmlAttributes)
+    {
+        if (item.Key.Contains("button"))
+        {
+            _buttonContainer += item.Value + "\r\n";
+        }
+        else
+            if (item.Key == "showButton")
+            {
+                showButton = (bool)item.Value;
+            }
+            else
+            {
+                _htmlAttributes += " " + item.Key + "=\"" + item.Value + "\"";
+            }
+    }
+
+    string actionUrl = Url.Action(action, controller, routeValues);
+}
+
+<form action="@actionUrl" method="@methodString" @Html.Raw(_htmlAttributes)>
+    @*<div class="widget-box">
+        <div class="widget-header widget-header-blue widget-header-flat">
+            <h4 class="lighter">
+                @box_header
+                @if (showButton)
+                {
+                    <span class="pull-right button-container" style="padding-right:12px; margin-top:-3px">
+                        <button type="submit" class="btn btn-mini btn-success" name="Submit" value="Save">
+                            <i class="ace-icon fa fa-save"></i>
+                            @Resources.Wording.Save
+                        </button>
+                        @Html.Raw(_buttonContainer)
+                    </span>
+                }
+            </h4>
+        </div>
+        <div class="widget-body">
+            <div class="widget-main edit-view clearfix">*@
+                <div class="edit-view clearfix">
+                

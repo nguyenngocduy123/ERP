@@ -1,0 +1,17 @@
+﻿@using Erp.BackOffice.Helpers
+
+@{
+    var titleUI = ViewData["titleUI"];
+    var inputUI = ViewData["inputUI"];
+    var validUI = ViewData["validUI"];
+    var validError = ViewData["validError"];
+    var controlClass = ViewData["controlClass"];
+    var css = ViewData["css"];
+    var id = ViewData["id"];
+}
+
+<div id="@id" class="control-group form-group @validError @css">
+    @titleUI
+    <div class="control-value @controlClass">
+        <div class="clearfix">
+            @inputUI

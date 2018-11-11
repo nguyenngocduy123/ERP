@@ -1,0 +1,10 @@
+﻿<div class="widget-box">
+    <div class="widget-header widget-header">
+        <h4 class="widget-title lighter"><i class="ace-icon fa fa-calendar"></i> Thống kê công nợ hiện tại</h4>
+    </div>
+    <div class="widget-body">
+        <div class="widget-main no-padding">
+            @{Html.RenderAction("TrackLiabilities", "AccountReport", new { area = "Account" });}
+        </div><!-- /.widget-main -->
+    </div><!-- /.widget-body -->
+</div>

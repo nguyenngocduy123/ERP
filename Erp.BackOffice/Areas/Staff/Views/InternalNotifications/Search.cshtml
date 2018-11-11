@@ -1,0 +1,108 @@
+﻿@using Erp.BackOffice.App_GlobalResources
+@using Erp.BackOffice.Helpers
+@using Erp.BackOffice.Staff.Models
+@using GridMvc.Html
+@model InternalNotificationsViewModel
+
+@{
+    Layout = null;
+}
+@helper GridColumnName(string name, int id, string code, bool gender, string ProfileImage)
+{
+    <div class="col-sm-3">
+        @if (!string.IsNullOrEmpty(ProfileImage))
+        {
+            <a data-toggle="tooltip" title='
+            <img src="/Data/HinhSV/@(ProfileImage)" width="248" />'>
+            <img class="profile-picture" src="/Data/HinhSV/@(ProfileImage)" width="35" height="44" alt="@name" />
+        </a>
+        }
+        else
+        {
+            <span class="profile-picture" style="height:44px; width:35px"><img style="max-width:100%; margin-top:5px" src="/assets/img/no-avatar.png" alt="@name" /></span>
+        }
+
+    </div>
+    <div class="col-sm-9">
+        @if (string.IsNullOrEmpty(name))
+        {
+            <p> <a href="@Url.Action("Detail", "Staffs", new { area = "Staff", Id = id })" target="_blank"><b><i class="fa fa-user-circle-o"></i>  No Title</b></a></p>
+        }
+        else
+        {
+            <p style="margin:0px">
+                <a href="@Url.Action("Detail", "Staffs", new { area = "Staff", Id = id })" target="_blank">
+                    <b>
+                        @if (gender == true)
+                        {
+                            <i style="color:#ff00dc" class="fa fa-female" data-rel="tooltip" title="" data-placement="bottom" data-original-title="Giới tính: Nữ"></i>
+                        }
+                        else
+                        {
+                            <i class="fa fa-male" data-rel="tooltip" title="" data-placement="bottom" data-original-title="Giới tính: Nam"></i>
+                        }
+                        @name
+                    </b>
+                </a>
+            </p>
+            <p><i class="fa fa-barcode" data-rel="tooltip" title="" data-placement="bottom" data-original-title="Mã nhân viên hiện tại"></i> @code</p>
+        }
+    </div>
+}
+<link href="@Url.Content("~/assets/css/Gridmvc.css")" rel="stylesheet" type="text/css" />
+<script src="@Url.Content("~/Scripts/gridmvc.min.js")" type="text/javascript"> </script>
+@helper BuildCheckAll()
+{
+    <label>
+        <input type="checkbox" name="checkAll" id="checkAll" class="ace" onclick="CheckAll()" />
+        <span class="lbl"></span>
+    </label>
+}
+@helper CheckDeleteColumns(long Id)
+{
+    <label>
+        <input class="ace class-delete-all" type="checkbox" name="staff-checkbox" id="staff-checkbox-@Id" value="@Id">
+        <span class="lbl"></span>
+    </label>
+}
+
+
+    <div class="col-sm-12 box" style="width:100%">
+        <div class="box-body" style="width:100%">
+@if (Model.StaffList != null)
+{
+                <div class="table-responsive" style="padding:10px 0 40px;width:100%">
+                    <div class="col-sm-12 table-fixed-column-1" style="padding:0px;">
+                            <table id="cTable" class="table">
+                                <thead>
+                                    <tr>
+                                        <th>
+                                            <span>@BuildCheckAll()</span>
+                                        </th>
+                                        <th>
+                                            <span>Nhân viên (@Model.StaffList.Count() người)</span>
+                                        </th>
+                                        
+                                    </tr>
+                                </thead>
+
+                                <tbody>
+                                  @foreach (var u in Model.StaffList)
+                                  {
+                                      <tr>
+                                          <td>
+                                              @CheckDeleteColumns(u.Id)
+                                          </td>
+                                          <td>
+                                              @GridColumnName(u.Name, u.Id, u.Code, u.Gender.Value, u.ProfileImage)
+                                          </td>
+                                      </tr>
+
+                                  }
+                                </tbody>
+                            </table>
+                    </div>
+                </div>
+}
+            </div>
+        </div>

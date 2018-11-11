@@ -1,0 +1,123 @@
+﻿@using Erp.BackOffice.App_GlobalResources
+@using Erp.BackOffice.Helpers
+@using Erp.BackOffice.Administration.Models
+@using GridMvc.Html
+
+@model ModuleViewModel
+
+@{
+    ViewBag.Title = Wording.PageDetail_Module;
+
+    Layout = null;
+}
+
+@helper GridColumnCommand(int id)
+{
+    <div class="hidden-phone visible-desktop action-buttons" style="display: inline-block; float: left;">
+        <p>
+            <button name="Delete" value="Delete" type="submit" class="btn btn-mini btn-danger">
+                <i class="ace-icon fa fa-trash bigger-120"></i>
+            </button>
+        </p>
+    </div>
+}
+
+@helper GridColumnName(string name, int id)
+{
+    @name
+}
+
+@helper CheckDeleteColumns(int Id)
+{
+    <label>
+        <input class="ace class-delete-all" type="checkbox" name="DeleteId-checkbox" value="@Id">
+        <span class="lbl"></span>
+    </label>
+}
+
+@helper BuildCheckAll()
+{
+    <label>
+        <input class="ace" type="checkbox" name="checkAll" id="checkAll" />
+        <span class="lbl"></span>
+    </label>
+}
+
+<div class="widget-box">
+    <div class="widget-header">
+        <h5 class="widget-title">Chi tiết</h5>
+    </div>
+    <div class="widget-body">
+        <div class="widget-main">
+            <div class="detail-view">
+                <div class="row control-group">
+                    <div class="col-sm-6">@Html.DetailViewItemFor2(model => model.Name)</div>
+                    <div class="col-sm-6">@Html.DetailViewItemFor2(model => model.TableName)</div>
+                </div>
+                <div class="row control-group">
+                    <div class="col-sm-6">@Html.DetailViewItemFor2(model => model.DisplayName)</div>
+                    <div class="col-sm-6">@Html.DetailViewItemFor2(model => model.AreaName)</div>
+                </div>
+            </div>
+            <ul class="nav nav-tabs top-10" id="myTab">
+                <li id="li-tab1" class="active"><a data-target="#tab1" data-toggle="tab">Metadata fields</a></li>
+                <li id="li-tab2"><a data-target="#tab2" data-toggle="tab">Relationship</a></li>
+                <li id="li-tab3"><a data-target="#tab3" data-toggle="tab">Edit</a></li>
+            </ul>
+
+            <div class="tab-content">
+                <div class="tab-pane clearfix active scrollable" id="tab1">
+                    @{Html.RenderAction("Index", "MetadataField", new { ModuleId = Model.Id });}
+                </div>
+                <div class="tab-pane clearfix scrollable" id="tab2">
+                    @{Html.RenderAction("Index", "ModuleRelationship", new { ModuleName = Model.Name });}
+                </div>
+                <div class="tab-pane clearfix" id="tab3">
+                    @using (Ajax.BeginForm("Edit", "Module"
+                        , new AjaxOptions()
+                        {
+                            HttpMethod = "POST",
+                            OnSuccess = "FormEdit_OnSuccess"
+                        }
+                        , new { id = "FormEdit", @class = "form-horizontal" })
+                    )
+                    {
+                        @Html.AntiForgeryToken()
+                        @Html.ValidationSummary(true)
+                        <p>
+                            <button style="margin-top:10px" type="submit" class="btn btn-info" name="Submit" value="Save">
+                                <i class="ace-icon fa fa-save bigger-110"></i>
+                                @Wording.Save
+                            </button>
+                        </p>
+
+                        @Html.HiddenFor(model => model.Id)
+                        @Html.HiddenFor(model => model.CreatedUserId)
+                        @Html.HiddenFor(model => model.CreatedDate)
+                        @Html.HiddenFor(model => model.IsDeleted)
+                        @Html.HiddenFor(model => model.Name)
+                        @Html.HiddenFor(model => model.OrderNo)
+                        @Html.HiddenFor(model => model.DisplayName)
+                        @Html.HiddenFor(model => model.AreaName)
+
+                        @Html.CustomTextboxFor(model => model.TableName, null, null, WidthType.span6)
+                        @Html.CustomSwitchesFor(model => model.IsVisible, SwitchesStyle.CheckboxStyle, true)
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    $(function () {
+        $('form').submit(function () {
+            ShowLoading();
+            if ($(this).valid()) {
+            }
+            else {
+                HideLoading();
+            }
+        });
+    });
+</script>

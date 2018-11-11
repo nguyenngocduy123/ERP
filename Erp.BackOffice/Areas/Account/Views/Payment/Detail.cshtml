@@ -1,0 +1,254 @@
+@using Erp.BackOffice.App_GlobalResources
+@using Erp.BackOffice.Helpers
+@using Erp.BackOffice.Account.Models
+@using GridMvc.Html
+@model PaymentViewModel
+
+@{
+    ViewBag.Title = Wording.PageDetail_Payment;
+
+    bool IsPopup = Request["IsPopup"] == null ? false : true;
+    Layout = "~/Views/Shared/" + (IsPopup == false ? "ACE_AdminLayout.cshtml" : "_PopupLayout.cshtml");
+    Erp.BackOffice.Models.PageSetting pageSetting = new Erp.BackOffice.Models.PageSetting
+    {
+        ModuleName = "Payment",
+        ActionName = "Detail",
+        PageTitle = ViewBag.Title,
+        DisplaySearchPanel = false,
+        IsPopup = IsPopup,
+        DisplayBackButton = true
+    };
+    int index = 1;
+    var PaymentDetail = new List<Erp.Domain.Account.Entities.PaymentDetail>();
+    PaymentDetail = ViewBag.PaymentDetail;
+}
+
+<style type="text/css">
+    .mini-popup {
+        position: relative;
+        display: inline;
+    }
+
+    #popup_huy {
+        position: absolute;
+        bottom: 45px;
+        left: 0px;
+        width: 390px;
+        height: 160px;
+        max-width: inherit;
+        top: inherit;
+    }
+</style>
+
+@using (Html.BeginPageHeaderContainer(pageSetting))
+{
+
+}
+
+@if (ViewBag.SuccessMessage != null && ViewBag.SuccessMessage != "")
+{
+    <div class="alert alert-block alert-success">
+        <button class="close" data-dismiss="alert" type="button">
+            <i class="ace-icon fa fa-times"></i>
+        </button>
+        <i class="ace-icon fa fa-check green"></i>
+        @ViewBag.SuccessMessage
+    </div>
+}
+
+@if (ViewBag.FailedMessage != null && ViewBag.FailedMessage != "")
+{
+    <div class="alert alert-block alert-danger">
+        <button class="close" data-dismiss="alert" type="button">
+            <i class="ace-icon fa fa-times"></i>
+        </button>
+        <i class="ace-icon fa fa-warning red"></i>
+        @ViewBag.FailedMessage
+    </div>
+}
+
+@if (Model.IsDeleted == true)
+{
+    <div class="alert alert-danger">
+        <p><i class="ace-icon fa fa-warning red"></i> @Model.ModifiedUserName đã hủy bỏ chứng từ lúc @Model.ModifiedDate.Value.ToString("HH:mm dd/MM/yyyy").</p>
+        <p>Lý do hủy: @Model.CancelReason</p>
+    </div>
+}
+
+<div class="detail-view">
+    <div class="row control-group">
+        @Html.DetailViewItem((Model.IsArchive == true ? "<span class=\"green\">Đã chi</span>" : "<span class=\"red\">Chưa chi</span>"), "IsArchive", "Trạng thái", null, null)
+    </div>
+    <div class="row control-group">
+        @Html.DetailViewItemFor2(model => model.Code)
+    </div>
+    <div class="row control-group">
+        @Html.DetailViewItemFor2(model => model.CreatedDate)
+    </div>
+    <div class="row control-group">
+        @Html.DetailViewItemFor2(model => model.Name)
+    </div>
+    <div class="row control-group">
+        @Html.DetailViewItem(Model.Amount.ToCurrencyStr(null), "Amount", Wording.Amount, null, "font-weight:bold;", "col-xs-2", "col-xs-10")
+        @*@Html.DetailViewItemFor2(model => model.Amount, true)*@
+    </div>
+    @*<div class="row control-group">
+            @Html.DetailViewItemFor2(model => model.Payer)
+        </div>*@
+    <div class="row control-group">
+        @Html.DetailViewItemFor2(model => model.ReceiverUserName)
+    </div>
+    <div class="row control-group">
+        @Html.DetailViewItemFor2(model => model.Address)
+    </div>
+    <div class="row control-group">
+        @Html.DetailViewItemFor2(model => model.PaymentMethod)
+    </div>
+    <div class="row control-group">
+        @Html.DetailViewItemFor2(model => model.Note)
+    </div>
+</div>
+@helper BuildCheckAll()
+{
+    <label>
+        <input class="ace" type="checkbox" name="checkAll" id="checkAll" />
+        <span class="lbl"></span>
+    </label>
+}
+@helper GridColumnChungTuGoc(string MaChungTuGoc, string LoaiChungTuGoc, bool isPopup)
+{
+    if (isPopup)
+    {
+        <span>@MaChungTuGoc</span>
+    }
+    else
+    {
+        switch (LoaiChungTuGoc)
+        {
+            case "ContractLease":
+            case "ContractSell":
+                <a onclick="OpenPopup('@Url.Action("Detail", "Contract", new { area = "Account", TransactionCode = MaChungTuGoc, IsPopup = true })', 'Thông tin hợp đồng', 0, 500)">@MaChungTuGoc</a>
+                break;
+            case "ProductInvoice":
+            <a href="@Url.Action("Detail", "ProductInvoice", new { area = "Sale", TransactionCode = MaChungTuGoc })">@MaChungTuGoc</a>
+                break;
+            case "PurchaseOrder":
+            <a href="@Url.Action("Detail", "PurchaseOrder", new { area = "Sale", TransactionCode = MaChungTuGoc })">@MaChungTuGoc</a>
+                break;
+            default:
+                break;
+        }
+    }
+}
+@helper CheckDeleteColumns(int Id)
+{
+    <label>
+        <input class="ace class-delete-all" type="checkbox" name="DeleteId-checkbox" value="@Id">
+        <span class="lbl"></span>
+    </label>
+}
+<div class="widget-box top-10">
+    <div class="widget-header">
+        <h5 class="widget-title">Chi tiết các khoản chi</h5>
+    </div>
+    <div class="widget-body">
+        <div class="widget-main">
+            <div class="table-responsive top-10 ">
+                <table class="table table-bordered bottom-5">
+                    <thead>
+                        <tr>
+                            <th width="50">STT</th>
+                            <th>Lý do chi</th>
+                            <th width="150">Số tiền (VNĐ)</th>
+                            <th width="200">Mã chứng từ</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in PaymentDetail.GroupBy(x => x.GroupName))
+                        {
+                            if (item.Key != null)
+                            {
+                                <tr>
+                                    <td colspan="4">@item.Key</td>
+                                </tr>
+                            }
+                            foreach (var ii in PaymentDetail.Where(x => x.GroupName == item.Key))
+                            {
+
+                                <tr>
+                                    <td>@(index++)</td>
+                                    <td>@ii.Name</td>
+                                    <td class="text-right">@CommonSatic.ToCurrencyStr(ii.Amount,null)</td>
+                                    <td>@ii.MaChungTuGoc</td>
+                                </tr>
+
+                            }
+                        }
+                    </tbody>
+                </table>
+                <span style="color:red" class="field-validation-valid help-inline" data-valmsg-for="ProductItemCount" data-valmsg-replace="true"></span>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+@using (Html.BeginButtonContainer(pageSetting))
+{
+    if (Model.IsDeleted == false)
+    {
+        if (Erp.BackOffice.Filters.SecurityFilter.AccessRight("Print", "Payment", "Account"))
+        {
+            <a href="@Url.Action("Print", new { Id = Model.Id })" target="_blank" class="btn btn-primary btn-mini"><i class="ace-icon fa fa-print"></i> In phiếu</a>
+
+        }
+        if (Erp.BackOffice.Filters.SecurityFilter.AccessRight("Delete", "Payment", "Account"))
+        {
+
+            <div class="mini-popup">
+
+                <a class="btn btn-white btn-sm no-border" data-toggle="collapse" data-target="#popup_huy" style="color: red !important;">
+                    <i class="ace-icon fa fa-trash"></i>
+                    Hủy phiếu chi
+                </a>
+                <div id="popup_huy" class="popover fade top">
+                    <div class="arrow" style="left: 50%;"></div>
+                    <h3 class="popover-title"><i class="ace-icon fa fa-bolt red"></i> Hủy phiếu chi</h3>
+                    <div class="popover-content">
+                        @using (Html.BeginForm_AceStyle((string)ViewBag.Title, "Delete", "Payment", null, FormMethod.Post, new { id = "Receipt_Delete", @class = "form-horizontal clearfix" }))
+                        {
+                            <input type="hidden" value="@Request["IsPopup"]" name="IsPopup" />
+                            @Html.HiddenFor(m => m.Id)
+                            @Html.CustomTextAreaFor(model => model.CancelReason, Wording.CancelReason, WidthType.span12)
+
+                            <p class="top-10">
+                                <button id="btnDelete" class="btn btn-mini btn-primary" type="submit" name="Submit" value="Save" onclick="return submitDelete();">
+                                    Đồng ý
+                                </button>
+                                <a class="btn btn-white btn-sm no-border" data-toggle="collapse" data-target="#popup_huy">Đóng</a>
+                            </p>
+                        }
+                    </div>
+                </div>
+            </div>
+        }
+    }
+}
+
+@section Scripts {
+    <script type="text/javascript">
+        function submitDelete() {
+            if (confirm('Bạn chắc chắn muốn thực hiện thao tác này?')) {
+                if ($("#CancelReason").val() == '') {
+                    alert("Vui lòng nhập lý do hủy!");
+                    $("#CancelReason").focus();
+                    return false;
+                }
+
+                return true;
+            }
+
+            return false;
+        }
+    </script>
+}

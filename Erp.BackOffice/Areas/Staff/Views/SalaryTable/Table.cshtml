@@ -1,0 +1,165 @@
+﻿@model IQueryable<SalaryTableViewModel>
+
+@using Erp.BackOffice.App_GlobalResources
+@using Erp.BackOffice.Staff.Models
+@using Erp.BackOffice.Helpers
+@using GridMvc.Html
+
+@{
+    ViewBag.Title = Wording.PageIndex_SalaryTable;
+    bool isPopup = Request["popup"] != null && Request["popup"].ToString().ToLower() == "true" ? true : false;
+
+    Layout = null;
+    Erp.BackOffice.Models.PageSetting pageSetting = new Erp.BackOffice.Models.PageSetting
+    {
+        ModuleName = "SalaryTable",
+        ActionName = "Table",
+        PageTitle = ViewBag.Title,
+        DisplaySearchPanel = false,
+        IsPopup = false,
+        DisplayBackButton = false
+
+    };
+}
+
+
+@helper GridColumnCommand(int id, bool Submitted)
+{
+    if (!Submitted)
+    {
+        <div class="hidden-phone visible-desktop action-buttons" style="display: inline-block; float: left;">
+            <p>
+                <button name="Delete" value="Delete" type="submit" class="btn btn-minier btn-danger">
+                    <i class="ace-icon fa fa-trash"></i>
+                </button>
+            </p>
+        </div>
+    }
+}
+
+@helper GridColumnName(string name, int id, bool isPopup)
+{
+    if (isPopup)
+    {
+        <a onclick="parent.selectBranchItem(@id)">@name</a>
+    }
+    else
+    {
+        name = string.IsNullOrEmpty(name) ? "No Title" : name;
+        <a href="@Url.Action("Detail", "SalaryTable" , new { Id= id })">@name</a>
+    }
+}
+
+@helper GridColumnCategoryValue(object value)
+{
+    var attr = Common.GetCategoryByValueOrId("value", value);
+    <span>@(attr != null ? attr.Name : "")</span>
+}
+
+@helper CheckDeleteColumns(int Id)
+{
+    <label>
+        <input class="ace class-delete-all" type="checkbox" name="DeleteId-checkbox" value="@Id">
+        <span class="lbl"></span>
+    </label>
+}
+
+@helper BuildCheckAll()
+{
+    <label>
+        <input class="ace" type="checkbox" name="checkAll" id="checkAll" />
+        <span class="lbl"></span>
+    </label>
+}
+
+@helper GridColumnStatus(string status)
+{
+    switch (status)
+    {
+        case "Đang xử lý":
+            <span class="label label-warning">@status</span>
+            break;
+        case "Đã khóa":
+        <span class="label label-info">
+            <i class="ace-icon fa fa-lock"></i>
+            @status
+        </span>
+            break;
+        case "Đã gửi":
+        <span class="label label-success">@status</span>
+            break;
+    }
+}
+
+@if (Model != null)
+{
+    using (Html.BeginForm("Delete", "SalaryTable", FormMethod.Post))
+    {
+
+        @Html.Grid(Model).Columns(columns =>
+            {
+                columns.Add().Titled(BuildCheckAll().ToHtmlString()).SetWidth(20).Sanitized(false).Encoded(false).RenderValueAs(n => CheckDeleteColumns(n.Id));
+                columns.Add().Titled("Trạng thái").SetWidth(100).Sanitized(false).Encoded(false).RenderValueAs(u => GridColumnStatus(u.Status));
+                columns.Add().Titled("Thời điểm").SetWidth(80).RenderValueAs(u => ((u.HiddenForMonth ? "" : (u.TargetMonth + "/")) + u.TargetYear));
+                columns.Add().Titled(Wording.Name).Sortable(false).Sanitized(false).Encoded(false).RenderValueAs(u => GridColumnName(u.Name, u.Id, isPopup));
+                columns.Add(u => u.CreatedDate).Titled(Wording.CreatedDate).SetWidth(130).Format("{0:dd/MM/yyyy HH:mm}");
+                columns.Add(u => u.ModifiedDate).Titled(Wording.ModifiedDate).SetWidth(130).Sortable(true).Format("{0:dd/MM/yyyy HH:mm}");
+                columns.Add(u => u.Id).Titled(Wording.Action).Sanitized(false).Encoded(false).RenderValueAs(u => GridColumnCommand(u.Id, u.Submitted)).SetWidth(20);
+            }).WithPaging(10)
+    }
+}
+else
+{
+    <div class="alert alert-warning">
+        <button type="button" class="close" data-dismiss="alert">
+            <i class="ace-icon fa fa-times"></i>
+        </button>
+        <strong>Dữ liệu trống</strong>
+
+        Không tìm thấy danh sách bản lương tương ứng.
+        <br>
+    </div>
+}
+
+@using (Html.BeginButtonContainer(pageSetting))
+{
+    if (Erp.BackOffice.Filters.SecurityFilter.AccessRight("Create", "SalaryTable", "Staff"))
+    {
+        <a class="btn btn-mini btn-primary" href="@Url.Action("Create", "SalaryTable", new { SalarySettingId = ViewBag.SalarySettingId })">
+            <i class="ace-icon fa fa-plus"></i>
+            @Wording.CreateNew
+        </a>
+    }
+}
+<script>
+    $(document).ready(function () {
+        function CheckIsval() {
+            if ($('[name="DeleteId-checkbox"]').is(':checked') == false) {
+                alert("Phải chọn ít nhất 1 item.");
+                return false;
+            }
+            else {
+                if (confirm('Bạn có chắc muốn xóa các item đã chọn ?')) {
+                    return true;
+                }
+                else {
+                    return false;
+                }
+            }
+        }
+
+        $('[name="Delete"]').click(function () {
+            if (confirm('Bạn có chắc muốn xóa item ?')) {
+                $(this).closest('tr').children('td').each(function (i, e) {
+                    $(this).find("input.class-delete-all").prop("checked", true);
+                    return true;
+                })
+            }
+            else {
+                return false;
+            }
+
+        })
+    })
+
+</script>

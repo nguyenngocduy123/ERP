@@ -1,0 +1,339 @@
+﻿@using Erp.BackOffice.App_GlobalResources
+@using Erp.BackOffice.Helpers
+@using Erp.BackOffice.Sale.Models
+@using Erp.BackOffice.Account.Models
+
+@model ProductInvoiceViewModel
+
+@{
+    if (Model.Id > 0)
+    {
+        ViewBag.Title = Wording.PageEdit_ProductInvoice;
+    }
+    else
+    {
+        ViewBag.Title = Wording.PageCreate_ProductInvoice;
+    }
+
+    Layout = "~/Views/Shared/ACE_AdminLayout.cshtml";
+
+    IEnumerable<SelectListItem> categoryList = (IEnumerable<SelectListItem>)ViewBag.categoryList;
+
+    Erp.BackOffice.Models.PageSetting pageSetting = new Erp.BackOffice.Models.PageSetting
+    {
+        ModuleName = "ProductInvoice",
+        ActionName = "CreateNT",
+        PageTitle = ViewBag.Title,
+        DisplaySearchPanel = false,
+        IsPopup = false,
+        DisplayBackButton = true
+    };
+    IEnumerable<InventoryViewModel> productList = (IEnumerable<InventoryViewModel>)ViewBag.productList;
+    IEnumerable<SelectListItem> drugStoreList = Erp.BackOffice.Helpers.SelectListHelper.GetSelectList_DepartmentAllNew(null, Wording.Empty);
+    var setting = Erp.BackOffice.Helpers.Common.GetSetting("hide_discount_product_invoice");
+    var user_type_onl = Erp.BackOffice.Helpers.Common.CurrentUser.UserTypeCode;
+    var setting_readonly = Erp.BackOffice.Helpers.Common.GetSetting("readonly_discount_product_invoice");
+    var _readonly = ("," + setting_readonly + ",").Contains("," + user_type_onl + ",") == false ? "true" : "false";
+   var _hiden = ("," + setting + ",").Contains("," + user_type_onl + ",") == false?"false":"true";
+   var _disabled = ("," + setting_readonly + ",").Contains("," + user_type_onl + ",") == false ? "disabled" : "";
+}
+
+@section HeadOfPage {
+    @Html.ScriptTop_ChosenStyle()
+    <style type="text/css">
+        #product_search_control {
+            display: inline-block;
+            position: relative;
+            float: left;
+        }
+
+            #product_search_control .result {
+                position: absolute;
+                width: 300px;
+                max-height: 300px;
+                overflow-y: scroll;
+                background: #fff;
+                border: 1px solid #ddd;
+                border-top: none;
+                display: none;
+            }
+
+                #product_search_control .result .item {
+                    padding: 2px 5px;
+                    border-bottom: 1px solid #ddd;
+                    cursor: pointer;
+                    display: block;
+                    text-decoration: none;
+                }
+
+                    #product_search_control .result .item:hover, #product_search_control .result .item.selected {
+                        background: #eee;
+                        font-weight: bold;
+                    }
+
+        #categorySelectList_chosen {
+            height: 29px !important;
+            float: left;
+            width: 250px !important;
+        }
+
+            #categorySelectList_chosen .chosen-single {
+                width: 100%;
+                height: 29px !important;
+            }
+
+
+        .mini-popup {
+            position: relative;
+            display: inline;
+        }
+
+        #popup_archive {
+            position: absolute;
+            bottom: 34px;
+            left: -154px;
+            width: 410px;
+            height: 235px;
+            max-width: inherit;
+            top: inherit;
+        }
+    </style>
+}
+
+@using (Html.BeginPageHeaderContainer(pageSetting))
+{
+
+}
+@using (Html.BeginForm_AceStyle((string)ViewBag.Title, "CreateNT", "ProductInvoice", null, FormMethod.Post, new { id = "SaleOrder", @class = "form-horizontal clearfix" }))
+{
+    @Html.ValidationSummary(true)
+    <input type="hidden" value="@_hiden" id="setting_hiden" name="setting_hiden" />
+    if (Model.Id == 0)
+    {
+        @Html.HiddenFor(model => model.CreatedUserName)
+        @Html.HiddenFor(model => model.Type)
+        @Html.HiddenFor(model => model.CustomerDiscountId)
+    @Html.HiddenFor(model => model.Id)
+    }
+    else
+    {
+        @Html.HiddenFor(model => model.Id)
+        @Html.HiddenFor(model => model.CreatedUserId)
+        @Html.HiddenFor(model => model.CreatedDate)
+        @Html.HiddenFor(model => model.IsDeleted)
+        @Html.HiddenFor(model => model.Code)
+        @Html.HiddenFor(model => model.CustomerDiscountId)
+        @Html.HiddenFor(model => model.Status)
+        @Html.HiddenFor(model => model.Type)
+    }
+
+    <div class="row">
+        <div class="col-sm-7 ">
+            <div class="listsearch">
+                <div class="product-search-box top-10">
+                    <input id="product_barcode" type="text" placeholder="Mã sản phẩm..." autocomplete="off" disabled style="width:0px!important" />
+                    <select id="productSelectList" name="productSelectList" style="width:400px">
+                        <option value="">- Tìm sản phẩm -</option>
+                        @foreach (var item in productList)
+                        {
+                            <option value="@item.Id" data-selected="0" data-value="@item.Id | @(Common.KiemTraTonTaiHinhAnh(item.Image_Name,"product-image-folder","product")) | @(item.ProductCode + " - " + item.ProductName + " (Lô:"+item.LoCode+"-HSD:"+(item.ExpiryDate==null?"":item.ExpiryDate.Value.ToShortDateString())+"-Tồn kho: " + Common.PhanCachHangNgan(item.Quantity) + ")")" data-code="@item.ProductCode" data-lo-code="@item.LoCode" data-expiry-date="@(item.ExpiryDate==null?"":item.ExpiryDate.Value.ToString("dd/MM/yyyy"))" data-product-type="@item.CategoryCode" data-price="@(item.ProductPriceOutbound)" data-unit="@item.ProductUnit" data-product-id="@item.ProductId" data-quantity-inventory="@(item.Quantity==null?0:item.Quantity.Value)">@item.ProductName</option>
+                        }
+                    </select>
+                </div>
+
+                <div id="listOrderDetail" class="table-responsive top-10 ">
+                    <table class="table table-bordered bottom-5">
+                        <thead>
+                            <tr>
+                                <th width="50">STT</th>
+                                <th>Tên sản phẩm</th>
+                                <th>Lô/Hạn SD</th>
+                                <th width="60">SL</th>
+                                <th width="100">Đơn giá</th>
+                                @if (("," + setting + ",").Contains("," + user_type_onl + ",") == false)
+                                {
+                                    <th width="100">% CK cố định 
+                                @Html.TextBox("InputFixedDiscount", 0, new { style = "width:50px; text-align:right",@readonly=_readonly })
+                                </th>
+                                    <th width="100">% CK đột xuất
+                                 @Html.TextBox("InputDiscount", 0, new { style = "width:50px; text-align:right", @readonly = _readonly })
+                                </th>
+                                }
+                                <th width="90">Thành tiền</th>
+
+                                <th width="20"></th>
+                            </tr>
+                        </thead>
+                        <tbody class="detailList">
+                            @if (Model.DetailList.Count > 0)
+                            {
+                                foreach (var item in Model.DetailList)
+                                {
+                                    @Html.Partial("LoadProductItemNT", item);
+                                }
+                            }
+                        </tbody>
+                        <tfoot>
+                            <tr>
+                                <td>
+                                    <input style="width:30px;" autocomplete="off" data-val="true" data-val-required="Vui lòng chọn sản phẩm!" id="ProductItemCount" name="ProductItemCount" type="text" value="@(Model.DetailList != null && Model.DetailList.Count > 0 ? Model.DetailList.Count.ToString() : "")" readonly="readonly" />
+                                </td>
+                                <td colspan="2" class="red"><span id="status"></span></td>
+                                <td id="TongSoLuong" align="right" style="font-weight:bold"></td>
+                                <td colspan="@(("," + setting + ",").Contains("," + user_type_onl + ",") == false?"3":"1")"></td>
+                                <td id="TongThanhTien" align="right" style="font-weight:bold"></td>
+                                <td></td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                    <span style="color:red" class="field-validation-valid help-inline" data-valmsg-for="ProductItemCount" data-valmsg-replace="true"></span>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-5">
+            <div class="widget-box">
+                <div class="widget-header">
+                    <h5 class="widget-title">Tổng quan</h5>
+                </div>
+                <div class="widget-body">
+                    <div class="widget-main">
+                        @if (Model.Id > 0)
+                        {
+                            <div class="detail-view">
+                                <div class="row control-group">
+                                    @Html.DetailViewItemFor2(m => m.Code)
+                                </div>
+                            </div>
+                        }
+                        @Html.CustomDropDownListFor(model => model.BranchId, drugStoreList, WidthType.span4, true, null, DropdownListStyle.DropdownListStyleDefault)
+                       
+                        <div class="control-group form-group">
+                            <label class="control-label col-lg-5 col-md-4 col-sm-4" for="">Khách vãng lai</label>
+                            <div class="control-value col-lg-7 col-md-8 col-sm-8" style="line-height:0px!important">
+                                <label class="radio"><input type="radio" value="Guests" class="group_choice ace" data-target="#group_choice_wrap1" checked name="group_choice" />  <span class="lbl"></span></label>
+                            </div>
+                        </div>
+                        <div class="control-group form-group">
+                            <label class="control-label col-lg-5 col-md-4 col-sm-4" for="">KH thường xuyên</label>
+                            <div class="control-value col-lg-7 col-md-8 col-sm-8" style="line-height:0px!important">
+                                <label class="radio"><input type="radio" value="Customer" class="group_choice ace" data-target="#group_choice_wrap2" name="group_choice" /> <span class="lbl"></span></label>
+                            </div>
+                        </div>
+                        <div id="group_choice_wrap1" class="group_choice_wrap clearfix">
+                         
+                        </div>
+
+                        <div id="group_choice_wrap2" class="group_choice_wrap clearfix" style="height:0;overflow: hidden;">
+                            @Html.CustomTextboxFor(model => model.CustomerPhone, null,null, WidthType.span12, true)
+                            @Html.CustomTextboxFor(model => model.CustomerName, null, null, WidthType.span12, true)
+                        </div>
+                        
+             
+                        @*@Html.ModulePopupFor(m => m.StaffCreateId, "Staffs", Model.StaffCreateName, false, false, false, null, null, "Search")*@
+                        @Html.CustomTextAreaFor(model => model.Note, Wording.Note, WidthType.span12, true, null, "hide", "full-w")
+                    </div>
+                </div>
+            </div>
+            <p></p>
+            <div class="widget-box">
+                <div class="widget-header">
+                    <h5 class="widget-title">Thông tin thanh toán</h5>
+                </div>
+                <div class="widget-body">
+                    <div class="widget-main">
+                        @Html.CustomTextboxFor(model => model.TotalAmount, null, null, WidthType.span12, true, new Dictionary<string, object> { { "class", "text-right" }, { "disabled", "disabled" } })
+                        @if (("," + setting + ",").Contains("," + user_type_onl + ",") == false)
+                        {
+                            @Html.CustomTextboxFor(model => model.FixedDiscount, null, null, WidthType.span12, true, new Dictionary<string, object> { { "class", "text-right" }, { "disabled", "disabled" } })
+                            @Html.CustomTextboxFor(model => model.IrregularDiscount, null, null, WidthType.span12, true, new Dictionary<string, object> { { "class", "text-right" }, { "disabled", "disabled" } })
+                        }
+                        @Html.CustomTextboxFor(model => model.TaxFee, null, null, WidthType.span12, true, new Dictionary<string, object> { { "class", "text-right" }, { "readonly", _readonly } })
+                        @Html.CustomTextboxFor(model => model.TongTienSauVAT, null, null, WidthType.span12, true, new Dictionary<string, object> { { "class", "text-right" }, { "disabled", "disabled" } })
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+   using (Html.BeginButtonContainer(pageSetting))
+    {
+        <a class="btn btn-mini btn-primary" onclick="Check();">
+            <i class="ace-icon fa fa-save"></i>
+            @Wording.Save
+        </a>
+    }
+}
+
+
+@section Scripts {
+
+    @Html.ScriptBottom_ValidationMvc()
+    @Html.ScriptBottom_ChosenStyle()
+    @Html.ScriptBottom_DatePicker("dd/MM/yyyy")
+<link href="/Scripts/RadCombobox_v1/RadComboBoxLite.css" rel="stylesheet" />
+<script src="/Scripts/RadCombobox_v1/rabCombobox.js"></script>
+    <script type="text/javascript">
+        @*var list = @Html.Raw(ViewBag.json);*@
+        $(document).ready(function () {
+            $(".group_choice").change(function () {
+                ShowLoading();
+                $(".group_choice_wrap").css('height', 'initial');
+                if ($(this).is(":checked")) {
+                    $(".group_choice_wrap").hide();
+                    $($(this).data("target")).show();
+                }
+                HideLoading();
+            });
+            $("#BranchId").change(function () {
+                ShowLoading();
+                var id = $("#Id").val();
+                var branch=$("#BranchId option:selected").val();
+                window.location = window.location.href.split("?")[0] + "?Id=" + id + "&BranchId=" + branch;
+            });
+            var url = '/api/BackOfficeServiceAPI/GetCustomerbyPhone';
+            var cus_name = $('#CustomerName'); // cache it
+
+            $("#CustomerPhone").change(function () {
+                ShowLoading();
+                var phone = $(this).val(); // Use $(this) so you don't traverse the DOM again
+                $.getJSON(url, { Phone: phone }, function (data) {
+                    if (data != 'null'||data!='') {
+                        cus_name.val(data);
+                    }
+                    HideLoading();
+                });
+
+            });
+        });
+        function selectLocationItem(id, code, name, orderNo) {
+
+            $("#DetailList_"+orderNo+"__SalerName").val(name);
+            $("#DetailList_"+orderNo+"__StaffId").val(id);
+            ClosePopup();
+        }
+        function Check() {
+            ShowLoading();
+            var check = $('input[name="group_choice"]:checked').val();
+             var CustomerPhone = $("#CustomerPhone").val();
+             var CustomerName = $("#CustomerName").val();
+            var messagge="";
+            if (check == 'Customer')
+            {
+                if (CustomerName == '')
+                    messagge += "Tên khách hàng chưa có<br>";
+                if (CustomerPhone=='')
+                    messagge += "Số điện thoại khách hàng chưa có <br>";
+            }
+            if (messagge!='') {
+                alertPopup('Lỗi!',messagge, 'error');
+                HideLoading();
+            }
+            else {
+                ClearFormatBeforeSubmit($("#SaleOrder"));
+                $("#SaleOrder").submit();
+            }
+        }
+    </script>
+    <script src="~/Scripts/area_sale/product_invoiceNT.js"></script>
+
+}

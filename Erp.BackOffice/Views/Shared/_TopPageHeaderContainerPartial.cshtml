@@ -1,0 +1,78 @@
+﻿@model Erp.BackOffice.Models.PageSetting
+
+<style type="text/css">
+    #page_header {
+        margin-bottom: 10px;
+    }   
+
+    .widget-toolbar {
+        padding: 0px;
+    }
+
+        .widget-toolbar a:hover {
+            transform: inherit !important;
+        }
+
+        .widget-toolbar::before {
+            content: none;
+        }
+
+        .widget-toolbar > a {
+            font-size: 12px;
+            line-height: 16px;
+            padding: 0px 4px;
+        }
+
+    #page_header .btn-search, #page_header .btn-setting {
+        display: inline-block;
+        float: left;
+        width: 34px;
+        height: 24px;
+        cursor: pointer;
+        background: url('/assets/img/btn_title_right.gif') no-repeat;
+        margin: 0px;
+    }
+
+    #page_header .btn-search {
+        background-position: 0 -24px;
+    }
+
+        #page_header .btn-search:hover {
+            background-position: -34px -24px;
+        }
+
+    #page_header .btn-setting:hover {
+        background-position: -34px 0px;
+    }
+</style>
+
+<div id="page_header" class="widget-box  @(Model.DisplaySearchPanel ? "" : "collapsed")">
+    <div class="widget-header">
+        <h5 class="widget-title">
+            <i class="ace-icon fa fa-star orange"></i>
+            @if (Model.DisplayBackButton && Model.IsPopup == false)
+            {
+                @*<a href="@Request.UrlReferrer" style="padding-right:5px"><i class="fa fa-arrow-left" aria-hidden="true"></i></a>*@
+                <a href="/@(Model.ModuleName)/Index" style="padding-right:5px"><i class="fa fa-arrow-left" aria-hidden="true"></i></a>
+            }
+            @Model.PageTitle
+            @if(!string.IsNullOrEmpty(Model.Status))
+            { 
+            <span style="color:@Model.Color">@Model.Status</span>
+                }
+</h5>
+        <div class="widget-toolbar">
+            @if (Model.DisplaySearchPanel)
+            {
+                <a class="btn-search" href="#" data-action="collapse">
+                    <i class="ace-icon fa"></i>
+                </a>
+            }
+            <a class="btn-setting"></a>
+        </div>
+    </div>
+
+    <div class="widget-body" style="@(Model.DisplaySearchPanel ? "" : "display: none;")">
+        <div class="widget-main">
+            <form action="/@Model.ModuleName/@Model.ActionName" class="search-view form-inline" id="@Model.ModuleName" method="get">
+

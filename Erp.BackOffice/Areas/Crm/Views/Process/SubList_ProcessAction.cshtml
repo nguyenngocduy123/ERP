@@ -1,0 +1,84 @@
+﻿@model IQueryable<ProcessActionViewModel>
+
+@using Erp.BackOffice.App_GlobalResources
+@using Erp.BackOffice.Crm.Models
+@using Erp.BackOffice.Helpers
+@using GridMvc.Html
+
+@helper GridColumnCommand(int id)
+{
+    <div class="hidden-phone visible-desktop action-buttons" style="display: inline-block; float: left;">
+        <p>
+            <button name="Delete" value="Delete" type="submit" class="btn btn-mini btn-danger">
+                <i class="ace-icon fa fa-trash bigger-120"></i>
+            </button>
+        </p>
+    </div>
+}
+
+@helper GridColumnName(string name, int id, string ActionType)
+{
+    <a onclick="OpenPopup('@Url.Action("Edit", "ProcessAction", new { area = "Crm", Id = id, IsPopup = true })', 'Chỉnh sửa hành động: @ActionType', 0, '100%')">@name</a>
+}
+
+@helper CheckDeleteColumns(int Id)
+{
+    <label>
+        <input class="ace class-delete-all" type="checkbox" name="DeleteAll-checkbox" value="@Id">
+        <span class="lbl"></span>
+    </label>
+}
+
+@helper BuildCheckAll()
+{
+    <label>
+        <input class="ace" type="checkbox" name="checkAll" id="checkAll" />
+        <span class="lbl"></span>
+    </label>
+}
+
+<div class="widget-box">
+    <div class="widget-header">
+        <h5 class="widget-title">Process này sẽ thực hiện các action sau</h5>
+        <div class="widget-toolbar">
+            <a href="#" data-action="collapse">
+                <i class="ace-icon fa fa-chevron-up"></i>
+            </a>
+        </div>
+    </div>
+    <div class="widget-body">
+        <div class="widget-main">
+            <p class="alert alert-info">Chọn loại hành động mà bạn muốn thêm vào process này</p>
+            @using (Html.BeginForm("DeleteOnSubList", "Process", FormMethod.Post))
+            {
+                <p>
+                    <a class="btn btn-mini btn-info" onclick="OpenPopup('@Url.Action("Create", "ProcessAction", new { area = "Crm", ProcessId = Request["ProcessId"], ActionType = "SendEmail", IsPopup = true })', 'Thêm hành động: SendEmail', 0, 500)">
+                        <i class="ace-icon fa fa-envelope bigger-120"></i>
+                        Send Email
+                    </a>
+                    <a class="btn btn-mini btn-info" onclick="OpenPopup('@Url.Action("Create", "ProcessAction", new { area = "Crm", ProcessId = Request["ProcessId"], ActionType = "CreateTask", IsPopup = true })', 'Thêm hành động: CreateTask', 0, 500)">
+                        <i class="ace-icon fa fa-list bigger-120"></i>
+                        Run Task
+                    </a>
+                    <a class="btn btn-mini btn-info" onclick="OpenPopup('@Url.Action("Create", "ProcessAction", new { area = "Crm", ProcessId = Request["ProcessId"], ActionType = "CreateNotifications", IsPopup = true })', 'Thêm hành động: CreateNotifications', 0, 500)">
+                        <i class="ace-icon fa fa-globe bigger-120"></i>
+                        Run Notifications
+                    </a>
+                    <button name="DeleteAll" value="DeleteAll" type="submit" class="btn btn-mini btn-danger" onclick="return CheckIsval();">
+                        <i class="ace-icon fa fa-trash bigger-120"></i>
+                        @Wording.Delete
+                    </button>
+                </p>
+
+                @Html.Grid(Model).Columns(columns =>
+                {
+                    columns.Add().Titled(BuildCheckAll().ToHtmlString()).SetWidth(20).Sanitized(false).Encoded(false).RenderValueAs(n => CheckDeleteColumns(n.Id));
+                    columns.Add(u => u.OrderNo).Titled(Html.DisplayNameFor(u => u.FirstOrDefault().OrderNo).ToString()).Sortable(false).SetWidth(50);
+                    columns.Add().Titled(Html.DisplayNameFor(u => u.FirstOrDefault().Name).ToString()).Sortable(false).Sanitized(false).Encoded(false).RenderValueAs(u => GridColumnName(u.Name, u.Id, u.ActionType)).SetWidth(200);
+                    columns.Add(u => u.ActionType).Titled(Html.DisplayNameFor(u => u.FirstOrDefault().ActionType).ToString()).Sortable(false);                    
+                    columns.Add(u => u.Id).Titled(Wording.Action).Sanitized(false).Encoded(false).RenderValueAs(u => GridColumnCommand(u.Id)).SetWidth(20);
+                }).WithPaging(10)
+            }
+        </div>
+    </div>
+</div>

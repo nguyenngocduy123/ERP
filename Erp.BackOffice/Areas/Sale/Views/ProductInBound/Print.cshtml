@@ -1,0 +1,103 @@
+﻿@using Erp.BackOffice.App_GlobalResources
+@using Erp.BackOffice.Helpers
+@using Erp.BackOffice.Sale.Models
+@using Erp.BackOffice.Account.Models
+
+@{
+    ViewBag.Title = "";
+
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title></title>
+    <style type="text/css">
+        body {
+            font-size: 12px;
+        }
+
+        p {
+            margin: 0px;
+            margin-bottom: 5px;
+        }
+
+        td {
+            padding-bottom: 3px;
+        }
+
+        .text-left {
+            text-align: left;
+        }
+
+        .invoice-detail {
+            width: 900px;
+            margin-top: 10px;
+            border-spacing: 0px;
+        }
+
+            .invoice-detail th {
+                border: 1px solid #000;
+                border-right: none;
+                padding: 5px;
+            }
+
+            .invoice-detail tr th:last-child {
+                border-right: 1px solid #000;
+            }
+
+            .invoice-detail td {
+                padding: 5px 5px;
+                border-bottom: 1px solid #000;
+                border-left: 1px solid #000;
+                height: 15px;
+                font-size: 12px;
+            }
+
+            .invoice-detail tr td:last-child {
+                border-right: 1px solid #000;
+            }
+
+            .invoice-detail tbody tr:last-child td {
+                border-bottom: 1px solid #000;
+            }
+
+            .invoice-detail tfoot td {
+                font-weight: bold;
+                border-bottom: 1px solid #000;
+            }
+
+            .invoice-detail tfoot tr:first-child td {
+                border-top: 1px solid #000;
+            }
+
+        .text-center {
+            text-align: center;
+        }
+
+        .text-right {
+            text-align: right;
+        }
+
+        .logo {
+            width: 100px;
+            float: left;
+            margin: 0 20px;
+            height: 100px;
+            line-height: 100px;
+        }
+
+            .logo img {
+                width: 100%;
+                vertical-align: middle;
+            }
+    </style>
+</head>
+<body>
+    @Html.Raw(ViewBag.PrintContent)
+    <script>
+        window.print();
+    </script>
+</body>
+</html>

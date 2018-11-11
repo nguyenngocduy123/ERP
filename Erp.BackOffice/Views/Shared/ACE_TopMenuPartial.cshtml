@@ -1,0 +1,143 @@
+﻿@model IEnumerable<Erp.BackOffice.Areas.Administration.Models.PageMenuViewModel>
+
+@using Erp.BackOffice.Areas.Administration.Models;
+@using Erp.Domain.Staff.Repositories;
+@using Erp.BackOffice.App_GlobalResources;
+@{
+    if (Model == null)
+    {
+        return;
+    }
+
+    int IdMenuItem = 0;
+    if (ViewBag.IdMenuItem != null)
+    {
+        IdMenuItem = (int)ViewBag.IdMenuItem;
+    }
+    int idMenuParent = IdMenuItem;
+    IEnumerable<Erp.BackOffice.Areas.Administration.Models.PageMenuViewModel> Parent = null;
+
+    List<int> idParentsActiveOpen = new List<int>();
+
+    if (Model != null)
+    {
+        int idParent = idMenuParent;
+        while (idParent > 0)
+        {
+            var item = Model.Where(p => p.Id == idParent).FirstOrDefault();
+
+            var parentItem = item != null && item.ParentId.HasValue ? Model.Where(p => p.Id == item.ParentId.Value).FirstOrDefault() : null;
+            if (parentItem != null)
+            {
+                idParentsActiveOpen.Add(parentItem.Id);
+                idParent = parentItem.Id;
+                idMenuParent = idParent;
+            }
+            else
+            {
+                idParent = 0;
+            }
+        }
+
+    }
+}
+<style>
+    .badge, .badge-red.label {
+        font-weight: 400;
+        background-color: #fa3e3e;
+        text-shadow: none;
+        position: absolute !important;
+        right: 0px;
+        font-size: 10px;
+        padding: 1px;
+    }
+
+    .button__badgeStaff {
+        background-color: #fa3e3e;
+        border-radius: 2px;
+        color: white;
+        padding: 1px 3px;
+        font-size: 10px;
+        position: absolute; /* Position the badge within the relatively positioned button */
+        top: 5px;
+        right: 10px;
+        height: 17px;
+        line-height: 15px;
+    }
+</style>
+
+<!-- Collect the nav links, forms, and other content for toggling -->
+<div class="collapse navbar-collapse pull-left" id="topmenu">
+    <ul class="nav navbar-nav">
+        @foreach (var item in Model.Where(p => p.ParentId == null && p.PageUrl != "/Home/Index").OrderBy(item => item.OrderNo))
+        {
+            var subList = Model.Where(p => p.ParentId == item.Id).OrderBy(i => i.OrderNo).ToList();
+            var hasSubList = subList != null && subList.Count > 0;
+
+            if (hasSubList)
+            {
+                var url = item.PageUrl;
+                if (item.PageId == null)
+                {
+                    url = item.Url;
+                }
+
+                var cssClassActiveOpen = "";
+                if (item.Id == idMenuParent)
+                {
+                    cssClassActiveOpen = "active";
+                }
+
+                <li>
+                    @*@if (hasSubList)
+                        {
+
+                            <a class="@cssClassActiveOpen dropdown-toggle" href="@url" data-toggle="dropdown" aria-expanded="true">
+                                <i class="@item.CssClassIcon"></i>
+                                @item.Name
+                                @if (item.CountNotifications > 0)
+                                {
+                                    <span class="button__badgeStaff">@item.CountNotifications</span>
+                                }
+                                <i class="ace-icon fa fa-caret-down"></i>
+                            </a>
+                            <ul class="dropdown-menu dropdown-caret dropdown-close">
+                                @foreach (var subItem in subList)
+                                {
+                                    var url2 = subItem.PageUrl;
+                                    if (subItem.PageId == null)
+                                    {
+                                        url2 = subItem.Url;
+                                    }
+                                    <li>
+                                        <a href="@url2" class="no-radius">
+                                            <i class="@subItem.CssClassIcon"></i>
+                                            @subItem.Name
+                                            @if (subItem.CountNotifications > 0)
+                                            {
+                                                <span class="badge badge-red">@subItem.CountNotifications</span>
+                                            }
+
+                                        </a>
+                                    </li>
+                                }
+                            </ul>
+                        }
+                        else
+                        {
+                            <a class="@cssClassActiveOpen" href="@url">
+                                <i class="@item.CssClassIcon"></i>
+                                @item.Name
+
+                            </a>
+                        }*@
+
+                    <a class="@cssClassActiveOpen" href="@url">
+                        @*<i class="@item.CssClassIcon"></i>*@
+                        @item.Name
+                    </a>
+                </li>
+            }
+        }
+    </ul>
+</div><!-- /.navbar-collapse -->

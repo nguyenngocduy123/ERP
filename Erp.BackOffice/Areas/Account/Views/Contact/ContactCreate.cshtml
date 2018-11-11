@@ -1,0 +1,162 @@
+﻿@using Erp.BackOffice.App_GlobalResources
+@using Erp.BackOffice.Helpers
+@using Erp.BackOffice.Account.Models
+
+@model ContactViewModel
+
+@{
+    ViewBag.Title = Model.Id == 0 ? Wording.PageCreate_Contact : Wording.PageEdit_Contact;
+
+    Layout = "~/Views/Shared/" + (Request["IsPopup"] == null ? "ACE_AdminLayout.cshtml" : "_PopupLayout.cshtml");
+
+    SelectList genderList = Erp.BackOffice.Helpers.Common.GetSelectList_Gender(null);
+    SelectList provinceList = SelectListHelper.GetSelectList_Location("0", null, Wording.Empty);
+    SelectList districtList = SelectListHelper.GetSelectList_Location(Model.CityId, null, Wording.Empty);
+    SelectList wardList = SelectListHelper.GetSelectList_Location(Model.DistrictId, null, Wording.Empty);
+
+    SelectList customerList = Erp.BackOffice.Helpers.SelectListHelper.GetSelectList("Sale_Customer", "Id", "CompanyName", Model.CustomerId);
+    SelectList supplierList = Erp.BackOffice.Helpers.SelectListHelper.GetSelectList("Sale_Supplier", "Id", "Name", Model.CustomerId);
+
+    Erp.BackOffice.Models.PageSetting pageSetting = new Erp.BackOffice.Models.PageSetting
+    {
+        ModuleName = "Contact",
+        ActionName = "ContactCreate",
+        PageTitle = ViewBag.Title,
+        DisplaySearchPanel = false,
+        IsPopup = true,
+        DisplayBackButton = true
+    };
+}
+
+@section HeadOfPage {
+    @Html.ScriptTop_ChosenStyle()
+}
+
+@using (Html.BeginPageHeaderContainer(pageSetting))
+{
+
+}
+
+@using (Html.BeginForm_AceStyle((string)ViewBag.Title, Model.Id == 0 ? "ContactCreate" : "ContactEdit", "Contact", null, FormMethod.Post, new { @class = "form-horizontal clearfix" }))
+{
+    @Html.ValidationSummary(true)
+
+    <input type="hidden" value="@Request["IsPopup"]" name="IsPopup" />
+    @Html.HiddenFor(model => model.Id)
+	if(Model.Id != 0)
+	{
+		@Html.HiddenFor(model => model.CustomerId)
+	}
+    
+    <div class="col-sm-6">
+        @Html.CustomTextboxFor(model => model.LastName, null, null, WidthType.span12)
+        @Html.CustomTextboxFor(model => model.FirstName, null, null, WidthType.span12)
+        @Html.CustomTextboxFor(model => model.Email, null, null, WidthType.span12)
+        @Html.CustomDropDownListFor(model => model.Gender, genderList, WidthType.span12)
+        @Html.CustomTextboxFor(model => model.Birthday, null, null, WidthType.span12)
+        @Html.CustomTextboxFor(model => model.DepartmentName, null, null, WidthType.span12)
+        @Html.CustomTextboxFor(model => model.Position, null, null, WidthType.span12)
+    </div>
+    <div class="col-sm-6">
+        @Html.CustomTextboxFor(model => model.Phone, null, null, WidthType.span12)
+        @Html.CustomTextboxFor(model => model.Mobile, null, null, WidthType.span12)
+        @Html.CustomTextboxFor(model => model.Address, null, null, WidthType.span12)
+        @Html.CustomDropDownListFor(model => model.CityId, provinceList, WidthType.span12)
+        @Html.CustomDropDownListFor(model => model.DistrictId, districtList, WidthType.span12)
+        @Html.CustomDropDownListFor(model => model.WardId, wardList, WidthType.span12)
+    </div>
+
+    @*<div class="clearfix col-sm-12 box box-attr" style="padding:0">
+        <h4><span>Các đặc tính khác</span></h4>
+        <div class="clearfix list-attr-by-category">
+            @Html.Action("GetListByModule", "ObjectAttribute", new { module = "contact",area="Sale" ,objectId = Model.Id })
+        </div>
+    </div>*@
+
+    using (Html.BeginButtonContainer(pageSetting))
+    {
+        <button class="btn btn-mini btn-primary" type="submit" name="Submit" value="Save">
+            <i class="ace-icon fa fa-save"></i>
+            @Wording.Save
+        </button>
+    }
+}
+
+@section Scripts {    
+
+    @Html.ScriptBottom_ValidationMvc()    
+    @Html.ScriptBottom_ChosenStyle()
+    @Html.ScriptBottom_DatePicker("dd/mm/yyyy")
+
+    <script>
+
+        var closePopup = '@ViewBag.closePopup';
+
+        $(document).ready(function () {
+            //nếu là được gọi theo dạng popup từ form thêm mới hóa đơn thì chạy đoạn code bên dưới
+            if (closePopup != '') {
+                window.parent.ShowLoading();
+                window.parent.ClosePopup(true);
+                //window.parent.location.reload();
+            }
+
+            $("[name='Birthday']").mask('99/99/9999');
+
+            $('#CustomerId').change(function () {
+                if ($(this).val() != '') {
+                    $('#SupplierId').closest('.col-sm-6').hide();
+                } else {
+                    $('#SupplierId').closest('.col-sm-6').show();
+                }
+            });
+            $('#SupplierId').change(function () {
+                if ($(this).val() != '') {
+                    $('#CustomerId').closest('.col-sm-6').hide();
+                } else {
+                    $('#CustomerId').closest('.col-sm-6').show();
+                }
+            });
+        });
+
+
+        $(function () {
+            var url = '/api/BackOfficeServiceAPI/FetchLocation';
+            var districts = $('#DistrictId'); // cache it
+            var ward = $('#WardId');
+
+            $("#CityId").change(function () {
+                var id = $(this).val(); // Use $(this) so you don't traverse the DOM again
+                $.getJSON(url, { parentId: id }, function (response) {
+                    districts.empty(); // remove any existing options
+                    ward.empty();
+                    $(document.createElement('option'))
+                            .attr('value', '')
+                            .text('- Rỗng -')
+                            .appendTo(ward);
+                    $(response).each(function () {
+                        $(document.createElement('option'))
+                            .attr('value', this.Id)
+                            .text(capitalizeFirstAllWords(this.Name.toLowerCase().replace('huyện', '').replace('quận', '')))
+                            .appendTo(districts);
+                    });
+
+                    districts.trigger("chosen:updated");
+                });
+            });
+
+            districts.change(function () {
+                var id = $(this).val(); // Use $(this) so you don't traverse the DOM again
+                $.getJSON(url, { parentId: id }, function (response) {
+                    ward.empty(); // remove any existing options
+                    $(response).each(function () {
+                        $(document.createElement('option'))
+                            .attr('value', this.Id)
+                            .text(capitalizeFirstAllWords(this.Name.toLowerCase()))
+                            .appendTo(ward);
+                    });
+                    ward.trigger("chosen:updated");
+                });
+            });
+        });
+    </script>
+}

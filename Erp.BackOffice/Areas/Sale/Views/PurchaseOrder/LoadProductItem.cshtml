@@ -1,0 +1,34 @@
+﻿@model Erp.BackOffice.Sale.Models.PurchaseOrderDetailViewModel
+
+@{
+    var thanh_tien = Model.Quantity * Model.Price;
+    var thanh_tien_sau_ck = thanh_tien - Model.DisCountAmount;
+}
+
+<tr role="@Model.OrderNo" id="product_item_@Model.OrderNo" data-id="@Model.OrderNo">
+    <td class="text-center">
+        @(Model.OrderNo + 1)
+        @*<input class="pricetest" type="text" id="DetailList_@(Model.OrderNo)__PriceTest" name="DetailList[@(Model.OrderNo)].PriceTest" value="@Model.PriceTest" data-val="true" autocomplete="off" hidden />*@
+    </td>
+    <td class="detail_item_id">
+        @Html.Hidden("DetailList[" + Model.OrderNo + "].ProductId", Model.ProductId)
+        @Model.ProductCode - @Model.ProductName
+    </td>
+    <td>
+        @Html.TextBox("DetailList[" + Model.OrderNo + "].Quantity", Model.Quantity, new { style = "width:50px", @class = "detail_item_qty numberinput1", autocomplete = "off", data_quantity_inventory = Model.QuantityInInventory })
+    </td>
+    <td>
+        @Html.TextBox("DetailList[" + Model.OrderNo + "].Price", Model.Price, new { style = "width:85px", @class = "detail_item_price numberinput2", autocomplete = "off" })
+
+    </td>
+    <td>
+        @Html.TextBox("DetailList[" + Model.OrderNo + "].DisCount", Model.DisCount, new { style = "width:85px", @class = "numberinput2 detail_item_discount", autocomplete = "off" })
+        @Html.TextBox("DetailList[" + Model.OrderNo + "].DisCountAmount1", Erp.BackOffice.Helpers.CommonSatic.ToCurrencyStr(Model.DisCountAmount,null), new { style = "width:85px;", @class = "detail_item_discount_amount", autocomplete = "off", @readonly = "readonly" })
+    </td>
+    <td class="detail_item_total">@Erp.BackOffice.Helpers.CommonSatic.ToCurrencyStr(thanh_tien_sau_ck,null)</td>
+    <td class="text-center">
+        <a class="btn-delete-item">
+            <i class="ace-icon fa fa-trash red bigger-120" style="cursor:pointer"></i>
+        </a>
+    </td>
+</tr>

@@ -1,0 +1,139 @@
+﻿@model IQueryable<LogContractbyCondosViewModel>
+
+@using Erp.BackOffice.App_GlobalResources
+@using Erp.BackOffice.Account.Models
+@using Erp.BackOffice.Helpers
+@using GridMvc.Html
+
+@{
+
+}
+
+<link href="@Url.Content("~/assets/css/Gridmvc.css")" rel="stylesheet" type="text/css" />
+<script src="@Url.Content("~/Scripts/gridmvc.min.js")" type="text/javascript"> </script>
+
+@helper GridColumnCommand(int id)
+{
+    <div class="hidden-phone visible-desktop action-buttons" style="display: inline-block; float: left;">
+        <p>
+            <button name="Delete" value="Delete" type="submit" class="btn btn-mini btn-danger">
+                <i class="ace-icon fa fa-trash bigger-120"></i>
+            </button>
+            <a class="btn btn-mini btn-success" href="@Url.Action("edit", "Contract", new { Id = id })">
+                <i class=" glyphicon glyphicon-edit bigger-120"></i>
+            </a>
+        </p>
+    </div>
+}
+
+@helper GridColumnName(string name, int id, bool isPopup)
+{
+    if (isPopup)
+    {
+        <a onclick="parent.selectBranchItem(@id)">@name</a>
+    }
+    else
+    {
+        name = string.IsNullOrEmpty(name) ? "No Title" : name;
+        <a href="@Url.Action("Detail", "Contract" , new { Id= id })">@name</a>
+    }
+}
+@helper GridColumnCategoryValue(object value, string code)
+{
+    var attr = Erp.BackOffice.Helpers.Common.GetCategoryByValueCodeOrId("value", value, code);
+    <span>@(attr != null ? attr.Name : "")</span>
+}
+
+@helper CheckDeleteColumns(int Id)
+{
+    <label>
+        <input class="ace class-delete-all" type="checkbox" name="DeleteId-checkbox" value="@Id">
+        <span class="lbl"></span>
+    </label>
+}
+
+@helper BuildCheckAll()
+{
+    <label>
+        <input class="ace" type="checkbox" name="checkAll" id="checkAll" />
+        <span class="lbl"></span>
+    </label>
+}
+@helper GridColumnStatus(string Status)
+{
+    switch (Status)
+    {
+        case "Mới":
+            <label class="label label-info " data-rel="tooltip" title="" data-placement="bottom" data-original-title="">@Status</label>
+            break;
+        case "Đã đặt cọc":
+        <label class="label label-danger" data-rel="tooltip" title="" data-placement="bottom" data-original-title="">@Status</label>
+            break;
+        case "Đã thanh toán":
+        <label class="label label-success" data-rel="tooltip" title="" data-placement="bottom" data-original-title="">@Status</label>
+            break;
+    }
+}
+    @using (Html.BeginForm("Delete", "ProcessPayment", FormMethod.Post))
+    {
+        <p>
+          
+            @*<button name="DeleteAll" value="DeleteAll" type="submit" class="btn btn-mini btn-danger" onclick="return CheckIsval();">
+                <i class="ace-icon fa fa-trash bigger-120"></i>
+                @Wording.Delete
+            </button>*@
+        </p>
+
+        @Html.Grid(Model).Columns(columns =>
+        {
+            columns.Add().Titled(BuildCheckAll().ToHtmlString()).SetWidth(20).Sanitized(false).Encoded(false).RenderValueAs(n => CheckDeleteColumns(n.Id));
+            columns.Add().Titled(Wording.Status).Sortable(false).Sanitized(false).Encoded(false).RenderValueAs(u => GridColumnStatus(u.Status));
+            columns.Add().Titled(Wording.ContractCode).Sortable(false).Sanitized(false).Encoded(false).RenderValueAs(u => GridColumnName(u.Code, u.Id, false));
+            columns.Add(u => u.CustomerName).Titled(Wording.Customer);
+            columns.Add(u => u.InfoPartyAName).Titled(Wording.surrogate);
+            columns.Add(u => u.InfoPartyCompanyName).Titled(Wording.CompanyName);
+            columns.Add().Titled(Wording.ContactType).Sortable(false).Sanitized(false).Encoded(false).RenderValueAs(u => GridColumnCategoryValue(u.Type, "ContractType"));
+            columns.Add().Titled(Wording.Quantity).Sortable(false).Sanitized(false).Encoded(false).RenderValueAs(u => Erp.BackOffice.Helpers.Common.PhanCachHangNgan(u.Quantity));
+            columns.Add().Titled(Wording.Price).Sortable(false).Sanitized(false).Encoded(false).RenderValueAs(u => Erp.BackOffice.Helpers.Common.PhanCachHangNgan(u.Price));
+            columns.Add().Titled(Wording.Unit).Sortable(false).Sanitized(false).Encoded(false).RenderValueAs(u => u.Unit);
+            columns.Add(u => u.DayPay).Titled(Wording.DayPay).RenderValueAs(u => u.DayPay.Value.ToString("dd/MM/yyyy"));
+            columns.Add(u => u.DayHandOver).Titled(Wording.DayHandOver).RenderValueAs(u => u.DayHandOver.Value.ToString("dd/MM/yyyy"));
+            //columns.Add(u => u.EffectiveDate).Titled(Wording.DayEffective).RenderValueAs(u => u.EffectiveDate.Value.ToString("dd/MM/yyyy"));
+            columns.Add(u => u.CreatedDate).Titled(Wording.CreatedDate).RenderValueAs(u => u.CreatedDate.Value.ToString("HH:mm - dd/MM/yyyy"));
+            //columns.Add(u => u.ModifiedDate).Titled(Wording.ModifiedDate).RenderValueAs(u => u.ModifiedDate.Value.ToString("HH:mm - dd/MM/yyyy"));
+            columns.Add(u => u.Id).Titled(Wording.Action).Sanitized(false).Encoded(false).RenderValueAs(u => GridColumnCommand(u.Id)).SetWidth(20);
+        }).WithPaging(10)
+    }
+
+@section Scripts {
+    <script type="text/javascript">
+        function CheckIsval() {
+            if ($('[name="DeleteId-checkbox"]').is(':checked') == false) {
+                alert("Phải chọn ít nhất 1 item.");
+                return false;
+            }
+            else {
+                if (confirm('Bạn có chắc muốn xóa các item đã chọn ?')) {
+                    return true;
+                }
+                else {
+                    return false;
+                }
+            }
+        }
+
+        $('[name="Delete"]').click(function () {
+            if (confirm('Bạn có chắc muốn xóa item ?')) {
+                $(this).closest('tr').children('td').each(function (i, e) {
+                    $(this).find("input.class-delete-all").prop("checked", true);
+                    return true;
+                })
+            }
+            else {
+                return false;
+            }
+
+        })
+
+    </script>
+}

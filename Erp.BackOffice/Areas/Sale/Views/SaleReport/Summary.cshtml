@@ -1,0 +1,433 @@
+﻿@model Erp.BackOffice.Sale.Models.SaleReportSumaryViewModel
+
+@{
+    var single = Request["single"] != null ? Request["single"] : "month";
+    var day = Erp.BackOffice.Helpers.DateDifference.DateDifferences(Erp.BackOffice.Helpers.Common.CurrentUser.CooperationDay.Value, DateTime.Now);
+
+}
+<div class="widget-box">
+    <div class="widget-header">
+        <h4 class="widget-title">
+            <i class="ace-icon fa fa-line-chart"></i>
+            Tổng quan bán hàng
+        </h4>
+    </div>
+    <div class="widget-body">
+        <div class="widget-main">
+            <p><b>@ViewBag.DateRangeText</b></p>
+            <div class="clearfix">
+                <div class="infobox infobox-blue tongdoanhthu">
+                    <div class="infobox-icon">
+                        <i class="ace-icon fa fa-dollar"></i>
+                    </div>
+                    <div class="infobox-data">
+                        <span class="infobox-data-number ng-binding">@Erp.BackOffice.Helpers.CommonSatic.ToCurrencyStr(Model.Revenue, null)</span>
+                        <div class="infobox-content">
+                            Tổng doanh số
+                        </div>
+                    </div>
+                </div>
+                <div class="infobox infobox-blue tongdonhang">
+                    <div class="infobox-icon">
+                        <i class="ace-icon fa fa-shopping-cart"></i>
+                    </div>
+                    <div class="infobox-data">
+                        <span class="infobox-data-number ng-binding">@Erp.BackOffice.Helpers.Common.PhanCachHangNgan2(Model.NumberOfProductInvoice)</span>
+                        <div class="infobox-content">Tổng đơn hàng</div>
+                    </div>
+                </div>
+            </div>
+            @if (Erp.BackOffice.Filters.SecurityFilter.IsAdminDrugStore())
+            {
+                <div class="clearfix">
+                    <div class="infobox infobox-green">
+                        <div class="infobox-icon">
+                            <i class="ace-icon fa fa-money"></i>
+                        </div>
+                        <div class="infobox-data">
+                            <span class="infobox-data-number ng-binding">@Erp.BackOffice.Helpers.CommonSatic.ToCurrencyStr(Model.TotalFixedDiscount, null)</span>
+                            <div class="infobox-content">
+                                Tổng CK cố định
+                            </div>
+                        </div>
+                    </div>
+                    <div class="infobox infobox-green">
+                        <div class="infobox-icon">
+                            <i class="ace-icon fa fa-money"></i>
+                        </div>
+                        <div class="infobox-data">
+                            <span class="infobox-data-number ng-binding">@Erp.BackOffice.Helpers.CommonSatic.ToCurrencyStr(Model.TotalIrregularDiscount, null)</span>
+                            <div class="infobox-content">Tổng CK đột xuất</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="clearfix">
+                    <div class="infobox infobox-green">
+                        <div class="infobox-icon">
+                            <i class="ace-icon fa fa-calendar-check-o"></i>
+                        </div>
+                        <div class="infobox-data">
+                            <span class="infobox-data-number ng-binding">@Erp.BackOffice.Helpers.Common.PhanCachHangNgan2(Model.TotalDayInvoice)</span>
+                            <div class="infobox-content">
+                                Số ngày bán tích lũy
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+            @if (Erp.BackOffice.Filters.SecurityFilter.IsAdminSystemManager() || Erp.BackOffice.Filters.SecurityFilter.IsTrinhDuocVien())
+            {
+                <div class="clearfix">
+                    <div class="infobox infobox-green">
+                        <div class="infobox-icon">
+                            <i class="ace-icon fa fa-money"></i>
+                        </div>
+                        <div class="infobox-data">
+                            <span class="infobox-data-number ng-binding">@Erp.BackOffice.Helpers.CommonSatic.ToCurrencyStr(Model.AmountCommissionStaff, null)</span>
+                            <div class="infobox-content">
+                                Hoa hồng được hưởng
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+
+            @if (Erp.BackOffice.Filters.SecurityFilter.IsAdminDrugStore())
+            {
+                <div class="clearfix">
+                    <div class="infobox infobox-orange">
+                        <div class="infobox-icon">
+                            <i class="ace-icon fa fa-vimeo"></i>
+                        </div>
+                        <div class="infobox-data">
+                            <span class="infobox-data-number ng-binding">@Model.SoVIP</span>
+                            <div class="infobox-content">Số điểm VIP</div>
+                        </div>
+                    </div>
+                    @if (Model.ProductInvoiceList.Count() > 0)
+                    {
+                        foreach (var item in Model.ProductInvoiceList)
+                        {
+                            <div class="infobox infobox-orange">
+                                <div class="infobox-icon">
+                                    <i class="ace-icon fa fa-dollar"></i>
+                                </div>
+                                <div class="infobox-data">
+                                    <span class="infobox-data-number ng-binding">@Erp.BackOffice.Helpers.CommonSatic.ToCurrencyStr(item.TotalAmount, null)</span>
+                                    <div class="infobox-content">
+                                        Công nợ tuần @item.WeekOfYear
+                                        @if (item.DrugStoreUserId == null && item.AccountancyUserId == null)
+                                        {
+                                            if (Erp.BackOffice.Filters.SecurityFilter.AccessRight("ApprovedDrugStore", "ProductInvoice", "Sale"))
+                                            {
+                                                if (item.TotalAmount > 0)
+                                                {
+                                                    <span id="approved">
+                                                        <span>||</span><a class="pull-right" onclick="Approved(@item.WeekOfYear,@item.Year,@item.BranchId)">Đã chuyển</a>
+                                                    </span>
+                                                }
+                                            }
+                                        }
+                                    </div>
+                                </div>
+                                @if (item.DrugStoreUserId == null && item.AccountancyUserId == null && item.TotalAmount > 0)
+                                {
+                                    <div class="badge badge-danger">
+                                        Chưa chuyển
+                                    </div>
+                                }
+                                else if (item.DrugStoreUserId != null && item.AccountancyUserId == null && item.TotalAmount > 0)
+                                {
+                                    <div class="badge badge-warning">
+                                        Đã chuyển
+                                    </div>
+                                }
+                                else if (item.TotalAmount > 0)
+                                {
+                                    <div class="badge badge-success">
+                                        Đã nhận
+                                    </div>
+                                }
+                            </div>
+                        }
+
+                    }
+                </div>
+            }
+
+            @if (Model.NumberOfProductInvoice_Pendding > 0 || Model.NumberOfProductInvoice_InProgress > 0)
+            {
+                <div class="alert alert-warning top-10">
+                    <p>
+                        @if (Model.NumberOfProductInvoice_Pendding > 0)
+                        {
+                            <a class="green" href="/ProductInvoice/Index?status=@Resources.Wording.OrderStatus_pending"><b>@Erp.BackOffice.Helpers.Common.PhanCachHangNgan2(Model.NumberOfProductInvoice_Pendding) đơn hàng mới</b></a>
+                        }
+                        @if (Model.NumberOfProductInvoice_InProgress > 0)
+                        {
+                            <span>|</span>
+                            <a class="orange" href="/ProductInvoice/Index?status=@Resources.Wording.OrderStatus_inprogress"><b>@Erp.BackOffice.Helpers.Common.PhanCachHangNgan2(Model.NumberOfProductInvoice_InProgress) đơn hàng đang xử lý</b></a>
+                        }
+                    </p>
+                </div>
+            }
+
+        </div>
+    </div>
+</div>
+<p></p>
+<div class="widget-box">
+    <div class="widget-header">
+        <h4 class="widget-title">
+            @ViewBag.Title_qThongKeBanHang_TheoKhachHang
+        </h4>
+    </div>
+    <div class="widget-body">
+        <div class="widget-main">
+            <canvas id="bieu_do_doanh_so_theo_khach_hang" width="400" height="300" style="max-width:600px;"></canvas>
+        </div>
+    </div>
+</div>
+<p></p>
+@*<div class="widget-box">
+        <div class="widget-header">
+            <h4 class="widget-title">
+                Thống kê doanh số theo nhân viên
+            </h4>
+        </div>
+        <div class="widget-body">
+            <div class="widget-main">
+                <canvas id="bieu_do_doanh_so_theo_nhan_vien" width="400" height="300" style="max-width:600px;"></canvas>
+            </div>
+        </div>
+    </div>*@
+
+<script type="text/javascript">
+    function buildHorizontalBarChart(el, responseData, title) {
+        $(function(){
+            function createNewDataset(arrayData, label, backgroundColorValue, borderColorValue, borderWidth) {
+                var objectDataset = {
+                    label: label,
+                    backgroundColor: colorRender(backgroundColorValue).alpha(0.5).rgbString(),
+                    borderColor: borderColorValue,
+                    borderWidth: borderWidth,
+                    data: []
+                };
+
+                for (var i in arrayData) {
+                    objectDataset.data.push(arrayData[i]);
+                }
+
+                return objectDataset;
+            }
+
+            var xData = [];
+            var yData = [];
+            var arrayLabelCode = [];
+            for (var i in responseData) {
+                xData.push(responseData[i].data);
+                yData.push(responseData[i].label);
+                arrayLabelCode.push(responseData[i].id)
+            }
+
+            var dataPushToDataset = [];
+
+            for (var i in yData) {
+                var item = responseData.filter(function(obj){
+                    return obj.label.toString() ==  yData[i];
+                });
+
+                arrayLabelCode.push()
+                if (item.length != 0) {
+                    dataPushToDataset.push(item[0].data);
+                } else {
+                    dataPushToDataset.push(0);
+                }
+            }
+
+            var arrayDataset = [];
+            var colorRender = Chart.helpers.color;
+            var newDataset = createNewDataset(dataPushToDataset, 'Doanh số', window.chartColors.green, window.chartColors.green, 1);
+            arrayDataset.push(newDataset);
+
+            var barChartData = {
+                labels: yData,
+                datasets: [],
+                Code: arrayLabelCode,
+                showLine: true
+            };
+
+            //Khởi tạo cái chart
+            $(document).ready(function () {
+                var canvas = document.getElementById("bieu_do_doanh_so_theo_khach_hang");
+                var ctx = document.getElementById(el).getContext("2d");
+                var chart = new Chart(ctx, {
+                    type: 'horizontalBar',
+                    data: barChartData,
+                    options: {
+                        responsive: true,
+                        barThickness: 40,
+                        legend: {
+                            position: 'top',
+                        },
+                        title: {
+                            display: false,
+                            text: title,
+                            enabled: false,
+                        },
+                        animation: {
+                            onComplete: function () {
+                                var ctx = this.chart.ctx;
+                                ctx.font = Chart.helpers.fontString(Chart.defaults.global.defaultFontFamily, 'normal', Chart.defaults.global.defaultFontFamily);
+                                ctx.fillStyle = "black";
+                                ctx.textAlign = 'center';
+                                ctx.textBaseline = 'bottom';
+
+                                this.data.datasets.forEach(function (dataset)
+                                {
+                                    for (var i = 0; i < dataset.data.length; i++) {
+                                        for(var key in dataset._meta)
+                                        {
+                                            var model = dataset._meta[key].data[i]._model;
+                                            ctx.fillText(numeral(dataset.data[i]).format('0,0'), model.x+35, model.y +10);
+                                        }
+                                    }
+                                });
+                            },
+                            duration: 500,
+                            enabled: true,
+                        },
+                        //animation: {
+                        //    duration: 500,
+                        //    enabled: true,
+                        //},
+                        scales: {
+                            yAxes: [
+                                {
+                                    ticks: {
+                                        fontSize: 10,
+                                        callback: function (label, index, labels) {
+                                            //return '';
+                                            return (index + 1) + '. ' + label;
+                                        }
+                                    }
+                                }
+                            ],
+                            xAxes: [
+                                {
+                                    ticks: {
+                                        fontSize: 10,
+                                        callback: function (label, index, labels) {
+                                            return numeral(label).format('0,0');
+                                        }
+                                    },
+                                    scaleLabel: {
+                                        display: window.outerWidth < 992 ? false : true,
+                                        labelString: ''
+                                    }
+                                }
+                            ]
+                        },
+                        tooltips: {
+                            enabled: true,
+                            mode: 'single',
+                            callbacks: {
+                                title: function (tooltipItem, data) {
+                                    return data.labels[tooltipItem[0].index];
+                                },
+                                label: function (tooltipItems, data) {
+                                    return numeral(tooltipItems.xLabel).format('0,0');
+                                }
+                            }
+                        }
+                    }
+                });
+
+                setTimeout(function () {
+                    for (var i in arrayDataset) {
+                        console.log(arrayDataset[i]);
+                        barChartData.datasets.push(arrayDataset[i]);
+                    }
+                    chart.update();
+                }, 500);
+
+                canvas.onclick = function (evt) {
+                    var month = $("#month option:selected").val();
+                    var quarter = $("#quarter option:selected").val();
+                    var year = $("#year option:selected").val();
+                    var CityId = $("#CityId option:selected").val();
+                    var DistrictId = $("#DistrictId option:selected").val();
+                    var branchId = $("#branchId option:selected").val();
+                    var week = $("#week option:selected").val();
+                    var single = $("[name='single']:checked").val();
+                    var activePoints = chart.getElementsAtEvent(evt);
+                    if (activePoints[0]) {
+                        var chartData = activePoints[0]['_chart'].config.data;
+                        var idx = activePoints[0]['_index'];
+
+                        var label = chartData.labels[idx];
+                        var value = chartData.datasets[0].data[idx];
+                        var id = chartData.Code[idx];
+                        OpenPopup('@Url.Action("DoanhThuNgay", "SaleReport", new { area = "Sale" })/?single=' + single + '&year=' + year + '&month=' + month + '&quarter=' + quarter + '&week=' + week + '&CityId=' + CityId + '&DistrictId=' + DistrictId + '&branchId=' + branchId+'&&IsPopup=true', 'Thông tin doanh số '+label, 0, 500);
+
+                    }
+                };
+
+            });
+        });
+    }
+
+    @*var jsonThongKeBanHang_TheoNhanVien = @Html.Raw(ViewBag.jsonThongKeBanHang_TheoNhanVien);
+    buildHorizontalBarChart("bieu_do_doanh_so_theo_nhan_vien", jsonThongKeBanHang_TheoNhanVien, "Thống kê doanh số theo nhân viên");*@
+
+    var jsonThongKeBanHang_TheoKhachHang = @Html.Raw(ViewBag.jsonThongKeBanHang_TheoKhachHang);
+    buildHorizontalBarChart("bieu_do_doanh_so_theo_khach_hang", jsonThongKeBanHang_TheoKhachHang, "Thống kê doanh số theo khách hàng");
+
+    function DoanhThu() {
+        // ShowLoading();
+        var single = $("[name='single']:checked").val();
+        // console.log(single);
+        var month = $("#month option:selected").val();
+        var quarter = $("#quarter option:selected").val();
+        var year = $("#year option:selected").val();
+        var CityId = $("#CityId option:selected").val();
+        var DistrictId = $("#DistrictId option:selected").val();
+        var branchId = $("#branchId option:selected").val();
+        var week = $("#week option:selected").val();
+        //  OpenPopup('/ProductInvoice/DetailByChart?IsPopup=true&month=' + month + '&year=' + year, 'Danh sách doanh số ngày ' + month +'/'+year, 0, 500);
+        OpenPopup('@Url.Action("DoanhThuNgay", "SaleReport", new { area = "Sale" })/?single=' + single + '&year=' + year + '&month=' + month + '&quarter=' + quarter + '&week=' + week + '&CityId=' + CityId + '&DistrictId=' + DistrictId + '&branchId=' + branchId+'&&IsPopup=true', 'Thông tin doanh số ', 0, 500);
+
+    };
+    function TongDonHang() {
+        // ShowLoading();
+        var single = $("[name='single']:checked").val();
+        // console.log(single);
+        var month = $("#month option:selected").val();
+        var quarter = $("#quarter option:selected").val();
+        var year = $("#year option:selected").val();
+        var CityId = $("#CityId option:selected").val();
+        var DistrictId = $("#DistrictId option:selected").val();
+        var branchId = $("#branchId option:selected").val();
+        var week = $("#week option:selected").val();
+        //  OpenPopup('/ProductInvoice/DetailByChart?IsPopup=true&month=' + month + '&year=' + year, 'Danh sách doanh số ngày ' + month +'/'+year, 0, 500);
+        OpenPopup('@Url.Action("DetailByChart", "ProductInvoice", new { area = "Sale" })/?single=' + single + '&year=' + year + '&month=' + month + '&quarter=' + quarter + '&week=' + week + '&CityId=' + CityId + '&DistrictId=' + DistrictId + '&branchId=' + branchId+'&&IsPopup=true', 'Thông tin doanh số ', 0, 500);
+
+    };
+    $('.tongdoanhthu').click(function () {
+        DoanhThu();
+    });
+    $('.tongdonhang').click(function () {
+        TongDonHang();
+    });
+
+    function TraLai() {
+        // ShowLoading();
+        var month = $("#month :selected").val();
+        var year = $("#year :selected").val();
+        OpenPopup('/ProductInvoice/DetailByChart?IsPopup=true&month=' + month + '&year=' + year, 'Danh sách doanh số ngày ' + month +'/'+year, 0, 500);
+    }
+    $('.tientrahang').click(function () {
+        DoanhThu();
+    });
+
+</script>

@@ -1,0 +1,95 @@
+﻿@using Erp.BackOffice.App_GlobalResources
+@using Erp.BackOffice.Helpers
+@using Erp.BackOffice.Account.Models
+
+@model InfoPartyAViewModel
+
+@{
+    ViewBag.Title = Wording.PageEdit_InfoPartyA;
+
+    Layout = "~/Views/Shared/ACE_AdminLayout.cshtml";
+}
+
+@section HeadOfPage {
+    @Html.ScriptTop_ChosenStyle()
+}
+
+@using (Html.BeginForm_AceStyle((string)ViewBag.Title, "Edit", "InfoPartyA", null, FormMethod.Post, new { @class = "form-horizontal" }))
+{
+    @Html.ValidationSummary(true)
+    @Html.HiddenFor(model => model.Id)
+    @Html.HiddenFor(model => model.CreatedUserId)
+    @Html.HiddenFor(model => model.AssignedUserId)
+    @Html.HiddenFor(model => model.CreatedDate)
+    @Html.HiddenFor(model => model.IsDeleted)
+    @Html.CustomTextboxFor(model => model.CompanyName, null, null, WidthType.span6)
+    @Html.CustomTextboxFor(model => model.Name, null, null, WidthType.span6)
+    @Html.CustomDropDownListFor(model => model.NamePrefix, SelectListHelper.GetSelectList_Category("NamePrefix", null, "Name", Wording.Empty), WidthType.span3, true, null, DropdownListStyle.DropdownListStyleChosen)
+    @Html.DateInput(model => model.Birthday, "dd/MM/yyyy", "99/99/9999", true, WidthType.none)
+    @Html.CustomTextboxFor(model => model.Position, null, null, WidthType.span4)
+    @Html.CustomDropDownListFor(model => model.ProvinceId, Erp.BackOffice.Helpers.Common.GetSelectList_Location("0", Model.ProvinceId), WidthType.span3, true, null, DropdownListStyle.DropdownListStyleChosen)
+    @Html.CustomDropDownListFor(model => model.DistrictId, Erp.BackOffice.Helpers.Common.GetSelectList_Location(Model.ProvinceId, Model.DistrictId), WidthType.span3, true, null, DropdownListStyle.DropdownListStyleChosen)
+    @Html.CustomDropDownListFor(model => model.WardId, Erp.BackOffice.Helpers.Common.GetSelectList_Location(Model.DistrictId, Model.WardId), WidthType.span3, true, null, DropdownListStyle.DropdownListStyleChosen)
+    @Html.CustomTextboxFor(model => model.Address, null, null, WidthType.span12)
+    @Html.CustomTextboxFor(model => model.IdCardNumber, null, null, WidthType.span4)
+    @Html.CustomDropDownListFor(model => model.IdCardIssued, Erp.BackOffice.Helpers.Common.GetSelectList_Location("0", null), WidthType.span3, true, null, DropdownListStyle.DropdownListStyleChosen)
+    @Html.DateInput(model => model.IdCardDate, "dd/MM/yyyy", "99/99/9999", true, WidthType.none)
+    @Html.CustomTextboxFor(model => model.Phone, null, null, WidthType.span4)
+    @Html.CustomTextboxFor(model => model.Fax, null, null, WidthType.span5)
+    @Html.CustomTextboxFor(model => model.AccountNumber, null, null, WidthType.span5)
+    @Html.CustomDropDownListFor(model => model.Bank, SelectListHelper.GetSelectList_Category("bank", Model.Bank, "Name", Wording.Empty), WidthType.span6, true, null, DropdownListStyle.DropdownListStyleChosen)
+    @Html.CustomTextboxFor(model => model.TaxCode, null, null, WidthType.span6)
+
+
+    <button style="margin-top:10px" type="submit" class="btn btn-info" name="Submit" value="Save">
+        <i class="ace-icon fa fa-save bigger-110"></i>
+        @Wording.Save
+    </button>
+}
+
+@section Scripts {
+    
+  <script>
+      var url = '/api/BackOfficeServiceAPI/FetchLocation';
+      var districts = $('#DistrictId'); // cache it
+      var ward = $('#WardId');
+
+      $("#ProvinceId").change(function () {
+          ShowLoading();
+          var id = $(this).val(); // Use $(this) so you don't traverse the DOM again
+          $.getJSON(url, { parentId: id }, function (response) {
+              districts.empty(); // remove any existing options
+              ward.empty();
+              $(document.createElement('option'))
+                      .attr('value', '')
+                      .text('- Rỗng -')
+                      .appendTo(ward).trigger('chosen:updated');
+              $(response).each(function () {
+                  $(document.createElement('option'))
+                      .attr('value', this.Id)
+                      .text(capitalizeFirstAllWords(this.Name.toLowerCase().replace('huyện', '').replace('quận', '')))
+                      .appendTo(districts).trigger('chosen:updated');
+                  HideLoading();
+              });
+          });
+      });
+
+      $("#DistrictId").change(function () {
+          ShowLoading();
+          var id = $(this).val(); // Use $(this) so you don't traverse the DOM again
+          $.getJSON(url, { parentId: id }, function (response) {
+              ward.empty(); // remove any existing options
+              $(response).each(function () {
+                  $(document.createElement('option'))
+                      .attr('value', this.Id)
+                      .text(capitalizeFirstAllWords(this.Name.toLowerCase()))
+                      .appendTo(ward).trigger('chosen:updated');
+                  HideLoading();
+              });
+          });
+      });
+</script>
+@Html.ScriptBottom_ValidationMvc()
+@Html.ScriptBottom_DatePicker("dd/mm/yyyy")
+@Html.ScriptBottom_ChosenStyle()
+}

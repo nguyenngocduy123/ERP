@@ -1,0 +1,47 @@
+﻿@model Erp.BackOffice.Areas.Cms.Models.NewsViewModel
+
+@using Erp.BackOffice.App_GlobalResources
+@using Erp.BackOffice.Helpers;
+
+@{
+    ViewBag.Title = Wording.UpdateNews;
+    Layout = "~/Views/Shared/ACE_AdminLayout.cshtml";
+}
+
+@section HeadOfPage {
+    @Html.ScriptTop_CkEditor()
+    @Html.ScriptTop_ChosenStyle()
+    @Html.ScriptTop_DatePicker()
+}
+
+@using (Html.BeginForm_AceStyle((string)ViewBag.Title, "EditNews", "News", null, FormMethod.Post, new { @class = "form-horizontal", enctype = "multipart/form-data"}))
+{   
+    // Detec browser
+    var browser = Request.Browser;
+    var browserName = browser.Browser;
+    @Html.ValidationSummary(true)
+    @Html.HiddenFor(n => n.Id)
+    @Html.HiddenFor(n => n.CreatedDate)
+    @Html.HiddenFor(n => n.CreatedUser)
+    @Html.HiddenFor(m => m.OrderNo)
+    @Html.CustomTextboxFor(n => n.Title, null, null, WidthType.span4, true)
+    @Html.CustomDropDownListFor(model => model.CategoryId, Model.CategoryList, WidthType.span3)
+                                
+    @Html.CustomTextAreaFor(n => n.ShortContent, null, WidthType.span12, true)     
+    @Html.CkEditorFor(n => n.Content, null, true)
+                                        
+    <div class="row-fluid wizard-actions span5">
+        <button type="submit" class="btn btn-info" name="Submit" value="Save">
+            <i class="ace-icon fa fa-check bigger-110"></i>
+            @Wording.Save				
+        </button>
+    </div>
+}
+
+@section Scripts {
+    @Html.ScriptBottom_ValidationMvc()
+    @Html.ScriptBottom_CkEditor()
+    @Html.ScriptBottom_ChosenStyle()
+    @Html.ScriptBottom_DatePicker("dd/mm/yyyy")
+    @Html.ScriptBottom_RequireEitherInput()
+}

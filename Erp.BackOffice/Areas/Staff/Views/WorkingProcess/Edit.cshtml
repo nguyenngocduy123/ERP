@@ -1,0 +1,98 @@
+﻿@using Erp.BackOffice.App_GlobalResources
+@using Erp.BackOffice.Helpers
+@using Erp.BackOffice.Staff.Models
+
+@model WorkingProcessViewModel
+
+@{
+    ViewBag.Title = Wording.PageEdit_WorkingProcess;
+    IEnumerable<BonusDisciplineViewModel> BonusDisciplineList = (IEnumerable<BonusDisciplineViewModel>) ViewBag.BonusDisciplineList;
+    Layout = "~/Views/Shared/" + (Request["IsPopup"] == null ? "ACE_AdminLayout.cshtml" : "_PopupLayout.cshtml");
+    Erp.BackOffice.Models.PageSetting pageSetting = new Erp.BackOffice.Models.PageSetting
+    {
+        ModuleName = "WorkingProcess",
+        ActionName = "Edit",
+        PageTitle = ViewBag.Title,
+        DisplaySearchPanel = false,
+        IsPopup = false,
+        DisplayBackButton = false
+    };
+}
+
+@section HeadOfPage {
+    @Html.ScriptTop_ChosenStyle()
+}
+<script src="~/Scripts/RadCombobox_v1/rabCombobox.js"></script>
+<link href="~/Scripts/RadCombobox_v1/RadComboBoxLite.css" rel="stylesheet" />
+@using (Html.BeginPageHeaderContainer(pageSetting))
+{
+
+}
+@using (Html.BeginForm_AceStyle((string)ViewBag.Title, "Edit", "WorkingProcess", null, FormMethod.Post, new { @class = "form-horizontal" }))
+{
+    @Html.ValidationSummary(true)
+    @Html.HiddenFor(model => model.Id)
+    @Html.HiddenFor(model => model.CreatedUserId)
+    @Html.HiddenFor(model => model.CreatedDate)
+    @Html.HiddenFor(model => model.IsDeleted)
+    @Html.HiddenFor(model => model.StaffId)
+    <input type="hidden" value="@Request["IsPopup"]" name="IsPopup" />
+
+    @Html.CustomTextboxFor(model => model.WorkPlace, null, null, WidthType.span12)
+    @Html.CustomTextboxFor(model => model.Position, null, null, WidthType.span12)
+    @Html.DatePicker(model => model.DayStart, "dd/MM/yyyy", "99/99/9999", true, true, "control-label col-lg-5 col-md-4 col-sm-4", "col-lg-7 col-md-8 col-sm-8", "col-xs-12")
+    @Html.DatePicker(model => model.DayEnd, "dd/MM/yyyy", "99/99/9999", true, true, "control-label col-lg-5 col-md-4 col-sm-4", "col-lg-7 col-md-8 col-sm-8", "col-xs-12")
+    // @Html.CustomDropDownListFor(model => model.BonusDisciplineId, BonusDisciplineIdList, WidthType.span12, true, null, DropdownListStyle.DropdownListStyleDefault)
+    // @Html.CustomTextboxFor(model => model.BonusDisciplineId, null, null, WidthType.span12)
+    @Html.CustomTextboxFor(model => model.Name, null, null, WidthType.span12)
+    @Html.CustomTextboxFor(model => model.Email, null, null, WidthType.span12)
+    @Html.CustomTextboxFor(model => model.Phone, null, null, WidthType.span12)
+    @*@Html.CustomDropDownListFor(model => model.BonusDisciplineId, SelectListHelper.GetSelectList_BonusDiscipline(Model.BonusDisciplineId,Model.StaffId,Wording.Empty), WidthType.span6)*@
+    @Html.CustomDropDownListSuggestTableFor(model => model.BonusDisciplineId,
+        BonusDisciplineList, "Id", "Code", "Id,Code,Formality,Reason,DayDecision,DayEffective",
+        new Dictionary<string, object>()
+            {
+                { "colTitle", "Id,Mã quyết định,Hình thức, Lý do, Ngày quyết định,Ngày hiệu lực" },
+                { "colValue", 1 },
+                { "colHide", "1" },
+               // { "colSize", "200px,200px,200px,200px,100px,100px" },
+                //{ "colClass", "" },
+                //{ "width", "1000px" },
+                //{ "height", "400px" },
+                {"boxSearch", true}
+            }, null, true, "- chọn -", "control-label col-lg-5 col-md-4 col-sm-4", "col-lg-7 col-md-8 col-sm-8", "class=form-group")
+    @*<div class="" style="margin-left:42%">
+        <a onclick="OpenPopup('@Url.Action("Create","BonusDiscipline", new { area = "Staff", StaffId = Model.StaffId, isPopup = "true" })', '@Wording.PageCreate_BonusDiscipline', 600, 600)"><b>Tạo quyết định khen thưởng - kỷ luật</b></a>
+    </div>*@
+
+    using (Html.BeginButtonContainer(pageSetting))
+    {
+        <button class="btn btn-mini btn-primary" type="submit" name="Submit" value="Save">
+            <i class="ace-icon fa fa-save"></i>
+            @Wording.Save
+        </button>
+    }
+
+}
+
+@section Scripts {
+    <script>
+    //truyền từ action create của controller qua khi thực hiện submit và return về lại view create, để nhận biết là được gọi theo dạng popup
+    var closePopup = '@ViewBag.closePopup';
+    $(document).ready(function () {
+        //nếu là được gọi theo dạng popup từ form khác thì chạy đoạn code bên dưới
+        if (closePopup != '') {
+            var option = '<option value="@Model.Id" >@Model.DayStart</option>';
+            window.parent.ClosePopupAndReloadPageStaffDetail();
+            window.parent.ClosePopupAndAppendSelect(option);
+        }
+    });
+        function ClosePopupAndDoSomethings(optionSelect) {
+            ClosePopup(false);
+            $('#BonusDisciplineId').append($(optionSelect)).trigger('rcb:updated');
+        }
+</script>
+    @Html.ScriptBottom_ValidationMvc()
+    @Html.ScriptBottom_DatePicker("dd/mm/yyyy")
+    @Html.ScriptBottom_ChosenStyle()
+}

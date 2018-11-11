@@ -1,0 +1,204 @@
+﻿@using Erp.BackOffice.App_GlobalResources
+@using Erp.BackOffice.Sale.Models
+@using Erp.BackOffice.Helpers
+@model List<CommisionStaffViewModel>
+@{
+    ViewBag.Title = "Báo cáo hoa hồng của nhân viên";
+    if (Request["IsPopup"] == "true")
+    {
+        Layout = "~/Views/Shared/_PopupLayout.cshtml";
+    }
+    else
+    {
+        if (Request["IsPopup"] == "null")
+        {
+            Layout = null;
+        }
+        else
+        {
+            Layout = "~/Views/Shared/ACE_AdminLayout.cshtml";
+        }
+    }
+    bool IsDisplaySearchPanel = Request["IsPopup"] != null && Request["IsPopup"].ToString().ToLower() == "true" ? false : true;
+    Erp.BackOffice.Models.PageSetting pageSetting = new Erp.BackOffice.Models.PageSetting
+    {
+        ModuleName = "SaleReport",
+        ActionName = "CommisionStaff",
+        PageTitle = ViewBag.Title,
+        DisplaySearchPanel = IsDisplaySearchPanel,
+        IsPopup = false,
+        DisplayBackButton = false
+    };
+    string BranchId = Request["BranchId"];
+    string StaffId = Request["StaffId"];
+    string month = Request["month"];
+    string year = Request["year"] != null ? Request["year"] : DateTime.Now.Year.ToString();
+    int index = 1;
+}
+
+<style type="text/css">
+
+</style>
+
+@using (Html.BeginPageHeaderContainer(pageSetting))
+{    
+    <p>
+        @Html.DropDownList("BranchId", SelectListHelper.GetSelectList_Branch(BranchId,"Tất cả chi nhánh"))
+        <select id="year" name="year">
+            @for (int i = 2016; i <= DateTime.Now.Year; i++)
+            {
+                <option @(year == i.ToString() ? "Selected" : "") value="@i">Năm @i</option>
+            }
+        </select>
+    </p>
+   
+}
+@if(Model.Count()>0)
+{ 
+<h4 class="green"><b> <i class="ace-icon fa fa-angle-double-right"></i> @(StaffId==null?(BranchId == null ? "Tất cả chi nhánh" : Model.FirstOrDefault().BranchName):Model.FirstOrDefault().StaffName)</b><b> <i class="ace-icon fa fa-angle-double-right"></i> @(month != null ? "Tháng " + month : "") Năm @year</b></h4>
+if (Request["IsPopup"] == "true")
+{
+    <div class="table-responsive" id="BCCommisionStaff">
+        <div class="grid-mvc" data-lang="en" data-gridname="" data-selectable="true" data-multiplefilters="false">
+            <div class="grid-wrap">
+                <table id="CTable" class="table table-bordered">
+                    <thead>
+                        <tr class="" >
+                            <th class="" colspan="6" style="display:none;text-align:center"><h4>BÁO CÁO HOA HỒNG CỦA NHÂN VIÊN @Model.FirstOrDefault().StaffName.ToUpper() THÁNG @month NĂM @year</h4></th>
+                        </tr>
+                        <tr>
+                            <th style="width:40px;text-align:center">STT</th>
+                            <th style="width:200px;text-align:center">Ngày tính hoa hồng</th>
+                            <th style="width:150px;text-align:center">Mã đơn hàng</th>
+                            <th style="text-align:center">Tên sản phẩm/Dịch vụ</th>
+                            <th style="width:100px;text-align:center">% Chiết khấu</th>
+                            <th style="width:150px;text-align:center">Số tiền</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model)
+                        {
+                            <tr>
+                                <td>
+                                    <span>@(index++)</span>
+                                </td>
+                                <td>@(item.CreatedDate.Value.ToString("dd/MM/yyyy HH:mm"))</td>
+                                <td>
+                                    @item.ProductInvoiceCode
+                                </td>
+                                <td>
+                                    @item.ProductCode -@item.ProductName
+                                </td>
+                                <td class="text-right">
+                                    @Common.PhanCachHangNgan(item.PercentOfCommision)
+                                </td>
+                                <td class="text-right">
+                                    @Common.PhanCachHangNgan(item.AmountOfCommision)
+                                </td>
+                            </tr>
+                        }
+
+                        <tr>
+                            <td colspan="5" style="text-align:right"><b>Tổng</b></td>
+                            <td style="width:100px;text-align:right;color:red"><b>@(Common.PhanCachHangNgan(Model.Sum(x => x.AmountOfCommision)))</b></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+}
+else
+{
+    <div class="table-responsive" id="BCCommisionStaff">
+        <div class="grid-mvc" data-lang="en" data-gridname="" data-selectable="true" data-multiplefilters="false">
+            <div class="grid-wrap">
+                <table id="CTable" class="table table-bordered">
+                    <thead>
+                        <tr class="" style="display:none;">
+                            <th class="" colspan="15" style="text-align:center"><h4>BÁO CÁO HOA HỒNG CỦA NHÂN VIÊN NĂM @year</h4></th>
+                        </tr>
+                        <tr>
+                            <th style="width:40px;text-align:center">STT</th>
+                            <th style="width:300px;text-align:center">Tên nhân viên</th>
+                          @for (int i = 1; i <= 12; i++)
+                          {
+                                <th style="width:100px;text-align:center">Tháng @i</th>
+                          }
+                            <th style="width:100px;text-align:center">@Wording.Total</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model.GroupBy(x=>x.StaffId))
+                        {
+                            <tr>
+                                <td>
+                                    <span>@(index++)</span>
+                                </td>
+                                <td style="width:300px;">@(item.FirstOrDefault().StaffName)</td>
+                               @for (int i = 1; i <= 12; i++)
+                               {
+                                    <td style="width:100px;text-align:right">
+                                        @if (Model.Where(x => x.StaffId == item.Key && x.month == i).Sum(x => x.AmountOfCommision) > 0)
+                                        {
+                                            <a onclick="OpenPopup('@Url.Action("CommisionStaff", "SaleReport", new { area = "Sale", BranchId = BranchId,StaffId=item.Key,month=i, IsPopup = "true" })', 'Trang danh sách chi tiết hoa hồng nhân viên', 0, 500)">
+                                                @Common.PhanCachHangNgan(Model.Where(x => x.StaffId == item.Key&&x.BranchId==item.FirstOrDefault().BranchId&&x.month == i).Sum(x => x.AmountOfCommision))
+                                            </a>
+                                        }
+                                        else
+                                        {
+                                            <span>0</span>
+                                        }
+                                    </td>
+                                }
+                                <td style="width:100px;text-align:right">@(Common.PhanCachHangNgan(Model.Where(x => x.StaffId == item.Key).Sum(x => x.AmountOfCommision)))</td>
+                            </tr>
+                        }
+
+                        <tr>
+                            <td colspan="2" style="text-align:right"><b>Tổng</b></td>
+                           @for (int i = 1; i <= 12; i++)
+                           {
+                                <td style="width:100px;text-align:right"><b>@(Common.PhanCachHangNgan(Model.Where(x => x.month == i).Sum(x => x.AmountOfCommision)))</b></td>
+                            }
+                            <td style="width:100px;text-align:right"><b>@(Common.PhanCachHangNgan(Model.Sum(x => x.AmountOfCommision)))</b></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+}
+}
+else
+{
+    <p class="alert alert-warning">
+        Không có dữ liệu.
+    </p>
+}
+@using (Html.BeginButtonContainer(pageSetting))
+{
+    <button onclick="tableToExcel('CTable', 'BCCommisionStaff')" class=" btn btn-primary btn-sm btn-white btn-success">
+        <i class="ace-icon fa fa-download"></i>
+        Xuất Excel
+    </button>
+}
+
+@section Scripts {
+    <script type="text/javascript">
+
+        var tableToExcel = (function () {
+            var uri = 'data:application/vnd.ms-excel;base64,'
+              , template = '<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40"><head><!--[if gte mso 9]><xml><x:ExcelWorkbook><x:ExcelWorksheets><x:ExcelWorksheet><x:Name>{worksheet}</x:Name><x:WorksheetOptions><x:DisplayGridlines/></x:WorksheetOptions></x:ExcelWorksheet></x:ExcelWorksheets></x:ExcelWorkbook></xml><![endif]--></head><body><table>{table}</table></body></html>'
+              , base64 = function (s) { return window.btoa(unescape(encodeURIComponent(s))) }
+              , format = function (s, c) { return s.replace(/{(\w+)}/g, function (m, p) { return c[p]; }) }
+            return function (table, name) {
+                if (!table.nodeType) table = document.getElementById(table)
+                var ctx = { worksheet: name || 'Worksheet', table: table.innerHTML }
+                window.location.href = uri + base64(format(template, ctx))
+            }
+        })()
+    </script>
+    @Html.ScriptBottom_ValidationMvc()
+    @Html.ScriptBottom_DatePicker("dd/MM/yyyy")
+}

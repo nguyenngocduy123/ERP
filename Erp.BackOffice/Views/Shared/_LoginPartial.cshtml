@@ -1,0 +1,39 @@
+﻿@using Erp.BackOffice.App_GlobalResources
+<ul class="nav-top">
+    @if (Request.IsAuthenticated)
+    {
+        <li>
+            @Wording.Welcome, <a href="@Url.Action("Manage", "User", new { area = "Administration" })" title="@User.Identity.Name">
+            @{
+                string Currentname = string.Empty;
+                if (User.Identity.Name.Length > 10)
+                {
+                    Currentname = User.Identity.Name.Substring(0, 10) + "...";
+                }
+                else
+                {
+                    Currentname = User.Identity.Name;
+                }
+            }
+                @Currentname
+                </a>
+        </li>
+        <li>
+            <a href='@Url.Action("Manage", "User", new { area = "Administration" })'>@Wording.Profile</a>
+        </li>
+        
+        <li>
+            <a href='@Url.Action("Manage", "User", new { area = "Administration" })'>@Wording.ChangePassword</a>
+        </li>
+        
+        <li style="width:35px;">
+            <a href='@Url.Action("LogOff", "User", new { area = "Administration" })'>@Wording.Logout</a>
+        </li>
+    }
+    else
+    {
+        <li>
+            <a href='@Url.Action("Login", "User", new { area = "Administration" })'>@Wording.Login</a>
+        </li>
+    }
+</ul>

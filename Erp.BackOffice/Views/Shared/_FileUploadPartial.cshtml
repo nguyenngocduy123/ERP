@@ -1,0 +1,105 @@
+﻿@{
+    var inputFile = ViewData["inputFile"];
+    var inputName = ViewData["inputName"];
+    var filter = ViewData["filter"];
+    if (filter == null)
+    {
+        filter = string.Empty;
+    }
+}
+
+@inputFile
+
+<script type="text/javascript">
+    $(function () {
+        $('[name=@inputName]').ace_file_input({
+            no_file: '...',
+            btn_choose: 'Chọn',
+            btn_change: 'Thay đổi',
+            droppable: false,
+            onchange: null,
+            thumbnail: false, //| true | large
+            //whitelist: '@filter' //'ppt|pptx'
+            //blacklist:'exe|php'
+            //onchange:''
+            before_change: function (files, dropped) {
+                var fileType = $("#Type").val();
+                var fileUpload = $('[name=@inputName]').val();
+                var extension = fileUpload.substring(fileUpload.lastIndexOf('.')).toLowerCase();
+                var validFileTypeVideo = ".mp4 , .avi";
+                var validFileTypeImg = ".jpg, .jpeg, .gif";
+                var reg = null;
+                var regTypeFile = null;
+                if (fileUpload.length > 0) {
+                    
+                    if (fileType == 2) {
+                        //check if type =2, This is video file
+                        //check file is of valid video type or not
+                        if (validFileTypeVideo.toLowerCase().indexOf(extension) < 0) {
+                            alert("Bạn đã chọn File (" + extension + ") không đúng định dạng đối với video!\nChú ý đối với video phần mở rộng cho phép là:\n .mp4, .avi");
+                            return false;
+                        } else {
+                            reg = /\.(mp4|avi)$/i;
+                            regTypeFile = /^(video)\/(mp4|avi)$/i;
+                        }
+                    } else {
+                        //default image
+                        //check file is of valid image type or not
+                        if (validFileTypeImg.toLowerCase().indexOf(extension) < 0) {
+                            alert("Bạn đã chọn File (" + extension + ") không đúng định dạng đối với hình ảnh!\nChú ý đối với hình ảnh, phần mở rộng cho phép là:\n .jpg, .jpeg, .gif");
+                            return false;
+                        } else {
+                            reg = /\.(jpg|jpe?g|gif)$/i;
+                            regTypeFile = /^(image)\/(jpg|jpe?g|gif)$/i;
+                        }
+                    }
+                    
+                    var allowed_files = [];
+                    for (var i = 0 ; i < files.length; i++) {
+                        var file = files[i];
+                        if (typeof file === "string") {
+                            //IE8 and browsers that don't support File Object
+                            if (!reg.test(file)) return false;//|png|gif|bmp
+                        }
+                        else {
+                            var type = $.trim(file.type);
+                            if ((type.length > 0 && !regTypeFile.test(type)) || (type.length == 0 && !reg.test(file.name)))
+                                continue;//not an image so don't keep this file
+                            //for android's default browser which gives an empty string for file.type
+                        }
+                        allowed_files.push(file);
+                    }
+                    if (allowed_files.length == 0) return false;
+                    return allowed_files;
+                }
+                
+                //var filterType = '@filter.ToString()';
+                //if (filterType === "2") {
+                //    //video
+                //    var reg = /\.(mp4|avi)$/i;
+                //    var regTypeFile = /^(video)\/(mp4|avi)$/i;
+                //}
+
+                //var allowed_files = [];
+                //for (var i = 0 ; i < files.length; i++) {
+                //    var file = files[i];
+                //    if (typeof file === "string") {
+                //        //IE8 and browsers that don't support File Object
+                //        if (!reg.test(file)) return false;//|png|gif|bmp
+                //    }
+                //    else {
+                //        var type = $.trim(file.type);
+                //        if ((type.length > 0 && !regTypeFile.test(type)) || (type.length == 0 && !reg.test(file.name)))
+                //            continue;//not an image so don't keep this file
+                //        //for android's default browser which gives an empty string for file.type
+                //    }
+                //    allowed_files.push(file);
+                //}               
+                //if (allowed_files.length == 0) return false;
+                //return allowed_files;
+            }
+            //$('[name=@inputName]').closest('.ace-file-input').addClass('span6');
+        });       
+    });
+
+</script>

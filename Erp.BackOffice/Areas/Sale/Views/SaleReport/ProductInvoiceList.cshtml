@@ -1,0 +1,207 @@
+﻿@using Erp.BackOffice.App_GlobalResources
+@using Erp.BackOffice.Sale.Models
+@using Erp.BackOffice.Helpers
+@model List<ProductInvoiceDetailViewModel>
+@{
+    ViewBag.Title = "Báo cáo bán hàng";
+    if (Request["IsPopup"] == "true")
+    {
+        Layout = "~/Views/Shared/_PopupLayout.cshtml";
+    }
+    else
+    {
+        if (Request["IsPopup"] == "null")
+        {
+            Layout = null;
+        }
+        else
+        {
+            Layout = "~/Views/Shared/ACE_AdminLayout.cshtml";
+        }
+    }
+    bool IsDisplaySearchPanel = Request["IsPopup"] != null && Request["IsPopup"].ToString().ToLower() == "true" ? false : true;
+    Erp.BackOffice.Models.PageSetting pageSetting = new Erp.BackOffice.Models.PageSetting
+    {
+        ModuleName = "SaleReport",
+        ActionName = "ProductInvoiceList",
+        PageTitle = ViewBag.Title,
+        DisplaySearchPanel = IsDisplaySearchPanel,
+        IsPopup = false,
+        DisplayBackButton = false
+    };
+
+
+    string BranchId = Request["BranchId"];
+    DateTime aDateTime = new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1);
+    // Cộng thêm 1 tháng và trừ đi một ngày.
+    DateTime retDateTime = aDateTime.AddMonths(1).AddDays(-1);
+ 
+    var startDate= Request["startDate"] != null ? Request["startDate"] : aDateTime.ToString("dd/MM/yyyy");
+    var endDate = Request["endDate"] != null ? Request["endDate"] : retDateTime.ToString("dd/MM/yyyy");
+    string category = Request["category"] != null ? Request["category"] : "";
+    string group = Request["group"] != null ? Request["group"] : "";
+    string manufacturer = Request["manufacturer"] != null ? Request["manufacturer"] : "";
+    int index = 1;
+    int colpan = 3 + Model.GroupBy(x=>x.BranchId).Count();
+}
+
+<style type="text/css">
+
+</style>
+
+@using (Html.BeginPageHeaderContainer(pageSetting))
+{    
+    <p>
+        @Html.DropDownList("BranchId", SelectListHelper.GetSelectList_Branch(BranchId,"Tất cả chi nhánh"))
+        @Html.DropDownList("manufacturer", SelectListHelper.GetSelectList_Category("manufacturerList", manufacturer, "- Nhà sản xuất -"))
+        @Html.DropDownList("ProductGroup", SelectListHelper.GetSelectList_Category("ProductGroup", group, "- Nhóm sản phẩm -"))
+        @Html.DropDownList("CategoryCode", SelectListHelper.GetSelectList_Category("product", category, "- Danh mục sản phẩm -"))
+    </p>
+    <p> 
+        <span class="input-daterange input-group">
+            @Html.TextBox("startDate", startDate, new { @class = "", autocomplete = "off", placeholder = "Từ ngày..." })
+            <span class="input-group-addon">
+                <i class="fa fa-exchange"></i>
+            </span>
+            @Html.TextBox("endDate",endDate, new { @class = "", autocomplete = "off", placeholder = "Đến ngày..." })
+        </span>
+    </p>
+}
+@if (Request["IsPopup"] == "true")
+{
+    <div class="table-responsive" id="BCPhieuChi">
+        <div class="grid-mvc" data-lang="en" data-gridname="" data-selectable="true" data-multiplefilters="false">
+            <div class="grid-wrap">
+                <table id="CTable" class="table table-bordered">
+                    <thead>
+                        <tr class="">
+                            <th class="" colspan="5" style="text-align:center"><h4>BÁO CÁO BÁN HÀNG TỪ @startDate ĐẾN @endDate</h4></th>
+                        </tr>
+                        <tr class="">
+                            <th class="" colspan="5">Sản phẩm @Model.FirstOrDefault().ProductCode -  @Model.FirstOrDefault().ProductName ở chi nhánh @Model.FirstOrDefault().BranchName</th>
+                        </tr>
+                        <tr>
+                            <th style="width:40px;text-align:center">STT</th>
+                            <th style="width:60px;text-align:center">Ngày bán</th>
+                            <th style="width:150px;text-align:center">Mã đơn hàng</th>
+                            <th style="width:200px;text-align:center">Khách hàng</th>
+                            <th style="width:150px;text-align:center">Số lượng</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model)
+                        {
+                            <tr>
+                                <td>
+                                    <span>@(index++)</span>
+                                </td>
+                                <td>@(item.ProductInvoiceDate.ToString("dd/MM/yyyy HH:mm"))</td>
+                                <td>
+                                    @item.ProductInvoiceCode
+                                </td>
+                                <td>
+                                    @item.CustomerName
+                                </td>
+                                <td>
+                                    @item.Quantity
+                                </td>
+                            </tr>
+                        }
+
+                        <tr>
+                            <td colspan="4" style="text-align:right"><b>Tổng</b></td>
+                            <td style="width:100px;text-align:right"><b>@(Common.MoneyToString(Model.Sum(x => x.Quantity)))</b></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+}
+else
+{
+    <div class="table-responsive" id="BCPhieuChi">
+        <div class="grid-mvc" data-lang="en" data-gridname="" data-selectable="true" data-multiplefilters="false">
+            <div class="grid-wrap">
+                <table id="CTable" class="table table-bordered">
+                    <thead>
+                        <tr class="">
+                            <th class="" colspan="@colpan" style="text-align:center"><h4>BÁO CÁO BÁN HÀNG TỪ @startDate ĐẾN @endDate</h4></th>
+                        </tr>
+                        <tr>
+                            <th style="width:40px;text-align:center">STT</th>
+                            <th style="width:300px;text-align:center">Tên sản phẩm</th>
+                            @foreach (var item in Model.GroupBy(x => x.BranchId).OrderBy(x => x.FirstOrDefault().BranchId))
+                            {
+                                <th style="width:100px;text-align:center">@item.FirstOrDefault().BranchName</th>
+                            }
+                            <th style="width:100px;text-align:center">@Wording.Total</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model.GroupBy(x=>x.ProductId))
+                        {
+                            <tr>
+                                <td>
+                                    <span>@(index++)</span>
+                                </td>
+                                <td style="width:300px;">@(item.FirstOrDefault().ProductCode) - @(item.FirstOrDefault().ProductName)</td>
+                                @foreach (var ii in Model.GroupBy(x => x.BranchId).OrderBy(x => x.FirstOrDefault().BranchId))
+                                {
+                                    <td style="width:100px;text-align:right">
+                                        @if (Model.Where(x => x.BranchId == ii.Key && x.ProductId == item.FirstOrDefault().ProductId).Sum(x => x.Quantity) > 0)
+                                        {
+                                            <a onclick="OpenPopup('@Url.Action("ProductInvoiceList", "SaleReport", new { area = "Sale", BranchId = ii.Key, startDate = startDate, endDate = endDate, ProductId = item.FirstOrDefault().ProductId, IsPopup = "true" })', 'Trang danh sách chi tiết bán hàng', 900, 500)">
+                                                @Common.MoneyToString(Model.Where(x => x.ProductId == item.FirstOrDefault().ProductId && x.BranchId == ii.Key).Sum(x => x.Quantity))
+                                            </a>
+                                        }
+                                        else
+                                        {
+                                            <span>0</span>
+                                        }
+                                    </td>
+                                }
+                                <td style="width:100px;text-align:right">@(Common.MoneyToString(Model.Where(x => x.ProductId == item.FirstOrDefault().ProductId).Sum(x => x.Quantity)))</td>
+                            </tr>
+                        }
+
+                        <tr>
+                            <td colspan="2" style="text-align:right"><b>Tổng</b></td>
+                            @foreach (var item in Model.GroupBy(x => x.BranchId).OrderBy(x => x.FirstOrDefault().BranchId))
+                            {
+                                <td style="width:100px;text-align:right"><b>@(Common.MoneyToString(item.Sum(x => x.Quantity)))</b></td>
+                            }
+                            <td style="width:100px;text-align:right"><b>@(Common.MoneyToString(Model.Sum(x => x.Quantity)))</b></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+}
+@using (Html.BeginButtonContainer(pageSetting))
+{
+    <button onclick="tableToExcel('CTable', 'BCPhieuChi')" class=" btn btn-primary btn-sm btn-white btn-success">
+        <i class="ace-icon fa fa-download"></i>
+        Xuất Excel
+    </button>
+}
+
+@section Scripts {
+    <script type="text/javascript">
+
+        var tableToExcel = (function () {
+            var uri = 'data:application/vnd.ms-excel;base64,'
+              , template = '<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40"><head><!--[if gte mso 9]><xml><x:ExcelWorkbook><x:ExcelWorksheets><x:ExcelWorksheet><x:Name>{worksheet}</x:Name><x:WorksheetOptions><x:DisplayGridlines/></x:WorksheetOptions></x:ExcelWorksheet></x:ExcelWorksheets></x:ExcelWorkbook></xml><![endif]--></head><body><table>{table}</table></body></html>'
+              , base64 = function (s) { return window.btoa(unescape(encodeURIComponent(s))) }
+              , format = function (s, c) { return s.replace(/{(\w+)}/g, function (m, p) { return c[p]; }) }
+            return function (table, name) {
+                if (!table.nodeType) table = document.getElementById(table)
+                var ctx = { worksheet: name || 'Worksheet', table: table.innerHTML }
+                window.location.href = uri + base64(format(template, ctx))
+            }
+        })()
+    </script>
+    @Html.ScriptBottom_ValidationMvc()
+    @Html.ScriptBottom_DatePicker("dd/MM/yyyy")
+}

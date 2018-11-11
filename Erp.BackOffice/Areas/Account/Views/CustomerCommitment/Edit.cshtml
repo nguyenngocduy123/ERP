@@ -1,0 +1,96 @@
+@using Erp.BackOffice.App_GlobalResources
+@using Erp.BackOffice.Helpers
+@using Erp.BackOffice.Account.Models
+
+@model CustomerCommitmentViewModel
+
+@{
+    ViewBag.Title = Wording.PageEdit_CustomerCommitment;
+
+    Layout = "~/Views/Shared/" + (Request["IsPopup"] == null ? "ACE_AdminLayout.cshtml" : "_PopupLayout.cshtml");
+    Erp.BackOffice.Models.PageSetting pageSetting = new Erp.BackOffice.Models.PageSetting
+    {
+        ModuleName = "CustomerCommitment",
+        ActionName = "Edit",
+        PageTitle = ViewBag.Title,
+        DisplaySearchPanel = false,
+        IsPopup = false,
+        DisplayBackButton = true
+    };
+}
+
+@section HeadOfPage {
+    @Html.ScriptTop_ChosenStyle()
+}
+@using (Html.BeginPageHeaderContainer(pageSetting))
+{
+
+}
+@using (Html.BeginForm_AceStyle((string)ViewBag.Title, "Edit", "CustomerCommitment", null, FormMethod.Post, new { @class = "form-horizontal" }))
+{
+    @Html.ValidationSummary(true)
+
+    <input type="hidden" value="@Request["IsPopup"]" name="IsPopup" />
+
+    @Html.HiddenFor(model => model.Id)
+    @Html.HiddenFor(model => model.CreatedUserId)
+    @Html.HiddenFor(model => model.AssignedUserId)
+    @Html.HiddenFor(model => model.CreatedDate)
+    @Html.HiddenFor(model => model.IsDeleted)
+    @Html.HiddenFor(model => model.CustomerId)
+    
+    @Html.CustomTextboxFor(model => model.Name, null, null, WidthType.span12)
+    @Html.CustomTextboxFor(model => model.Date, null, null, WidthType.span12)
+    <p></p>
+    <textarea class="ckeditor" cols="20" id="Description" name="Description" placeholder="" rows="2">@Model.Description</textarea>
+
+    using (Html.BeginButtonContainer(pageSetting))
+    {
+        <button class="btn btn-mini btn-primary" type="submit" name="Submit" value="Save">
+            <i class="ace-icon fa fa-save"></i>
+            @Wording.Save
+        </button>
+    }
+}
+
+@section Scripts {
+    <link href="/Scripts/ckeditor/contents.css" rel="stylesheet" />
+<script src="/Scripts/ckeditor/ckeditor.js"></script>
+   <script>
+       $(document).ready(function () { $("[name='Date']").mask('99/99/9999'); })
+
+       function initCkeditor() {
+           $('.ckeditor').ckeditor({
+               "extraPlugins": 'imagebrowser',
+               "imageBrowser_listUrl": "@Url.Action("ListJson","Images")",
+               // Define the toolbar groups as it is a more accessible solution.
+               toolbarGroups: [
+                   { "name": "document", "groups": ["mode", "document", "doctools"] },
+                   { "name": "editing", "groups": ["find", "selection", "spellchecker"] },
+                   { "name": "forms" },
+                   { "name": "tools" },
+                   { "name": "basicstyles", "groups": ["basicstyles", "cleanup"] },
+                   { "name": "clipboard", "groups": ["clipboar", "undo"] },
+                   { "name": "links", "groups": ["links"] },
+                   { "name": "paragraph", "groups": ["list", "blocks"] },
+                   { "name": "insert", "groups": ["insert"] },
+                   { "name": "styles", "groups": ["styles"] },
+                   //{ "name": "about", "groups": ["about"] },
+                   { "name": "styles" },
+                   { "name": "colors" },
+                   { "name": "align", "groups": ['JustifyLeft', 'JustifyCenter', 'JustifyRight', 'JustifyBlock'] }
+
+               ],
+           // Remove the redundant buttons from toolbar groups defined above.
+           removeButtons: 'Underline,Strike,Subscript,Superscript,Anchor,Styles,Specialchar'
+       });
+       }
+
+    </script>
+
+    @Html.ScriptBottom_ValidationMvc()
+    @Html.ScriptBottom_ChosenStyle()
+@Html.ScriptBottom_DatePicker("dd/mm/yyyy")
+
+
+}

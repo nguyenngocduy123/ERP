@@ -1,0 +1,81 @@
+﻿@model Erp.BackOffice.Sale.Models.ProductOutboundDetailViewModel
+@using Erp.BackOffice.Helpers
+@{
+    
+    var thanh_tien = Model.Price * Model.Quantity;
+}
+<tr class="detail_item" role="@(Model.OrderNo)" id="product_item_@Model.OrderNo" data-id="@Model.OrderNo">
+    <td class="text-center">
+        <span>@(Model.OrderNo + 1)</span>
+    </td>
+    <td class="has-error detail_item_id">
+        @Html.Hidden("DetailList[" + Model.OrderNo + "].ProductId", Model.ProductId)
+        @Model.ProductCode - @Model.ProductName
+    </td>
+    <td class="detail-locode">
+        @Html.TextBox("DetailList[" + Model.OrderNo + "].LoCode", Model.LoCode, new { @style = "width:100px;",@readonly="readonly" })
+        <input class="form-control input-mask-date" type="text" id="DetailList_@(Model.OrderNo)__ExpiryDate" name="DetailList[@Model.OrderNo].ExpiryDate" value="@(Model.ExpiryDate==null?"":Model.ExpiryDate.Value.ToString("dd/MM/yyyy"))" style="width:100px;" readonly="readonly">
+    </td>
+    <td class="has-error">
+        <input type="hidden" name="DetailList[@(Model.OrderNo)].Unit" value="" class="detail_item_unit" />
+        @Html.TextBox("DetailList[" + Model.OrderNo + "].Quantity", Model.Quantity, new { style = "width:50px", @class = "detail_item_qty numberinput1", autocomplete = "off", data_quantity_inventory = Model.QuantityInInventory })
+    </td>
+    <td class="has-error detail-product-price">
+        <input class="detail_item_price numberinput2" type="text" id="DetailList_@(Model.OrderNo)__Price" name="DetailList[@(Model.OrderNo)].Price" value="@Model.Price" role="price" style="width:100%" data-val="true" data-val-required="Chưa nhập giá" autocomplete="off" />
+    </td>
+    <td class="detail_item_total">@thanh_tien.ToCurrencyStr(null)</td>
+    <td class="text-center">
+        <a class="btn-delete-item">
+            <i class="ace-icon fa fa-trash red bigger-120" style="cursor:pointer"></i>
+        </a>
+    </td>
+</tr>
+@*<tr class="template_location" data-productid="@Model.ProductId" data-productcode="@Model.ProductCode">
+    <td></td>
+    <td colspan="5">
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th style="width:20px">STT</th>
+                    <th>SN</th>
+                    <th>Kệ</th>
+                    <th>Tầng</th>
+                    <th>Lô sản xuất</th>
+                    <th>Ngày hết hạn</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                @{int orderNo = -1;}
+                @foreach (var location in Model.ListWarehouseLocationItemViewModel)
+                {
+                    orderNo++;
+                    <tr>
+                        <td>
+                            <span>@((Model.OrderNo + 1) + "." + (orderNo + 1))</span>
+                            <input type="hidden" value="@location.Id" name="LocationItemList[@orderNo].Id" id="LocationItemList_@(orderNo)__Id" />
+                            <input type="hidden" value="@Model.ProductId" name="LocationItemList[@orderNo].ProductId" />
+                        </td>
+                        <td>
+
+                            <input type="text" name="LocationItemList[@orderNo].SN" id="LocationItemList_@(orderNo)__SN" value="@location.SN" readonly="readonly" style="width:100%" />
+                        </td>
+                        <td><input type="text" name="LocationItemList[@orderNo].Shelf" id="LocationItemList_@(orderNo)__Shelf" value="@location.Shelf" autocomplete="off" readonly="readonly" style="width:30px;" /></td>
+                        <td><input type="text" name="LocationItemList[@orderNo].Floor" id="LocationItemList_@(orderNo)__Floor" value="@location.Floor" autocomplete="off" readonly="readonly" style="width:30px;" /></td>
+                        <td style="width:100px;">
+                            <input type="text" name="LocationItemList[@orderNo].LoCode" id="LocationItemList_@(orderNo)__LoCode" value="@location.LoCode" readonly="readonly" style="width:100%;" />
+                        </td>
+                        <td style="width:100px;">
+                            <input type="text" name="LocationItemList[@orderNo].ExpiryDate" id="LocationItemList_@(orderNo)__ExpiryDate" value="@(location.ExpiryDate.HasValue?location.ExpiryDate.Value.ToShortDateString():"")" readonly="readonly" style="width:100%;" />
+                        </td>
+                        <td style="width:50px;">
+                            <span class="input-group-addon" onclick="OpenPopup('/WarehouseLocationItem/Index?IsPopup=true&OrderNo=@orderNo&productId=@location.ProductId', 'Tìm kiếm dữ liệu', 800, 600)" style="cursor:pointer">
+                                <i class="ace-icon fa fa-search"></i>
+                            </span>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </td>
+</tr>*@

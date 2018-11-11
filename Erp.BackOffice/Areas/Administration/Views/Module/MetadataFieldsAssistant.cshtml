@@ -1,0 +1,25 @@
+﻿@using Erp.BackOffice.App_GlobalResources
+@using Erp.BackOffice.Helpers
+@using Erp.BackOffice.Administration.Models
+
+@model MetadataFieldsAssistantViewModel
+
+@*@foreach(var item in Model)
+    {
+        <a class="btn btn-info btn-minier" style="margin-bottom:2px;" onclick="insertAtCaret('{@(ViewBag.Entity).@(item.Name)}')">@item.Name</a>
+    }*@
+<div class="no-label">
+    @Html.CustomDropDownListFor(m => m.MetadataField, Model.SelectListMetadataFields, WidthType.span12, true, null, DropdownListStyle.DropdownListStyleChosen)
+</div>
+<a id="btnMetadataFieldSelect" class="btn btn-success btn-sm">
+    <i class="ace-icon fa fa-check bigger-110"></i>
+    @Wording.Select
+</a>
+
+<script type="text/javascript">
+    $(function () {
+        $("#btnMetadataFieldSelect").click(function () {
+            insertAtCaret($("#MetadataField option:selected").val());
+        });
+    });
+</script>

@@ -1,0 +1,323 @@
+﻿@using Erp.BackOffice.App_GlobalResources
+@using Erp.BackOffice.Sale.Models
+@using Erp.BackOffice.Helpers
+@using System.Globalization;
+@model List<ProductInvoiceViewModel>
+@{
+    ViewBag.Title = "Báo cáo công nợ nhà thuốc";
+    if (Request["IsPopup"] == "true")
+    {
+        Layout = "~/Views/Shared/_PopupLayout.cshtml";
+    }
+    else
+    {
+        if (Request["IsPopup"] == "null")
+        {
+            Layout = null;
+        }
+        else
+        {
+            Layout = "~/Views/Shared/ACE_AdminLayout.cshtml";
+        }
+    }
+    bool IsDisplaySearchPanel = Request["IsPopup"] != null && Request["IsPopup"].ToString().ToLower() == "true" ? false : true;
+    Erp.BackOffice.Models.PageSetting pageSetting = new Erp.BackOffice.Models.PageSetting
+    {
+        ModuleName = "SaleReport",
+        ActionName = "Sale_LiabilitiesDrugStore",
+        PageTitle = ViewBag.Title,
+        DisplaySearchPanel = IsDisplaySearchPanel,
+        IsPopup = false,
+        DisplayBackButton = false
+    };
+    int index = 1;
+    Calendar calendar = CultureInfo.InvariantCulture.Calendar;
+    var weekdefault = calendar.GetWeekOfYear(DateTime.Now, CalendarWeekRule.FirstFourDayWeek, DayOfWeek.Monday);
+    string Month = Request["month"] != null ? Request["month"] : DateTime.Now.Month.ToString();
+    string Year = Request["year"] != null ? Request["year"] : DateTime.Now.Year.ToString();
+    string manufacturer = Request["manufacturer"] != null ? Request["manufacturer"] : "";
+    string group = Request["group"] != null ? Request["group"] : "";
+    string week = Request["week"] != null ? Request["week"] : weekdefault.ToString();
+    string branchId = Request["branchId"] != null ? Request["branchId"] : "";
+    if (Request["branchId"] == null)
+    {
+        if (Erp.BackOffice.Filters.SecurityFilter.IsAdminDrugStore() || Erp.BackOffice.Filters.SecurityFilter.IsStaffDrugStore())
+        {
+            branchId = Erp.BackOffice.Helpers.Common.CurrentUser.DrugStore;
+        }
+    }
+    var single = Request["single"] != null ? Request["single"] : "month";
+    ViewData["branchId"] = branchId;
+
+    int year = Convert.ToInt32(Year);
+    var first_day = Erp.BackOffice.Helpers.Common.FirstDateOfWeekISO8601(year, Convert.ToInt32(week));
+    DateTime end_day = first_day.AddDays(6);
+}
+
+<style type="text/css">
+
+</style>
+<script type="text/javascript">
+    var exportThis = (function () {
+        var uri = 'data:application/vnd.ms-excel;base64,',
+            template = '<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel"  xmlns="http://www.w3.org/TR/REC-html40"><head> <!--[if gte mso 9]><xml><x:ExcelWorkbook><x:ExcelWorksheets> <x:ExcelWorksheet><x:Name>{worksheet}</x:Name> <x:WorksheetOptions><x:DisplayGridlines/></x:WorksheetOptions> </x:ExcelWorksheet></x:ExcelWorksheets></x:ExcelWorkbook> </xml><![endif]--></head><body> <table>{table}</table></body></html>',
+            base64 = function (s) {
+                return window.btoa(unescape(encodeURIComponent(s)))
+            },
+            format = function (s, c) {
+                return s.replace(/{(\w+)}/g, function (m, p) { return c[p]; })
+            }
+        return function () {
+            var ctx = { worksheet: '@ViewBag.Title' || 'Worksheet', table: document.getElementById("CTable").innerHTML }
+            window.location.href = uri + base64(format(template, ctx))
+        }
+    })()
+
+    var exportThisWithParameter = (function () {
+        var uri = 'data:application/vnd.ms-excel;base64,',
+            template = '<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel"  xmlns="http://www.w3.org/TR/REC-html40"><head> <!--[if gte mso 9]><xml><x:ExcelWorkbook><x:ExcelWorksheets> <x:ExcelWorksheet><x:Name>{worksheet}</x:Name> <x:WorksheetOptions><x:DisplayGridlines/></x:WorksheetOptions> </x:ExcelWorksheet></x:ExcelWorksheets></x:ExcelWorkbook> </xml><![endif]--></head><body> <table>{table}</table></body></html>',
+            base64 = function (s) {
+                return window.btoa(unescape(encodeURIComponent(s)))
+            },
+            format = function (s, c) {
+                return s.replace(/{(\w+)}/g, function (m, p) { return c[p]; })
+            }
+        return function (tableID, excelName) {
+            tableID = document.getElementById(tableID)
+            var ctx = { worksheet: excelName || 'Worksheet', table: tableID.innerHTML }
+            window.location.href = uri + base64(format(template, ctx))
+        }
+    })()
+</script>
+
+@using (Html.BeginPageHeaderContainer(pageSetting))
+{
+    @Html.Partial("_PartialSearchDrugStore", ViewData["branchId"])
+    <p>
+        Xem dữ liệu theo
+        <label>
+            <input id="single3" name="single" type="radio" class="ace" value="week" @(single == "week" ? "checked=checked" : "")>
+            <span class="lbl"> Tuần</span>
+        </label>
+        <label>
+            <input id="single1" name="single" type="radio" class="ace" value="month" @(single == "month" ? "checked=checked" : "")>
+            <span class="lbl"> Tháng</span>
+        </label>
+
+        <label>
+            <input id="single2" name="single" type="radio" class="ace" value="quarter" @(single == "quarter" ? "checked=checked" : "")>
+            <span class="lbl"> Quý</span>
+        </label>
+
+        <select id="month" name="month" style="@(single == "month" ? "" : "display:none")">
+            @for (int i = 1; i <= 12; i++)
+            {
+                <option @(Month == i.ToString() ? "Selected" : "") value="@i">Tháng @i</option>
+            }
+        </select>
+        <select id="quarter" name="quarter" style="@(single == "quarter" ? "" : "display:none")">
+            <option value="1">Quý I</option>
+            <option value="2">Quý II</option>
+            <option value="3">Quý III</option>
+            <option value="4">Quý IV</option>
+        </select>
+        <select id="week" name="week" style="@(single == "week" ? "" : "display:none")">
+            @for (int i = 1; i <= 52; i++)
+            {
+                <option @(week == i.ToString() ? "Selected" : "") value="@i">Tuần @i</option>
+            }
+        </select>
+        <select id="year" name="year">
+            @for (int i = 2016; i <= DateTime.Now.Year; i++)
+            {
+                <option @(Year == i.ToString() ? "Selected" : "") value="@i">Năm @i</option>
+            }
+        </select>
+    </p>
+}
+<span>@ViewBag.DateRangeText</span>
+<div class="table-responsive" id="BCDoanhthu" style="margin-bottom:40px">
+    <table id="CTable" class="table table-bordered">
+        <thead>
+            <tr>
+                <th style="width:40px;text-align:center">STT</th>
+                <th style="width:100px;text-align:center">Trạng thái</th>
+                <th style="text-align:center">Tên nhà thuốc</th>
+                <th style="width:50px;text-align:center">Tuần</th>
+                <th style="width:50px;text-align:center">Năm</th>
+                <th style="width:100px;text-align:center">Công nợ</th>
+                <th style="width:100px;text-align:center">Hoạt động</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr class="@(index%2==0?"alert-warning":"")">
+                    <td>
+                        <span>@(index++)</span>
+                    </td>
+                    <td>
+                        @if (item.DrugStoreUserId == null && item.AccountancyUserId == null && item.TotalAmount > 0)
+                        {
+                            <label class="label label-info">Chưa chuyển</label>
+                        }
+                        else if (item.DrugStoreUserId != null && item.AccountancyUserId == null && item.TotalAmount > 0)
+                        {
+                            <label class="label label-warning">Đã chuyển</label>
+                        }
+                        else if (item.TotalAmount > 0)
+                        {
+                            <label class="label label-success">Đã nhận</label>
+                        }
+                    </td>
+
+                    <td>@(item.BranchName)</td>
+
+                    <td>@(item.WeekOfYear)</td>
+                    <td>@(item.Year)</td>
+                    <td style="text-align:right">@(CommonSatic.ToCurrencyStr(item.TotalAmount, null))</td>
+
+                    <td>
+
+                        @{
+                            if (item.DrugStoreUserId != null && item.AccountancyUserId == null && item.TotalAmount > 0)
+                            {
+                                if (Erp.BackOffice.Filters.SecurityFilter.AccessRight("ApprovedAccountancy", "ProductInvoice", "Sale"))
+                                {
+                                    <a class="btn btn-mini btn-success" onclick="ApprovedAccountancy(@item.WeekOfYear,@item.Year,@item.BranchId)"><i class="fa fa-check-square-o"></i> Đã nhận</a>
+                                }
+                            }
+                            if (item.DrugStoreUserId == null && item.AccountancyUserId == null && item.TotalAmount > 0)
+                            {
+                                if (Erp.BackOffice.Filters.SecurityFilter.AccessRight("ApprovedDrugStore", "ProductInvoice", "Sale"))
+                                {
+                                    <a class="btn btn-mini btn-info" onclick="ApprovedDrugStore(@item.WeekOfYear,@item.Year,@item.BranchId)"><i class="fa fa-send"></i> Đã chuyển</a>
+                                }
+                            }
+                        }
+                    </td>
+
+                </tr>
+                            }
+        </tbody>
+        <thead>
+            <tr>
+                <td colspan="5" style="text-align:right"><b>Tổng</b></td>
+                <td style="text-align:right">@(CommonSatic.ToCurrencyStr(Model.Sum(x => x.TotalAmount), null))</td>
+                <td></td>
+            </tr>
+        </thead>
+    </table>
+</div>
+
+@using (Html.BeginButtonContainer(pageSetting))
+{
+    <button class="btn btn-white btn-success btn-sm" type="button" value="Export" onclick="exportThis()">
+        <i class="ace-icon fa fa-file-excel-o"></i>
+        Xuất excel
+    </button>
+}
+
+@section Scripts {
+
+    @Html.ScriptBottom_ValidationMvc()
+    @Html.ScriptBottom_DatePicker("dd/MM/yyyy")
+    <script type="text/javascript">
+        $(function () {
+
+            $("#quarter").val(currentQuarter);
+
+            var single = "month";
+
+            $("#single1").change(function () {
+                if ($(this).val() == 'month') {
+                    $("#month").show();
+                    $("#week").hide();
+                    $("#quarter").hide();
+                    single = "month";
+                }
+            });
+
+            $("#single2").change(function () {
+                if ($(this).val() == 'quarter') {
+                    $("#month").hide();
+                    $("#week").hide();
+                    $("#quarter").show();
+                    single = "quarter";
+                }
+            });
+            $("#single3").change(function () {
+                if ($(this).val() == 'week') {
+                    $("#month").hide();
+                    $("#quarter").hide();
+                    $("#week").show();
+                    single = "week";
+                }
+            });
+
+        });
+        function ApprovedDrugStore(week, year, branchId) {
+            ShowLoading();
+            if (confirm('Bạn có muốn báo đã chuyển tiền lên kế toán Công ty không?')) {
+                $.ajax({
+                    type: "POST",
+                    datatype: 'json',
+                    url: '@Url.Action("ApprovedDrugStore", "ProductInvoice", new { area = "Sale" })',
+                    data: {
+                        week: week,
+                        year: year,
+                        branchId: branchId
+                    },
+                    success: function (data) {
+                        if (data.Result == 'success') {
+                            alertPopup("Thông báo", data.Message, "success");
+                            window.location.reload();
+                        }
+                        else {
+                            alertPopup("Lỗi", data.Message, "danger");
+                        }
+                    }
+                });
+                HideLoading();
+                return true;
+            }
+            else {
+                HideLoading();
+                return false;
+            }
+
+        };
+        function ApprovedAccountancy(week, year, branchId) {
+            ShowLoading();
+            if (confirm('Bạn có chắc xác nhận đã nhận tiền từ nhà thuốc đã chọn ?')) {
+                $.ajax({
+                    type: "POST",
+                    datatype: 'json',
+                    url: '@Url.Action("ApprovedAccountancy", "ProductInvoice", new { area = "Sale" })',
+                    data: {
+                        week: week,
+                        year: year,
+                        branchId: branchId
+                    },
+                    success: function (data) {
+                        if (data.Result == 'success') {
+                            alertPopup("Thông báo", data.Message, "success");
+                            window.location.reload();
+                        }
+                        else {
+                            alertPopup("Lỗi", data.Message, "danger");
+                        }
+
+                    }
+                });
+                HideLoading();
+                return true;
+            }
+            else {
+                HideLoading();
+                return false;
+            }
+
+        };
+    </script>
+}

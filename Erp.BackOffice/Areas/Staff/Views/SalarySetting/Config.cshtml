@@ -1,0 +1,104 @@
+﻿@using Erp.BackOffice.App_GlobalResources
+@using Erp.BackOffice.Helpers
+
+@model List<Erp.BackOffice.Areas.Administration.Models.SettingViewModel>
+
+@{
+    ViewBag.Title = "Thiết lập tính lương";
+    Layout = "~/Views/Shared/" + (Request["IsPopup"] == null ? "ACE_AdminLayout.cshtml" : "_PopupLayout.cshtml");
+
+    Erp.BackOffice.Models.PageSetting pageSetting = new Erp.BackOffice.Models.PageSetting
+    {
+        ModuleName = "SalarySetting",
+        ActionName = "Config",
+        PageTitle = ViewBag.Title,
+        DisplaySearchPanel = false,
+        IsPopup = false,
+        DisplayBackButton = false
+    };
+}
+
+@section HeadOfPage {
+    @Html.ScriptTop_ChosenStyle()
+
+    <style type="text/css">
+        table input {
+            padding: 2px 5px !important;
+        }
+
+        table select {
+            height: 25px;
+            font-size: 12px;
+        }
+    </style>
+}
+
+@using (Html.BeginPageHeaderContainer(pageSetting))
+{
+
+}
+
+@helper renderItem(Erp.BackOffice.Areas.Administration.Models.SettingViewModel item)
+{
+    <tr>
+        <td style="padding-top:11px">@item.Note</td>
+        <td>@Html.TextBox("Value_" + item.Id, item.Value, new { style = "width:100px;" })</td>
+        <td>
+            <a class="btn btn-success btn-mini" style="height:25px" onclick="updateSetting(@item.Id)">
+                <i class="fa fa-save"></i>
+                Lưu
+            </a>
+        </td>
+    </tr>
+}
+
+<div class="row">
+    <div class="col-sm-6">
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <td><b>Tiêu đề</b></td>
+                    <td><b>Giá trị</b></td>
+                    <td></td>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    @renderItem(item)
+                }
+            </tbody>
+        </table>
+    </div>
+    <div class="col-sm-6">
+        @Html.Action("DayOff", "SymbolTimekeeping", new { area = "Staff" })
+    </div>
+</div>
+
+@section Scripts {
+    <script type="text/javascript">
+        function updateSetting(Id) {
+            var Value = $("#Value_" + Id).val();
+
+            ShowLoading();
+            var url = "/Setting/Update";
+
+            $.post(url, {
+                Id: Id,
+                Value: Value
+            },
+            function (res) {
+                if (res == 'success') {
+                    //location.reload();
+                    alertPopup('Lưu thành công!', '', 'success');
+                    HideLoading();
+                } else {
+                    alertPopup('Lưu không thành công!', 'Xin hãy kiểm tra lại.', 'error');
+                    HideLoading();
+                }
+            });
+        }
+    </script>
+    @Html.ScriptBottom_ValidationMvc()
+    @Html.ScriptBottom_ChosenStyle()
+}

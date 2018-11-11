@@ -1,0 +1,45 @@
+﻿@using Erp.Domain.Staff.Entities;
+@using Erp.BackOffice.Staff.Models;
+
+@model IEnumerable<SalaryTableViewModel>
+
+@{
+    Layout = null;
+    string AccordionDataID = (string)ViewBag.AccordionDataID;
+}
+
+<div id="@AccordionDataID" class="accordion-style1 panel-group padding-12">
+    @foreach (var item in Model)
+    {
+        int IdLuuTam = -1;
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h4 class="panel-title">
+                    <a class="accordion-toggle collapsed" data-toggle="collapse" data-parent="#@AccordionDataID" href="#@item.Id" aria-expanded="false">
+                        <i class="bigger-110 ace-icon fa fa-angle-right" data-icon-hide="ace-icon fa fa-angle-down" data-icon-show="ace-icon fa fa-angle-right"></i>
+                        @item.Name - Mã [@item.Id]
+                    </a>
+                </h4>
+            </div>
+
+            <div class="panel-collapse collapse" id="@item.Id" aria-expanded="false" style="height: 0px;">
+                <div class="panel-body">
+                    @foreach (SalaryTableDetailReport salaryRP in item.ListalaryTableDetailReport)
+                    {
+                        if (IdLuuTam == -1)
+                        {
+                            IdLuuTam = salaryRP.StaffId.Value;
+                        }
+                        if (IdLuuTam != salaryRP.StaffId.Value)
+                        {
+                            break;
+                        }
+                        <p><a class="btn_formula_item" onclick="selectSalarySettingDetail(0, '@(string.Format("{0}|{1}", item.Id, salaryRP.ColumName))')">@salaryRP.ColumName</a></p>
+                    }
+                   
+                </div>
+            </div>
+        </div>
+    }
+  
+</div>

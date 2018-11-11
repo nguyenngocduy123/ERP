@@ -1,0 +1,32 @@
+﻿@model Erp.BackOffice.Account.Models.AccountReportTrackLiabilitiesViewModel
+
+<div class="clearfix">
+    @if (ViewBag.Name.Contains("Customer") == true)
+    {
+        <div class="infobox infobox-blue">
+            <div class="infobox-icon">
+                <i class="ace-icon fa fa-dollar"></i>
+            </div>
+            <div class="infobox-data">
+                <span class="infobox-data-number ng-binding" style="font-size:18px">@Erp.BackOffice.Helpers.Common.PhanCachHangNgan2(Model.CongNoPhaiThuKhachHang)</span>
+                <div class="infobox-content">
+                    @Erp.BackOffice.App_GlobalResources.Wording.DebtCollection
+                </div>
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="infobox infobox-orange">
+            <div class="infobox-icon">
+                <i class="ace-icon fa fa-money"></i>
+            </div>
+            <div class="infobox-data">
+                <span class="infobox-data-number ng-binding" style="font-size:18px">@Erp.BackOffice.Helpers.Common.PhanCachHangNgan2(Model.CongNoPhaiTraNhaCungCap)</span>
+                <div class="infobox-content">
+                    @Erp.BackOffice.App_GlobalResources.Wording.DebtToSpend
+                </div>
+            </div>
+        </div>
+    }
+</div>

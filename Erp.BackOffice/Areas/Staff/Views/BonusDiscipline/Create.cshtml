@@ -1,0 +1,135 @@
+﻿@using Erp.BackOffice.App_GlobalResources
+@using Erp.BackOffice.Helpers
+@using Erp.BackOffice.Staff.Models
+
+@model BonusDisciplineViewModel
+
+@{
+    ViewBag.Title = Wording.PageCreate_BonusDiscipline;
+
+    Layout = "~/Views/Shared/" + (Request["IsPopup"] == null ? "ACE_AdminLayout.cshtml" : "_PopupLayout.cshtml");
+    Erp.BackOffice.Models.PageSetting pageSetting = new Erp.BackOffice.Models.PageSetting
+    {
+        ModuleName = "BonusDiscipline",
+        ActionName = "Create",
+        PageTitle = ViewBag.Title,
+        DisplaySearchPanel = false,
+        IsPopup = false,
+        DisplayBackButton = false
+
+    };
+}
+
+@section HeadOfPage {
+    @Html.ScriptTop_ChosenStyle()
+    <style type="text/css">
+    </style>
+
+}
+@using (Html.BeginPageHeaderContainer(pageSetting))
+{
+
+}
+@using (Html.BeginForm_AceStyle((string)ViewBag.Title, "Create", "BonusDiscipline", null, FormMethod.Post, new { @class = "form-horizontal" }))
+{
+    @Html.ValidationSummary(true)
+    <input type="hidden" value="@Request["IsPopup"]" name="IsPopup" />
+    <input type="hidden" name="UrlReferrer" value="@Request.UrlReferrer" />
+
+    @Html.ModulePopupFor(m => m.StaffId, "Staffs", Model.Name, false, false, false, null, null, "Search")
+    @Html.DatePicker(model => model.DayEffective, "dd/MM/yyyy", "99/99/9999", true, true)
+    @Html.CustomDropDownListFor(model => model.Category, SelectListHelper.GetSelectList_Category("BonusDiscipline_Category", null, "Value", Wording.Empty), WidthType.span12, true, null, DropdownListStyle.DropdownListStyleChosen)
+    @Html.CustomDropDownListFor(model => model.Sale_BranchId, SelectListHelper.GetSelectList_Branch(Model.PlaceDecisions_Branch, Wording.Empty), WidthType.span12)
+    @Html.CustomDropDownListFor(model => model.PlaceDecisions, Model.DepartmentList, WidthType.span12)
+    @Html.CustomDropDownListFor(model => model.Reason, new List<SelectListItem> { new SelectListItem { Text = "- Rỗng -", Value = "" } }, WidthType.span12)
+    @Html.CustomDropDownListFor(model => model.Formality, new List<SelectListItem> { new SelectListItem { Text = "- Rỗng -", Value = "" } }, WidthType.span12)
+    @Html.CustomTextboxFor(model => model.Money, null, null, WidthType.span12, true, new Dictionary<string, object> { { "class", "text-right" } })
+      @Html.CustomTextAreaFor(model => model.Note, null, WidthType.span12)
+    using (Html.BeginButtonContainer(pageSetting))
+    {
+        <button class="btn btn-mini btn-primary" type="submit" name="Submit" value="Save">
+            <i class="ace-icon fa fa-save"></i>
+            @Wording.Save
+        </button>
+    }
+}
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            $('#Money').numberFormat();
+        });
+       //Fetch Department of University
+       var urBonusDisciplinel = '/api/BackOfficeServiceAPI/FetchBonusDiscipline';
+       var reason = $('#Reason'); // cache it
+       var formality = $('#Formality');
+
+       $(document).ready(function () {
+
+           $('#Category').change(function () {
+               var $this = $(this);
+
+               reason.html('');
+               formality.html('');
+
+               $.get('/api/BackOfficeServiceAPI/FetchCategoryBy', { value: 'Reason_' + $this.val(), getByType: 'value' }, function (res) {
+                   var options = '';
+                   for (var i in res) {
+                       options += '<option value="' + res[i].Value + '">' + res[i].Text + '</option>';
+                   }
+                   reason.append($(options)).trigger('chosen:updated');
+               });
+               $.get('/api/BackOfficeServiceAPI/FetchCategoryBy', { value: 'Formality_' + $this.val(), getByType: 'value' }, function (res) {
+                   var options = '';
+                   for (var i in res) {
+                       options += '<option value="' + res[i].Value + '">' + res[i].Text + '</option>';
+                   }
+                   formality.append($(options)).trigger('chosen:updated');
+               });
+           });
+
+           $('#Category').trigger('change');
+       });
+       //Fetch Department of University
+       var urDepartmentl = '/api/BackOfficeServiceAPI/FetchBranchDepartment';
+       var department = $('#PlaceDecisions'); // cache it
+
+       $("#Sale_BranchId").change(function () {
+           department.empty(); // remove any existing options
+           $(document.createElement('option'))
+                       .attr('value', '')
+                       .text('- Rỗng -')
+                       .appendTo(department).trigger('chosen:updated');
+           var id = $(this).val(); // Use $(this) so you don't traverse the DOM again
+           $.getJSON(urDepartmentl, { BranchId: id }, function (response) {
+               department.empty(); // remove any existing options
+
+               $(response).each(function () {
+                   $(document.createElement('option'))
+                       .attr('value', this.Id)
+                       .text(this.Staff_DepartmentId)
+                       .appendTo(department).trigger('chosen:updated');
+               });
+           });
+       });
+       var urlRefer = '@ViewBag.urlRefer';
+       var closePopup = '@ViewBag.closePopup';
+
+       $(document).ready(function () {
+           //nếu là được gọi theo dạng popup từ form thêm mới hóa đơn thì chạy đoạn code bên dưới
+           if (closePopup != '') {
+               var option = '<option value="@Model.Id" data-value="@Model.Id|@Model.Code|@Model.Formality|@Model.Reason|@Model.DayDecision|@Model.DayEffective">@Model.Code</option>';
+               window.parent.ClosePopupAndAppendSelect(option);
+           }
+           //nếu có url thì gọi hàm này để trang ngoài iframe nhảy trang
+           if (urlRefer != '') {
+               window.parent.ClosePopupAndRedirectToURL(urlRefer);
+           }
+           $("[name='DayEffective']").mask('99/99/9999');
+           $("[name='DayDecision']").mask('99/99/9999');
+       });
+    </script>
+    @Html.ScriptBottom_ValidationMvc()
+    @Html.ScriptBottom_DatePicker("dd/mm/yyyy")
+    @Html.ScriptBottom_ChosenStyle()
+}

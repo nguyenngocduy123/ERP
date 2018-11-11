@@ -1,0 +1,240 @@
+﻿@using Erp.BackOffice.App_GlobalResources
+@using Erp.BackOffice.Helpers
+@using Erp.BackOffice.Sale.Models
+
+@model ProductInboundViewModel
+
+@{
+    ViewBag.Title = Wording.PageUpdateLocationItem_ProductInBound;
+
+    Layout = "~/Views/Shared/ACE_AdminLayout.cshtml";
+    Erp.BackOffice.Models.PageSetting pageSetting = new Erp.BackOffice.Models.PageSetting
+    {
+        ModuleName = "ProductInBound",
+        ActionName = "UpdateLocationItem",
+        PageTitle = ViewBag.Title,
+        DisplaySearchPanel = false,
+        IsPopup = false,
+        DisplayBackButton = true
+    };
+}
+
+@section HeadOfPage {
+    @Html.ScriptTop_ChosenStyle()
+}
+
+@using (Html.BeginPageHeaderContainer(pageSetting))
+{
+
+}
+
+@if (ViewBag.FailedMessage != null && ViewBag.FailedMessage != "")
+{
+    <div class="alert alert-block alert-danger">
+        <button class="close" data-dismiss="alert" type="button">
+            <i class="ace-icon fa fa-times"></i>
+        </button>
+        <i class="ace-icon fa fa-warning red"></i>
+        @ViewBag.FailedMessage
+    </div>
+}
+
+@using (Html.BeginForm_AceStyle((string)ViewBag.Title, "", "UpdateLocationItem", "ProductInBound", null, FormMethod.Post, new { id = "ProductInBound", @class = "form-horizontal clearfix" }))
+{
+    @Html.ValidationSummary(true)
+
+    <input type="hidden" name="ProductInboundId" value="@Model.Id" />
+    <input type="hidden" name="WarehouseId" value="@Model.WarehouseDestinationId" />
+    <input type="hidden" name="BranchId" value="@Model.BranchId" />
+    <div class="col-sm-6 form_input_by detail-view">
+        <div class="row control-group">
+            @Html.DetailViewItem(Model.Code, "Code", Wording.Code, null, null, "col-xs-4", "col-xs-8")
+        </div>
+        <div class="row control-group">
+            @Html.DetailViewItem(string.IsNullOrEmpty(Model.PurchaseOrderCode) ? "Nhập tay" : Model.PurchaseOrderCode, "PurchaseOrderCode", Wording.PurchaseOrderCode, null, null, "col-xs-4", "col-xs-8")
+        </div>
+        <div class="row control-group">
+            @Html.DetailViewItem(Common.PhanCachHangNgan(Model.TotalAmount), "TotalAmount", Wording.TotalAmount, null, null, "col-xs-4", "col-xs-8")
+        </div>
+        <div class="row control-group">
+            @Html.DetailViewItem(Model.Note, "Note", Wording.Note, null, null, "col-xs-4", "col-xs-8")
+        </div>
+    </div>
+
+    <div class="col-sm-6 form_input_by detail-view">
+        <div class="row control-group">
+            @Html.DetailViewItem(Model.ShipperName, "ShipperName", Wording.ShipperName, null, null, "col-xs-4", "col-xs-8")
+        </div>
+        <div class="row control-group">
+            @Html.DetailViewItem(Model.ShipperPhone, "ShipperPhone", Wording.ShipperPhone, null, null, "col-xs-4", "col-xs-8")
+        </div>
+        <div class="row control-group">
+            @Html.DetailViewItem(Model.SupplierName, "SupplierName", Wording.Supplier, null, null, "col-xs-4", "col-xs-8")
+        </div>
+        <div class="row control-group">
+            @Html.DetailViewItem(Model.WarehouseDestinationName, "WarehouseDestinationName", Wording.WarehouseDestination, null, null, "col-xs-4", "col-xs-8")
+        </div>
+    </div>
+
+    <div class="col-sm-12" style="padding:0;" id="listOrderDetail">
+        @*<label style="padding:15px; color:#d16e6c">Chọn đơn hàng để xem chi tiết sản phẩm cần nhập </label>*@
+        <div class="text-center wait-icon" style="display:none; position: relative; top: 60px;">
+            <img src="~/assets/img/ajax-loader.gif" />
+        </div>
+    </div>
+
+    <div class="col-sm-12 box top-20 box-height-max">
+        <p style="font-weight:bold; margin:0">Các sản phẩm trong phiếu nhập</p>
+        <div class="clearfix"></div>
+        <input data-val="true" data-val-required="Chưa chọn sản phẩm" id="numOfdetailItem" name="numOfdetailItem" type="text" value="1" style="">
+        <span class="field-validation-valid help-inline" style="color:#F44336" data-valmsg-for="numOfdetailItem" data-valmsg-replace="true"></span>
+
+        <div class="box-body">
+            <div class="table-responsive">
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th style="width:20px">STT</th>
+                            <th>Tên sản phẩm</th>
+                            <th style="width:10%">Số lượng</th>
+                            <th style="width:15%">Đơn giá</th>
+                            <th style="width:15%">Thành tiền</th>
+                        </tr>
+                    </thead>
+                    <tbody class="detailList">
+                        @{int orderNo = -1; }
+                        @foreach (var item in Model.DetailList)
+                        {
+                            int index = Model.DetailList.IndexOf(item);
+
+                            <tr role="@index" style="background: #62A8D1; color:#fff; font-weight:bold">
+                                <td>@(index + 1)</td>
+                                <td class="has-error">@item.ProductName</td>
+                                <td class="has-error text-right">@item.Quantity</td>
+                                <td class="has-error text-right">@Common.PhanCachHangNgan(item.Price)</td>
+                                <td class="text-right">@Common.PhanCachHangNgan(item.Price * item.Quantity)</td>
+                            </tr>
+
+                            <tr>
+                                <td></td>
+                                <td colspan="5">
+                                    <table class="table table-bordered">
+                                        <thead>
+                                            <tr>
+                                                <th style="width:20px">STT</th>
+                                                <th>SN</th>
+                                                <th>Kệ</th>
+                                                <th>Tầng</th>
+                                                <th>Lô sản xuất</th>
+                                                <th>Ngày hết hạn</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @foreach (var location in item.ListWarehouseLocationItemViewModel)
+                                            {
+                                                orderNo++;
+                                                <tr>
+                                                    <td>
+                                                        <span>@((index + 1) + "." + (orderNo + 1))</span>
+                                                        <input type="hidden" value="@location.Id" name="LocationItemList[@orderNo].Id" />
+                                                        <input type="hidden" value="@item.ProductCode" name="LocationItemList[@orderNo].ProductCode" />
+                                                    </td>
+                                                    <td>
+                                                        <input type="text" name="LocationItemList[@orderNo].SN" value="@location.SN" readonly="readonly" />
+                                                    </td>
+                                                    <td><input type="text" name="LocationItemList[@orderNo].Shelf" value="@location.Shelf" autocomplete="off" /></td>
+                                                    <td><input type="text" name="LocationItemList[@orderNo].Floor" value="@location.Floor" autocomplete="off" /></td>
+                                                    <td><input type="text" name="LocationItemList[@orderNo].LoCode" value="@location.LoCode" autocomplete="off" /></td>
+                                                    <td>
+                                                        <input class="input-mask-date" type="text" id="LocationItemList_@(orderNo)_ExpiryDate" name="LocationItemList[@orderNo].ExpiryDate" value="@location.ExpiryDate" autocomplete="off" style=" width:100px;">
+                                                    </td>
+                                                </tr>
+                                            }
+                                        </tbody>
+                                    </table>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-sm-12 form_input_by top-30">
+        @using (Html.BeginButtonContainer(pageSetting))
+        {
+            <button class="btn btn-mini btn-primary" type="submit" name="Submit" value="Save">
+                <i class="ace-icon fa fa-save"></i>
+                @Wording.Save
+            </button>
+        }
+    </div>
+}
+
+@section Scripts {
+
+    @Html.ScriptBottom_ValidationMvc()
+    @Html.ScriptBottom_ChosenStyle()
+
+    <script src="/assets/js/moment.min.js"></script>
+    <script src="/assets/js/bootstrap-datetimepicker.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            $('.input-mask-date').mask('99/99/9999');
+
+            resetLableRequired('#ProductInBound');
+            //parseValidatorForm('#ProductInBound');
+            $('#ProductInBound').submit(function () {
+                ShowLoading();
+                if ($(this).valid()) {
+                    if (checkFieldLiveRequired($(this)) == true) {
+                        if (checkChosenProductOnTable() == true)
+                            return true;
+                    }
+                }
+
+                HideLoading(); return false;
+            });
+        });
+
+        function checkChosenProductOnTable() {
+            var flag = true;
+            if ($('#PurchaseOrderId').val() == '') {
+                $('.box-detail .detailList select').each(function (index, elem) {
+                    if ($(elem).val() == '') {
+                        var message = $(elem).data('val-required') != undefined ? $(elem).data('val-required') : 'Chưa chọn sản phẩm!';
+                        $(elem).next('span').text(message);
+                        flag = false;
+                    }
+                });
+            }
+            return flag;
+        }
+
+        //hàm gọi lại từ form tạo mới phiếu nhập
+        function ClosePopupAndAppendSelectPurchaseOrder(optionSelect) {
+            ClosePopup(false);
+            $('#PurchaseOrderId').append($(optionSelect)).trigger("chosen:updated");
+        }
+
+        function parseValidatorForm(form) {
+            //jQuery.noConflict();
+
+            // if the form is in a dialog box {
+            var form = $(form);
+            form.removeData('validator').removeData('nobtrusiveValidation');
+            $.validator.unobtrusive.parse(form); // }
+
+            $.fn.extend({
+                // form validation {
+                isValid: function () {
+                    var self = $(this);
+                    $.validator.unobtrusive.parse(self);
+                    return self.data('unobtrusiveValidation').validate();
+                } // }
+            });
+        };
+
+    </script>
+}

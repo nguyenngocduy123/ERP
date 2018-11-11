@@ -1,0 +1,252 @@
+﻿@using Erp.BackOffice.App_GlobalResources
+@using Erp.BackOffice.Sale.Models
+@using Erp.BackOffice.Helpers
+@using GridMvc.Html
+@using Erp.Domain.Sale.Entities;
+@model IndexViewModel<WarehouseViewModel>
+
+@{
+    ViewBag.Title = Wording.PageIndex_Inventory;
+    Layout = "~/Views/Shared/ACE_AdminLayout.cshtml";
+    Erp.BackOffice.Models.PageSetting pageSetting = new Erp.BackOffice.Models.PageSetting
+    {
+        ModuleName = "Inventory",
+        ActionName = "Index",
+        PageTitle = ViewBag.Title,
+        DisplaySearchPanel = true,
+        IsPopup = false,
+        DisplayBackButton = false
+    };
+    
+    var url = Request.Url;
+    //List<WarehouseViewModel> warehouseList = (List<WarehouseViewModel>)ViewBag.warehouseList;
+    List<InventoryViewModel> inventoryList = (List<InventoryViewModel>)ViewBag.inventoryList;
+    List<InventoryViewModel> ProductList = (List<InventoryViewModel>)ViewBag.ProductList;
+    string category = Request["category"] != null ? Request["category"] : "";
+    string group = Request["group"] != null ? Request["group"] : "";
+    string conHang = Request["conHang"] == null || Request["conHang"] == "1"? "1" : "0";
+    string branchId = Request["branchId"] != null ? Request["branchId"] : "";
+    if (Request["branchId"] == null)
+    {
+        if (Erp.BackOffice.Filters.SecurityFilter.IsAdminDrugStore() || Erp.BackOffice.Filters.SecurityFilter.IsStaffDrugStore())
+        {
+            branchId = Erp.BackOffice.Helpers.Common.CurrentUser.DrugStore;
+        }
+    }
+    ViewData["branchId"] = branchId;
+}
+<style>
+    #cTable table tbody, #cTable table thead {
+        display: block !important;
+    }
+
+    #cTable table tbody {
+        overflow: auto;
+        height: calc(100vh - 360px) !important;
+    }
+
+    #cTable table {
+        width: 1520px !important; /* can be dynamic */
+    }
+
+    #cTable th {
+        width: 100px;
+    }
+
+    #cTable td {
+        width: 100px;
+    }
+
+    #cTable > thead > tr > th {
+        vertical-align: middle;
+        text-align: center;
+    }
+
+
+    #cTable > tbody > tr > td {
+        vertical-align: middle;
+        text-align: center;
+    }
+</style>
+@*<style type="text/css">
+    thead, tbody {
+        display: block;
+    }
+
+    tbody {
+        overflow-y: auto; /* Trigger vertical scroll    */
+        overflow-x: hidden; /* Hide the horizontal scroll */
+    }
+
+    .table > tbody > tr > td, .table > tbody > tr > th, .table > tfoot > tr > td, .table > tfoot > tr > th, .table > thead > tr > td, .table > thead > tr > th {
+        vertical-align: middle;
+    }
+
+    .page-content {
+    }
+</style>*@
+
+@helper BuildCheckAll()
+{
+    <label>
+        <input class="ace" type="checkbox" name="checkAll" id="checkAll" />
+        <span class="lbl"></span>
+    </label>
+}
+
+@using (Html.BeginPageHeaderContainer(pageSetting))
+{
+    @Html.Partial("_PartialSearchDrugStore", ViewData["branchId"])
+    <p> 
+        @Html.TextBox("txtCode", Request["txtCode"], new { @class = "", autocomplete = "off", placeholder = "Mã sản phẩm..." })
+        @Html.TextBox("txtSearch", Request["txtSearch"], new { @class = "", autocomplete = "off", placeholder = "Tên sản phẩm..." })
+        @*@Html.DropDownList("group", SelectListHelper.GetSelectList_Category("ProductGroup", group, "- Nhóm sản phẩm -"))*@
+        @Html.DropDownList("category", SelectListHelper.GetSelectList_Category("product", category, "- Danh mục sản phẩm -"))
+        <select id="conHang" name="conHang">
+            <option value="1" @(conHang == "1" ? "selected" : "")>Còn hàng</option>
+            <option value="0" @(conHang == "0" ? "selected" : "")>Hết hàng</option>
+        </select>
+        @Html.DropDownList("WarehouseId", SelectListHelper.GetSelectList_Warehouse(Request["WarehouseId"], null), "Kho quản lý", new Dictionary<string, object> { { "class", "" }, { "data-val-required", "Bắt buộc chọn." } })
+    </p>
+}
+
+@if (ViewBag.SuccessMessage != null && ViewBag.SuccessMessage != "")
+{
+    <div class="alert alert-block alert-success">
+        <button class="close" data-dismiss="alert" type="button">
+            <i class="ace-icon fa fa-times"></i>
+        </button>
+        <i class="ace-icon fa fa-check green"></i>
+        @Html.Raw(ViewBag.SuccessMessage)
+    </div>
+}
+
+@if (ViewBag.FailedMessage != null && ViewBag.FailedMessage != "")
+{
+    <div class="alert alert-block alert-danger">
+        <button class="close" data-dismiss="alert" type="button">
+            <i class="ace-icon fa fa-times"></i>
+        </button>
+        <i class="ace-icon fa fa-warning red"></i>
+        @ViewBag.FailedMessage
+    </div>
+}
+
+<p>Tổng số: <b>@Erp.BackOffice.Helpers.Common.PhanCachHangNgan(Model.Pager.TotalItems)</b></p>
+@if (inventoryList.Count()>0)
+{ 
+<div class="table-responsive">
+    <table id="cTable" class="table table-bordered">
+        <thead>
+            <tr>
+                <th rowspan="2" style="width:40px;">STT</th>
+                @*<th class="grid-header" rowspan="2" style="width:80px;">Mã kho</th>*@
+                <th rowspan="2" style="width:200px;">Tên kho</th>
+                @*<th class="grid-header" style="width:400px;">Địa chỉ</th>*@
+                @foreach (var product in ProductList.GroupBy(x => x.ProductId))
+                {
+                    <th colspan="@product.Count()" style="width:70px;font-size: 11px; white-space: inherit !important"><span title="@product.FirstOrDefault().ProductName">@product.FirstOrDefault().ProductCode</span></th>
+                }
+                <th class="grid-header" style="width:80px;" rowspan="2">Tổng số</th>
+            </tr>
+            <tr>
+                @foreach (var product in ProductList)
+                {
+                    string day = product.day + "/" + product.month + "/" + product.year;
+                    <th style="width:80px;font-size: 9px; white-space: inherit !important">
+                        <span title="Lô sản phẩm">@product.LoCode</span><br>
+                        <span title="Hạn sử dụng">@((product.day > 0 || product.month > 0 || product.year > 0) ? day : "")</span>
+                    </th>
+                }
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model.Items)
+            {
+                int index = Model.Items.IndexOf(item);
+
+                <tr class="@(index%2==0?"alert-warning":"")">
+                    <td style="width:40px;">@Model.Pager.GetOrderNoNumber(index)</td>
+                    @*<td class="grid-cell" data-name="" style="width:80px;">@item.Code</td>*@
+                    <td style="width:200px;"><a onclick="OpenPopup('@Url.Action("Detail", new { Id = item.Id })', '', 500, 700)">@item.Name</a></td>
+                    @*<td class="grid-cell" data-name="" style="width:400px;">@item.Address</td>*@
+                    @foreach (var product in ProductList)
+                    {
+                        var productOfWH = inventoryList.Where(x => x.ProductId == product.ProductId && x.LoCode == product.LoCode && x.day == product.day && x.month == product.month && x.year == product.year && x.WarehouseId == item.Id).ToList();
+                        if (productOfWH.Count() != 0)
+                        {
+                            int? productQtyOfWH = productOfWH.Sum(x => x.Quantity);
+                            <td class="text-right" style="width:80px;font-weight:bold"><a onclick="OpenPopup('@Url.Action("Detail", new { Id = product.ProductId,LoCode=product.LoCode,day=product.day,month=product.month,year=product.year, WarehouseId = item.Id })', '', 500, 700)">@(Erp.BackOffice.Helpers.Common.PhanCachHangNgan(productQtyOfWH))</a></td>
+                        }
+                        else
+                        {
+                            <td class="text-right" style="width:80px;font-weight:bold"><a onclick="OpenPopup('@Url.Action("Detail", new { Id = product.ProductId, LoCode = product.LoCode, day = product.day, month = product.month, year = product.year, WarehouseId = item.Id })', '', 500, 700)">0</a></td>
+                        }
+                    }
+                    <td class="text-right" data-name="" style="width:80px;font-weight:bold">@(Erp.BackOffice.Helpers.Common.PhanCachHangNgan(inventoryList.Where(x => x.WarehouseId == item.Id).Sum(x => x.Quantity)))</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+    <div class="grid-footer">
+        @Html.Raw(Model.Pager.Paging(Request.Url.ToString()))
+    </div>
+</div>
+}
+else
+{
+    <div class="alert alert-block alert-info">
+        Không có dữ liệu
+    </div>
+}
+@using (Html.BeginButtonContainer(pageSetting))
+{
+    if (Erp.BackOffice.Filters.SecurityFilter.AccessRight("UpdateAll", "Inventory", "Sale"))
+    {
+        using (Html.BeginForm("UpdateAll", "Inventory", FormMethod.Post))
+        {
+            @Html.Hidden("url", url)
+            <button class="btn btn-mini btn-primary" type="submit" name="Submit" value="Save">
+                <i class="ace-icon fa fa-save"></i>
+               Kiểm tra kho
+            </button>
+        }
+    }
+}
+
+@section Scripts {
+    <script type="text/javascript">
+        $(function () {
+            $("table tbody").height($(window).height() - $("table tbody").position().top - 170);
+        });
+
+        function CheckIsval() {
+            if ($('[name="DeleteId-checkbox"]').is(':checked') == false) {
+                alert("Phải chọn ít nhất 1 item.");
+                return false;
+            }
+            else {
+                if (confirm('Bạn có chắc muốn xóa các item đã chọn ?')) {
+                    return true;
+                }
+                else {
+                    return false;
+                }
+            }
+        }
+
+        $('[name="Delete"]').click(function () {
+            if (confirm('Bạn có chắc muốn xóa item ?')) {
+                $(this).closest('tr').children('td').each(function (i, e) {
+                    $(this).find("input.class-delete-all").prop("checked", true);
+                    return true;
+                })
+            }
+            else {
+                return false;
+            }
+
+        })
+
+    </script>
+}

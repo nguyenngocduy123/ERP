@@ -1,0 +1,24 @@
+﻿@model Erp.BackOffice.Models.BreadcrumbViewModel
+
+@if (Model != null)
+{
+    if (Model.ParrentId != null)
+    {
+        @Html.Action("BreadcrumbParentPage", "Home", new { @parrentId = Model.ParrentId.Value, @area = "" })
+    }
+    <li><a href="@(Model.Action != null ? Url.Action(Model.Action, Model.Controller, new { @area = Model.Area }) : "#")">@Model.Name</a></li>
+}
+
+@*@if (Model != null)
+{
+    if (Model.ParrentId != null)
+    {
+    @Html.Action("BreadcrumbParentPage", "Home", new { @parrentId = Model.ParrentId.Value, @area = "" })
+    }
+    <li><a href="@(Model.Action != null ? Url.Action(Model.Action, Model.Controller, new { @area = Model.Area }) : "#")">@Model.Name</a></li>
+
+    <span class="divider">
+        <i class="icon-angle-right arrow-icon"></i>
+    </span>    
+}*@
+

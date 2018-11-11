@@ -1,0 +1,210 @@
+﻿@{
+    Layout = null;
+    string home_page = Common.GetSetting("home_page");
+}
+@using Erp.BackOffice.App_GlobalResources
+@using Erp.BackOffice.Helpers
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+    <meta charset="utf-8" />
+    <title>@(ViewBag.Title != "" ? ViewBag.Title + " - " : "")Administration Site</title>
+
+    <meta name="description" content="Erp.BackOffice.Helpers.Common form elements and layouts" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
+
+    <!-- bootstrap & fontawesome -->
+    <link rel="stylesheet" href="/assets/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="/assets/font-awesome/4.7.0/css/font-awesome.min.css" />
+
+    <!-- page specific plugin styles -->
+    <link rel="stylesheet" href="/assets/css/jquery-ui.custom.min.css" />
+    <link rel="stylesheet" href="/assets/css/bootstrap-datetimepicker.min.css" />
+    <link rel="stylesheet" href="/assets/css/select2.min.css" />
+    <link rel="stylesheet" href="/assets/css/jquery.gritter.min.css" />
+    @*<link href="~/assets/css/jquery-ui.custom.min.css" rel="stylesheet" />*@
+    <!-- text fonts -->
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet">
+    <link rel="stylesheet" href="/assets/fonts/fonts.googleapis.com.css" />
+
+    <!-- ace styles -->
+    <link rel="stylesheet" href="/assets/css/ace.min.css" class="ace-main-stylesheet" id="main-ace-style" />
+    <link rel="stylesheet" href="/assets/css/style.css" />
+
+    <!-- ace settings handler -->
+    <script src="/assets/js/ace-extra.min.js"></script>
+
+    <!--[if lte IE 9]>
+        <link rel="stylesheet" href="/assets/css/ace-part2.min.css" class="ace-main-stylesheet" />
+    <![endif]-->
+    <!--[if lte IE 9]>
+      <link rel="stylesheet" href="/assets/css/ace-ie.min.css" />
+    <![endif]-->
+    <!-- inline styles related to this page -->
+    <!-- HTML5shiv and Respond.js for IE8 to support HTML5 elements and media queries -->
+    <!--[if lte IE 8]>
+    <script src="/assets/js/html5shiv.min.js"></script>
+    <script src="/assets/js/respond.min.js"></script>
+    <![endif]-->
+    <!--[if !IE]> -->
+    <script src="/assets/js/jquery.2.1.1.min.js"></script>
+    <script src="/assets/js/jquery-ui.min.js"></script>
+    <!-- <![endif]-->
+    <!--[if IE]>
+    <script src="/assets/js/jquery.1.11.1.min.js"></script>
+    <![endif]-->
+    <!--[if !IE]> -->
+    <script type="text/javascript">
+        window.jQuery || document.write("<script src='/assets/js/jquery.min.js'>" + "<" + "/script>");
+    </script>
+
+    <!-- <![endif]-->
+    <!--[if IE]>
+    <script type="text/javascript">
+     window.jQuery || document.write("<script src='/assets/js/jquery1x.min.js'>"+"<"+"/script>");
+    </script>
+    <![endif]-->
+    @Scripts.Render("~/bundles/modernizr")
+
+    <script>
+        $(document).ready(function () {
+            $("#checkAll").change(function () {
+                $("input:checkbox").prop('checked', $(this).prop("checked"));
+            });
+        });
+    </script>
+    <style>
+        header {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background: #428BCA;
+            z-index: 1111;
+            padding: 5px 5px;
+            line-height: 11px;
+            font-size: 11px;
+            color: white;
+        }
+    </style>
+    <!--page specific plugin styles-->
+    @RenderSection("HeadOfPage", required: false)
+    @StackExchange.Profiling.MiniProfiler.RenderIncludes()
+</head>
+
+
+<body class="no-skin">
+    <div  style="margin-bottom:40px">
+        <header>
+            <div class="pull-left">
+                <img src="~/assets/images/logo.png" width="55" height="35" style="padding-left:10px;padding-right:10px" />
+            </div>
+            <div class="pull-left">
+                <h5>THẨM MỸ VIỆN NGỌC HƯỜNG</h5>
+            </div>
+        </header>
+    </div>
+    <div class="main-container" id="main-container">
+        <!-- side bar -->
+        @*@Html.Partial("ACE_SideBarPartial", ViewData["DataMenuItem"])*@
+        <!-- /side bar -->
+
+        <div class="main-content">
+            <div class="main-content-inner">
+                <!-- breadcrumb -->
+                @*@Html.Action("Breadcrumb", "Home", new { DataMenuItem = (List<Erp.BackOffice.Areas.Administration.Models.PageMenuViewModel>)ViewData["DataMenuItem"], Area = "", controllerName = ViewContext.RouteData.Values["controller"], actionName = ViewContext.RouteData.Values["action"], areaName = ViewContext.RouteData.DataTokens["area"] })*@
+                <!-- /breadcrumb -->
+
+                <div class="page-content">
+                    <!--PAGE CONTENT BEGINS HERE-->
+                    @RenderBody()
+                    <!--PAGE CONTENT ENDS HERE-->
+                </div>
+                <!--/.page-content-->
+            </div>
+        </div>
+        <!--/.main-content-->
+
+    </div>
+    <!--/.main-container-->
+
+    @*<footer>
+        <span class="pull-left" style="color:#fff">@Erp.BackOffice.Helpers.Common.CurrentUser.BranchName</span>
+        <div class="col-sm-3 pull-right text-right">
+            <a style="" href="http://qtsoftware.vn/" target="_blank">Developed by DatViet Software</a>
+        </div>
+    </footer>*@
+
+    <!-- Modal -->
+    <div class="modal" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="myModalLabel"></h4>
+                </div>
+                <div class="modal-body">
+                    <div class="iframe-container" style="height:100%"></div>
+                    <div class="img-loading-wrap">
+                        <div class="outer">
+                            <div class="middle">
+                                <div class="img-loading"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                @*<div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-primary">Save changes</button>
+                    </div>*@
+            </div>
+        </div>
+    </div>
+
+    <div class="img-loading-wrap">
+        <div class="outer">
+            <div class="middle">
+                <div class="img-loading"></div>
+            </div>
+        </div>
+    </div>
+
+    <a href="#" id="btn-scroll-up" class="btn-scroll-up btn btn-small btn-inverse">
+        <i class="ace-icon fa fa-angle-double-up icon-only bigger-110"></i>
+    </a>
+
+    <script type="text/javascript">
+        if ('ontouchstart' in document.documentElement) document.write("<script src='/assets/js/jquery.mobile.custom.min.js'>" + "<" + "/script>");
+    </script>
+    <script src="/assets/js/bootstrap.min.js"></script>
+
+    <!-- page specific plugin scripts -->
+    <!--[if lte IE 8]>
+      <script src="/assets/js/excanvas.min.js"></script>
+    <![endif]-->
+    <script async src="/assets/js/jquery-ui.custom.min.js"></script>
+    <script async src="/assets/js/jquery.ui.touch-punch.min.js"></script>
+    <script async src="/assets/js/fuelux.spinner.min.js"></script>
+
+    <script src="/assets/js/moment.min.js"></script>
+    <script src="/assets/js/bootstrap-datetimepicker.min.js"></script>
+    <script async src="/assets/js/jquery.autosize.min.js"></script>
+    <script src="/assets/js/jquery.maskedinput.min.js"></script>
+    <script async src="/assets/js/jquery.gritter.min.js"></script>
+
+    <!-- ace scripts -->
+    <script src="/assets/js/ace-elements.min.js"></script>
+    <script src="/assets/js/ace.min.js"></script>
+
+    <script src="/Scripts/jquery.blockUI.js"></script>
+    <script src="/Scripts/jquery.priceformat.min.js"></script>
+
+    <!-- basic scripts -->
+    <script src="/Scripts/script.js"></script>
+    <script src="/Scripts/script-ext.js"></script>
+
+    <!--inline scripts related to this page-->
+    @RenderSection("Scripts", required: false)
+
+</body>
+</html>

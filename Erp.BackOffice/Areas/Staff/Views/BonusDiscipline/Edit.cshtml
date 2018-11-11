@@ -1,0 +1,170 @@
+﻿@using Erp.BackOffice.App_GlobalResources
+@using Erp.BackOffice.Helpers
+@using Erp.BackOffice.Staff.Models
+
+@model BonusDisciplineViewModel
+
+@{
+    ViewBag.Title = Wording.PageEdit_BonusDiscipline;
+    Layout = "~/Views/Shared/" + (Request["IsPopup"] == null ? "ACE_AdminLayout.cshtml" : "_PopupLayout.cshtml");
+    //   Model.Category = GridColumnCategoryValue(Model.Category, "BonusDiscipline_Category").ToString();
+    Erp.BackOffice.Models.PageSetting pageSetting = new Erp.BackOffice.Models.PageSetting
+    {
+        ModuleName = "BonusDiscipline",
+        ActionName = "Edit",
+        PageTitle = ViewBag.Title,
+        DisplaySearchPanel = false,
+        IsPopup = false,
+        DisplayBackButton = false
+    };
+}
+@helper GridColumnCategoryValue(string value, string code)
+{
+var attr = Erp.BackOffice.Helpers.Common.GetCategoryByValueCodeOrId("value", value, code);
+    @(attr != null ? attr.Name : "");
+}
+
+
+@section HeadOfPage {
+    @Html.ScriptTop_ChosenStyle()
+}
+@using (Html.BeginPageHeaderContainer(pageSetting))
+{
+
+}
+@using (Html.BeginForm_AceStyle((string)ViewBag.Title, "Edit", "BonusDiscipline", null, FormMethod.Post, new { @class = "form-horizontal" }))
+{
+    @Html.ValidationSummary(true)
+    @Html.HiddenFor(model => model.Id)
+    @Html.HiddenFor(model => model.CreatedUserId)
+    @Html.HiddenFor(model => model.CreatedDate)
+    @Html.HiddenFor(model => model.IsDeleted)
+    @Html.HiddenFor(model => model.StaffId)
+    @Html.HiddenFor(model => model.Code)
+    @Html.HiddenFor(model => model.DayDecision)
+    @Html.HiddenFor(model => model.PlaceDecisions_Branch)
+
+    <input type="hidden" value="@Request["IsPopup"]" name="IsPopup" />
+    <div class="row" style="text-align:center">
+        <div class="col-xs-12">
+            <div class="widget-box">
+                <div class="widget-body">
+                    <div class="widget-main" style="background: #f7f7f7;">
+                        <div class="row">
+                            <div class="col-sm-5">
+                                <img id="avatar" alt="@Model.Name" src="@(Erp.BackOffice.Helpers.Common.KiemTraTonTaiHinhAnh(Model.ProfileImage,"Staff","user"))" style="width:130px;height:130px;border-radius:100%;border:1px solid #ccc" />
+                            </div>
+                            <div class="col-sm-7">
+                                <div style="color:#337ab7;border-bottom:3px solid" class="top-20"><h3><b>@Model.Name</b></h3></div>
+                                <div style="color:#337ab7">@Model.StaffCode</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row top-10 bottom-40">
+        <div class="col-xs-12">
+            <div class="widget-box">
+                <div class="widget-body">
+                    <div class="widget-main">
+                        @Html.CustomTextboxFor(model => model.Code, null, null, WidthType.span12, true, new Dictionary<string, object> { { "disabled", "disabled" } })
+                        @*@Html.CustomTextboxFor(model => model.Name, null, null, WidthType.span12, true, new Dictionary<string, object> { { "disabled", "disabled" } })*@
+                        @Html.DatePicker(model => model.DayEffective, "dd/MM/yyyy", "99/99/9999", true, true, "control-label col-lg-5 col-md-4 col-sm-4", "col-lg-7 col-md-8 col-sm-8", "col-xs-12")
+                        @Html.CustomDropDownListFor(model => model.Category, Model.CategoryList, WidthType.span12)
+                        @Html.CustomDropDownListFor(model => model.Sale_BranchId, SelectListHelper.GetSelectList_Branch(Model.PlaceDecisions_Branch, Wording.Empty), WidthType.span12)
+                        @Html.CustomDropDownListFor(model => model.PlaceDecisions, Model.DepartmentList, WidthType.span12)
+                        @Html.CustomDropDownListFor(model => model.Reason, Model.ReasonList, WidthType.span12)
+                        @Html.CustomDropDownListFor(model => model.Formality, Model.FormalityList, WidthType.span12)
+                        @Html.CustomTextboxFor(model => model.Money, null, null, WidthType.span12, true, new Dictionary<string, object> { { "class", "text-right" } })
+                        @Html.CustomTextAreaFor(model => model.Note, null, WidthType.span12)
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+    using (Html.BeginButtonContainer(pageSetting))
+    {
+        <button class="btn btn-mini btn-primary" type="submit" name="Submit" value="Save">
+            <i class="ace-icon fa fa-save"></i>
+            @Wording.Save
+        </button>
+    }
+}
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+
+            $('#Money').numberFormat();
+        });
+           //Fetch Department of University
+       var urBonusDisciplinel = '/api/BackOfficeServiceAPI/FetchBonusDiscipline';
+       var reason = $('#Reason'); // cache it
+       var formality = $('#Formality');
+
+       $(document).ready(function () {
+
+           $('#Category').change(function () {
+               var $this = $(this);
+
+               reason.html('');
+               formality.html('');
+
+               $.get('/api/BackOfficeServiceAPI/FetchCategoryBy', { value: 'Reason_' + $this.val(), getByType: 'value' }, function (res) {
+                   var options = '';
+                   for (var i in res) {
+                       options += '<option value="' + res[i].Value + '">' + res[i].Text + '</option>';
+                   }
+                   reason.append($(options)).trigger('chosen:updated');
+               });
+               $.get('/api/BackOfficeServiceAPI/FetchCategoryBy', { value: 'Formality_' + $this.val(), getByType: 'value' }, function (res) {
+                   var options = '';
+                   for (var i in res) {
+                       options += '<option value="' + res[i].Value + '">' + res[i].Text + '</option>';
+                   }
+                   formality.append($(options)).trigger('chosen:updated');
+               });
+           });
+
+
+       });
+       //Fetch Department of University
+       var urDepartmentl = '/api/BackOfficeServiceAPI/FetchBranchDepartment';
+       var department = $('#PlaceDecisions'); // cache it
+
+       $("#Sale_BranchId").change(function () {
+           department.empty(); // remove any existing options
+           $(document.createElement('option'))
+                       .attr('value', '')
+                       .text('- Rỗng -')
+                       .appendTo(department).trigger('chosen:updated');
+           var id = $(this).val(); // Use $(this) so you don't traverse the DOM again
+           $.getJSON(urDepartmentl, { BranchId: id }, function (response) {
+               department.empty(); // remove any existing options
+
+               $(response).each(function () {
+                   $(document.createElement('option'))
+                       .attr('value', this.Id)
+                       .text(this.Staff_DepartmentId)
+                       .appendTo(department).trigger('chosen:updated');
+               });
+           });
+       });
+       //truyền từ action create của controller qua khi thực hiện submit và return về lại view create, để nhận biết là được gọi theo dạng popup
+       var closePopup = '@ViewBag.closePopup';
+       $(document).ready(function () {
+           //nếu là được gọi theo dạng popup từ form khác thì chạy đoạn code bên dưới
+           if (closePopup != '') {
+               var option = '<option value="@Model.Id" >@Model.Name</option>';
+               window.parent.ClosePopupAndReloadPageStaffDetail();
+               window.parent.ClosePopupAndAppendSelect(option);
+           }
+       });
+    </script>
+    @Html.ScriptBottom_ValidationMvc()
+    @Html.ScriptBottom_DatePicker("dd/mm/yyyy")
+    @Html.ScriptBottom_ChosenStyle()
+}

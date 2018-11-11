@@ -1,0 +1,194 @@
+﻿@model IEnumerable<WarehouseLocationItemViewModel>
+
+@using Erp.BackOffice.App_GlobalResources
+@using Erp.BackOffice.Sale.Models
+@using Erp.BackOffice.Helpers
+@using GridMvc.Html
+
+@{
+    ViewBag.Title = Wording.PageIndex_WarehouseLocationItem+" (Số lượng sản phẩm: "+Model.Count()+")";
+    bool isPopup = Request["IsPopup"] != null && Request["IsPopup"].ToString().ToLower() == "true" ? true : false;
+    if (isPopup)
+    {
+        Layout = "~/Views/Shared/_PopupLayout.cshtml";
+    }
+    else
+    {
+        Layout = "~/Views/Shared/ACE_AdminLayout.cshtml";
+    }
+    var orderNo = Request["OrderNo"] == null ? "" : Request["OrderNo"].ToString();
+    Erp.BackOffice.Models.PageSetting pageSetting = new Erp.BackOffice.Models.PageSetting
+    {
+        ModuleName = "WarehouseLocationItem",
+        ActionName = "Index",
+        PageTitle = ViewBag.Title,
+        DisplaySearchPanel = true,
+        IsPopup = false,
+        DisplayBackButton = false
+    };
+}
+
+@if (ViewBag.SuccessMessage != null && ViewBag.SuccessMessage != "")
+{
+    <div class="alert alert-block alert-success">
+        <button class="close" data-dismiss="alert" type="button">
+            <i class="ace-icon fa fa-times"></i>
+        </button>
+        <i class="ace-icon fa fa-check green"></i>
+        @ViewBag.SuccessMessage
+    </div>
+}
+
+@if (ViewBag.FailedMessage != null && ViewBag.FailedMessage != "")
+{
+    <div class="alert alert-block alert-danger">
+        <button class="close" data-dismiss="alert" type="button">
+            <i class="ace-icon fa fa-times"></i>
+        </button>
+        <i class="ace-icon fa fa-warning red"></i>
+        @ViewBag.FailedMessage
+    </div>
+}
+
+<link href="@Url.Content("~/assets/css/Gridmvc.css")" rel="stylesheet" type="text/css" />
+<script src="@Url.Content("~/Scripts/gridmvc.min.js")" type="text/javascript"> </script>
+
+@helper GridColumnCommand(string LoCode,string Floor,DateTime? ExpiryDate,string Shelf, int id, bool isPopup, string orderNo, string SN)
+{
+        <p>
+            <a class="btn btn-mini btn-primary" onclick="parent.selectLocationItem(@id, '@LoCode','@Floor','@(ExpiryDate.HasValue?ExpiryDate.Value.ToShortDateString():"")','@Shelf','@SN', '@orderNo')">
+                <i class="ace-icon fa fa-plus"></i>
+            </a>
+        </p>
+}
+
+@helper GridColumnName(string LoCode,string Floor,DateTime? ExpiryDate,string Shelf, int id, bool isPopup, string orderNo, string SN)
+{
+    var name = "- SN: "+(SN==null?"chưa có":SN)+". - Lô SX: " + (LoCode==null?LoCode=" chưa có ":LoCode) + ". - HSD: " + (ExpiryDate.HasValue ? ExpiryDate.Value.ToString("dd/MM/yyyy") : " chưa có") + ". - Tầng: " + (Floor==null?Floor=" chưa có ":Floor) + ". - Kệ: " + (Shelf==null?Shelf=" chưa có ":Shelf) + ".";
+    if (!isPopup)
+    {
+       
+    }
+    else
+    {
+        <a onclick="parent.selectLocationItem(@id, '@LoCode','@Floor','@ExpiryDate','@Shelf','@SN', '@orderNo')">@SN</a>
+    }
+}
+
+
+@using (Html.BeginPageHeaderContainer(pageSetting))
+{
+    <input type="hidden" value="@Request["IsPopup"]" name="IsPopup" />
+    <input type="hidden" value="@Request["jsCallback"]" name="jsCallback" />
+    <input type="hidden" value="@Request["productId"]" name="productId" />
+    <input type="hidden" value="@Request["warehouseId"]" name="warehouseId" />
+    <p>
+        @Html.TextBox("LoCode", Request["LoCode"], new { @class = "", autocomplete = "off", placeholder = "Lô sản xuất..." })
+
+        <span class="input-daterange input-group">
+            @Html.TextBox("start_date", Request["start_date"] != null ? Request["start_date"] : "", new { @class = "", autocomplete = "off", placeholder = "Hạn sử dụng từ..." })
+            <span class="input-group-addon">
+                <i class="fa fa-exchange"></i>
+            </span>
+            @Html.TextBox("end_date", Request["end_date"] != null ? Request["end_date"] : "", new { @class = "", autocomplete = "off", placeholder = "Đến ngày..." })
+        </span>
+        <span class="input-daterange">
+            @Html.TextBox("startDate", Request["startDate"] != null ? Request["startDate"] : "", new { @class = "", autocomplete = "off", placeholder = "Ngày nhập kho từ..." })
+            <span class="">
+                <i class="fa fa-exchange"></i>
+            </span>
+            @Html.TextBox("endDate", Request["endDate"] != null ? Request["endDate"] : "", new { @class = "", autocomplete = "off", placeholder = "Đến ngày..." })
+        </span>
+        @Html.TextBox("ProductInboundCode", Request["ProductInboundCode"], new { @class = "", autocomplete = "off", placeholder = "Mã phiếu nhập kho..." })
+    </p>
+}
+@helper GridColumnCategoryValue(object value)
+{
+    var attr = Erp.BackOffice.Helpers.Common.GetCategoryByValueOrId("value", value);
+    <span>@(attr != null ? attr.Name : "")</span>
+}
+
+@helper CheckDeleteColumns(int Id)
+{
+    <label>
+        <input class="ace class-delete-all" type="checkbox" name="DeleteId-checkbox" value="@Id">
+        <span class="lbl"></span>
+    </label>
+}
+
+@helper BuildCheckAll()
+{
+    <label>
+        <input class="ace" type="checkbox" name="checkAll" id="checkAll" />
+        <span class="lbl"></span>
+    </label>
+}
+
+@if (!isPopup)
+{
+    @Html.Grid(Model).Columns(columns =>
+    {
+        columns.Add().Titled(Wording.SN).Sortable(false).Sanitized(false).Encoded(false).RenderValueAs(u => u.SN);
+        columns.Add().Titled(Wording.LoCode).Sortable(false).Sanitized(false).Encoded(false).RenderValueAs(u => u.LoCode);
+        columns.Add().Titled(Wording.ExpiryDateItem).Sortable(false).Sanitized(false).Encoded(false).RenderValueAs(u => (u.ExpiryDate.HasValue ? u.ExpiryDate.Value.ToShortDateString() : ""));
+        columns.Add().Titled(Wording.Floor).Sortable(false).Sanitized(false).Encoded(false).RenderValueAs(u => u.Floor);
+        columns.Add().Titled(Wording.Shelf).Sortable(false).Sanitized(false).Encoded(false).RenderValueAs(u => u.Shelf);
+        columns.Add().Titled(Wording.ProductInboundCode).Sortable(false).Sanitized(false).Encoded(false).RenderValueAs(u => u.ProductInboundCode);
+        columns.Add().Titled(Wording.CreatedDate).Sortable(false).Sanitized(false).Encoded(false).RenderValueAs(u => u.CreatedDate.Value.ToShortDateString());
+        columns.Add(u => u.Id).Titled(Wording.Action).Sanitized(false).Encoded(false).RenderValueAs(u => GridColumnCommand(u.LoCode, u.Floor, u.ExpiryDate, u.Shelf, u.Id.Value, isPopup, orderNo, u.SN)).SetWidth(20);
+    }).WithPaging(10)
+}
+else
+{
+    @Html.Grid(Model).Columns(columns =>
+    {
+        columns.Add().Titled(Wording.SN).Sortable(false).Sanitized(false).Encoded(false).RenderValueAs(u => u.SN);
+        columns.Add().Titled(Wording.LoCode).Sortable(false).Sanitized(false).Encoded(false).RenderValueAs(u => u.LoCode);
+        columns.Add().Titled(Wording.ExpiryDateItem).Sortable(false).Sanitized(false).Encoded(false).RenderValueAs(u => (u.ExpiryDate.HasValue ? u.ExpiryDate.Value.ToShortDateString() : ""));
+        columns.Add().Titled(Wording.Floor).Sortable(false).Sanitized(false).Encoded(false).RenderValueAs(u => u.Floor);
+        columns.Add().Titled(Wording.Shelf).Sortable(false).Sanitized(false).Encoded(false).RenderValueAs(u => u.Shelf);
+        columns.Add().Titled(Wording.ProductInboundCode).Sortable(false).Sanitized(false).Encoded(false).RenderValueAs(u => u.ProductInboundCode);
+        columns.Add().Titled(Wording.CreatedDate).Sortable(false).Sanitized(false).Encoded(false).RenderValueAs(u => u.CreatedDate.Value.ToShortDateString());
+        columns.Add(u => u.Id).Titled("").Sanitized(false).Encoded(false).RenderValueAs(u => GridColumnCommand(u.LoCode, u.Floor, u.ExpiryDate, u.Shelf, u.Id.Value, isPopup, orderNo,u.SN)).SetWidth(20);
+    }).WithPaging(10)
+}
+
+@section Scripts {
+    <script type="text/javascript">
+        function CheckIsval() {
+            if ($('[name="DeleteId-checkbox"]').is(':checked') == false) {
+                alert("Phải chọn ít nhất 1 item.");
+                return false;
+            }
+            else {
+                if (confirm('Bạn có chắc muốn xóa các item đã chọn ?')) {
+                    return true;
+                }
+                else {
+                    return false;
+                }
+            }
+        }
+
+        $('[name="Delete"]').click(function () {
+            if (confirm('Bạn có chắc muốn xóa item ?')) {
+                $(this).closest('tr').children('td').each(function (i, e) {
+                    $(this).find("input.class-delete-all").prop("checked", true);
+                    return true;
+                })
+            }
+            else {
+                return false;
+            }
+
+        })
+
+        function ClosePopupAndReloadPage()
+        {
+            ClosePopup(true);
+            //location.reload();
+        }
+
+    </script>
+@Html.ScriptBottom_DatePicker("dd/MM/yyyy")
+}

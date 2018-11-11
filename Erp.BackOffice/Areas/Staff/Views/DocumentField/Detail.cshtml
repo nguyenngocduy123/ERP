@@ -1,0 +1,207 @@
+﻿@using Erp.BackOffice.App_GlobalResources
+@using Erp.BackOffice.Helpers
+@using Erp.BackOffice.Staff.Models
+@using Erp.BackOffice.Filters
+@model DocumentFieldViewModel
+
+@{
+    ViewBag.Title = Wording.PageEdit_DocumentField;
+
+    Layout = "~/Views/Shared/ACE_AdminLayout.cshtml";
+    Model.Category = GridColumnCategoryValue(Model.Category, "Module").ToString();
+    Erp.BackOffice.Models.PageSetting pageSetting = new Erp.BackOffice.Models.PageSetting
+    {
+        ModuleName = "DocumentField",
+        ActionName = "Detail",
+        PageTitle = ViewBag.Title,
+        DisplaySearchPanel = false,
+        IsPopup = false,
+        DisplayBackButton = true
+    };
+}
+
+@section HeadOfPage {
+    @Html.ScriptTop_ChosenStyle()
+    <style type="text/css">
+    </style>
+}
+@helper GridColumnCategoryValue(string value, string Code)
+{
+    var attr = Erp.BackOffice.Helpers.Common.GetCategoryByValueCodeOrId("value", value, Code);
+    @(attr != null ? attr.Name : "")
+}
+@using (Html.BeginPageHeaderContainer(pageSetting))
+{
+
+}
+
+    <input type="hidden" name="UrlReferrer" value="@Request.UrlReferrer" />
+    <div class="tabbable">
+    <ul class="nav nav-tabs padding-12 tab-color-blue background-blue" id="tabCustomer">
+        <li class="active">
+            <a data-toggle="tab" href="#tab1">Thông tin tập tài liệu</a>
+        </li>
+
+        <li>
+            <a data-toggle="tab" href="#tab2">Các đặc tính khác</a>
+        </li>
+    </ul>
+    <div class="tab-content">
+        <div class="tab-pane clearfix active" id="tab1">
+            <div class="detail-view col-sm-6">
+                <div class="row control-group">
+                    @Html.DetailViewItemFor2(model => model.Name, null, null, "col-xs-4", "col-xs-8")
+                </div>
+                <div class="row control-group">
+                    @Html.DetailViewItemFor2(model => model.Code, null, null, "col-xs-4", "col-xs-8")
+                </div>
+            </div>
+            <div class="detail-view col-sm-6">
+                <div class="row control-group">
+                    @Html.DetailViewItemFor2(model => model.Category, null, null, "col-xs-4", "col-xs-8")
+                </div>
+                <div class="row control-group">
+                    @Html.DetailViewItemFor2(model => model.CategoryDetail, null, null, "col-xs-4", "col-xs-8")
+                </div>
+            </div>
+            @using (Html.BeginForm("Detail", "DocumentField", null, FormMethod.Post, new { @id = "form-attribute", @class = "form-horizontal" }))
+            {
+                @Html.HiddenFor(model => model.Id)
+                @Html.HiddenFor(model => model.CreatedUserId)
+                @Html.HiddenFor(model => model.AssignedUserId)
+                @Html.HiddenFor(model => model.CreatedDate)
+                @Html.HiddenFor(model => model.IsDeleted)
+                @Html.HiddenFor(model => model.Name)
+                @Html.HiddenFor(model => model.Category)
+                <p>
+                    <a class="btn btn-primary btn-mini top-10" onclick="addDocumentAttribute();">
+                        <i class="ace-icon fa fa-plus bigger-110"></i>
+                        <span>Thêm tập tin</span>
+                    </a>
+                    <button id="save" type="submit" class="btn btn-success btn-green btn-mini top-10 hidden" name="Submit" value="Save">
+                        <i class="ace-icon fa fa-floppy-o"></i>
+                        @Wording.Save
+                    </button>
+                    <button id="exit" type="button" class="btn btn-black btn-mini top-10 hidden" onclick="AllowClose();">
+                        <span class="ace-icon fa fa-window-close"></span>
+                        @Wording.Close
+                    </button>
+                </p>
+            }
+            <div id="DocumentAttributeCreate" hidden>
+                <div class="col-sm-12 clearfix" style="padding:0px">
+                    @Html.Partial("_Upload")
+
+                </div>
+            </div>
+            <table class="table table-striped grid-table table-responsive">
+                <thead>
+                    <tr>
+                        <th class="grid-header">
+                            <div class="grid-header-title"><span></span></div>
+                        </th>
+                        <th class="grid-header">
+                            <div class="grid-header-title"><span>Hình ảnh</span></div>
+                        </th>
+                        <th class="grid-header">
+                            <div class="grid-header-title"><span>Tên tập tin</span></div>
+                        </th>
+                        @*<th class="grid-header">
+                        <div class="grid-header-title"><span>Ghi chú</span></div>
+                    </th>*@
+                        <th class="grid-header">
+                            <div class="grid-header-title"><span>Size</span></div>
+                        </th>
+                        <th class="grid-header">
+                            <div class="grid-header-title"><span>Ngày tạo</span></div>
+                        </th>
+                        <th class="grid-header">
+                            <div class="grid-header-title"><span>Số lượt tải</span></div>
+                        </th>
+                        <th class="grid-header">
+                            <div class="grid-header-title"><span>Hoạt động</span></div>
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model.DocumentAttributeList)
+                    {
+                        <tr class="grid-row">
+                            <td class="grid-cell" data-name=""></td>
+                            <td class="grid-cell">
+                                <span class="preview">
+                                    <a title="@item.File" data-gallery><img src="@item.FilePath" width="48" height="48"></a>
+                                </span>
+                            </td>
+                            <td class="grid-cell"> @item.File </td>
+                            @*<td class="grid-cell" data-name="">@item.Note</td>*@
+                            <td class="grid-cell size " data-name="">@Erp.BackOffice.Helpers.Common.GetFileSize(Convert.ToDouble(item.Size))</td>
+                            <td class="grid-cell" data-name="">@item.CreatedDate.Value.ToString("H:mm - dd/MM/yyyy")</td>
+                            <td class="grid-cell text-right" data-name="">
+                                <a onclick="OpenPopup('@Url.Action("Index", "LogDocumentAttribute", new { area = "Staff", Id = item.Id })', '@Wording.PageIndex_LogDocumentAttribute', 700, 700)"><b>@item.QuantityDownload</b></a>
+                            </td>
+                            <td class="grid-cell" data-name="">
+                                <a class="btn btn-mini btn-primary" onclick="return Download(@item.Id,'@item.File')">
+                                    <i class="fa fa-download"></i>
+                                    <span>Tải về</span>
+                                </a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+        <div class="tab-pane clearfix" id="tab2">
+            <div class="clearfix list-attr-by-category edit-view">
+                @Html.Action("GetListByModule", "ObjectAttribute", new { area = "Sale", module = "DocumentField", objectId = Model.Id, colum = "col-sm-12", disabled = true })
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(function () {
+            $('#form-attribute').submit(function () {
+                if ($(this).valid()) {
+                    ShowLoading();
+                }
+            });
+        });
+        //hiển thị thẻ div tập tin khi thêm tập tin mới
+        function addDocumentAttribute() {
+            $("#DocumentAttributeCreate").removeClass("hidden");
+            $("#DocumentAttributeCreate").show();
+            $("#save").removeClass("hidden");
+            $("#save").show();
+            $("#exit").removeClass("hidden");
+            $("#exit").show();
+        }
+        //đóng thẻ div tập tin
+        function AllowClose() {
+            $("#DocumentAttributeCreate").addClass("hidden");
+            $("#save").addClass("hidden");
+            $("#exit").addClass("hidden");
+        }
+        function Download(Id, file) {
+            $.ajax({
+                url: '/DocumentField/CheckDownload',
+                type: 'GET',
+                data: { Id: Id, file: file },
+                success: function (res) {
+                    if (res == "success") {
+                        // alert('Tải thành công!');
+                        location.href = '/DocumentField/Download?Id=' + Id + '&file=' + file;
+                        alertPopup("Thông báo","Tập tin đã tải thành công","success");
+                    } else {
+                        alertPopup("Lỗi","Tập tin không tồn tại","danger");
+                      //  alert('Tập tin không tồn tại!');
+                    }
+                }
+            });
+
+        };
+    </script>
+    @Html.ScriptBottom_ValidationMvc()
+    @Html.ScriptBottom_ChosenStyle()
+}

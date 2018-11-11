@@ -1,0 +1,84 @@
+@model IQueryable<ProcessStageViewModel>
+
+@using Erp.BackOffice.App_GlobalResources
+@using Erp.BackOffice.Crm.Models
+@using Erp.BackOffice.Helpers
+@using GridMvc.Html
+
+@helper GridColumnCommand(int id)
+{
+    <div class="hidden-phone visible-desktop action-buttons" style="display: inline-block; float: left;">
+        <p>
+            <button name="Delete" value="Delete" type="submit" class="btn btn-mini btn-danger">
+                <i class="ace-icon fa fa-trash bigger-120"></i>
+            </button>
+        </p>
+    </div>
+}
+
+@helper GridColumnName(string name, int id)
+{
+    @*if (string.IsNullOrEmpty(name))
+        {
+            <a href="@Url.Action("Edit", "Branch", new { Id = id })">No Title</a>
+        }
+        else
+        {
+            <a href="@Url.Action("Edit", "Branch", new { Id = id })">@name</a>
+        }*@
+    @name
+}
+
+@helper CheckDeleteColumns(int Id)
+{
+    <label>
+        <input class="ace class-delete-all" type="checkbox" name="DeleteAll-checkbox" value="@Id">
+        <span class="lbl"></span>
+    </label>
+}
+
+@helper BuildCheckAll()
+{
+    <label>
+        <input class="ace" type="checkbox" name="checkAll" id="checkAll" />
+        <span class="lbl"></span>
+    </label>
+}
+
+<div class="widget-box">
+    <div class="widget-header">
+        <h5 class="widget-title">Sub List ProcessStage</h5>
+        <div class="widget-toolbar">
+            <a href="#" data-action="collapse">
+                <i class="ace-icon fa fa-chevron-up"></i>
+            </a>
+        </div>
+    </div>
+    <div class="widget-body">
+        <div class="widget-main">
+            @using (Html.BeginForm("DeleteOnSubList", "ProcessStage", FormMethod.Post))
+            {
+                <p>
+                    @if (Erp.BackOffice.Filters.SecurityFilter.AccessRight("Create", "ProcessStage", "Crm"))
+                    {
+                        @Html.Button(Wording.CreateNew, ButtonType.aTag, ButtonColor.Info, ButtonSize.Mini, true, IconType.Plus, IconSize.Default, false, new { @href = Url.Action("Create", "ProcessStage") })
+                    }
+                    @if (Erp.BackOffice.Filters.SecurityFilter.AccessRight("DeleteOnSubList", "ProcessStage", "Crm"))
+                    {
+                        <button name="DeleteAll" value="DeleteAll" type="submit" class="btn btn-mini btn-danger" onclick="return CheckIsval();">
+                            <i class="ace-icon fa fa-trash bigger-120"></i>
+                            @Wording.Delete
+                        </button>
+                    }
+                </p>
+
+                @Html.Grid(Model).Columns(columns =>
+                {
+                    columns.Add().Titled(BuildCheckAll().ToHtmlString()).SetWidth(20).Sanitized(false).Encoded(false).RenderValueAs(n => CheckDeleteColumns(n.Id));
+                    columns.Add().Titled(Html.DisplayNameFor(u => u.FirstOrDefault().Name).ToString()).Sortable(false).Sanitized(false).Encoded(false).RenderValueAs(u => GridColumnName(u.Name, u.Id));
+                    columns.Add(u => u.Id).Titled(Wording.Action).Sanitized(false).Encoded(false).RenderValueAs(u => GridColumnCommand(u.Id)).SetWidth(20);
+                }).WithPaging(10)
+            }
+        </div>
+    </div>
+</div>

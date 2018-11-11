@@ -1,0 +1,19 @@
+﻿@{
+    var inputUI = ViewData["inputUI"];
+    var inputMask = ViewData["inputMask"];
+    var inputName = ViewData["inputName"];
+}
+
+<div class="input-append">
+    @inputUI
+    <span class="add-on"><i class="icon-calendar"></i></span>
+</div>
+
+@if (inputMask != null)
+{
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $("[name='@inputName']").mask('@inputMask');
+        });
+    </script>
+}

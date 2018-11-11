@@ -1,0 +1,28 @@
+﻿@model Erp.BackOffice.Sale.Models.RequestInboundDetailViewModel
+@using Erp.BackOffice.Helpers
+<tr role="@(Model.OrderNo + 1)" id="product_item_@Model.OrderNo" data-id="@Model.OrderNo">
+    <td class="text-center">
+        <span>@(Model.OrderNo + 1)</span>
+        @*<br />
+        <label class="toggle_template_location label label-info" data-toggle="tooltip" data-placement="right" title="Bấm để hiển thị danh sách mã vạch và vị trí sản phẩm"><i class="fa fa-angle-double-down"></i></label>*@
+    </td>
+    <td class="has-error detail_item_id">
+        @Html.Hidden("DetailList[" + Model.OrderNo + "].ProductId", Model.ProductId)
+        @Model.ProductCode - @Model.ProductName
+    </td>
+    <td class="has-error">
+        <input type="hidden" name="DetailList[@(Model.OrderNo)].Unit" value="" class="detail_item_unit" />
+        <input type="text" style="width:100%" min="1" value="@Model.Quantity" data-val-range="Số lượng phải lớn hơn 1" name="DetailList[@Model.OrderNo].Quantity" id="DetailList_@(Model.OrderNo)_Quantity" class="detail_item_qty numberinput1" autocomplete="off" />
+        <span style="display:block; font-size:11px;" class="field-validation-valid help-inline" data-valmsg-for="DetailList_@(Model.OrderNo)_Quantity" data-valmsg-replace="false"></span>
+    </td>
+    <td class="has-error detail-product-price">
+        <input class="detail_item_price numberinput2" type="text" readonly="readonly" id="DetailList_@(Model.OrderNo)__Price" name="DetailList[@(Model.OrderNo)].Price" value="@Model.Price.ToCurrencyStr(null)" role="price" style="width:100%" data-val="true" data-val-required="Chưa nhập giá" autocomplete="off" />
+        <span class="field-validation-valid help-inline" data-valmsg-for="DetailList_@(Model.OrderNo)__Price" data-valmsg-replace="false"></span>
+    </td>
+    <td class="detail_item_total">@Model.Price.ToCurrencyStr(null)</td>
+    <td class="text-center">
+        <a class="btn-delete-item">
+            <i class="ace-icon fa fa-trash red bigger-120" style="cursor:pointer"></i>
+        </a>
+    </td>
+</tr>

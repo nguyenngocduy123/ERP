@@ -1,0 +1,174 @@
+﻿.item-block {
+    margin-bottom: 10px;
+    width: 100%;
+}
+
+    .item-block .title {
+        font-weight: bold;
+    }
+
+    .item-block .info {
+        text-align: left;
+        color: #333;
+    }
+
+/*------------------- condos-item ------------*/
+.item-condos {
+    margin-bottom: 10px;
+    width: 100%;
+}
+
+    .item-condos .title {
+        font-weight: bold;
+        border-bottom: 1px dotted #e2e2e2;
+        padding-bottom: 5px;
+    }
+
+    .item-condos .info {
+        text-align: left;
+        color: #333;
+    }
+
+/****************** Real Estate ***********************/
+
+.Erp-area-wrap::after {
+    content: "";
+    clear: both;
+}
+
+.Erp-room-wrap {
+}
+
+    .Erp-room-wrap button {
+        margin-bottom: 10px;
+        max-width: 100%;
+        width: 100%;
+        padding: 0px;
+    }
+
+    .Erp-room-wrap:after {
+        content: "";
+        clear: both;
+        display: table;
+        line-height: 0;
+    }
+
+.Erp-room-item.actived {
+    background: #629B58 !important;
+    border-color: #629B58 !important;
+}
+
+.Erp-room-wrap .Erp-room-item {
+    display: block;
+    max-width: 100%;
+    padding: 0px;
+    margin-bottom: 2px;
+    border: 2px solid #c5d0dc;
+    cursor: pointer;
+    min-height: 120px;
+}
+
+    .Erp-room-wrap .Erp-room-item:hover {
+        border: 2px solid #0093d7;
+    }
+
+.Erp-room-item p {
+    font-size: 12px;
+    line-height: 20px;
+    margin-bottom: 0px;
+    text-align: left;
+    padding-left: 10px;
+}
+
+    .Erp-room-item p.name {
+        font-size: 20px;
+        font-weight: bold;
+        text-align: center;
+        padding-left: 0px;
+        line-height: 35px;
+    }
+
+    .Erp-room-item p.total {
+    }
+
+#ErpRoomDetail {
+    clear: both;
+}
+
+.no-click {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    top: 0px;
+    z-index: 999;
+}
+
+.tab-content {
+    overflow: inherit;
+}
+
+.student-name-wrap .label {
+    padding: 7px;
+    margin-right: 5px;
+}
+
+/********************/
+.Erp-house-wrap:after {
+    content: "";
+    clear: both;
+    display: table;
+    line-height: 0;
+}
+
+.Erp-house-wrap .Erp-house-item {
+    display: block;
+    max-width: 100%;
+    padding: 0px;
+    min-height: 166px !important;
+    background: url('../img/icon-house.png') no-repeat right top;
+    cursor: pointer;
+    border: 2px solid #c5d0dc;
+    position: relative;
+}
+
+    .Erp-house-wrap .Erp-house-item:hover {
+        border: 2px solid #0093d7;
+    }
+
+.Erp-house-item p {
+    font-size: 12px;
+    line-height: 20px;
+    margin-bottom: 5px;
+    text-align: left;
+    padding-left: 5px;
+}
+
+    .Erp-house-item p.name {
+        font-size: 20px;
+        font-weight: bold;
+        line-height: 35px;
+        color: #0093d7;
+    }
+
+        .Erp-house-item p.name .icon-female {
+            color: #ff006e;
+            background: #fff;
+            padding: 2px 5px;
+            border-radius: 100%;
+        }
+
+.Erp-house-item .total {
+    margin-top: 5px;
+}
+
+    .Erp-house-item .total::after {
+        content: "";
+        clear: both;
+    }
+
+    .Erp-house-item .total label {
+    }
+
+    .Erp-house-item .total b {
+        font-size: 15px;
+    }

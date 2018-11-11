@@ -1,0 +1,101 @@
+@model IQueryable<BonusDisciplineViewModel>
+
+@using Erp.BackOffice.App_GlobalResources
+@using Erp.BackOffice.Staff.Models
+@using Erp.BackOffice.Helpers
+@using GridMvc.Html
+
+@{
+    ViewBag.Title = Wording.PageIndex_BonusDiscipline;
+ bool isPopup = Request["IsPopup"] != null && Request["IsPopup"].ToString().ToLower() == "true" ? true : false;
+    if (isPopup)
+    {
+        Layout = "~/Views/Shared/_PopupLayout.cshtml";
+    }
+    else
+    {
+        Layout = "~/Views/Shared/ACE_AdminLayout.cshtml";
+    }
+    Erp.BackOffice.Models.PageSetting pageSetting = new Erp.BackOffice.Models.PageSetting
+    {
+        ModuleName = "BonusDiscipline",
+        ActionName = "List",
+        PageTitle = ViewBag.Title,
+        DisplaySearchPanel = true,
+        IsPopup = false,
+        DisplayBackButton = false
+    };
+}
+
+<link href="@Url.Content("~/assets/css/Gridmvc.css")" rel="stylesheet" type="text/css" />
+<script src="@Url.Content("~/Scripts/gridmvc.min.js")" type="text/javascript"> </script>
+
+@*@helper GridColumnCommand(int id)
+{
+    <button name="Delete" value="Delete" type="submit" id="btn_delete_BonusDiscipline_@id" class="btn btn-mini btn-danger" onclick="return BonusDisciplineDelete(@id)">
+        <i class="ace-icon fa fa-trash bigger-120"></i>
+    </button>
+}*@
+
+@helper GridColumnName(string name, int id)
+{
+    if (string.IsNullOrEmpty(name))
+    {
+        <span>NoTile</span>
+    }
+    else
+    {
+        <a onclick="OpenPopup('@Url.Action("Edit", "BonusDiscipline", new { area = "Staff", Id = id, IsPopup = "true" })', '@Wording.PageEdit_BonusDiscipline', 500, 500)">@name</a>
+    }
+}
+@helper GridColumnCategoryValue(string value, string code)
+{
+    var attr = Common.GetCategoryByValueCodeOrId("value", value, code);
+    <span>@(attr != null ? attr.Name : "")</span>
+}
+<div class="table-responsive">
+        @Html.Grid(Model).Columns(columns =>
+   {
+       int index = 0;
+       columns.Add().Titled(Wording.OrderNo).SetWidth(30).RenderValueAs(n => (++index).ToString());
+       columns.Add().Titled(Wording.CodeDecisions).Sortable(false).SetWidth(150).Sanitized(false).Encoded(false).RenderValueAs(u => GridColumnName(u.Code,u.Id));
+       columns.Add(u => u.DayDecision).Format("{0:dd/MM/yyyy}").Titled(Wording.DayDecision).SetWidth(100);
+       columns.Add(u => u.DayEffective).Format("{0:dd/MM/yyyy}").Titled(Wording.DayEffective).SetWidth(100);
+       columns.Add(u => u.PlaceDecisionsName).Titled(Wording.PlaceDecisions).SetWidth(100);
+       columns.Add(u => u.Reason).Titled(Wording.Reason).SetWidth(200);
+       columns.Add(u => u.Formality).Titled(Wording.Formality);
+       columns.Add().Titled(Wording.Category).Sortable(false).Sanitized(false).Encoded(false).RenderValueAs(u => GridColumnCategoryValue(u.Category,"BonusDiscipline_Category"));
+       // columns.Add(u => u.Category).Titled(Wording.Category).SetWidth(100);
+       columns.Add(u => u.Note).Titled(Wording.Note);
+       //columns.Add(u => u.CreatedDate).Titled(Wording.CreatedDate).SetWidth(100);
+       //columns.Add(u => u.ModifiedUserId).Titled(Html.DisplayNameFor(u => u.FirstOrDefault().ModifiedUserId).ToString()).SetWidth(100).RenderValueAs(u => u.ModifiedUserName);
+       //columns.Add(u => u.ModifiedDate).Titled(Wording.ModifiedDate).SetWidth(100).Sortable(true);
+       //  columns.Add(u => u.Id).Titled(Wording.Action).Sanitized(false).Encoded(false).RenderValueAs(u => GridColumnCommand(u.Id)).SetWidth(20);
+   }).WithPaging(10)
+
+    </div>
+@using (Html.BeginButtonContainer(pageSetting))
+{
+    if (Erp.BackOffice.Filters.SecurityFilter.AccessRight("Create", "BonusDiscipline", "Staff"))
+    {
+        @Html.Button(Wording.CreateNew, ButtonType.aTag, ButtonColor.Primary, ButtonSize.Mini, true, IconType.Plus, IconSize.Default, false, new { @class = "btn-BonusDisciplineCreate", @onclick = "OpenPopup('" + Url.Action("Create", "BonusDiscipline", new { area = "Staff", IsPopup = "true" }) + "', '" + Wording.PageCreate_BonusDiscipline + "', 0, 500)" })
+    }
+
+}
+@section Scripts {
+    <script type="text/javascript">
+        function ClosePopupAndReloadPageStaffDetail() {
+            ClosePopup(true);
+            ShowLoading();
+        };
+        function ClosePopupAndAppendSelect() {
+            ShowLoading();
+            ClosePopup(true);
+        }
+
+        function ClosePopupAndRedirectToURL(url) {
+            ClosePopup(true);
+            location.href = url;
+        }
+    </script>
+}

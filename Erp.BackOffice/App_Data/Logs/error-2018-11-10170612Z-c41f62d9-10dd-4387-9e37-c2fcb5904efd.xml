@@ -1,0 +1,206 @@
+﻿<error errorId="c41f62d9-10dd-4387-9e37-c2fcb5904efd" application="/LM/W3SVC/2/ROOT" host="DESKTOP-MQDDLAE" type="System.Data.ConstraintException" message="The 'ManagerStaffId' property on 'vwCustomer' could not be set to a 'null' value. You must set this property to a non-null value of type 'System.Int32'. " source="EntityFramework" detail="System.Data.ConstraintException: The 'ManagerStaffId' property on 'vwCustomer' could not be set to a 'null' value. You must set this property to a non-null value of type 'System.Int32'. &#xD;&#xA;   at System.Data.Entity.Core.Common.Internal.Materialization.Shaper.ErrorHandlingValueReader`1.GetValue(DbDataReader reader, Int32 ordinal)&#xD;&#xA;   at System.Data.Entity.Core.Common.Internal.Materialization.Shaper.GetPropertyValueWithErrorHandling[TProperty](Int32 ordinal, String propertyName, String typeName)&#xD;&#xA;   at lambda_method(Closure , Shaper )&#xD;&#xA;   at System.Data.Entity.Core.Common.Internal.Materialization.Shaper.HandleEntityAppendOnly[TEntity](Func`2 constructEntityDelegate, EntityKey entityKey, EntitySet entitySet)&#xD;&#xA;   at lambda_method(Closure , Shaper )&#xD;&#xA;   at System.Data.Entity.Core.Common.Internal.Materialization.Coordinator`1.ReadNextElement(Shaper shaper)&#xD;&#xA;   at System.Data.Entity.Core.Common.Internal.Materialization.Shaper`1.SimpleEnumerator.MoveNext()&#xD;&#xA;   at System.Data.Entity.Internal.LazyEnumerator`1.MoveNext()&#xD;&#xA;   at System.Linq.Enumerable.WhereSelectEnumerableIterator`2.MoveNext()&#xD;&#xA;   at System.Linq.Enumerable.WhereEnumerableIterator`1.MoveNext()&#xD;&#xA;   at System.Linq.Buffer`1..ctor(IEnumerable`1 source)&#xD;&#xA;   at System.Linq.OrderedEnumerable`1.&lt;GetEnumerator&gt;d__1.MoveNext()&#xD;&#xA;   at System.Linq.Enumerable.Count[TSource](IEnumerable`1 source)&#xD;&#xA;   at ASP._Page_Areas_Account_Views_Customer_Index_cshtml.Execute() in f:\src\Erp.BackOffice\Areas\Account\Views\Customer\Index.cshtml:line 196&#xD;&#xA;   at System.Web.WebPages.WebPageBase.ExecutePageHierarchy()&#xD;&#xA;   at System.Web.Mvc.WebViewPage.ExecutePageHierarchy()&#xD;&#xA;   at System.Web.WebPages.WebPageBase.ExecutePageHierarchy(WebPageContext pageContext, TextWriter writer, WebPageRenderingBase startPage)&#xD;&#xA;   at System.Web.Mvc.RazorView.RenderView(ViewContext viewContext, TextWriter writer, Object instance)&#xD;&#xA;   at System.Web.Mvc.BuildManagerCompiledView.Render(ViewContext viewContext, TextWriter writer)&#xD;&#xA;   at System.Web.Mvc.ViewResultBase.ExecuteResult(ControllerContext context)&#xD;&#xA;   at System.Web.Mvc.ControllerActionInvoker.InvokeActionResult(ControllerContext controllerContext, ActionResult actionResult)&#xD;&#xA;   at System.Web.Mvc.ControllerActionInvoker.&lt;&gt;c__DisplayClass1a.&lt;InvokeActionResultWithFilters&gt;b__17()&#xD;&#xA;   at System.Web.Mvc.ControllerActionInvoker.InvokeActionResultFilter(IResultFilter filter, ResultExecutingContext preContext, Func`1 continuation)&#xD;&#xA;   at System.Web.Mvc.ControllerActionInvoker.&lt;&gt;c__DisplayClass1a.&lt;&gt;c__DisplayClass1c.&lt;InvokeActionResultWithFilters&gt;b__19()&#xD;&#xA;   at System.Web.Mvc.ControllerActionInvoker.InvokeActionResultFilter(IResultFilter filter, ResultExecutingContext preContext, Func`1 continuation)&#xD;&#xA;   at System.Web.Mvc.ControllerActionInvoker.&lt;&gt;c__DisplayClass1a.&lt;&gt;c__DisplayClass1c.&lt;InvokeActionResultWithFilters&gt;b__19()&#xD;&#xA;   at System.Web.Mvc.ControllerActionInvoker.InvokeActionResultFilter(IResultFilter filter, ResultExecutingContext preContext, Func`1 continuation)&#xD;&#xA;   at System.Web.Mvc.ControllerActionInvoker.&lt;&gt;c__DisplayClass1a.&lt;&gt;c__DisplayClass1c.&lt;InvokeActionResultWithFilters&gt;b__19()&#xD;&#xA;   at System.Web.Mvc.ControllerActionInvoker.InvokeActionResultFilter(IResultFilter filter, ResultExecutingContext preContext, Func`1 continuation)&#xD;&#xA;   at System.Web.Mvc.ControllerActionInvoker.&lt;&gt;c__DisplayClass1a.&lt;&gt;c__DisplayClass1c.&lt;InvokeActionResultWithFilters&gt;b__19()&#xD;&#xA;   at System.Web.Mvc.ControllerActionInvoker.InvokeActionResultFilter(IResultFilter filter, ResultExecutingContext preContext, Func`1 continuation)&#xD;&#xA;   at System.Web.Mvc.ControllerActionInvoker.&lt;&gt;c__DisplayClass1a.&lt;&gt;c__DisplayClass1c.&lt;InvokeActionResultWithFilters&gt;b__19()&#xD;&#xA;   at System.Web.Mvc.ControllerActionInvoker.InvokeActionResultWithFilters(ControllerContext controllerContext, IList`1 filters, ActionResult actionResult)&#xD;&#xA;   at System.Web.Mvc.Async.AsyncControllerActionInvoker.&lt;&gt;c__DisplayClass25.&lt;&gt;c__DisplayClass2a.&lt;BeginInvokeAction&gt;b__20()&#xD;&#xA;   at System.Web.Mvc.Async.AsyncControllerActionInvoker.&lt;&gt;c__DisplayClass25.&lt;BeginInvokeAction&gt;b__22(IAsyncResult asyncResult)&#xD;&#xA;   at System.Web.Mvc.Async.AsyncResultWrapper.WrappedAsyncResult`1.End()&#xD;&#xA;   at System.Web.Mvc.Async.AsyncControllerActionInvoker.EndInvokeAction(IAsyncResult asyncResult)&#xD;&#xA;   at System.Web.Mvc.Controller.&lt;&gt;c__DisplayClass1d.&lt;BeginExecuteCore&gt;b__18(IAsyncResult asyncResult)&#xD;&#xA;   at System.Web.Mvc.Async.AsyncResultWrapper.&lt;&gt;c__DisplayClass4.&lt;MakeVoidDelegate&gt;b__3(IAsyncResult ar)&#xD;&#xA;   at System.Web.Mvc.Async.AsyncResultWrapper.WrappedAsyncResult`1.End()&#xD;&#xA;   at System.Web.Mvc.Controller.EndExecuteCore(IAsyncResult asyncResult)&#xD;&#xA;   at System.Web.Mvc.Async.AsyncResultWrapper.&lt;&gt;c__DisplayClass4.&lt;MakeVoidDelegate&gt;b__3(IAsyncResult ar)&#xD;&#xA;   at System.Web.Mvc.Async.AsyncResultWrapper.WrappedAsyncResult`1.End()&#xD;&#xA;   at System.Web.Mvc.Controller.EndExecute(IAsyncResult asyncResult)&#xD;&#xA;   at System.Web.Mvc.Controller.System.Web.Mvc.Async.IAsyncController.EndExecute(IAsyncResult asyncResult)&#xD;&#xA;   at System.Web.Mvc.MvcHandler.&lt;&gt;c__DisplayClass8.&lt;BeginProcessRequest&gt;b__3(IAsyncResult asyncResult)&#xD;&#xA;   at System.Web.Mvc.Async.AsyncResultWrapper.&lt;&gt;c__DisplayClass4.&lt;MakeVoidDelegate&gt;b__3(IAsyncResult ar)&#xD;&#xA;   at System.Web.Mvc.Async.AsyncResultWrapper.WrappedAsyncResult`1.End()&#xD;&#xA;   at System.Web.Mvc.MvcHandler.EndProcessRequest(IAsyncResult asyncResult)&#xD;&#xA;   at System.Web.Mvc.MvcHandler.System.Web.IHttpAsyncHandler.EndProcessRequest(IAsyncResult result)&#xD;&#xA;   at System.Web.HttpApplication.CallHandlerExecutionStep.System.Web.HttpApplication.IExecutionStep.Execute()&#xD;&#xA;   at System.Web.HttpApplication.ExecuteStepImpl(IExecutionStep step)&#xD;&#xA;   at System.Web.HttpApplication.ExecuteStep(IExecutionStep step, Boolean&amp; completedSynchronously)" user="admin" time="2018-11-10T17:06:12.5725489Z">
+  <serverVariables>
+    <item name="ALL_HTTP">
+      <value string="HTTP_CONNECTION:keep-alive&#xD;&#xA;HTTP_ACCEPT:text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8&#xD;&#xA;HTTP_ACCEPT_ENCODING:gzip, deflate, br&#xD;&#xA;HTTP_ACCEPT_LANGUAGE:en-US,en;q=0.9&#xD;&#xA;HTTP_COOKIE:userInfo=username=admin&amp;password=123456&amp;permisson=1&amp;id_cuahang=-1; ASP.NET_SessionId=4z25ukceyuiz0nfodycscebu; __RequestVerificationToken=etTk6s_uF0taHrlRm43GujJLgGt7gGCeXWZuISKRnF63P0uGaldZRV-Jw8A6P_rK-y6y_JJeAzLOept9SBjSMvJxKnIThWlGWij3h0iSgqI1; BO=EE7101F68C415BF548C7E2C5E3D376C9C7CFC25D402EC144B5AFF74DEDE3290BB70A07319FA0200DE046AB6C82B0676772B70BEFA68B2C36227C232ED8A437D48ABF0B81552FD0283EF75C2485A071DA2C32D7D6F01AB638B62E98739ED7A4CD&#xD;&#xA;HTTP_HOST:localhost:53200&#xD;&#xA;HTTP_REFERER:http://localhost:53200/Customer/Index&#xD;&#xA;HTTP_USER_AGENT:Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.102 Safari/537.36&#xD;&#xA;HTTP_UPGRADE_INSECURE_REQUESTS:1&#xD;&#xA;" />
+    </item>
+    <item name="ALL_RAW">
+      <value string="Connection: keep-alive&#xD;&#xA;Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8&#xD;&#xA;Accept-Encoding: gzip, deflate, br&#xD;&#xA;Accept-Language: en-US,en;q=0.9&#xD;&#xA;Cookie: userInfo=username=admin&amp;password=123456&amp;permisson=1&amp;id_cuahang=-1; ASP.NET_SessionId=4z25ukceyuiz0nfodycscebu; __RequestVerificationToken=etTk6s_uF0taHrlRm43GujJLgGt7gGCeXWZuISKRnF63P0uGaldZRV-Jw8A6P_rK-y6y_JJeAzLOept9SBjSMvJxKnIThWlGWij3h0iSgqI1; BO=EE7101F68C415BF548C7E2C5E3D376C9C7CFC25D402EC144B5AFF74DEDE3290BB70A07319FA0200DE046AB6C82B0676772B70BEFA68B2C36227C232ED8A437D48ABF0B81552FD0283EF75C2485A071DA2C32D7D6F01AB638B62E98739ED7A4CD&#xD;&#xA;Host: localhost:53200&#xD;&#xA;Referer: http://localhost:53200/Customer/Index&#xD;&#xA;User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.102 Safari/537.36&#xD;&#xA;Upgrade-Insecure-Requests: 1&#xD;&#xA;" />
+    </item>
+    <item name="APPL_MD_PATH">
+      <value string="/LM/W3SVC/2/ROOT" />
+    </item>
+    <item name="APPL_PHYSICAL_PATH">
+      <value string="F:\src\Erp.BackOffice\" />
+    </item>
+    <item name="AUTH_TYPE">
+      <value string="Forms" />
+    </item>
+    <item name="AUTH_USER">
+      <value string="admin" />
+    </item>
+    <item name="AUTH_PASSWORD">
+      <value string="*****" />
+    </item>
+    <item name="LOGON_USER">
+      <value string="admin" />
+    </item>
+    <item name="REMOTE_USER">
+      <value string="admin" />
+    </item>
+    <item name="CERT_COOKIE">
+      <value string="" />
+    </item>
+    <item name="CERT_FLAGS">
+      <value string="" />
+    </item>
+    <item name="CERT_ISSUER">
+      <value string="" />
+    </item>
+    <item name="CERT_KEYSIZE">
+      <value string="" />
+    </item>
+    <item name="CERT_SECRETKEYSIZE">
+      <value string="" />
+    </item>
+    <item name="CERT_SERIALNUMBER">
+      <value string="" />
+    </item>
+    <item name="CERT_SERVER_ISSUER">
+      <value string="" />
+    </item>
+    <item name="CERT_SERVER_SUBJECT">
+      <value string="" />
+    </item>
+    <item name="CERT_SUBJECT">
+      <value string="" />
+    </item>
+    <item name="CONTENT_LENGTH">
+      <value string="0" />
+    </item>
+    <item name="CONTENT_TYPE">
+      <value string="" />
+    </item>
+    <item name="GATEWAY_INTERFACE">
+      <value string="CGI/1.1" />
+    </item>
+    <item name="HTTPS">
+      <value string="off" />
+    </item>
+    <item name="HTTPS_KEYSIZE">
+      <value string="" />
+    </item>
+    <item name="HTTPS_SECRETKEYSIZE">
+      <value string="" />
+    </item>
+    <item name="HTTPS_SERVER_ISSUER">
+      <value string="" />
+    </item>
+    <item name="HTTPS_SERVER_SUBJECT">
+      <value string="" />
+    </item>
+    <item name="INSTANCE_ID">
+      <value string="2" />
+    </item>
+    <item name="INSTANCE_META_PATH">
+      <value string="/LM/W3SVC/2" />
+    </item>
+    <item name="LOCAL_ADDR">
+      <value string="::1" />
+    </item>
+    <item name="PATH_INFO">
+      <value string="/Customer/Index" />
+    </item>
+    <item name="PATH_TRANSLATED">
+      <value string="F:\src\Erp.BackOffice\Customer\Index" />
+    </item>
+    <item name="QUERY_STRING">
+      <value string="IsPopup=&amp;jsCallback=&amp;Phone=0904082780&amp;txtCode=&amp;txtCusName=&amp;CardCode=&amp;ProvinceId=&amp;DistrictId=&amp;WardId=&amp;search=Search" />
+    </item>
+    <item name="REMOTE_ADDR">
+      <value string="::1" />
+    </item>
+    <item name="REMOTE_HOST">
+      <value string="::1" />
+    </item>
+    <item name="REMOTE_PORT">
+      <value string="5776" />
+    </item>
+    <item name="REQUEST_METHOD">
+      <value string="GET" />
+    </item>
+    <item name="SCRIPT_NAME">
+      <value string="/Customer/Index" />
+    </item>
+    <item name="SERVER_NAME">
+      <value string="localhost" />
+    </item>
+    <item name="SERVER_PORT">
+      <value string="53200" />
+    </item>
+    <item name="SERVER_PORT_SECURE">
+      <value string="0" />
+    </item>
+    <item name="SERVER_PROTOCOL">
+      <value string="HTTP/1.1" />
+    </item>
+    <item name="SERVER_SOFTWARE">
+      <value string="Microsoft-IIS/10.0" />
+    </item>
+    <item name="URL">
+      <value string="/Customer/Index" />
+    </item>
+    <item name="HTTP_CONNECTION">
+      <value string="keep-alive" />
+    </item>
+    <item name="HTTP_ACCEPT">
+      <value string="text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8" />
+    </item>
+    <item name="HTTP_ACCEPT_ENCODING">
+      <value string="gzip, deflate, br" />
+    </item>
+    <item name="HTTP_ACCEPT_LANGUAGE">
+      <value string="en-US,en;q=0.9" />
+    </item>
+    <item name="HTTP_COOKIE">
+      <value string="userInfo=username=admin&amp;password=123456&amp;permisson=1&amp;id_cuahang=-1; ASP.NET_SessionId=4z25ukceyuiz0nfodycscebu; __RequestVerificationToken=etTk6s_uF0taHrlRm43GujJLgGt7gGCeXWZuISKRnF63P0uGaldZRV-Jw8A6P_rK-y6y_JJeAzLOept9SBjSMvJxKnIThWlGWij3h0iSgqI1; BO=EE7101F68C415BF548C7E2C5E3D376C9C7CFC25D402EC144B5AFF74DEDE3290BB70A07319FA0200DE046AB6C82B0676772B70BEFA68B2C36227C232ED8A437D48ABF0B81552FD0283EF75C2485A071DA2C32D7D6F01AB638B62E98739ED7A4CD" />
+    </item>
+    <item name="HTTP_HOST">
+      <value string="localhost:53200" />
+    </item>
+    <item name="HTTP_REFERER">
+      <value string="http://localhost:53200/Customer/Index" />
+    </item>
+    <item name="HTTP_USER_AGENT">
+      <value string="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.102 Safari/537.36" />
+    </item>
+    <item name="HTTP_UPGRADE_INSECURE_REQUESTS">
+      <value string="1" />
+    </item>
+  </serverVariables>
+  <queryString>
+    <item name="IsPopup">
+      <value string="" />
+    </item>
+    <item name="jsCallback">
+      <value string="" />
+    </item>
+    <item name="Phone">
+      <value string="0904082780" />
+    </item>
+    <item name="txtCode">
+      <value string="" />
+    </item>
+    <item name="txtCusName">
+      <value string="" />
+    </item>
+    <item name="CardCode">
+      <value string="" />
+    </item>
+    <item name="ProvinceId">
+      <value string="" />
+    </item>
+    <item name="DistrictId">
+      <value string="" />
+    </item>
+    <item name="WardId">
+      <value string="" />
+    </item>
+    <item name="search">
+      <value string="Search" />
+    </item>
+  </queryString>
+  <cookies>
+    <item name="userInfo">
+      <value string="username=admin&amp;password=123456&amp;permisson=1&amp;id_cuahang=-1" />
+    </item>
+    <item name="ASP.NET_SessionId">
+      <value string="4z25ukceyuiz0nfodycscebu" />
+    </item>
+    <item name="__RequestVerificationToken">
+      <value string="etTk6s_uF0taHrlRm43GujJLgGt7gGCeXWZuISKRnF63P0uGaldZRV-Jw8A6P_rK-y6y_JJeAzLOept9SBjSMvJxKnIThWlGWij3h0iSgqI1" />
+    </item>
+    <item name="BO">
+      <value string="EE7101F68C415BF548C7E2C5E3D376C9C7CFC25D402EC144B5AFF74DEDE3290BB70A07319FA0200DE046AB6C82B0676772B70BEFA68B2C36227C232ED8A437D48ABF0B81552FD0283EF75C2485A071DA2C32D7D6F01AB638B62E98739ED7A4CD" />
+    </item>
+  </cookies>
+</error>

@@ -1,0 +1,127 @@
+﻿@model IQueryable<ProcessPaymentViewModel>
+
+@using Erp.BackOffice.App_GlobalResources
+@using Erp.BackOffice.Account.Models
+@using Erp.BackOffice.Helpers
+@using GridMvc.Html
+
+@{
+    ViewBag.Title = Wording.PageIndex_ProcessPayment;
+
+}
+
+<link href="@Url.Content("~/assets/css/Gridmvc.css")" rel="stylesheet" type="text/css" />
+<script src="@Url.Content("~/Scripts/gridmvc.min.js")" type="text/javascript"> </script>
+
+@helper GridColumnCommand(int id)
+{
+    <div class="hidden-phone visible-desktop action-buttons" style="display: inline-block; float: left;">
+        <p>
+            <button name="Delete" value="Delete" type="submit" class="btn btn-mini btn-danger">
+                <i class="ace-icon fa fa-trash bigger-120"></i>
+            </button>
+        </p>
+    </div>
+}
+@helper GridColumnStatus(string Status)
+{
+    switch (Status)
+    {
+        case "Chưa thanh toán":
+            <label class="label label-black">@Status</label>
+            break;
+        case "Đã thanh toán":
+        <label class="label label-success">@Status</label>
+            break;
+
+    }
+    @*<label class="label label-success"><b>@Status</b></label>*@
+
+}
+@helper GridColumnName(string name, int id, bool isPopup)
+{
+
+    name = string.IsNullOrEmpty(name) ? "No Title" : name;
+    <a onclick="OpenPopup('@Url.Action("Edit", "ProcessPayment", new { area = "Account", Id = id, isPopup = "true" })', '@Wording.PageEdit_ProcessPayment', 700, 450)"><b>@name</b></a>
+}
+
+@helper GridColumnCategoryValue(object value)
+{
+    var attr = Erp.BackOffice.Helpers.Common.GetCategoryByValueOrId("value", value);
+    <span>@(attr != null ? attr.Name : "")</span>
+}
+
+@helper CheckDeleteColumns(int Id)
+{
+    <label>
+        <input class="ace class-delete-all" type="checkbox" name="DeleteId-checkbox" value="@Id">
+        <span class="lbl"></span>
+    </label>
+}
+
+@helper BuildCheckAll()
+{
+    <label>
+        <input class="ace" type="checkbox" name="checkAll" id="checkAll" />
+        <span class="lbl"></span>
+    </label>
+}
+
+    @using (Html.BeginForm("Delete", "ProcessPayment", FormMethod.Post))
+    {
+        <p>
+          
+            @*<button name="DeleteAll" value="DeleteAll" type="submit" class="btn btn-mini btn-danger" onclick="return CheckIsval();">
+                <i class="ace-icon fa fa-trash bigger-120"></i>
+                @Wording.Delete
+            </button>*@
+        </p>
+
+        @Html.Grid(Model).Columns(columns =>
+        {
+            //columns.Add().Titled(BuildCheckAll().ToHtmlString()).SetWidth(20).Sanitized(false).Encoded(false).RenderValueAs(n => CheckDeleteColumns(n.Id));
+            columns.Add(u => u.OrderNo).Titled(Wording.OrderNo).SetWidth(50);
+            columns.Add().Titled(Wording.Name).Sortable(false).Sanitized(false).Encoded(false).RenderValueAs(u => GridColumnName(u.Name, u.Id,true));
+            columns.Add(u => u.DayPayment).Titled(Wording.DayPayment).RenderValueAs(u => u.DayPayment.Value.ToString("dd/MM/yyyy"));
+            columns.Add(u => u.MoneyPayment).Titled(Wording.MoneyPayment).RenderValueAs(u => Erp.BackOffice.Helpers.Common.PhanCachHangNgan(u.MoneyPayment));
+            columns.Add(u => u.FormPayment).Titled(Wording.FormPayment).RenderValueAs(u => u.FormPayment);
+            columns.Add(u => u.CodeTrading).Titled(Wording.CodeTrading).RenderValueAs(u => u.CodeTrading);
+            columns.Add(u => u.Bank).Titled(Wording.Bank).RenderValueAs(u => u.Bank);
+            columns.Add(u => u.Payer).Titled(Wording.Payer).RenderValueAs(u => u.Payer);
+            columns.Add().Titled(Wording.Status).Sortable(false).SetWidth(100).Sanitized(false).Encoded(false).RenderValueAs(u => GridColumnStatus(u.Status));
+            //columns.Add(u => u.Id).Titled(Wording.Action).Sanitized(false).Encoded(false).RenderValueAs(u => GridColumnCommand(u.Id)).SetWidth(20);
+        }).WithPaging(10)
+    }
+
+@section Scripts {
+    <script type="text/javascript">
+        function CheckIsval() {
+            if ($('[name="DeleteId-checkbox"]').is(':checked') == false) {
+                alert("Phải chọn ít nhất 1 item.");
+                return false;
+            }
+            else {
+                if (confirm('Bạn có chắc muốn xóa các item đã chọn ?')) {
+                    return true;
+                }
+                else {
+                    return false;
+                }
+            }
+        }
+
+        $('[name="Delete"]').click(function () {
+            if (confirm('Bạn có chắc muốn xóa item ?')) {
+                $(this).closest('tr').children('td').each(function (i, e) {
+                    $(this).find("input.class-delete-all").prop("checked", true);
+                    return true;
+                })
+            }
+            else {
+                return false;
+            }
+
+        })
+
+    </script>
+}

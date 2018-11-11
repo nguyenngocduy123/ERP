@@ -1,0 +1,99 @@
+﻿@using Erp.BackOffice.App_GlobalResources
+@using Erp.BackOffice.Helpers
+@using Erp.BackOffice.Administration.Models
+
+@model ModuleRelationshipViewModel
+
+@{
+    Layout = null;
+}
+
+@using (Ajax.BeginForm("Create", "ModuleRelationship"
+        , new AjaxOptions()
+        {
+            HttpMethod = "POST",
+            OnSuccess = "ModuleRelationshipFormEdit_OnSuccess"
+        }
+        , new { id = "ModuleRelationshipFormEdit", @class = "form-horizontal" })
+    )
+{
+    @Html.AntiForgeryToken()
+    @Html.ValidationSummary(true)
+    @Html.HiddenFor(model => model.Id)
+    @Html.HiddenFor(model => model.CreatedUserId)
+    @Html.HiddenFor(model => model.CreatedDate)
+    @Html.HiddenFor(model => model.IsDeleted)
+
+    <div class="no-label form-inline form-search clearfix">
+        <span class="control-group">
+            @Html.CustomTextboxFor(model => model.First_ModuleName, null, null, WidthType.span12, true, new Dictionary<string, object> { { "readonly", true } }, null, "control-label", "col-sm-12")
+        </span>
+        <span class="control-group">
+            @Html.CustomDropDownListFor(model => model.First_MetadataFieldName, Model.SelectListMetadataFields, WidthType.span12, true, null, DropdownListStyle.DropdownListStyleDefault, false, false, "", "col-sm-12")
+        </span>
+        <span class="control-group">
+            @Html.CustomDropDownListFor(model => model.Second_ModuleName, Model.SelectListModule, WidthType.span12, true, null, DropdownListStyle.DropdownListStyleDefault, false, false, "", "col-sm-12")
+        </span>
+        <span class="control-group">
+            @Html.CustomTextboxFor(model => model.Second_ModuleName_Alias, null, null, WidthType.span12, true, null, null, "control-label", "col-sm-12")
+        </span>
+        <span class="control-group">
+            <div class="control-group form-group">
+                <div class="control-value col-sm-12">
+                    <div class="clearfix">
+                        <select class="col-sm-12 " data-val="true" data-val-required="Bắt buộc nhập" id="Second_MetadataFieldName" name="Second_MetadataFieldName">
+                            <option value="">- Rỗng -</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </span>
+
+        <button type="submit" class="btn btn-success btn-sm" name="Submit" value="Save" onclick="return save();">
+            <i class="ace-icon fa fa-save bigger-110"></i>
+            @Wording.Save
+        </button>
+    </div>
+}
+
+<script type="text/javascript">
+    function save() {
+        ShowLoading();
+        if ($("#First_ModuleName").val() != ""
+            && $("#First_MetadataFieldName").val() != ""
+            && $("#Second_ModuleName").val() != ""
+            && $("#Second_ModuleName_Alias").val() != ""
+            && $("#Second_MetadataFieldName").val() != "") {
+            return true;
+        }
+        else {
+            alert("Vui lòng nhập đầy đủ thông tin!");
+            HideLoading();
+            return false;
+        }
+    }
+
+    $("#Second_ModuleName").change(function () {
+        var Second_MetadataFieldName = $('#Second_MetadataFieldName');
+        var selectedValue = $(this).find("option:selected").val();
+        if (selectedValue != "") {
+            ShowLoading();
+
+            $("#Second_ModuleName_Alias").val(selectedValue);
+
+            var url = '@Url.Action("SelectList", "MetadataField")';
+
+            $.getJSON(url, { ModuleName: selectedValue }, function (response) {
+                Second_MetadataFieldName.empty(); // remove any existing options
+                $(response).each(function () {
+                    $(document.createElement('option'))
+                        .attr('value', this.Value)
+                        .text(this.Text)
+                        .appendTo(Second_MetadataFieldName);
+                });
+
+                HideLoading();
+            });
+        }
+    });
+</script>

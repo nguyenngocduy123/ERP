@@ -1,0 +1,65 @@
+﻿@model Erp.BackOffice.Administration.Models.EditUserViewmodel
+
+@using Erp.BackOffice.App_GlobalResources
+@using Erp.BackOffice.Helpers
+
+
+
+<div>
+    <div class="widget-box">
+        <div class="widget-header widget-header-blue widget-header-flat">
+            <h4 class="lighter">@Wording.Evidence</h4>
+        </div>
+        <div class="widget-body">
+            <div class="widget-main">
+                <div class="row-fluid">
+                    @Html.HiddenFor(model => model._UserInfoViewModel.Id)
+                    <span class="profile-picture" style="width:32%;    border: 0px !important">
+
+                        <img src="~/Images/NoImage.jpg" id="IdImage" class="editable editable-click editable-empty"></img>
+                       
+                    </span>
+                    <span class="profile-picture" style="width:32% ;   border: 0px !important">
+
+                        <img src="~/Images/NoImage.jpg" id="ReImage" class="editable editable-click editable-empty"></img>
+
+                    </span>
+                    <span class="profile-picture" style="width:32%  ;  border: 0px !important">
+
+                        <img src="~/Images/NoImage.jpg" id="AgImage" class="editable editable-click editable-empty"></img>
+
+                    </span>
+
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function () {
+        var UserId = '@Model._UserInfoViewModel.MCS_ID';
+      
+        $.ajax({
+            url: '@Url.Action("getImagefromWebservice", "User", new { AreaName = "Administration" })',
+            data: { id: UserId },
+            type: "POST",
+            success: function (data) {
+                if (data.urlImageId != "#") {
+                  
+                    $("#IdImage")[0].src = data.urlImageId;
+                }
+                if (data.urlImageRe != "#") {
+                    $("#ReImage")[0].src = data.urlImageRe;
+                }
+                if (data.urlImageAg != "#") {
+                    $("#AgImage")[0].src = data.urlImageAg;
+                }
+
+               
+            }
+
+        });
+    });
+</script>

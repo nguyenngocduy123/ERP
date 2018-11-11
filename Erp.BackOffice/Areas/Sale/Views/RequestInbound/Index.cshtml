@@ -1,0 +1,242 @@
+﻿@model IEnumerable<RequestInboundViewModel>
+
+@using Erp.BackOffice.App_GlobalResources
+@using Erp.BackOffice.Sale.Models
+@using Erp.BackOffice.Helpers
+@using GridMvc.Html
+
+@{
+    ViewBag.Title = Wording.PageIndex_RequestInbound;
+    bool isPopup = Request["IsPopup"] != null && Request["IsPopup"].ToString().ToLower() == "true" ? true : false;
+    if (isPopup)
+    {
+        Layout = "~/Views/Shared/_PopupLayout.cshtml";
+    }
+    else
+    {
+        Layout = "~/Views/Shared/ACE_AdminLayout.cshtml";
+    }
+
+    Erp.BackOffice.Models.PageSetting pageSetting = new Erp.BackOffice.Models.PageSetting
+    {
+        ModuleName = "RequestInbound",
+        ActionName = "Index",
+        PageTitle = ViewBag.Title,
+        DisplaySearchPanel = true,
+        IsPopup = false,
+        DisplayBackButton = false
+    };
+}
+
+<link href="@Url.Content("~/assets/css/Gridmvc.css")" rel="stylesheet" type="text/css" />
+<script src="@Url.Content("~/Scripts/gridmvc.min.js")" type="text/javascript"> </script>
+
+@helper GridColumnCommand(int id, string status)
+{
+    @*<p>
+            @if (status == "new")
+            {
+                if (Erp.BackOffice.Filters.SecurityFilter.AccessRight("Cancel", "RequestInbound", "Sale"))
+                {
+                    <a class="btn btn-mini btn-danger" href="@Url.Action("Cancel", "RequestInbound", new { Id = id })">
+                        <i class="glyphicon glyphicon-remove "></i>
+                        @Wording.RequestInboundStatus_cancel
+                    </a>
+                }
+            }
+            @if (status == "cancel")
+            {
+                <button name="Delete" value="Delete" type="submit" class="btn btn-mini btn-danger">
+                    <i class="ace-icon fa fa-trash bigger-120"></i>
+                </button>
+            }
+        </p>*@
+
+}
+
+@helper GridColumnName(string name, int id, string note)
+{
+    name = string.IsNullOrEmpty(name) ? "No Title" : name;
+    <a href="@Url.Action("Detail", "RequestInbound", new { Id = id })">@name</a>
+
+    if (!string.IsNullOrEmpty(note))
+    {
+        <span class="help-button" data-rel="tooltip" data-placement="bottom" data-original-title="@note">?</span>
+    }
+}
+
+@helper GridColumnCategoryValue(object value)
+{
+    var attr = Common.GetCategoryByValueOrId("value", value);
+    <span>@(attr != null ? attr.Name : "")</span>
+}
+
+@helper CheckDeleteColumns(int Id)
+{
+    <label>
+        <input class="ace class-delete-all" type="checkbox" name="DeleteId-checkbox" value="@Id">
+        <span class="lbl"></span>
+    </label>
+}
+
+@helper BuildCheckAll()
+{
+    <label>
+        <input class="ace" type="checkbox" name="checkAll" id="checkAll" />
+        <span class="lbl"></span>
+    </label>
+}
+
+@using (Html.BeginPageHeaderContainer(pageSetting))
+{
+    <p>
+        @*@Html.TextBox("txtCusName", Request["txtCusName"], new { @class = "form-control", autocomplete = "off", placeholder = "Tên khách hàng..." })*@
+        @Html.TextBox("txtCode", Request["txtCode"], new { @class = "", autocomplete = "off", placeholder = "Mã yêu cầu nhập kho..." })
+        @Html.DropDownList("status", SelectListHelper.GetSelectList_Category("RequestInbound_Status", Request["status"], "Value", null), "- Trạng thái -", new Dictionary<string, object> { { "class", "" }, { "data-val-required", "Bắt buộc chọn." } })
+        @Html.DropDownList("branchId", SelectListHelper.GetSelectList_DepartmentAllNew(Request["branchId"], "Nhà thuốc"), new Dictionary<string, object> { { "class", "" }, { "data-val-required", "Bắt buộc chọn." } })
+        <span class="input-daterange">
+            @Html.TextBox("startDate", Request["startDate"] != null ? Request["startDate"] : "", new { @class = "", autocomplete = "off", placeholder = "Từ ngày..." })
+            <span class="">
+                <i class="fa fa-exchange"></i>
+            </span>
+            @Html.TextBox("endDate", Request["endDate"] != null ? Request["endDate"] : "", new { @class = "", autocomplete = "off", placeholder = "Đến ngày..." })
+        </span>
+    </p>
+}
+
+@if (ViewBag.SuccessMessage != null && ViewBag.SuccessMessage != "")
+{
+    <div class="alert alert-block alert-success">
+        <button class="close" data-dismiss="alert" type="button">
+            <i class="ace-icon fa fa-times"></i>
+        </button>
+        <i class="ace-icon fa fa-check green"></i>
+        @ViewBag.SuccessMessage
+    </div>
+}
+
+@if (ViewBag.FailedMessage != null && ViewBag.FailedMessage != "")
+{
+    <div class="alert alert-block alert-danger">
+        <button class="close" data-dismiss="alert" type="button">
+            <i class="ace-icon fa fa-times"></i>
+        </button>
+        <i class="ace-icon fa fa-warning red"></i>
+        @ViewBag.FailedMessage
+    </div>
+}
+@helper GridColumnStatusName(string status)
+{
+    switch (status)
+    {
+        case "new":
+            <span class="label label-info">@Wording.RequestInboundStatus_new</span>
+            break;
+        case "ApprovedASM":
+        <span class="label label-warning pull-left" style="margin-right:5px">ASM đã duyệt</span>
+            break;
+        case "ApprovedKT":
+        <span class="label label-warning pull-left" style="margin-right:5px">Kế toán đã duyệt</span>
+            break;
+        case "shipping":
+        <span class="label label-warning">@Wording.RequestInboundStatus_shipping</span>
+            break;
+        case "inbound_complete":
+        <span class="label label-success">@Wording.RequestInboundStatus_inbound_complete</span>
+            break;
+        case "cancel":
+        <span class="label label-danger">@Wording.RequestInboundStatus_cancel</span>
+            break;
+        case "refure":
+        <span class="label label-danger">@Wording.RequestInboundStatus_refure</span>
+            break;
+    }
+}
+@if (!isPopup)
+{
+    using (Html.BeginForm("Delete", pageSetting.ModuleName, FormMethod.Post))
+    {
+        @Html.Grid(Model).Columns(columns =>
+        {
+            int index = 0;
+            //columns.Add().Titled(BuildCheckAll().ToHtmlString()).SetWidth(20).Sanitized(false).Encoded(false).RenderValueAs(n => CheckDeleteColumns(n.Id));
+            columns.Add().Titled(Wording.Status).SetWidth(100).Sanitized(false).Encoded(false).RenderValueAs(n => GridColumnStatusName(n.Status));
+            columns.Add(u => u.CreatedDate).Titled(Wording.CreatedDate).SetWidth(130).Format("{0:dd/MM/yyyy HH:mm}");
+            columns.Add().Titled("Mã yêu cầu").Sortable(false).Sanitized(false).Encoded(false).RenderValueAs(u => GridColumnName(u.Code, u.Id, u.Note)).SetWidth(140);
+            columns.Add(u => u.TotalAmount).Titled(Wording.TotalAmount).Sortable(true).SetWidth(100).RenderValueAs(n => CommonSatic.ToCurrencyStr(n.TotalAmount, null)).Css("text-right");
+            columns.Add().Titled(Wording.WarehouseRequired).RenderValueAs(n => n.WarehouseDestinationName);
+            columns.Add().Titled(Wording.BranchName).RenderValueAs(n => n.BranchName);
+            //columns.Add().Titled("Nhân viên bán").RenderValueAs(n => n.SalerName).SetWidth(150);
+            //columns.Add().Titled("TT ghi sổ").Sanitized(false).Encoded(false).RenderValueAs(n => (n.IsPayment ? "<span style=\"color:green\"><b>Đã ghi sổ</b></span>" : "")).SetWidth(120);
+            //columns.Add().Titled("CT xuất kho").Sanitized(false).Encoded(false).RenderValueAs(n => string.Format("<a href=\"/ProductOutbound/Detail/{0}\" target=\"_blank\">{1}</a>", n.ProductOutboundId, n.ProductOutboundCode)).SetWidth(120);
+            //columns.Add(u => u.ModifiedDate).Titled(Wording.ModifiedDate).SetWidth(130).Sortable(true).Format("{0:dd/MM/yyyy HH:mm}");
+            //columns.Add(u => u.Id).Titled("").Sanitized(false).Encoded(false).RenderValueAs(u => GridColumnCommand(u.Id, u.Status)).SetWidth(200);
+        }).WithPaging(20)
+        using (Html.BeginButtonContainer(pageSetting))
+        {
+            if (Erp.BackOffice.Filters.SecurityFilter.AccessRight("Create", "RequestInbound", "Sale"))
+            {
+                <a class="btn btn-primary btn-mini" href="@Url.Action("Create", pageSetting.ModuleName)">
+                    <i class="ace-icon fa fa-plus"></i>
+                    @Wording.CreateNew
+                </a>
+            }
+            @*if (Erp.BackOffice.Filters.SecurityFilter.AccessRight("Delete", "RequestInbound", "Sale"))
+                {
+                    <button name="DeleteAll" value="DeleteAll" type="submit" class="btn btn-mini btn-danger" onclick="return CheckIsval();">
+                        <i class="ace-icon fa fa-trash bigger-120"></i>
+                        @Wording.Delete
+                    </button>
+                }*@
+        }
+    }
+}
+            @*else
+                {
+                    @Html.Grid(Model).Columns(columns =>
+                    {
+                        //columns.Add().Titled(BuildCheckAll().ToHtmlString()).SetWidth(20).Sanitized(false).Encoded(false).RenderValueAs(n => CheckDeleteColumns(n.Id));
+                        columns.Add().Titled(Html.DisplayNameFor(u => u.FirstOrDefault().Code).ToString()).Sortable(false).Sanitized(false).Encoded(false).RenderValueAs(u => GridColumnName(u.Code, u.Id, isPopup));
+                    }).WithPaging(10)
+                }*@
+
+            @section Scripts {
+                <script type="text/javascript">
+                    function CheckIsval() {
+                        if ($('[name="DeleteId-checkbox"]').is(':checked') == false) {
+                            alert("Phải chọn ít nhất 1 item.");
+                            return false;
+                        }
+                        else {
+                            if (confirm('Bạn có chắc muốn xóa các item đã chọn ?')) {
+                                return true;
+                            }
+                            else {
+                                return false;
+                            }
+                        }
+                    }
+
+                    $('[name="Delete"]').click(function () {
+                        if (confirm('Bạn có chắc muốn xóa item ?')) {
+                            $(this).closest('tr').children('td').each(function (i, e) {
+                                $(this).find("input.class-delete-all").prop("checked", true);
+                                return true;
+                            })
+                        }
+                        else {
+                            return false;
+                        }
+
+                    })
+                    function ClosePopupAndDoSomething() {
+                        ClosePopup(true);
+
+                    }
+                    $(document).ready(function () {
+                        $('[data-rel="tooltip"]').tooltip({ container: 'body' });
+                    });
+                </script>
+                @Html.ScriptBottom_ValidationMvc()
+                @Html.ScriptBottom_DatePicker("dd/MM/yyyy")
+            }

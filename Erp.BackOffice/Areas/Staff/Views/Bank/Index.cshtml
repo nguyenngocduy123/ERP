@@ -1,0 +1,82 @@
+@model IQueryable<BankViewModel>
+
+@using Erp.BackOffice.App_GlobalResources
+@using Erp.BackOffice.Staff.Models
+@using Erp.BackOffice.Helpers
+@using GridMvc.Html
+
+@{
+    ViewBag.Title = Wording.PageIndex_Bank;
+    bool isPopup = Request["IsPopup"] != null && Request["IsPopup"].ToString().ToLower() == "true" ? true : false;
+    if (isPopup)
+    {
+        Layout = "~/Views/Shared/_PopupLayout.cshtml";
+    }
+    else
+    {
+        Layout = "~/Views/Shared/ACE_AdminLayout.cshtml";
+    }
+}
+
+<link href="@Url.Content("~/assets/css/Gridmvc.css")" rel="stylesheet" type="text/css" />
+<script src="@Url.Content("~/Scripts/gridmvc.min.js")" type="text/javascript"> </script>
+
+@helper GridColumnCommand(int id)
+{
+    <button name="Delete" value="Delete" type="submit" id="btn_delete_bank_@id" class="btn btn-mini btn-danger" onclick="return BankDelete(@id)">
+        <i class="ace-icon fa fa-trash bigger-120"></i>
+    </button>
+}
+
+@helper GridColumnName(string name, int id)
+{
+    <a onclick="OpenPopup('@Url.Action("Edit", "Bank", new { area = "Staff", Id = id, IsPopup = "true" })', '@Wording.PageEdit_Bank', 500, 500)">@name</a>
+}
+
+@helper GridColumnCategoryValue(object value)
+{
+    var attr = Common.GetCategoryByValueOrId("value", value);
+    <span>@(attr != null ? attr.Name : "")</span>
+}
+@helper GridColumnCheck(bool? check)
+{
+    if (check == null || check == false)
+    {
+        <i class="ace-icon fa fa-times red"></i>
+    }
+    else
+    {
+        <i class="ace-icon fa fa-check green"></i>
+    }
+}
+@if (ViewBag.AccessRightCreate)
+{
+    <p>@Html.Button(Wording.PageCreate_Bank, ButtonType.aTag, ButtonColor.Success, ButtonSize.Mini, true, IconType.Plus, IconSize.Default, false, new { @class = "btn-BankCreate", @onclick = "OpenPopup('" + Url.Action("Create", "Bank", new { area = "Staff", Id = ViewBag.StaffId, IsPopup = "true" }) + "', '" + Wording.PageCreate_Bank + "', 500, 300)" })</p>
+}
+<div class="table-responsive">
+@Html.Grid(Model).Columns(columns =>
+{
+    int index = 0;
+    columns.Add().Titled(Wording.OrderNo).SetWidth(30).RenderValueAs(n => (++index).ToString());
+    columns.Add().Titled(Wording.NameBank).SetWidth(200).Sortable(false).Sanitized(false).Encoded(false).RenderValueAs(u => GridColumnName(u.NameBank, u.Id));
+    //columns.Add(u => u.CreatedUserId).Titled(Wording.CreatedUserId).SetWidth(100).RenderValueAs(u => u.CreatedUserName);
+    columns.Add().Titled(Wording.BranchName).SetWidth(100).Sanitized(false).Encoded(false).RenderValueAs(n => n.BranchName);
+    columns.Add().Titled(Wording.AccountName).SetWidth(100).Sanitized(false).Encoded(false).RenderValueAs(n => n.Name);
+    columns.Add().Titled(Wording.AccountNumber).SetWidth(100).RenderValueAs(n => n.CodeBank);
+    columns.Add().Titled(Wording.IsActive).SetWidth(100).Sortable(false).Sanitized(false).Encoded(false).RenderValueAs(u => GridColumnCheck(u.IsActive));
+    columns.Add(u => u.CreatedDate).Titled(Wording.CreatedDate).SetWidth(100);
+    //columns.Add(u => u.ModifiedUserId).Titled(Html.DisplayNameFor(u => u.FirstOrDefault().ModifiedUserId).ToString()).SetWidth(100).RenderValueAs(u => u.ModifiedUserName);
+    columns.Add(u => u.ModifiedDate).Titled(Wording.ModifiedDate).SetWidth(100).Sortable(true);
+    columns.Add(u => u.Id).Titled(Wording.Action).Sanitized(false).Encoded(false).RenderValueAs(u => GridColumnCommand(u.Id)).SetWidth(100);
+}).WithPaging(10)
+    </div>
+@section Scripts {
+    <script type="text/javascript">
+        function ClosePopupAndReloadPageStaffDetail() {
+            ClosePopup(true);
+            ShowLoading();
+        };
+        //hàm xóa technique nằm trong trang detail staff
+
+    </script>
+}

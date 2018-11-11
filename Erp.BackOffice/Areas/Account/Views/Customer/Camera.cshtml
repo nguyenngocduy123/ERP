@@ -1,0 +1,177 @@
+﻿@model Erp.BackOffice.Account.Models.CustomerViewModel
+
+@using Erp.BackOffice.App_GlobalResources
+@using Erp.BackOffice.Sale.Models
+@using Erp.BackOffice.Helpers
+@using Erp.Domain.Account.Entities
+@using Erp.Domain.Sale.Entities
+@using GridMvc.Html
+
+@{
+    Layout = "~/Views/Shared/_PopupLayout.cshtml";
+
+    ViewBag.Title = Wording.Customer + Model.CompanyName;
+
+    Erp.BackOffice.Models.PageSetting pageSetting = new Erp.BackOffice.Models.PageSetting
+    {
+        ModuleName = "Customer",
+        ActionName = "Camera",
+        PageTitle = ViewBag.Title,
+        DisplaySearchPanel = false,
+        IsPopup = false,
+        DisplayBackButton = false
+    };
+}
+
+@section HeadOfPage {
+    <style>
+        audio,
+        video {
+            -moz-transition: all 1s ease;
+            -ms-transition: all 1s ease;
+            -o-transition: all 1s ease;
+            -webkit-transition: all 1s ease;
+            transition: all 1s ease;
+            vertical-align: top;
+            /*width: 100%;*/
+            margin: 0 auto;
+            /*height:100%;*/
+        }
+
+        #video-container {
+            background: white;
+            border: 1px solid #999;
+            border-radius: 4px;
+            display: inline-block;
+            padding: 1px;
+            vertical-align: top;
+        }
+
+        .takeSnapshot,
+        .takeSnapshot:hover,
+        .takeSnapshot:active {
+            background-color: transparent;
+            background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAYAAACqaXHeAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAAYdEVYdFNvZnR3YXJlAHBhaW50Lm5ldCA0LjAuM4zml1AAAAO1SURBVHhe7VpNixNBEN17focevewP3IMIgiDeBT2IoIgoIoJ40IMigoh48CQLwiZZkaCbZLNfCfG93pqme6Yyk5mepbPTPnhUp7pnmHrd1R8z2Voul0lTdaZE1ZkSVWdKVJ0pUXWmRNWZElVnSlSdKVF1rsEeeEW4syavbm9vb7VN3DeIqrOCvfF4/BG2FnDNV5jWRcA9g6g6K8heb4odLYgQ4p5BVJ0VTEYAN88tF4vFA9imuAdq80MIC8+4goynEGfBAfZOTk5uHh4e/kW5M5jNZlN03nUUPSHcwMnewcHBd9jOQkSwMXvBTyaTD7AWmLn3jo+Pn8vPTmA6nY5g7ChwBWCeWJydnT2CyeaBroExrRYA+f8GJlOpsQDIu1cwO7Cvzz3tQCbiykkQI/gzrAbWrxYAsA2kXBtIp/cwZuND27IIdjlFuYy9FSl88QJwsskeUh6UvdUW1hWA1J7/4gXAavINxo4ADMcfpqIdbL4ABILeRSrcgf0prlYgE3QmbhXjCXCRgKg8kK2zE7wG5kG/iS8LMh+obSDlruG/AKCJLwsyH2gUATCsfw2Hw6f7+/uPaQeDwTPsSSZS3SY2SwBZq5nPhRcm9LEuv00PxGYIgB7/AqMGnifbsC2uGcKGIr4Ask22gbMMUgyNXjuIwNdrIYgrgCxhXlA4pb01lQpQ9w7Ga4+UGJjKZognAF9MwOSD+W0qSwAR/sC413FkNEU8AU5PT2+4wWMCnJ3XVEPO8kYEWhkZTRBHAAnWBoDzwidTUQNyqszu0XQUxBGAa7vT+yFD2ByGYDkKOCrqIo4AueEfLADZ7/dfiK8O4ggA2AdHz90WXxPY+4xGo7viq4P4AvDVu/ia4HIK4L4lws9WUgDzyhPx1UEcAXjICRVADkd2JWm4NY4jgLsJom3yohTX3AoVEYgjgMAOX5TZg3vn7mrIVysrYMBHm3gCSMAmCEeEXVNZAjd4uS5kDoknAHF0dPQSxhOBy6KkiAfk/FiWTK99k12kg7gCEPP5/CGMDSoLDGTPuiy0gVA8SocgvgCE5LAXYBnZVo7SodgMAQgExG8GhZ52g2a9/GdhjHIbKBdAcjT442gdMP+xq7uPopcCECj07Y+GcgEIWaOT+jzOP0h4r5l4fhchOgOkEf/6o/5Bguxib3so+4sMaYb8OhuTywb2PN9HoGh7n3SDd5nl/jr0Jq0I1J5Joxd4xoIjNarOlKg6U6LqTImqMyWqzpSoOlOi6kyJqjMlqs6UqDrT4XLrH5iAs+/bwo6TAAAAAElFTkSuQmCC') !important;
+            background-position: center center !important;
+            background-repeat: no-repeat !important;
+            height: 44px;
+            margin: .2em;
+            position: absolute;
+            width: 63px;
+            z-index: 200;
+            border: 0;
+            cursor: pointer;
+        }
+
+        #snapshots-container img {
+            width: 100px;
+        }
+    </style>
+}
+
+@using (Html.BeginPageHeaderContainer(pageSetting))
+{
+
+}
+
+<div class="row">
+    <div class="col-sm-6">
+      <div id="videos-container"></div>
+    </div>
+    <div class="col-sm-6" id="DetailSidebar">
+        <div class="widget-box">
+            <div class="widget-header">
+                <h5 class="widget-title">Thông tin khách hàng</h5>
+            </div>
+            <div class="widget-body">
+                <div class="widget-main">
+                    @Html.Partial("DetailSidebar", Model)
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+    @*@using (Html.BeginButtonContainer(pageSetting))
+    {
+
+    }*@
+@section Scripts {
+    <script src="/Scripts/firebase.js"></script>
+    <script src="/Scripts/RTCMultiConnection.js"></script>
+
+    <script>
+        // Check that the browser supports getUserMedia.
+        // If it doesn't show an alert, otherwise continue.
+        if (navigator.getUserMedia) {
+            // Request the camera.
+            navigator.getUserMedia(
+                // Constraints
+                {
+                    video: true
+                },
+
+                // Success Callback
+                function (localMediaStream) {
+
+                },
+
+                // Error Callback
+                function (err) {
+                    // Log the error to the console.
+                    console.log('The following error occurred when trying to use getUserMedia: ' + err);
+                }
+            );
+
+        } else {
+            alert('Sorry, your browser does not support getUserMedia');
+        }
+
+        var mainConnection = new RTCMultiConnection('@(ViewBag.ConnectionID)');
+        //mainConnection.autoCloseEntireSession = true;
+        mainConnection.session = {
+            video: true
+        };
+
+        mainConnection.direction = 'one-way';
+
+        mainConnection.sdpConstraints.mandatory = {
+            OfferToReceiveVideo: false
+        };
+
+        mainConnection.connect();
+        mainConnection.open();
+
+        var videosContainer = document.getElementById('videos-container');
+
+        mainConnection.onstream = function (e) {
+            videosContainer.appendChild(e.mediaElement);
+        };
+        //mainConnection.close();
+    </script>
+
+    <script src="~/Scripts/jquery.signalR-2.2.1.min.js" type="text/javascript"></script>
+    <script src="~/signalr/hubs"></script>
+
+    <script type="text/javascript">
+        $(function () {
+            var w = Math.max(document.documentElement.clientWidth, window.innerWidth || 0);
+            var h = Math.max(document.documentElement.clientHeight, window.innerHeight || 0);
+            var h_DetailSidebar = $("#DetailSidebar").height();
+            //var h_page_toolbar = $("#page_toolbar").height();
+            var h_page_header = $("#page_header").height();
+            
+            if (h > w) {
+                $("#videos-container").css({ 'height': h - h_DetailSidebar - h_page_header + 'px' });
+            }
+            var erpHub = $.connection.erpHub;
+
+            //Start the connection.
+            $.connection.hub.start().done(function () {
+            });
+
+            erpHub.client.loadUrl = function (url) {
+                window.location = url;
+            };
+        });
+    </script>
+    }

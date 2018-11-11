@@ -1,0 +1,124 @@
+﻿/*so do department*/
+.department-wrap:after {
+    content: "";
+    clear: both;
+    display: table;
+    line-height: 0;
+}
+
+.department-wrap .department-item {
+    display: block;
+    max-width: 100%;
+    padding: 0px;
+    min-height: 166px !important;
+    /*  background: url('/assets/css/img/student.png') no-repeat right top; */
+    cursor: pointer;
+    border: 2px solid #c5d0dc;
+    position: relative;
+    text-align: left;
+}
+
+    .department-wrap .department-item:hover {
+        border: 2px solid #0093d7;
+    }
+
+.department-item p {
+    font-size: 12px;
+    line-height: 20px;
+    margin-bottom: 5px;
+    text-align: left;
+    padding-left: 5px;
+}
+
+    .department-item p.name {
+        font-size: 20px;
+        font-weight: bold;
+        line-height: 35px;
+        color: #0093d7;
+    }
+
+        .department-item p.name .icon-female {
+            color: #ff006e;
+            background: #fff;
+            padding: 2px 5px;
+            border-radius: 100%;
+        }
+
+.department-item .total {
+    margin-top: 5px;
+}
+
+    .department-item .total::after {
+        content: "";
+        clear: both;
+    }
+
+    .department-item .total label {
+    }
+
+    .department-item .total b {
+        font-size: 15px;
+    }
+
+.department-item.sum {
+    text-align: center;
+}
+
+/*so do dashboard summary*/
+.dayoff-wrap:after {
+    content: "";
+    clear: both;
+    display: table;
+    line-height: 0;
+}
+
+.dayoff-wrap .dayoff-item {
+    display: block;
+    width: 240px;
+    padding: 1px;
+    /*min-height: 66px !important;*/
+    /*  background: url('/assets/css/img/student.png') no-repeat right top; */
+    cursor: pointer;
+    border: 1px solid #c5d0dc;
+    position: relative;
+    text-align: left;
+}
+
+    .dayoff-wrap .dayoff-item:hover {
+        border: 1px solid #0093d7;
+    }
+
+.dayoff-item p {
+    font-size: 12px;
+    line-height: 20px;
+    margin-bottom: 5px;
+    text-align: left;
+    padding-left: 5px;
+}
+
+    .dayoff-item p.name {
+        font-size: 20px;
+        font-weight: bold;
+        line-height: 35px;
+        color: #0093d7;
+    }
+
+.dayoff-item .total {
+    margin-top: 5px;
+}
+
+    .dayoff-item .total::after {
+        content: "";
+        clear: both;
+    }
+
+    .dayoff-item .total label {
+    }
+
+    .dayoff-item .total b {
+        font-size: 15px;
+    }
+
+.dayoff-item.sum {
+    text-align: center;
+}

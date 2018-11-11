@@ -1,0 +1,46 @@
+@using Erp.BackOffice.App_GlobalResources
+@using Erp.BackOffice.Helpers
+@using Erp.BackOffice.Staff.Models
+
+@model TimekeepingSynthesisViewModel
+
+@{
+    ViewBag.Title = Wording.PageEdit_TimekeepingSynthesis;
+
+    Layout = "~/Views/Shared/ACE_AdminLayout.cshtml";
+}
+
+@section HeadOfPage {
+    @Html.ScriptTop_ChosenStyle()
+}
+
+@using (Html.BeginForm_AceStyle((string)ViewBag.Title, "Edit", "TimekeepingSynthesis", null, FormMethod.Post, new { @class = "form-horizontal", showButton = true }))
+{
+    @Html.ValidationSummary(true)
+    @Html.HiddenFor(model => model.Id)
+    @Html.HiddenFor(model => model.CreatedUserId)
+    @Html.HiddenFor(model => model.AssignedUserId)
+    @Html.HiddenFor(model => model.CreatedDate)
+    @Html.HiddenFor(model => model.IsDeleted)
+
+        @Html.CustomTextboxFor(model => model.NgayCongThucTe, null, null, WidthType.span12)
+    @Html.CustomTextboxFor(model => model.GioThucTe, null, null, WidthType.span12)
+    @Html.CustomTextboxFor(model => model.GioThemNgayThuong, null, null, WidthType.span12)
+    @Html.CustomTextboxFor(model => model.GioThemNgayNghi, null, null, WidthType.span12)
+    @Html.CustomTextboxFor(model => model.GioThemNgayLe, null, null, WidthType.span12)
+    @Html.CustomTextboxFor(model => model.GioDiTre, null, null, WidthType.span12)
+    @Html.CustomTextboxFor(model => model.GioVeSom, null, null, WidthType.span12)
+    @Html.CustomDropDownListFor(model => model.StaffId, StaffIdList, WidthType.span12, true, null, DropdownListStyle.DropdownListStyleDefault)
+    @Html.CustomTextboxFor(model => model.Month, null, null, WidthType.span12)
+    @Html.CustomTextboxFor(model => model.Year, null, null, WidthType.span12)
+    @Html.CustomTextboxFor(model => model.TongNgayNghi, null, null, WidthType.span12)
+    @Html.CustomTextboxFor(model => model.NgayNghiCoPhep, null, null, WidthType.span12)
+    @Html.CustomTextboxFor(model => model.NgayNghiKoPhep, null, null, WidthType.span12)
+
+}
+
+@section Scripts {
+    
+    @Html.ScriptBottom_ValidationMvc()
+    @Html.ScriptBottom_ChosenStyle()
+}

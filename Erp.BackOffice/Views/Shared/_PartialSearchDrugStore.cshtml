@@ -1,0 +1,94 @@
+﻿@using Erp.BackOffice.App_GlobalResources
+@using Erp.BackOffice.Helpers
+@using System.Globalization;
+@{
+    
+    IEnumerable<SelectListItem> ProvinceList = Erp.BackOffice.Helpers.SelectListHelper.GetSelectList_CityByUser("0", null, Wording.Province);
+    //var hide = "";
+    //if (!Erp.BackOffice.Filters.SecurityFilter.IsAdmin() && !Erp.BackOffice.Filters.SecurityFilter.IsKeToan())
+    //{
+    //    hide = "display:none";
+    //}
+    string CityId = Request["CityId"] != null ? Request["CityId"] : "";
+    string DistrictId = Request["DistrictId"] != null ? Request["DistrictId"] : "";
+}
+<p>
+ 
+    <select id="CityId" name="CityId" style="">
+        @foreach (var pro in ProvinceList)
+        {
+            <option value="@pro.Value" @(pro.Value == CityId?"selected":"")>@pro.Text</option>
+        }
+    </select>
+
+    <select id="DistrictId" name="DistrictId" style="">
+        <option value="">@Wording.District</option>
+    </select>
+    @Html.DropDownList("branchId", SelectListHelper.GetSelectList_DepartmentAllNew(ViewData["branchId"], "- Nhà thuốc -"))
+</p>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        var url_Location = '/api/BackOfficeServiceAPI/FetchLocation';
+        var districts_id = $('#DistrictId'); // cache it
+
+        var url_FetchDrugStore = '/api/BackOfficeServiceAPI/FetchDrugStore';
+        var branchId = $('#branchId');
+
+        $("#CityId").change(function () {
+            var id = $(this).val(); // Use $(this) so you don't traverse the DOM again
+            var DistrictId = $("#DistrictId option:selected").val();
+            ShowLoading();
+            $.getJSON(url_Location, { parentId: id }, function (response) {
+                districts_id.empty(); // remove any existing options
+                $(document.createElement('option'))
+                       .attr('value', '')
+                       .text('Quận/Huyện')
+                       .appendTo(districts_id).trigger('chosen:updated');
+                $(response).each(function () {
+                    $(document.createElement('option'))
+                        .attr('value', this.Id)
+                        .text(capitalizeFirstAllWords(this.Name.toLowerCase().replace('huyện', '').replace('quận', '')))
+                        .appendTo(districts_id).trigger('chosen:updated');
+                });
+                $.getJSON(url_FetchDrugStore, { CityId: id, DistrictId: DistrictId }, function (response) {
+                    branchId.empty(); // remove any existing options
+                    $(document.createElement('option'))
+                          .attr('value', '')
+                          .text('Nhà thuốc')
+                          .appendTo(branchId).trigger('chosen:updated');
+                    $(response).each(function () {
+                        $(document.createElement('option'))
+                            .attr('value', this.Id)
+                            .text(capitalizeFirstAllWords(this.Name.toLowerCase()))
+                            .appendTo(branchId).trigger("chosen:updated");
+                    });
+                    HideLoading();
+                });
+
+            });
+        });
+
+        districts_id.change(function () {
+            ShowLoading();
+            var id = $(this).val(); // Use $(this) so you don't traverse the DOM again
+            var CityId = $("#CityId option:selected").val();
+            $.getJSON(url_FetchDrugStore, { CityId: CityId, DistrictId: id }, function (response) {
+                branchId.empty(); // remove any existing options
+                $(document.createElement('option'))
+                      .attr('value', '')
+                      .text('Nhà thuốc')
+                      .appendTo(branchId).trigger('chosen:updated');
+                $(response).each(function () {
+                    $(document.createElement('option'))
+                        .attr('value', this.Id)
+                        .text(capitalizeFirstAllWords(this.Name.toLowerCase()))
+                        .appendTo(branchId).trigger("chosen:updated");
+                });
+                HideLoading();
+            });
+        });
+
+    });
+
+</script>

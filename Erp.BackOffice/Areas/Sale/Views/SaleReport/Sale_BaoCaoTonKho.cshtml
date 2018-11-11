@@ -1,0 +1,203 @@
+@using Erp.BackOffice.App_GlobalResources
+@using Erp.BackOffice.Helpers
+
+@{
+    ViewBag.Title = "Báo cáo tồn kho";
+    Layout = "~/Views/Shared/ACE_AdminLayout.cshtml";
+    Erp.BackOffice.Models.PageSetting pageSetting = new Erp.BackOffice.Models.PageSetting
+    {
+        ModuleName = "SaleReport",
+        ActionName = "Sale_BaoCaoTonKho",
+        PageTitle = ViewBag.Title,
+        DisplaySearchPanel = true,
+        IsPopup = false,
+        DisplayBackButton = false,
+        SearchButtonText = "Xem báo cáo"
+    };
+
+    //DateTime aDateTime = new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1);
+    //// Cộng thêm 1 tháng và trừ đi một ngày.
+    //DateTime retDateTime = aDateTime.AddMonths(1).AddDays(-1);
+    string branchId = Request["branchId"] != null ? Request["branchId"] : "";
+    if (Request["branchId"] == null)
+    {
+        if (Erp.BackOffice.Filters.SecurityFilter.IsAdminDrugStore() || Erp.BackOffice.Filters.SecurityFilter.IsStaffDrugStore())
+        {
+            branchId = Erp.BackOffice.Helpers.Common.CurrentUser.DrugStore;
+        }
+    }
+    ViewData["branchId"] = branchId;
+}
+
+@section HeadOfPage {
+
+
+    <style type="text/css">
+        .cell-center {
+            text-align: center;
+        }
+
+        .tr-bold {
+            font-weight: 700;
+        }
+
+        .ctl {
+            position: relative;
+            /*float: left;*/
+            margin-right: 3px;
+        }
+
+            .ctl .error {
+                position: absolute;
+                background: #de2a2a;
+                left: 0px;
+                top: 28px;
+                padding: 2px 5px;
+                color: #fff;
+                z-index: 999;
+            }
+
+                .ctl .error:before {
+                    border-bottom: 7px solid #de2a2a;
+                    border-left: 7px solid transparent;
+                    border-right: 7px solid transparent;
+                    left: 9px;
+                    top: -6px;
+                    content: "";
+                    display: inline-block;
+                    position: absolute;
+                }
+
+        .icon-add {
+            margin-top: 0px !important;
+        }
+
+        .combojax {
+            display: inline-block;
+            position: initial !important;
+            float: none !important;
+        }
+    </style>
+
+}
+
+<div id="page_header" class="widget-box">
+    <div class="widget-header">
+        <h5 class="widget-title">
+            <i class="ace-icon fa fa-star orange"></i>
+            Báo cáo tồn kho
+        </h5>
+        <div class="widget-toolbar">
+            <a class="btn-search" href="#" data-action="collapse">
+                <i class="ace-icon fa fa-search blue"></i>
+            </a>
+            <a class="btn-setting"></a>
+        </div>
+    </div>
+
+    <div class="widget-body" style="display: block;">
+        <div class="widget-main">
+            <div class="search-view form-inline" id="SaleReport">
+                @Html.Partial("_PartialSearchDrugStore", ViewData["branchId"])
+                <p>
+                    @*<span class="ctl inline">
+                        @Html.DropDownList("WarehouseId", SelectListHelper.GetSelectList_Warehouse(Request["WarehouseId"], null), "Kho quản lý", new Dictionary<string, object> { { "class", "" }, { "data-val-required", "Bắt buộc chọn." } })
+                    </span>*@
+                    <span class="ctl inline">
+                        @Html.DropDownList("ProductGroup", SelectListHelper.GetSelectList_Category("Categories_product", Request["ProductGroup"], "Value", null), "Nhóm sản phẩm", new Dictionary<string, object> { { "class", "" }, { "data-val-required", "Bắt buộc chọn." } })
+                    </span>
+                    <span class="ctl inline">
+                        @Html.DropDownList("CategoryCode", SelectListHelper.GetSelectList_Category("product", Request["CategoryCode"], "Value", null), "Danh mục sản phẩm", new Dictionary<string, object> { { "class", "" }, { "data-val-required", "Bắt buộc chọn." } })
+                    </span>
+                    <span class="ctl inline">
+                        @Html.DropDownList("Manufacturer", SelectListHelper.GetSelectList_Category("manufacturerList", Request["Manufacturer"], "Value", null), "Nhà sản xuất", new Dictionary<string, object> { { "class", "" }, { "data-val-required", "Bắt buộc chọn." } })
+                    </span>
+                    <span class="ctl inline">
+                        @Html.DropDownList("WarehouseId", SelectListHelper.GetSelectList_Warehouse(Request["WarehouseId"], null), "Kho quản lý", new Dictionary<string, object> { { "class", "" }, { "data-val-required", "Bắt buộc chọn." } })
+                    </span>
+</p>
+                <p style="margin:0px;">
+                    <button class="btn btn-mini btn-primary" name="search" onclick="searchreact()" type="submit" value="Search">
+                        Xem báo cáo
+                    </button>
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row" style="padding-top: 5px;">
+    <div class="col-xs-12">
+        <div id="react_report" class="table-responsive">
+
+        </div>
+    </div>
+</div>
+
+@using (Html.BeginButtonContainer(pageSetting))
+{
+    <button class="btn btn-white btn-success btn-sm" type="button" value="Export" onclick="GetPrint(true)">
+        <i class="ace-icon fa fa-file-excel-o"></i>
+        Xuất excel
+    </button>
+    <button class="btn btn-white btn-success btn-sm" type="button" value="Export" onclick="GetPrint(false)">
+        <i class="ace-icon fa fa-print"></i>
+        In báo cáo
+    </button>
+}
+
+@section Scripts {
+    @Html.ScriptBottom_ValidationMvc()
+    @Html.ScriptBottom_DatePicker("dd/MM/yyyy")
+
+    @*<script src="/Scripts/combojax.js"></script>
+    <link href="/assets/css/combojax.css" rel="stylesheet" />
+    <script src="~/Scripts/cmreactjs/Sale_BaoCaoTonKho.jsx"></script>
+    <script>
+        searchreact();
+        function searchreact() {
+            GetDatatable('@(Common.GetSetting("domainAPI"))Category/GetListSale_BaoCaoTonKho', '@Html.Raw(ViewBag.Title)');
+        }
+
+    </script>*@
+<script>
+    searchreact();
+    function searchreact() {
+        GetDatatable('/SaleReport/_GetListSale_BCTK', '@Html.Raw(ViewBag.Title)');
+    };
+    function GetDatatable(url, title) {
+        var CategoryCode = $('#CategoryCode').val();
+        var Manufacturer = $('#Manufacturer').val();
+        var WarehouseId = $('#WarehouseId').val();
+        var BranchId = $('#branchId').val();
+        var ProductGroup = $('#ProductGroup').val();
+        var CityId = $('#CityId').val();
+        var DistrictId = $('#DistrictId').val();
+        var formdata = {
+            BranchId: BranchId,
+            WarehouseId: WarehouseId,
+            ProductGroup: ProductGroup,
+            CategoryCode: CategoryCode,
+            Manufacturer: Manufacturer,
+            DistrictId: DistrictId,
+            CityId: CityId
+        };
+       
+        ClickEventHandlerHTML(true, url, "#react_report", formdata, function () {
+            //$("#react_report").html("");
+        });
+    };
+    function GetPrint(type) {
+        var CategoryCode = $('#CategoryCode').val();
+        var Manufacturer = $('#Manufacturer').val();
+        var WarehouseId = $('#WarehouseId').val();
+        var BranchId = $('#branchId').val();
+        var ProductGroup = $('#ProductGroup').val();
+        var CityId = $('#CityId').val();
+        var DistrictId = $('#DistrictId').val();
+        OpenPopup('/SaleReport/PrintBCTK/?CategoryCode=' + CategoryCode + '&Manufacturer=' + Manufacturer + '&WarehouseId=' + WarehouseId + '&BranchId=' + BranchId + '&ProductGroup=' + ProductGroup + '&CityId=' + CityId + '&DistrictId=' + DistrictId + '&ExportExcel=' + type + '&IsPopup=true', '', 0, 0);
+        HideLoading();
+    };
+   
+</script>
+}

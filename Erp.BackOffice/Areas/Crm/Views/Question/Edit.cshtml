@@ -1,0 +1,189 @@
+﻿@using Erp.BackOffice.App_GlobalResources
+@using Erp.BackOffice.Helpers
+@using Erp.BackOffice.Crm.Models
+
+@model QuestionViewModel
+
+@{
+    ViewBag.Title = Wording.PageEdit_Question;
+
+    Layout = "~/Views/Shared/" + (Request["IsPopup"] == null ? "ACE_AdminLayout.cshtml" : "_PopupLayout.cshtml");
+
+    Erp.BackOffice.Models.PageSetting pageSetting = new Erp.BackOffice.Models.PageSetting
+    {
+        ModuleName = "Question",
+        ActionName = "Edit",
+        PageTitle = ViewBag.Title,
+        DisplaySearchPanel = false,
+        IsPopup = false,
+        DisplayBackButton = true
+    };
+
+    int OrderNo = -1;
+}
+
+@section HeadOfPage {
+    @Html.ScriptTop_ChosenStyle()
+}
+
+@using (Html.BeginPageHeaderContainer(pageSetting))
+{
+
+}
+
+@using (Html.BeginForm_AceStyle((string)ViewBag.Title, pageSetting.ActionName, pageSetting.ModuleName, null, FormMethod.Post, new { @class = "form-horizontal", showButton = true }))
+{
+    @Html.ValidationSummary(true)
+    <input type="hidden" value="@Request["IsPopup"]" name="IsPopup" />
+
+    <div class="row">
+        <div class="col-sm-7">
+            @Html.EditTextboxFor(model => model.Name, new { @class = "full-w" })
+
+            <div class="tabbable top-5">
+                <ul class="nav nav-tabs padding-12 tab-color-blue background-blue" id="tab">
+                    <li class="active">
+                        <a data-toggle="tab" href="#tab1">Đáp án</a>
+                    </li>
+                    <li>
+                        <a data-toggle="tab" href="#tab2">Nội dung</a>
+                    </li>
+                </ul>
+                <div class="tab-content">
+                    <div id="tab1" class="tab-pane in active">
+                        <table class="table table-bordered">
+                            <thead>
+                                <tr>
+                                    <th style="width: 80px; text-align: center">STT</th>
+                                    <th>Đáp án</th>
+                                    <th style="width: 100px; text-align: center">Kích hoạt</th>
+                                    <th style="width:80px"></th>
+                                </tr>
+                            </thead>
+                            <tbody id="DetailList">
+                                @foreach (var item in Model.DetailList)
+                                {
+                                    OrderNo++;
+                                    <tr>
+                                        <td style="text-align:center">
+                                            @Html.Hidden("DetailList[" + OrderNo + "].Id", item.Id)
+                                            <input class="item_OrderNo" type="text" id="DetailList_@(OrderNo)" name="DetailList[@(OrderNo)].OrderNo" value="@item.OrderNo" style="width:50px; text-align:center">
+                                        </td>
+                                        <td><input class="item_Content" type="text" id="DetailList_@(OrderNo)_Content" name="DetailList[@(OrderNo)].Content" value="@item.Content" style="width:100%"></td>
+                                        <td style="text-align:center">
+                                            <label>
+                                                <input class="ace item_IsActivated" type="checkbox" id="DetailList_@(OrderNo)_IsActivated" name="DetailList[@(OrderNo)].IsActivated" @(item.IsActivated.HasValue && item.IsActivated.Value ? "checked" : "") value="@item.IsActivated"><span class="lbl"></span>
+                                            </label>
+                                        </td>
+                                        <td style="text-align:center"><i data-index="@(OrderNo)" class="btn-delete ace-icon fa fa-trash red" style="cursor:pointer"></i></td>
+                                    </tr>
+                                }
+                            </tbody>
+                            <tfoot>
+                                <tr>
+                                    <td colspan="4">
+                                        <a class="btn btn-mini btn-primary" onclick="addAnswer()">
+                                            <i class="ace-icon fa fa-plus"></i>
+                                            Thêm đáp án
+                                        </a>
+                                    </td>
+                                </tr>
+                            </tfoot>
+                        </table>
+
+                    </div>
+                    <div id="tab2" class="tab-pane">
+                        <textarea class="ckeditor" cols="20" id="Content" name="Content">@Model.Content</textarea>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-5">
+            <div class="widget-box">
+                <div class="widget-header">
+                    <h5 class="widget-title">Cài đặt</h5>
+                </div>
+                <div class="widget-body">
+                    <div class="widget-main">
+                        @Html.CustomSwitchesFor(model => model.IsActivated, SwitchesStyle.CheckboxStyle, true)
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    using (Html.BeginButtonContainer(pageSetting))
+    {
+        <button class="btn btn-mini btn-primary" type="submit" name="Submit" value="Save" onclick="return submitSave()">
+            <i class="ace-icon fa fa-save"></i>
+            @Wording.Save
+        </button>
+    }
+}
+
+@section Scripts {
+    <link href="/Scripts/ckeditor/contents.css" rel="stylesheet" />
+    <script src="/Scripts/ckeditor/ckeditor.js"></script>
+    <script>
+        //truyền từ action create của controller qua khi thực hiện submit và return về lại view create, để nhận biết là được gọi theo dạng popup
+        var closePopup = '@ViewBag.closePopup';
+        $(document).ready(function () {
+            //nếu là được gọi theo dạng popup từ form khác thì chạy đoạn code bên dưới
+            if (closePopup != '') {
+                var option = '<option value="@Model.Id" >@Model.Name</option>';
+                //tên funtion có thể khác theo từng công việc riêng (đây chỉ là mẫu khi thêm mới sẽ gọi lại)
+                window.parent.ClosePopupAndAppendSelect(option);
+            }
+
+            $('#DetailList').on('focus', '.item_OrderNo, .item_Content', function () {
+                $(this).select();
+            });
+
+            $('#DetailList').on('click', '.btn-delete', function () {
+                var OrderNo = $(this).data("index");
+                $("#DetailList tr:eq(" + OrderNo + ")").remove();
+
+                $('#DetailList tr').each(function (index, tr) {
+                    $(tr).find('.btn-delete').data('index', index);
+                    $(tr).find('input[type=hidden]').attr('name', 'DetailList[' + index + '].Id').attr('id', 'DetailList_' + index + '_Id');
+                    $(tr).find('.item_OrderNo').attr('name', 'DetailList[' + index + '].OrderNo').attr('id', 'DetailList_' + index + '_OrderNo').val(index + 1);
+                    $(tr).find('.item_Content').attr('name', 'DetailList[' + index + '].Content').attr('id', 'DetailList_' + index + '_Content');
+                    $(tr).find('.item_IsActivated').attr('name', 'DetailList[' + index + '].IsActivated').attr('id', 'DetailList_' + index + '_IsActivated');
+                    $(tr).find('.btn-save').data('index', index);
+                });
+            });
+
+            $('#DetailList').on('click', '.item_IsActivated', function () {
+                $(this).val($(this).prop("checked"));
+            });
+        });
+
+        function addAnswer() {
+            var OrderNo = $("#DetailList tr").length;
+
+            var td1 = "\r\n<td style='text-align:center'><input class='item_OrderNo' type='text' id='DetailList_" + OrderNo + "_OrderNo' name='DetailList[" + OrderNo + "].OrderNo' value='" + (OrderNo + 1) + "' style='width:50px; text-align:center'/></td>";
+            var td2 = "\r\n<td><input class='item_Content' type='text' id='DetailList_" + OrderNo + "_Content' name='DetailList[" + OrderNo + "].Content' value='' style='width:100%'/></td>";
+            var td3 = "\r\n<td style='text-align:center'><label><input class='ace item_IsActivated' type='checkbox' id='DetailList_" + OrderNo + "_IsActivated' name='DetailList[" + OrderNo + "].IsActivated' checked value='true'/><span class='lbl'></span>";
+            var td4 = "\r\n<td style='text-align:center'><i data-index='" + OrderNo + "' class='btn-delete ace-icon fa fa-trash red' style='cursor:pointer'></i></td>";
+            $("#DetailList").append("\r\n<tr>" + td1 + td2 + td3 + td4 + "</tr>");
+
+            $('#DetailList_' + OrderNo + '_OrderNo').numberOnly();
+        }
+
+        function submitSave() {
+            var answerContentNull = $("#DetailList .item_Content").filter(function () {
+                return $(this).val() === '';
+            });
+
+            if (answerContentNull.length > 0) {
+                alert('Vui lòng nhập đầy đủ nội dung đáp án!');
+
+                return false;
+            }
+
+            return true;
+        }
+    </script>
+    @Html.ScriptBottom_ValidationMvc()
+    @Html.ScriptBottom_ChosenStyle()
+}

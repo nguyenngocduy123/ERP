@@ -1,0 +1,104 @@
+﻿@model Erp.BackOffice.Models.PageSetting
+<p style="margin:0px;">
+    <button class="btn btn-mini btn-primary" name="search" onclick="return true;" type="submit" value="Search">
+        @if (string.IsNullOrEmpty(Model.SearchButtonText))
+        {
+            <span>Tìm kiếm</span>
+            <i class="ace-icon fa fa-search"></i>
+        }
+        else
+        {
+            @Model.SearchButtonText
+        }
+    </button>
+
+    @if (!Model.HideClearButton)
+    {
+        <a class="btn btn-mini btn-black" href="@Url.Action(Model.ActionName, Model.ModuleName)">
+            Nhập lại
+            <i class="ace-icon fa fa-refresh icon-on-right"></i>
+        </a>
+    }
+
+    @if (Model.AdvancedSearch)
+    {
+        <a class="btn btn-mini btn-primary cd-btn" href="#0">
+            Tìm kiếm nâng cao
+            <i class="ace-icon fa fa-search-plus icon-on-right"></i>
+        </a>
+    }
+</p>
+</form>
+</div></div></div>
+@if (Model.AdvancedSearch)
+{
+    <div style="position:absolute; right:15px;">
+        <div class="cd-panel from-right">
+            @*<header class="cd-panel-header">
+                    <h4>Tìm kiếm nâng cao</h4>
+                    <a href="#0" class="cd-panel-close">Close</a>
+                </header>*@
+            <div class="cd-panel-container">
+                <div class="cd-panel-content">
+                    <form action="" method="post">
+                        @{ Html.RenderAction("SidebarSearch", "ObjectAttribute", new { area = "Sale", module = Model.ModuleName, listField = Model.SearchOjectAttr }); }
+
+                        <div class="form-group top-20">
+                            @*<button class="btn btn-primary">Tìm kiếm</button>*@
+                            <button class="btn btn-primary btn-sm">
+                                @(string.IsNullOrEmpty(Model.SearchButtonText) ? "Tìm kiếm" : Model.SearchButtonText)
+                                <i class="ace-icon fa fa-search"></i>
+                            </button>
+                        </div>
+
+                    </form>
+                </div> <!-- cd-panel-content -->
+            </div> <!-- cd-panel-container -->
+        </div> <!-- cd-panel -->
+    </div>
+}
+    @*<script type="text/javascript">
+            function Submit() {
+                $('#@Model.ModuleName').submit();
+            }
+        </script>*@
+    @if (Model.AdvancedSearch)
+    {
+        <script type="text/javascript">
+            jQuery(document).ready(function ($) {
+                //open the lateral panel
+                $('.cd-btn').on('click', function (event) {
+                    event.preventDefault();
+                    $('.cd-panel').addClass('is-visible');
+                });
+                //clode the lateral panel
+                $('.cd-panel').on('click', function (event) {
+                    if ($(event.target).is('.cd-panel') || $(event.target).is('.cd-panel-close')) {
+                        $('.cd-panel').removeClass('is-visible');
+                        event.preventDefault();
+                    }
+                });
+
+                //for effect of input
+                var $input_field = $('input.input__field');
+                $.each($input_field, function (index, elem) {
+                    if ($(elem).val() !== '') {
+                        $(elem).parent('span').addClass('input--filled');
+                    }
+                });
+                $input_field.focus(function () {
+                    $(this).parent('span').addClass('input--filled');
+                });
+                $input_field.blur(function () {
+                    if ($(this).val() == '') {
+                        $(this).parent('span').removeClass('input--filled');
+                    }
+                });
+
+
+                $('.cd-panel-content form').submit(function () {
+                    ShowLoading();
+                });
+            });
+        </script>
+    }

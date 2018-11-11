@@ -1,0 +1,126 @@
+﻿@model IEnumerable<LabourContractViewModel>
+
+    @using Erp.BackOffice.App_GlobalResources
+    @using Erp.BackOffice.Staff.Models
+    @using Erp.BackOffice.Helpers
+    @using GridMvc.Html
+    @using Erp.BackOffice.Filters
+    @{
+        ViewBag.Title = Wording.PageIndex_LabourContract;
+        bool isPopup = Request["IsPopup"] != null && Request["IsPopup"].ToString().ToLower() == "true" ? true : false;
+        if (isPopup)
+        {
+            Layout = "~/Views/Shared/_PopupLayout.cshtml";
+        }
+        else
+        {
+            Layout = "~/Views/Shared/ACE_AdminLayout.cshtml";
+        }
+        Erp.BackOffice.Models.PageSetting pageSetting = new Erp.BackOffice.Models.PageSetting
+        {
+            ModuleName = "LabourContract",
+            ActionName = "List",
+            PageTitle = ViewBag.Title,
+            DisplaySearchPanel = true,
+            IsPopup = false,
+            DisplayBackButton = false,
+        };
+
+    }
+
+
+    <link href="@Url.Content("~/assets/css/Gridmvc.css")" rel="stylesheet" type="text/css" />
+    <script src="@Url.Content("~/Scripts/gridmvc.min.js")" type="text/javascript"> </script>
+    @helper GridColumnStatus(string Status, string status2)
+    {
+switch (Status)
+{
+    case "Còn hiệu lực":
+            <label class="label label-success arrowed-in-right" data-rel="tooltip" title="" data-placement="bottom" data-original-title="@status2">@Status</label>
+        break;
+    case "Sắp hết":
+            <label class="label label-danger arrowed-in-right" data-rel="tooltip" title="" data-placement="bottom" data-original-title="@status2">@Status</label>
+        break;
+    case "Hết hạn":
+            <label class="label label-black arrowed-in-right" data-rel="tooltip" title="" data-placement="bottom" data-original-title="@status2">@Status</label>
+        break;
+}
+}
+        <style type="text/css">
+            .label-black.arrowed-in-right:after {
+                border-color: #666 transparent #666 #666;
+            }
+
+            .label-black.arrowed-in:before {
+                border-color: #666 #666 #666 transparent;
+            }
+
+            .profile-picture {
+                padding: 0px !important;
+            }
+        </style>
+
+
+    @helper GridColumnCommand(int id, string Status, DateTime? SignDay)
+    {
+        if (SecurityFilter.AccessRight("Extend", "LabourContract", "Staff"))
+        {
+            if (Status == "Sắp hết")
+            {
+                <a class="btn btn-mini btn-info" href="@Url.Action("Extend", "LabourContract", new { Id = id })">
+                    <i class="fa fa-external-link-square bigger-120"></i>
+                    @Wording.extend
+                </a>
+            }
+        }
+        if (SignDay > DateTime.Now)
+        {
+            <a class="btn btn-mini btn-success" href="@Url.Action("Edit", "LabourContract", new { Id = id })">
+                <i class="fa fa-edit bigger-120"></i>
+            </a>
+        }
+        <button name="Delete" value="Delete" type="submit" class="btn btn-mini btn-danger">
+            <i class="ace-icon fa fa-trash bigger-120"></i>
+        </button>
+}
+    @helper CheckDeleteColumns(int Id)
+    {
+    <label>
+        <input class="ace class-delete-all" type="checkbox" name="DeleteId-checkbox" value="@Id">
+        <span class="lbl"></span>
+    </label>
+}
+
+    @helper BuildCheckAll()
+    {
+    <label>
+        <input class="ace" type="checkbox" name="checkAll" id="checkAll" />
+        <span class="lbl"></span>
+    </label>
+}
+
+    @helper GridColumnName(int id, string code)
+    {
+    <a onclick="OpenPopup('@Url.Action("Detail", "LabourContract", new { Id = id,IsPopup=true })', 'Chi tiết hợp đồng', 0, 300)">
+<b>@code</b>
+    </a>
+}
+
+    @using (Html.BeginForm("Delete", "LabourContract", FormMethod.Post))
+    {
+        <div class="table-responsive">
+            @Html.Grid(Model).Columns(columns =>
+       {
+       //columns.Add().Titled(BuildCheckAll().ToHtmlString()).SetWidth(20).Sanitized(false).Encoded(false).RenderValueAs(n => CheckDeleteColumns(n.Id));
+       columns.Add().Titled(Wording.Status).Sortable(false).Sanitized(false).Encoded(false).RenderValueAs(u => GridColumnStatus(u.Status,u.Status2));
+       columns.Add().Titled("Mã hợp đồng").Sortable(false).Sanitized(false).Encoded(false).RenderValueAs(u => GridColumnName(u.Id,u.Code));
+       columns.Add().Titled("Tên hợp đồng").Sortable(false).Sanitized(false).Encoded(false).RenderValueAs(u => u.Name);
+       columns.Add().Titled("Loại hợp đồng").Sortable(false).Sanitized(false).Encoded(false).RenderValueAs(u =>u.ContractTypeName);
+       columns.Add().Titled("Ngày hiệu lực").Sortable(false).SetWidth(150).Sanitized(false).Encoded(false).RenderValueAs(u =>u.EffectiveDate.Value.ToString("dd/MM/yyyy"));
+       columns.Add().Titled("Ngày hết hạn").Sortable(false).SetWidth(150).Sanitized(false).Encoded(false).RenderValueAs(u => u.ExpiryDate.Value.ToString("dd/MM/yyyy"));
+     
+       columns.Add(u => u.Id).Titled(Wording.Action).Sanitized(false).Encoded(false).RenderValueAs(u => GridColumnCommand(u.Id, u.Status, u.SignedDay));
+       }).WithPaging(10)
+        </div>
+    }
+   

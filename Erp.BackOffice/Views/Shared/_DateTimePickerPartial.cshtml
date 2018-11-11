@@ -1,0 +1,28 @@
+﻿@{
+    var inputUI = ViewData["inputUI"];
+    var inputMask = ViewData["inputMask"];
+    var inputName = ViewData["inputName"];
+    string format = ViewData["format"].ToString();
+
+    format = string.IsNullOrEmpty(format) ? "DD/MM/YYYY H:MM" : format.ToUpper();
+}
+
+<div class="input-append">
+    @inputUI
+    <span class="add-on"><i class="icon-calendar"></i></span>
+</div>
+
+
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        @if (inputMask != null)
+        {
+            //$("[name='@inputName']").mask('@inputMask');
+        }
+
+        $('#@inputName').datetimepicker({
+            format: 'DD/MM/YYYY HH:mm'
+        });
+    });
+</script>

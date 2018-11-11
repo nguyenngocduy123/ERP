@@ -1,0 +1,17 @@
+D:\00.Solutions\02.QLDT\src_v2\webApp\Exam.Utilities\bin\Debug\Dormitory.Utilities.dll
+D:\00.Solutions\02.QLDT\src_v2\webApp\Exam.Utilities\bin\Debug\Dormitory.Utilities.pdb
+D:\00.Solutions\02.QLDT\src_v2\webApp\Exam.Utilities\bin\Debug\Newtonsoft.Json.dll
+D:\00.Solutions\02.QLDT\src_v2\webApp\Exam.Utilities\bin\Debug\System.Net.Http.Formatting.dll
+D:\00.Solutions\02.QLDT\src_v2\webApp\Exam.Utilities\bin\Debug\Newtonsoft.Json.xml
+D:\00.Solutions\02.QLDT\src_v2\webApp\Exam.Utilities\bin\Debug\System.Net.Http.Formatting.xml
+D:\00.Solutions\02.QLDT\src_v2\webApp\Exam.Utilities\obj\Debug\Dormitory.Utilities.dll
+D:\00.Solutions\02.QLDT\src_v2\webApp\Exam.Utilities\obj\Debug\Dormitory.Utilities.pdb
+D:\qts_erp\src\ERP\Erp.Utilities\bin\Debug\Dormitory.Utilities.dll
+D:\qts_erp\src\ERP\Erp.Utilities\bin\Debug\Dormitory.Utilities.pdb
+D:\qts_erp\src\ERP\Erp.Utilities\bin\Debug\Newtonsoft.Json.dll
+D:\qts_erp\src\ERP\Erp.Utilities\bin\Debug\System.Net.Http.Formatting.dll
+D:\qts_erp\src\ERP\Erp.Utilities\bin\Debug\Newtonsoft.Json.xml
+D:\qts_erp\src\ERP\Erp.Utilities\bin\Debug\System.Net.Http.Formatting.xml
+D:\qts_erp\src\ERP\Erp.Utilities\obj\Debug\Exam.Utilities.csprojResolveAssemblyReference.cache
+D:\qts_erp\src\ERP\Erp.Utilities\obj\Debug\Dormitory.Utilities.dll
+D:\qts_erp\src\ERP\Erp.Utilities\obj\Debug\Dormitory.Utilities.pdb

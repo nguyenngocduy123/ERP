@@ -1,0 +1,18 @@
+﻿@{
+    var inputUI = ViewData["inputUI"];
+    var inputMask = ViewData["inputMask"];
+    var inputName = ViewData["inputName"];
+}
+
+<div class="input-append">
+    @inputUI
+</div>
+
+@if (inputMask != null)
+{
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $("[name='@inputName']").mask('@inputMask');
+        });
+    </script>
+}

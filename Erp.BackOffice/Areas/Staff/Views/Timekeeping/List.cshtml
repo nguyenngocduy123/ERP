@@ -1,0 +1,110 @@
+﻿@model  WorkSchedulesViewModel
+
+@using Erp.BackOffice.App_GlobalResources
+@using Erp.BackOffice.Staff.Models
+@using Erp.BackOffice.Helpers
+@using GridMvc.Html
+@using Erp.Domain.Entities
+@using Erp.Domain.Staff.Entities
+@{
+
+    Layout = null;
+    List<Category> DayOff = (List<Category>)ViewBag.DayOff;
+    List<Holidays> DayHoliday = (List<Holidays>)ViewBag.DayHoliday;
+    var url = Request.Url;
+}
+@section HeadOfPage {
+
+    @Html.ScriptTop_ChosenStyle()
+    <style type="text/css">
+    </style>
+}
+@helper GridColumnName(string name, int id, string code)
+    {
+        if (string.IsNullOrEmpty(name))
+        {
+            <p style="margin-left:10px;"> <a href="@Url.Action("Detail", "Staffs", new { area = "Staff", Id = id })" target="_blank"><b><i class="fa fa-user-circle-o"></i>  No Title</b></a></p>
+        }
+        else
+        {
+            <p style="margin-left:10px;">
+                <a href="@Url.Action("Detail", "Staffs", new { area = "Staff", Id = id })" target="_blank">
+                    <b><i class="fa fa-user-circle"></i> @name </b>
+                </a>
+            </p>
+            <p style="margin-left:10px;"><i class="fa fa-barcode" data-rel="tooltip" title="" data-placement="bottom" data-original-title="Mã nhân viên hiện tại"></i> @code</p>
+        }
+}
+<div class="col-sm-12" style="width:100%">
+    <div class="box" style="width:100%">
+        <div class="table-responsive" style="width:100%">
+            <div class="col-sm-12 table-fixed-column" style="padding:0px;">
+                <table id="cTable" class="table">
+                    <thead>
+                        <tr>
+                            <th>
+                                <span>Tên nhân viên</span>
+                            </th>
+                            @for (DateTime dt = ViewBag.aDateTime; dt <= ViewBag.retDateTime; dt = dt.AddDays(1))
+                        {
+                            <th>
+                                @if (DayOff.Where(x => Convert.ToInt32(x.OrderNo) == (int)dt.DayOfWeek && x.Value == "True").Count() <= 0)
+                            {
+                                <span data-rel="tooltip" title="" data-placement="bottom" data-original-title="@dt.ToString("dddd") - @dt.ToString("dd/MM/yyyy")">@dt.ToString("ddd") - @dt.ToString("dd/MM")</span>
+                        }
+                        else
+                        {
+                            <span data-rel="tooltip" title="" data-placement="bottom" data-original-title="@dt.ToString("dddd") - @dt.ToString("dd/MM/yyyy") - Ngày nghỉ của tuần">@dt.ToString("ddd") - @dt.ToString("dd/MM")</span>
+                    }
+                                @foreach (var q in DayHoliday.Where(x => x.DayStart <= dt && dt <= x.DayEnd))
+                            {
+                                <i class="fa fa-info-circle red popover-info" data-rel="popover" data-placement="bottom" title="" data-content="@q.Name" data-original-title="Ngày lễ" aria-describedby="popover315746"></i>
+                        }
+                            </th>
+                    }
+
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        @foreach (var item in Model.StaffList)
+                    {
+                        <tr>
+                            <td data-name="">
+                                @GridColumnName(item.Name, item.StaffId.Value, item.Code)
+                            </td>
+
+                            @for (DateTime ii = ViewBag.aDateTime; ii <= ViewBag.retDateTime; ii = ii.AddDays(1))
+                        {
+                            //nếu ngày nghỉ thì đổi màu ô ngày đó ngược lại giữ nguyên
+                            var mau = "";
+                            if (DayOff.Where(x => Convert.ToInt32(x.OrderNo) == (int)ii.DayOfWeek && x.Value == "True").Count() > 0)
+                            {
+                                mau = "label-danger label-white";
+                            }
+                            <td class="@mau" style="padding: 0px;">
+
+                                @foreach (var q in Model.pageIndexViewModel.Items.Where(x => x.Day.Value.ToString("dd/MM/yyyy") == ii.ToString("dd/MM/yyyy") && x.StaffId == item.StaffId))
+                            {
+                                <a class="label" style="background-color:@(q.Symbol==null?"#797979":q.Color)"
+                                   onclick="OpenPopup('@Url.Action("Edit", "Timekeeping", new { area = "Staff", Id = q.Id })', '@Wording.EditTimekeeping' , 500, 500)"
+                                   data-rel="tooltip" title="" data-placement="bottom" data-original-title="@q.CodeShifts-@q.NameShifts @q.DayOffCode-@q.DayOffName">
+                                    @q.CodeShifts : @(q.Symbol == null ? "" : q.DayOffCode)
+                                </a>
+                        }
+
+                            </td>
+                    }
+                        </tr>
+                }
+                    </tbody>
+                </table>
+
+            </div>
+        </div>
+        <input type="hidden" name="UrlReferrer" value="@Request.UrlReferrer" />
+        <div class="grid-footer">
+            @Html.Raw(Model.pageIndexViewModel.Pager.Paging(Request.UrlReferrer.ToString()))
+        </div>
+    </div>
+</div>

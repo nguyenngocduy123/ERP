@@ -1,0 +1,201 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <metadata name="sqlDataSource1.ParameterValues" xml:space="preserve">
+    <value>{"@StartDate":"2017-05-01","@EndDate":"2017-05-30","@BranchId":"1","@SalerId":"2618","@CustomerId":"1"}</value>
+  </metadata>
+  <data name="sqlDataSource1.SelectCommand" xml:space="preserve">
+    <value>SELECT tb.CreatedDate,
+--1. mã hóa đơn bán hàng
+ TransactionCode
+	--mã khách hàng
+	, TargetCode
+	--2.tổng tiền trong hóa đơn
+	,Total
+	--3.số tiền còn lại 
+	,(Total-Remain-DeductionAmount) as Remain
+	--4. tên nhân viên bán hàng
+	, d.SalerFullName
+	--5. ngày tạo hóa đơn bán hàng
+	,d.CreatedDate AS DaySale
+	--id chi nhánh dùng để lọc dữ liệu
+	,BranchId
+	-- ngày thu gần nhất dùng để lọc dữ liệu
+	,DayPayment
+	--6. tiền đã thu trong kỳ
+	, PaymentNew
+	--7. tiền đã thu
+	,PaymentAmount
+	--id nhân viên bán hàng dùng để lọc dữ liệu
+	,d.SalerId
+	--id khách hàng dùng để lọc dữ liệu
+	,CustomerId
+	--8. tên khách hàng
+	,TargetName
+	--9. danh sách phiếu thu
+	,ReceiptCode
+	--10. tình trạng tt
+	, dbo.CheckStatusInvoiceReceipt(Total,PaymentAmount) AS StatusReceipt
+	--11. giảm trừ công nợ
+,DeductionAmount
+FROM 
+(
+	SELECT
+         bag2.CreatedDate,bag2.TransactionCode,bag2.TargetCode,
+		 (case when bag2.Debit IS NOT NULL then bag2.Debit else 0 end) as Total
+		,bag2.TargetName,
+		--ngày thu gần nhất
+		 (SELECT TOP 1 bag3.CreatedDate FROM dbo.vwAccount_TransactionLiabilities bag3 where bag3.MaChungTuGoc=bag2.MaChungTuGoc ORDER BY bag3.CreatedDate DESC) AS DayPayment,
+		 --tiền đã thu
+		 (case when (SELECT SUM(dbo.vwAccount_TransactionLiabilities.Credit) FROM dbo.vwAccount_TransactionLiabilities where dbo.vwAccount_TransactionLiabilities.MaChungTuGoc=bag2.MaChungTuGoc AND dbo.vwAccount_TransactionLiabilities.TransactionModule='Receipt') IS NOT NULL then
+		(SELECT SUM(dbo.vwAccount_TransactionLiabilities.Credit) FROM dbo.vwAccount_TransactionLiabilities where dbo.vwAccount_TransactionLiabilities.MaChungTuGoc=bag2.MaChungTuGoc AND dbo.vwAccount_TransactionLiabilities.TransactionModule='Receipt')
+		else 0 end) as PaymentAmount,
+		--tiền đã thu trong kỳ
+		(case when (SELECT SUM(dbo.vwAccount_TransactionLiabilities.Credit) FROM dbo.vwAccount_TransactionLiabilities where dbo.vwAccount_TransactionLiabilities.MaChungTuGoc=bag2.MaChungTuGoc AND dbo.vwAccount_TransactionLiabilities.TransactionModule='Receipt' AND ((dbo.vwAccount_TransactionLiabilities.CreatedDate&gt; @StartDate) AND (dbo.vwAccount_TransactionLiabilities.CreatedDate&lt; @EndDate))) IS NOT NULL then
+		(SELECT SUM(dbo.vwAccount_TransactionLiabilities.Credit) FROM dbo.vwAccount_TransactionLiabilities where dbo.vwAccount_TransactionLiabilities.MaChungTuGoc=bag2.MaChungTuGoc AND dbo.vwAccount_TransactionLiabilities.TransactionModule='Receipt' AND ((dbo.vwAccount_TransactionLiabilities.CreatedDate&gt; @StartDate) AND (dbo.vwAccount_TransactionLiabilities.CreatedDate&lt; @EndDate)))
+		else 0 end) AS PaymentNew,
+		 --giảm trừ công nợ
+		 (case when (SELECT SUM(dbo.vwAccount_TransactionLiabilities.Credit) FROM dbo.vwAccount_TransactionLiabilities where dbo.vwAccount_TransactionLiabilities.MaChungTuGoc=bag2.MaChungTuGoc AND dbo.vwAccount_TransactionLiabilities.TransactionModule='SalesReturns') IS NOT NULL then
+		(SELECT SUM(dbo.vwAccount_TransactionLiabilities.Credit) FROM dbo.vwAccount_TransactionLiabilities where dbo.vwAccount_TransactionLiabilities.MaChungTuGoc=bag2.MaChungTuGoc AND dbo.vwAccount_TransactionLiabilities.TransactionModule='SalesReturns')
+		else 0 end) as DeductionAmount,
+        --còn lại phải thu
+		(case when (SELECT SUM(dbo.vwAccount_TransactionLiabilities.Credit) FROM dbo.vwAccount_TransactionLiabilities where dbo.vwAccount_TransactionLiabilities.MaChungTuGoc=bag2.MaChungTuGoc AND dbo.vwAccount_TransactionLiabilities.TransactionModule='Receipt') IS NOT NULL then
+		(SELECT SUM(dbo.vwAccount_TransactionLiabilities.Credit) FROM dbo.vwAccount_TransactionLiabilities where dbo.vwAccount_TransactionLiabilities.MaChungTuGoc=bag2.MaChungTuGoc AND dbo.vwAccount_TransactionLiabilities.TransactionModule='Receipt')
+		else 0 end)as Remain,
+		--lấy tất cả danh sách phiếu thu
+		(   SELECT bag1.TransactionCode +',' AS [text()]
+            FROM dbo.vwAccount_TransactionLiabilities bag1
+            WHERE bag1.MaChungTuGoc=bag2.MaChungTuGoc AND bag1.TransactionModule='Receipt'
+            ORDER BY bag1.TransactionCode
+            FOR XML PATH(''))AS[ReceiptCode]
+    FROM dbo.vwAccount_TransactionLiabilities bag2
+) AS tb
+LEFT OUTER JOIN  dbo.vwSale_ProductInvoice AS d ON d.Code = tb.TransactionCode
+	WHERE (@BranchId=0 OR BranchId=@BranchId) 
+	AND (Total&gt;0)
+	AND (@SalerId=0 OR SalerId=@SalerId) 
+	AND (@CustomerId=0 OR CustomerId=@CustomerId) 
+	AND(((tb.CreatedDate&gt; @StartDate) AND (tb.CreatedDate&lt; @EndDate))OR((DayPayment&gt;@StartDate)AND(DayPayment&lt; @EndDate))) 
+	ORDER BY TransactionCode
+</value>
+  </data>
+  <metadata name="$this.SnapGridSize" type="Telerik.Reporting.Drawing.Unit, Telerik.Reporting, Version=9.0.15.225, Culture=neutral, PublicKeyToken=a9d7983dfcc261be">
+    <value>0.1cm</value>
+  </metadata>
+</root>

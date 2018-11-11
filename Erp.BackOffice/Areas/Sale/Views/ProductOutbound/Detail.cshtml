@@ -1,0 +1,263 @@
+﻿@using Erp.BackOffice.App_GlobalResources
+@using Erp.BackOffice.Helpers
+@using Erp.BackOffice.Sale.Models
+
+@model ProductOutboundViewModel
+
+@{
+    ViewBag.Title = Wording.PageView_ProductOutbound;
+    bool IsPopup = Request["IsPopup"] == null ? false : true;
+    Layout = "~/Views/Shared/" + (IsPopup == false ? "ACE_AdminLayout.cshtml" : "_PopupLayout.cshtml");
+    Erp.BackOffice.Models.PageSetting pageSetting = new Erp.BackOffice.Models.PageSetting
+    {
+        ModuleName = "ProductOutbound",
+        ActionName = "Edit",
+        PageTitle = ViewBag.Title,
+        DisplaySearchPanel = false,
+        IsPopup = IsPopup,
+        DisplayBackButton = true
+    };
+}
+
+@section HeadOfPage {
+    @Html.ScriptTop_ChosenStyle()
+    <style>
+        .mini-popup {
+            position: relative;
+            display: inline;
+        }
+
+        #popup_huy {
+            position: absolute;
+            bottom: 45px;
+            left: 0px;
+            width: 410px;
+            height: 160px;
+            max-width: inherit;
+            top: inherit;
+        }
+
+        .popover {
+            max-width: 650px !important;
+        }
+    </style>
+}
+
+@using (Html.BeginPageHeaderContainer(pageSetting))
+{
+
+}
+
+@if (ViewBag.SuccessMessage != null && ViewBag.SuccessMessage != "")
+{
+    <div class="alert alert-block alert-success">
+        <button class="close" data-dismiss="alert" type="button">
+            <i class="ace-icon fa fa-times"></i>
+        </button>
+        <i class="ace-icon fa fa-check green"></i>
+        @ViewBag.SuccessMessage
+    </div>
+}
+
+@if (ViewBag.FailedMessage != null && ViewBag.FailedMessage != "")
+{
+    <div class="alert alert-block alert-danger">
+        <button class="close" data-dismiss="alert" type="button">
+            <i class="ace-icon fa fa-times"></i>
+        </button>
+        <i class="ace-icon fa fa-warning red"></i>
+        @Html.Raw(ViewBag.FailedMessage)
+    </div>
+}
+
+<div class="row">
+    <div class="col-sm-7">
+        <h4 class="green" style="margin-top:0px">
+            <span>Phiếu xuất: @Model.Code (@Model.CreatedDate.Value.ToString("dd/MM/yyyy HH:mm"))</span>
+            <span class="pull-right red"><b>@CommonSatic.ToCurrencyStr(Model.TotalAmount,null)</b></span>
+        </h4>
+        @if (!string.IsNullOrEmpty(Model.Note))
+        {
+            <div class="alert alert-warning">@Model.Note</div>
+        }
+
+        @if (Model.IsDeleted == true)
+        {
+            <div class="alert alert-danger">
+                <p><i class="ace-icon fa fa-warning red"></i> @Model.ModifiedUserName đã hủy bỏ chứng từ lúc @Model.ModifiedDate.Value.ToString("HH:mm dd/MM/yyyy").</p>
+                <p>Lý do hủy: @Model.Note</p>
+            </div>
+        }
+        <div class="table-responsive">
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th style="width:5%">STT</th>
+                        <th>Tên sản phẩm</th>
+                        <th>Lô</th>
+                        <th>Hạn SD</th>
+                        <th style="width:10%">Số lượng</th>
+                        <th style="width:10%">Đơn giá</th>
+                        <th style="width:10%">Thành tiền</th>
+                    </tr>
+                </thead>
+                <tbody id="detailList">
+                    @foreach (var detail in Model.DetailList)
+                    {
+                        var index = Model.DetailList.IndexOf(detail);
+                        <tr>
+                            <td>@(index + 1)</td>
+                            <td>@detail.ProductCode - @detail.ProductName</td>
+                            <td>
+                                @detail.LoCode
+                            </td>
+                            <td>
+                                @(detail.ExpiryDate == null ? "" : detail.ExpiryDate.Value.ToString("dd/MM/yyyy"))
+                            </td>
+                            <td align="center">@Common.PhanCachHangNgan(detail.Quantity)</td>
+                            <td class="detail_item_price">@detail.Price.ToCurrencyStr(null)</td>
+                            <td class="detail_item_total">@Erp.BackOffice.Helpers.CommonSatic.ToCurrencyStr(detail.Price * detail.Quantity,null)</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div class="col-sm-5">
+        <div class="tabbable">
+            <ul class="nav nav-tabs padding-12 tab-color-blue background-blue" id="tabCustomer">
+                <li class="active">
+                    <a data-toggle="tab" href="#tab1">Thông tin chi tiết</a>
+                </li>
+            </ul>
+            <div class="tab-content">
+                <div class="detail-view">
+                    @if (Model.CreatedStaffId != null)
+                    {
+                        <div class="row control-group">
+                            <div class="col-xs-4 control-label"><label for="CreatedStaffId">Nhân viên lập phiếu</label></div><div class="col-xs-8 control-value" style=""><a href="/Staffs/Detail/?Id=@Model.CreatedStaffId" target="_blank">@Model.CreatedStaffName</a></div>
+                        </div>
+                    }
+                    <div class="row control-group">
+                        @Html.DetailViewItemFor2(m => m.WarehouseSourceName, true, null, null, "col-xs-4", "col-xs-8")
+                    </div>
+                    <div class="row control-group">
+                        <div class="col-xs-4 control-label"><label for="InvoiceCode">Mã đơn hàng</label></div><div class="col-xs-8 control-value" style=""><a href="/ProductInvoice/Detail/?TransactionCode=@Model.InvoiceCode" target="_blank">@Model.InvoiceCode</a></div>
+                    </div>
+                    <div class="row control-group">
+                        @Html.DetailViewItemFor2(m => m.Note, null, null, "col-xs-4", "col-xs-8")
+                    </div>
+                </div>
+            </div>
+        </div>
+        <p></p>
+        <div class="widget-box">
+            <div class="widget-header">
+                <h5 class="widget-title">Chứng từ</h5>
+            </div>
+            <div class="widget-body">
+                <div class="widget-main">
+                    @{Html.RenderAction("Relationship", "Transaction", new { area = "Account", TransactionCode = Model.Code });}
+                </div>
+            </div>
+        </div>
+        <p></p>
+    </div>
+</div>
+
+@using (Html.BeginButtonContainer(pageSetting))
+{
+    <a href="@Url.Action("Print", new { Id = Model.Id })" target="_blank" class="btn btn-primary btn-white btn-sm"><i class="fa fa-print"></i> In phiếu</a>
+
+    if (Model.AllowEdit)
+    {
+        if (!Model.IsArchive)
+        {
+            if (Erp.BackOffice.Filters.SecurityFilter.AccessRight("Archive", "ProductOutbound", "Sale"))
+            {
+                using (Html.BeginForm("Archive", pageSetting.ModuleName, FormMethod.Post, new { @class = "inline" }))
+                {
+                    @Html.HiddenFor(m => m.Id)
+                    <input type="hidden" name="IsPopup" value="@Request["IsPopup"]" />
+                    <button class="btn btn-mini btn-success" type="submit" name="Submit" value="Save">
+                        <i class="ace-icon fa fa-save"></i>
+                        Ghi sổ
+                    </button>
+                }
+            }
+            if (Erp.BackOffice.Filters.SecurityFilter.AccessRight("Edit", "ProductOutbound", "Sale"))
+            {
+                <a href="@Url.Action("Edit", new { Id = Model.Id })" class="btn btn-mini btn-primary" type="submit" name="Submit" value="Save">
+                    <i class="ace-icon fa fa-edit"></i>
+                    Chỉnh sửa
+                </a>
+            }
+            if (Erp.BackOffice.Filters.SecurityFilter.AccessRight("Delete", "ProductOutbound", "Sale"))
+            {
+                <div class="mini-popup">
+                    <a class="btn btn-white btn-sm no-border" data-toggle="collapse" data-target="#popup_huy" style="color: red !important;">
+                        <i class="ace-icon fa fa-trash"></i>
+                        Hủy phiếu xuất
+                    </a>
+                    <div id="popup_huy" class="popover fade top">
+                        <div class="arrow" style="left: 50%;"></div>
+                        <h3 class="popover-title"><i class="ace-icon fa fa-bolt red"></i> Hủy đơn hàng</h3>
+                        <div class="popover-content">
+                            @using (Html.BeginForm_AceStyle((string)ViewBag.Title, "Delete", "ProductOutbound", null, FormMethod.Post, new { id = "ProductInvoice_Delete", @class = "form-horizontal clearfix" }))
+                            {
+                                @Html.HiddenFor(m => m.Id)
+                                @Html.CustomTextAreaFor(model => model.Note, null, WidthType.span12)
+
+                                <p class="top-10">
+                                    <button id="btnDelete" class="btn btn-mini btn-primary" type="submit" name="Submit" value="Save" onclick="return submitDelete();">
+                                        Đồng ý
+                                    </button>
+                                    <a class="btn btn-white btn-sm no-border" data-toggle="collapse" data-target="#popup_huy">Đóng</a>
+                                </p>
+                            }
+                        </div>
+                    </div>
+                </div>
+            }
+        }
+        else
+        {
+            if (Erp.BackOffice.Filters.SecurityFilter.AccessRight("UnArchive", "ProductOutbound", "Sale"))
+            {
+                using (Html.BeginForm("UnArchive", pageSetting.ModuleName, FormMethod.Post, new { @class = "inline" }))
+                {
+                    @Html.HiddenFor(m => m.Id)
+                    <input type="hidden" name="IsPopup" value="@Request["IsPopup"]" />
+                    <button class="btn btn-white btn-danger btn-sm no-border" type="submit" name="Submit" value="Save" onclick="return confirm('Bạn chắc chắn muốn thực hiện thao tác này?')">
+                        Bỏ ghi sổ
+                    </button>
+                }
+            }
+        }
+    }
+}
+@section Scripts {
+
+    @Html.ScriptBottom_ValidationMvc()
+    @Html.ScriptBottom_ChosenStyle()
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            //định dạng tiền tệ
+            $('#TotalAmount').numberFormat();
+
+            //$('.input-edit-inline').editInlineInput({id:@Model.Id, url:'/ProductOutbound/EditInline', disabled: true});
+        });
+        function submitDelete() {
+            var note = $("#Note").val();
+            if (note == '') {
+                alertPopup('Bạn chưa nhập lý do hủy. Không thể hủy phiếu xuất này!', 'Xin hãy kiểm tra lại.', 'error');
+                return false;
+            }
+            else {
+                alertPopup('Hủy thành công!', '', 'success');
+                return true;
+            }
+        }
+    </script>
+}

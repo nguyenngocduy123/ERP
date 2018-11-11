@@ -1,0 +1,189 @@
+﻿==============================================================
+custom control cho edit form
+==============================================================	
+model.TypeSelectList = Helpers.SelectListHelper.GetSelectList_Category("campaign_type", null, "Value", false);
+@Html.CustomDropDownListFor(model => model.ContactId, SelectListHelper.GetSelectList_Contact(null), WidthType.span4, true, null, DropdownListStyle.DropdownListStyleChosen)
+@Html.DateInput(model => model.StartDate, "dd/MM/yyyy", "99/99/9999", true)
+@Html.DatePicker(model => model.PaymentDate, "dd/MM/yyyy", "99/99/9999", true, false)
+@Html.SpinnerFor(model => model.OrderNo, 100, 0, 1, SpinnerStyle.SpinnerStyle1, true)
+@Html.CustomSwitchesFor(model => model.IsActive, SwitchesStyle.CheckboxStyle, true)
+
+@Html.Button(Wording.CreateNew, ButtonType.aTag, ButtonColor.Primary, ButtonSize.Mini, true, IconType.Plus, IconSize.Default, false, new { @href = Url.Action("Create", Model.ModuleName) })
+@Html.Button(Wording.Delete, ButtonType.buttonTag, ButtonColor.Primary, ButtonSize.Mini, true, IconType.Trash, IconSize.Default, false, new { type = "submit", name = "DeleteAll", value = "DeleteAll", onclick="return CheckIsval();" })
+
+@Html.Button(Wording.Save, ButtonType.buttonTag, ButtonColor.Primary, ButtonSize.Mini, true, IconType.Save, IconSize.Default, false, new { type = "submit", name = "Submit", value = "Save" })
+
+@Html.Button(Wording.Edit, ButtonType.aTag, ButtonColor.Primary, ButtonSize.Mini, true, IconType.Edit, IconSize.Default, false, new { @href = Url.Action("Edit", ModuleName, new { Id = Model.Id }) })
+
+<button class="btn btn-mini btn-primary" type="submit" name="Submit" value="Save">
+    <i class="ace-icon fa fa-save"></i>
+    @Wording.Save
+</button>
+
+<button class="btn btn-mini btn-danger" type="submit" name="DeleteAll" value="DeleteAll" onclick="return CheckIsval();">
+    <i class="ace-icon fa fa-trash"></i>
+    @Wording.Delete
+</button>
+
+<a class="btn btn-mini btn-primary" href="@Url.Action("Edit", pageSetting.ModuleName, new { Id = Model.Id })">
+    <i class="ace-icon fa fa-edit"></i>
+    @Wording.Edit
+</a>
+
+<a class="btn btn-mini btn-primary" href="@Url.Action("Create", pageSetting.ModuleName)">
+    <i class="ace-icon fa fa-plus"></i>
+    @Wording.CreateNew
+</a>
+
+Mở popup
+==============================================================
+OpenPopup('@Url.Action("", "", new { IsPopup = true })', '', 500, 500)
+
+<a class="btn btn-white btn-success btn-sm" href="@Url.Action("Export", pageSetting.ModuleName, new { Id = Model.Id })">
+    <i class="ace-icon fa fa-file-excel-o"></i>
+    @Wording.ExportExcel
+</a>
+
+=================
+Erp.BackOffice.Models.PageSetting pageSetting = new Erp.BackOffice.Models.PageSetting
+{        
+    ModuleName = "PageMenu",
+    ActionName = "Index",
+    PageTitle = ViewBag.Title,
+    DisplaySearchPanel = true,
+    IsPopup = false,
+    DisplayBackButton = false,
+	AdvancedSearch=true,
+    SearchOjectAttr = ViewBag.ListOjectAttrSearch
+};
+
+@using(Html.BeginPageHeaderContainer(pageSetting))
+{
+
+}
+
+@using (Html.BeginButtonContainer(pageSetting))
+{
+    <a class="btn btn-info btn-mini" href="@Url.Action("Create", pageSetting.ModuleName)">
+        <i class="ace-icon fa fa-plus"></i>
+        @Resources.Wording.CreateNew
+    </a>
+}
+
+    using (Html.BeginForm(pageSetting.ActionName, pageSetting.ModuleName, FormMethod.Post, new { id = pageSetting.ModuleName, @class = "search-view form-inline" }))
+{
+    <p>
+        @Html.TextBox("txtCode", Request["txtCode"], new { @class = "form-control", autocomplete = "off", placeholder = "Mã đơn hàng" })
+        @Html.TextBox("txtCusName", Request["txtCusName"], new { @class = "form-control", autocomplete = "off", placeholder = "Tên khách hàng" })
+        @Html.TextBox("txtCityName", Request["txtCityName"], new { @class = "form-control", autocomplete = "off", placeholder = "Tỉnh/thành" })
+        <span class="input-daterange input-group">
+            @Html.TextBox("startDate", Request["startDate"] != null ? Request["startDate"] : "", new { @class = "form-control", autocomplete = "off", placeholder = "Từ ngày" })
+            <span class="input-group-addon">
+                <i class="fa fa-exchange"></i>
+            </span>
+            @Html.TextBox("endDate", Request["endDate"] != null ? Request["endDate"] : "", new { @class = "form-control", autocomplete = "off", placeholder = "Đến ngày" })
+        </span>
+
+    </p>
+	  <div class="hr hr2 hr-double" style="margin-bottom:10px;width:30%"></div>
+    <p>
+        <button class="btn btn-mini btn-primary" type="submit" name="Submit" value="Search">
+            @Wording.Search
+            <i class="ace-icon fa fa-search"></i>
+        </button>
+        <a class="btn btn-mini btn-black" href="@Url.Action(pageSetting.ActionName, pageSetting.ModuleName)">
+            Nhập lại
+            <i class="ace-icon fa fa-refresh icon-on-right"></i>
+        </a>
+    </p>
+}
+
+==============================================================
+action dung de dong popup khi luu
+==============================================================				
+Return action đóng popup và gọi FunctionCallback
+return RedirectToAction("_ClosePopup", "Home", new { area = "", FunctionCallback = "ClosePopupAndReloadPage" });
+
+<input type="hidden" value="@Request["IsPopup"]" name="IsPopup" />
+
+, bool IsPopup
+
+if (IsPopup)
+{
+    return RedirectToAction("_ClosePopup", "Home", new { area = "", FunctionCallback = "ClosePopupAndReloadPage" });
+}
+else
+{
+    TempData[Globals.SuccessMessageKey] = App_GlobalResources.Wording.InsertSuccess;
+    return RedirectToAction("Index");
+}
+				
+==============================================================
+ScriptBottom
+==============================================================
+@Html.ScriptBottom_ValidationMvc()
+@Html.ScriptBottom_DatePicker("dd/mm/yyyy")
+@Html.ScriptBottom_ChosenStyle()
+@Html.ScriptBottom_RequireEitherInput()
+@Html.ScriptBottom_InputMask()
+				
+==============================================================
+ajax form
+==============================================================
+@using (Ajax.BeginForm("Edit", ""
+	, new AjaxOptions()
+	{
+	HttpMethod = "POST",
+	OnSuccess = "FormEdit_OnSuccess"
+	}
+	, new { id = "FormEdit", @class = "form-horizontal" }))
+{
+	@Html.AntiForgeryToken()
+	@Html.ValidationSummary(true)               
+
+	@Html.HiddenFor(model => model.Id)
+	@Html.HiddenFor(model => model.CreatedUserId)
+	@Html.HiddenFor(model => model.CreatedDate)
+	@Html.HiddenFor(model => model.IsDeleted)
+
+	<p>
+		@Html.Button(Wording.Save, ButtonType.buttonTag, ButtonColor.Success, ButtonSize.Small, true, IconType.Save, IconSize.Default, false, null)
+   </p>
+}
+			
+==============================================================
+lay chieu cao, chieu rong man hinh
+==============================================================
+var w = Math.max(document.documentElement.clientWidth, window.innerWidth || 0);
+var h = Math.max(document.documentElement.clientHeight, window.innerHeight || 0);
+
+==============================================================
+helper PhanCachHangNgan cho columns gridview
+==============================================================
+@helper GridColumnPrice(double price)
+{
+    @Erp.BackOffice.Helpers.Common.PhanCachHangNgan(price)
+}
+
+==============================================================
+tao so thu tu trong gridview
+==============================================================
+int rowNumber = 0;
+int numberOfItem = 30;
+int currentPage = Request["grid-page"] != null ? Convert.ToInt32(Request["grid-page"]) : 1;
+
+columns.Add().Titled("#").SetWidth(50).RenderValueAs(o =>
+{
+	rowNumber++;
+	return @<text> @(rowNumber + ((currentPage - 1) * numberOfItem)) </text>;
+});
+
+==============================================================
+Định dạng Grid
+.Format("{0:dd/MM/yyyy HH:mm}")
+
+==============================================================
+$.post( "test.php", { name: "John", time: "2pm" })
+.done(function( data ) {
+	alert( "Data Loaded: " + data );
+});

@@ -1,0 +1,416 @@
+﻿@model IEnumerable<BranchViewModel>
+@using Erp.BackOffice.App_GlobalResources
+@using Erp.BackOffice.Staff.Models
+@using Erp.BackOffice.Helpers
+
+@{
+    ViewBag.Title = Wording.PageIndex_Branch;
+    TreeNode tree = (TreeNode)ViewBag.TreeNode;
+
+    Layout = "~/Views/Shared/ACE_AdminLayout.cshtml";
+    Erp.BackOffice.Models.PageSetting pageSetting = new Erp.BackOffice.Models.PageSetting
+    {
+        ModuleName = "Branch",
+        ActionName = "Diagrams",
+        PageTitle = ViewBag.Title,
+        DisplaySearchPanel = false,
+        IsPopup = false,
+        DisplayBackButton = false
+    };
+}
+
+
+@section HeadOfPage {
+    @Html.ScriptTop_ChosenStyle()
+    <link href="~/Scripts/vakata-jstree/dist/themes/default/style.min.css" rel="stylesheet" />
+}
+<style>
+    .nav-user-photo {
+        max-width: 70px !important;
+        max-height: 70px !important;
+    }
+
+    #tree a {
+        white-space: normal !important;
+        height: auto;
+        padding: 1px 2px;
+    }
+</style>
+@if (ViewBag.SuccessMessage != null && ViewBag.SuccessMessage != "")
+{
+    <div class="alert alert-block alert-success">
+        <button class="close" data-dismiss="alert" type="button">
+            <i class="ace-icon fa fa-times"></i>
+        </button>
+        <i class="ace-icon fa fa-check green"></i>
+        @ViewBag.SuccessMessage
+    </div>
+}
+
+@if (ViewBag.FailedMessage != null && ViewBag.FailedMessage != "")
+{
+    <div class="alert alert-block alert-danger">
+        <button class="close" data-dismiss="alert" type="button">
+            <i class="ace-icon fa fa-times"></i>
+        </button>
+        <i class="ace-icon fa fa-warning red"></i>
+        @ViewBag.FailedMessage
+    </div>
+}
+
+
+@using (Html.BeginPageHeaderContainer(pageSetting))
+{
+
+}
+<div class="row">
+    <div class="col-sm-3">
+        <div class="search-area well well-sm">
+            <div class="search-filter-header bg-primary">
+                <h5 class="smaller no-margin-bottom">
+                    <i class="ace-icon fa fa-map-signs bigger-130"></i>&nbsp; Sơ đồ tổ chức
+                </h5>
+            </div>
+
+            <div class="space-10"></div>
+
+
+            <div class="row">
+                <div class="col-xs-12 col-sm-12 col-md-12">
+                    <div class="input-group">
+                        <input type="text" id="searchtree" class="form-control" name="keywords" placeholder="Tìm kiếm nhánh  ...">
+                        <div class="input-group-btn">
+                            <button type="button" class="btn btn-default no-border btn-sm">
+                                <i class="ace-icon fa fa-search icon-on-right bigger-110"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="hr hr-dotted"></div>
+
+            <div class="tree-container" style="position: relative; max-width: initial;     max-height: initial;">
+                <div id="tree" style="padding-top:0px;">
+                    @Html.Partial("~/Areas/Staff/Views/Shared/TreeNodeChild.cshtml", tree.ChildNode)
+                </div>
+            </div>
+
+
+            @*<div class="hr hr-dotted"></div>
+                @if (ViewBag.AccessRightCreate)
+                {
+                    <p>@Html.Button(Wording.CreateNew +" trường hoặc phòng GDDT", ButtonType.aTag, ButtonColor.Success, ButtonSize.Mini, true, IconType.Plus, IconSize.Default, false, new { @class = "btn-BranchCreate" })</p>
+                }*@
+
+        </div>
+    </div>
+    <div class="col-sm-9">
+        <div id="PanelBranch">
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+
+    <script src="~/Scripts/vakata-jstree/dist/jstree.min.js"></script>
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+        
+            //Tree
+            $('#tree').jstree({
+                // "plugins":["checkbox"]
+                'search': {
+                    'case_insensitive': true,
+                    'show_only_matches': true
+                },
+                "plugins": [
+                    "search"
+                ]
+
+            });
+
+            var count = 0;
+            var nodeSeleted;
+            $('')
+
+            $('#tree').on('changed.jstree', function (e, data) {
+                $(data.selected).each(function (idx) {
+                    var node = data.instance.get_node(data.selected[idx]);
+                    nodeSeleted = node;
+
+                    console.log('Bạn đang chọn: ' + node.text + " Level: " + node.parents.length);
+                    console.log(node);
+
+                   if (node.data.id >0) {
+                        LoadPhongBan(node.data.id);
+                    }
+                    else {
+                        LoadConfig();
+                    }
+
+                });
+            });
+
+          
+            $('#tree').on('ready.jstree', function () {
+                $("#tree").jstree("open_all");
+            });
+
+
+            //search
+            //var value = document.getElementById("search_field").value;
+            $('#tree').on('search.jstree', function (nodes, str, res) {
+                if (str.nodes.length === 0) {
+                    $('#tree').jstree(true).hide_all();
+                }
+            })
+
+            //textbox search
+            $('#searchtree').keyup(function () {
+                $('#tree').jstree(true).show_all();
+                $('#tree').jstree('search', $(this).val());
+            });
+
+
+            $('[data-rel="tooltip"]').tooltip({ container: 'body' });
+
+
+            @*$('.btn-BranchCreate').click(function () {
+                //var id = nodeSeleted.
+                OpenPopup('/Branch/Create?IsPopup=true&amp;BranchId=' + nodeSeleted.data.id, '@Html.Raw(Wording.CreateNew)', 300, 300);
+            });*@
+        });
+        function LoadConfig() {
+            ShowLoading();
+            $("#PanelBranch").html("");
+            $.ajax({
+                url: '@Url.Action("Config", "Branch", new { area = "Staff" })',
+                success: function (rs) {
+                    $("#PanelBranch").html(rs);
+                    HideLoading();
+                }
+            });
+        }
+        function LoadPhongBan(id) {
+            ShowLoading();
+            $("#PanelBranch").html("");
+            $.ajax({
+                url: '@Url.Action("DetailBasic", "Branch", new { area = "Staff" })',
+                data: {
+                    Id: id
+                },
+                success: function (rs) {
+                    $("#PanelBranch").html("");
+                    $("#PanelBranch").html(rs);
+                    HideLoading();
+                }
+            });
+        }
+
+        function ClosePopupAndDoSomething() {
+            ShowLoading();
+            ClosePopup(true);
+        }
+        function ClosePopupAndReloadPageStaffDetail() {
+            ShowLoading();
+            ClosePopup(true);
+
+        }
+        function ClosePopupAndRedirectToURL(url) {
+            ClosePopup(true);
+            location.href = url;
+        }
+
+
+        var url = '/api/BackOfficeServiceAPI/FetchLocation';
+        var districts = $('#DistrictId'); // cache it
+        var ward = $('#WardId');
+
+        $("#CityId").change(function () {
+            var id = $(this).val(); // Use $(this) so you don't traverse the DOM again
+            $.getJSON(url, { parentId: id }, function (response) {
+                districts.empty(); // remove any existing options
+                ward.empty();
+                $(document.createElement('option'))
+                        .attr('value', '')
+                        .text('- Rỗng -')
+                        .appendTo(ward).trigger('chosen:updated');
+                $(response).each(function () {
+                    $(document.createElement('option'))
+                        .attr('value', this.Id)
+                        .text(capitalizeFirstAllWords(this.Name.toLowerCase().replace('huyện', '').replace('quận', '')))
+                        .appendTo(districts).trigger('chosen:updated');
+                });
+            });
+        });
+
+        $("#DistrictId").change(function () {
+            var id = $(this).val(); // Use $(this) so you don't traverse the DOM again
+            $.getJSON(url, { parentId: id }, function (response) {
+                ward.empty(); // remove any existing options
+                $(response).each(function () {
+                    $(document.createElement('option'))
+                        .attr('value', this.Id)
+                        .text(capitalizeFirstAllWords(this.Name.toLowerCase()))
+                        .appendTo(ward).trigger('chosen:updated');
+                });
+            });
+        });
+        $('a[data-toggle="tooltip"]').tooltip({
+            animated: 'fade',
+            placement: 'right',
+            html: true
+        });
+
+        //    1.4 Xóa thân nhân
+        function StaffFamilyDelete(id) {
+            if (confirm('Bạn có chắc muốn xóa các item đã chọn ?')) {
+                ShowLoading();
+                $.post("@Url.Action("Delete", "StaffFamily", new { area = "Staff" })", { id: id })
+            .done(function (data) {
+                $("#btn_delete_stafffamily_" + id).closest('tr').remove();
+                HideLoading();
+            });
+                return false;
+            }
+            else {
+                return false;
+            }
+        };
+        //    1.4 Xóa tài khoản
+        function BankDelete(id) {
+            if (confirm('Bạn có chắc muốn xóa các item đã chọn ?')) {
+                ShowLoading();
+                $.post("@Url.Action("Delete", "Bank", new { area = "Staff" })", { id: id })
+            .done(function (data) {
+                $("#btn_delete_bank_" + id).closest('tr').remove();
+                HideLoading();
+            });
+                return false;
+            }
+            else {
+                return false;
+            }
+        };
+        //    1.4 Xóa thân nhân
+        function TechniqueDelete(id) {
+            if (confirm('Bạn có chắc muốn xóa các item đã chọn ?')) {
+                ShowLoading();
+                $.post("@Url.Action("Delete", "Technique", new { area = "Staff" })", { id: id })
+            .done(function (data) {
+                $("#btn_delete_technique_" + id).closest('tr').remove();
+                HideLoading();
+            });
+                return false;
+            }
+            else {
+                return false;
+            }
+        };
+
+        //    1.4 Xóa ngày nghỉ
+        function DayOffDelete(id) {
+            if (confirm('Bạn có chắc muốn xóa các item đã chọn ?')) {
+                ShowLoading();
+                $.post("@Url.Action("Delete", "DayOff", new { area = "Staff" })", { id: id })
+            .done(function (data) {
+                $("#btn_delete_dayoff_" + id).closest('tr').remove();
+                HideLoading();
+            });
+                return false;
+            }
+            else {
+                return false;
+            }
+        };
+
+        //    1.4 Xóa quá trình công tác
+        function WorkingProcessDelete(id) {
+            if (confirm('Bạn có chắc muốn xóa các item đã chọn ?')) {
+                ShowLoading();
+                $.post("@Url.Action("Delete", "WorkingProcess", new { area = "Staff" })", { id: id })
+            .done(function (data) {
+                $("#btn_delete_workingprocess_" + id).closest('tr').remove();
+                HideLoading();
+            });
+                return false;
+            }
+            else {
+                return false;
+            }
+        };
+        //    1.4 Xóa bậc lương
+        function SalaryLevelDelete(id) {
+            if (confirm('Bạn có chắc muốn xóa các item đã chọn ?')) {
+                ShowLoading();
+                $.post("@Url.Action("Delete", "SalaryLevel", new { area = "Staff" })", { id: id })
+            .done(function (data) {
+                $("#btn_delete_SalaryLevel_" + id).closest('tr').remove();
+                HideLoading();
+            });
+                return false;
+            }
+            else {
+                return false;
+            }
+        };
+
+
+
+        //    1.4 Xóa khen thưởng - kỷ luật
+        function BonusDisciplineDelete(id) {
+            if (confirm('Bạn có chắc muốn xóa các item đã chọn ?')) {
+                ShowLoading();
+                $.post("@Url.Action("Delete", "BonusDiscipline", new { area = "Staff" })", { id: id })
+            .done(function (data) {
+                $("#btn_delete_BonusDiscipline_" + id).closest('tr').remove();
+                HideLoading();
+            });
+                return false;
+            }
+            else {
+                return false;
+            }
+        };
+        //1.5 xóa xét phụ cấp thâm niên.
+        function SalarySeniorityDelete(id) {
+            if (confirm('Bạn có chắc muốn xóa các item đã chọn ?')) {
+                ShowLoading();
+                $.post("@Url.Action("Delete", "SalarySeniority", new { area = "Staff" })", { id: id })
+            .done(function (data) {
+                $("#btn_delete_SalarySeniority_" + id).closest('tr').remove();
+                HideLoading();
+            });
+                return false;
+            }
+            else {
+                return false;
+            }
+        };
+        $(function () {
+            $('#form-profileimage').submit(function () {
+                if ($(this).valid()) {
+                    ShowLoading();
+                }
+            });
+        });
+        //hiển thị thẻ div hình ảnh khi đổi ảnh đại diện
+        function addImage() {
+            var materialSelected = $("#MaterialId").find("option:selected");
+            $("#ImageCreate").removeClass("hidden");
+            $("#ImageCreate").show();
+            //$('.btn-edit-note').hide();
+            //$('.btn-save-note, .btn-cancel-edit-note').show();
+        }
+        //đóng thẻ div ảnh
+        function AllowClose() {
+            var materialSelected = $("#MaterialId").find("option:selected");
+            $("#ImageCreate").addClass("hidden");
+        }
+    </script>
+    @Html.ScriptBottom_ValidationMvc()
+    @Html.ScriptBottom_DatePicker("dd/mm/yyyy")
+    @Html.ScriptBottom_ChosenStyle()
+}

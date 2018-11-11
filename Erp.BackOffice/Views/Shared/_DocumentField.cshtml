@@ -1,0 +1,22 @@
+﻿@using Erp.BackOffice.Helpers
+@using Erp.BackOffice.App_GlobalResources
+@*<h3 class="header smaller lighter blue"><span>Thông tin tập tin đính kèm</span></h3>
+<p></p>*@
+<div class="row" style="margin-top:5px;">
+    <label class="control-label no-padding-right col-sm-3">Tên tài liệu</label>
+    <div class="control-value col-sm-9">
+        @Html.TextBox("NameField", null, null, WidthType.span12)
+    </div>
+</div>
+@*<div class="row" style="margin-top:10px;">
+    <label class="control-label no-padding-right col-sm-3">Loại tài liệu</label>
+    <div class="control-value col-sm-9">
+        @Html.DropDownList("DocumentTypeId", SelectListHelper.GetSelectList_DocumentType(null), DropdownListStyle.DropdownListStyleChosen)
+    </div>
+</div>*@
+@*<div class="row" style="margin-top:10px;">
+    <label class="control-label no-padding-right col-sm-3">Cấp bậc được xem</label>
+    <div class="control-value col-sm-9">
+        @Html.DropDownList("IsSearch", SelectListHelper.GetSelectList_Category("position", null, "Value", Wording.Empty), DropdownListStyle.DropdownListStyleChosen)
+    </div>
+</div>*@

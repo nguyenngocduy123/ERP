@@ -1,0 +1,4233 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="Address" xml:space="preserve">
+    <value>Địa chỉ</value>
+  </data>
+  <data name="ConfirmNewPassword" xml:space="preserve">
+    <value>Xác nhận mật khẩu mới</value>
+  </data>
+  <data name="ConfirmPassword" xml:space="preserve">
+    <value>Xác nhận lại mật khẩu</value>
+  </data>
+  <data name="Content" xml:space="preserve">
+    <value>Nội dung</value>
+  </data>
+  <data name="CreatedDate" xml:space="preserve">
+    <value>Ngày tạo</value>
+  </data>
+  <data name="CreatedUser" xml:space="preserve">
+    <value>Người tạo</value>
+  </data>
+  <data name="CurrentPassword" xml:space="preserve">
+    <value>Mật khẩu hiện tại</value>
+  </data>
+  <data name="DeactiveImage" xml:space="preserve">
+    <value>Hình ảnh không hoạt động</value>
+  </data>
+  <data name="Default" xml:space="preserve">
+    <value>Mặc định</value>
+  </data>
+  <data name="Email" xml:space="preserve">
+    <value>Email</value>
+  </data>
+  <data name="FirstName" xml:space="preserve">
+    <value>Họ và tên lót</value>
+  </data>
+  <data name="Gender" xml:space="preserve">
+    <value>Giới tính</value>
+  </data>
+  <data name="IDCardNo" xml:space="preserve">
+    <value>Chứng minh nhân dân</value>
+  </data>
+  <data name="IDCardPlace" xml:space="preserve">
+    <value>Nơi cấp CMND</value>
+  </data>
+  <data name="Image" xml:space="preserve">
+    <value>Hình ảnh</value>
+  </data>
+  <data name="Language" xml:space="preserve">
+    <value>Ngôn ngữ</value>
+  </data>
+  <data name="Link" xml:space="preserve">
+    <value>Đường dẫn</value>
+  </data>
+  <data name="NewPassword" xml:space="preserve">
+    <value>Mật khẩu mới</value>
+  </data>
+  <data name="NewsCategory" xml:space="preserve">
+    <value>Loại tin tức</value>
+  </data>
+  <data name="OrderNo" xml:space="preserve">
+    <value>STT</value>
+  </data>
+  <data name="Password" xml:space="preserve">
+    <value>Mật khẩu</value>
+  </data>
+  <data name="PlaceOfBirth" xml:space="preserve">
+    <value>Nơi sinh</value>
+  </data>
+  <data name="Publish" xml:space="preserve">
+    <value>Hoạt động</value>
+  </data>
+  <data name="ShortDescription" xml:space="preserve">
+    <value>Mô tả ngắn</value>
+  </data>
+  <data name="Status" xml:space="preserve">
+    <value>Trạng thái</value>
+  </data>
+  <data name="Thumbnail" xml:space="preserve">
+    <value>Thumbnail</value>
+  </data>
+  <data name="Title" xml:space="preserve">
+    <value>Tiêu đề</value>
+  </data>
+  <data name="UpdatedDate" xml:space="preserve">
+    <value>Ngày cập nhật</value>
+  </data>
+  <data name="UpdatedUser" xml:space="preserve">
+    <value>Người cập nhật</value>
+  </data>
+  <data name="Username" xml:space="preserve">
+    <value>Tên đăng nhập</value>
+  </data>
+  <data name="UserType" xml:space="preserve">
+    <value>Loại người dùng</value>
+  </data>
+  <data name="Category" xml:space="preserve">
+    <value>Danh mục</value>
+  </data>
+  <data name="Note" xml:space="preserve">
+    <value>Ghi chú</value>
+  </data>
+  <data name="Media" xml:space="preserve">
+    <value>Media</value>
+  </data>
+  <data name="Description" xml:space="preserve">
+    <value>Mô tả</value>
+  </data>
+  <data name="News" xml:space="preserve">
+    <value>Tín tức</value>
+  </data>
+  <data name="User" xml:space="preserve">
+    <value>Nhân viên</value>
+  </data>
+  <data name="ActionName" xml:space="preserve">
+    <value>Action name</value>
+  </data>
+  <data name="ControllerName" xml:space="preserve">
+    <value>Controller name</value>
+  </data>
+  <data name="CssClassIcon" xml:space="preserve">
+    <value>Css class icon</value>
+  </data>
+  <data name="IsDeleted" xml:space="preserve">
+    <value>Đã được xóa</value>
+  </data>
+  <data name="IsVisible" xml:space="preserve">
+    <value>Xuât hiện</value>
+  </data>
+  <data name="MenuName" xml:space="preserve">
+    <value>Tên chức năng</value>
+  </data>
+  <data name="ParentMenuName" xml:space="preserve">
+    <value>Tên menu cha</value>
+  </data>
+  <data name="Url" xml:space="preserve">
+    <value>Url</value>
+  </data>
+  <data name="Name" xml:space="preserve">
+    <value>Tên</value>
+  </data>
+  <data name="Answer" xml:space="preserve">
+    <value>Đáp án</value>
+  </data>
+  <data name="MultiSelection" xml:space="preserve">
+    <value>Nhiều lựa chọn</value>
+  </data>
+  <data name="Source" xml:space="preserve">
+    <value>Nguồn</value>
+  </data>
+  <data name="Duration" xml:space="preserve">
+    <value>Thời gian</value>
+  </data>
+  <data name="BackToList" xml:space="preserve">
+    <value>Quay lại danh sách</value>
+  </data>
+  <data name="ChooseCategory" xml:space="preserve">
+    <value>Vui lòng chọn Danh mục</value>
+  </data>
+  <data name="CreateNew" xml:space="preserve">
+    <value>Tạo mới</value>
+  </data>
+  <data name="Delete" xml:space="preserve">
+    <value>Xóa</value>
+  </data>
+  <data name="Save" xml:space="preserve">
+    <value>Lưu</value>
+  </data>
+  <data name="FormEditCategory" xml:space="preserve">
+    <value>Cập nhật thông tin ngành hàng</value>
+  </data>
+  <data name="FormEditNews" xml:space="preserve">
+    <value>Cập nhật tin tức</value>
+  </data>
+  <data name="Search" xml:space="preserve">
+    <value>Tìm kiếm</value>
+  </data>
+  <data name="Deleted" xml:space="preserve">
+    <value>Đã xóa</value>
+  </data>
+  <data name="FromDate" xml:space="preserve">
+    <value>Từ ngày</value>
+  </data>
+  <data name="Month" xml:space="preserve">
+    <value>Tháng</value>
+  </data>
+  <data name="Week" xml:space="preserve">
+    <value>Tuần</value>
+  </data>
+  <data name="Year" xml:space="preserve">
+    <value>Năm</value>
+  </data>
+  <data name="PublishedDate" xml:space="preserve">
+    <value>Ngày kích hoạt</value>
+  </data>
+  <data name="DeleteSuccess" xml:space="preserve">
+    <value>Đã xóa mẫu tin thành công</value>
+  </data>
+  <data name="FormCreateNews" xml:space="preserve">
+    <value>Tạo mới tin tức</value>
+  </data>
+  <data name="InsertSuccess" xml:space="preserve">
+    <value>Đã thêm thành công mẫu tin</value>
+  </data>
+  <data name="FullName" xml:space="preserve">
+    <value>Họ và tên</value>
+  </data>
+  <data name="English" xml:space="preserve">
+    <value>Tiếng Anh</value>
+  </data>
+  <data name="Login" xml:space="preserve">
+    <value>Đăng nhập</value>
+  </data>
+  <data name="Logout" xml:space="preserve">
+    <value>Thoát</value>
+  </data>
+  <data name="Profile" xml:space="preserve">
+    <value>Thông tin cá nhân</value>
+  </data>
+  <data name="Vietnamese" xml:space="preserve">
+    <value>Tiếng Việt</value>
+  </data>
+  <data name="Welcome" xml:space="preserve">
+    <value>Xin chào</value>
+  </data>
+  <data name="Key" xml:space="preserve">
+    <value>Từ khóa</value>
+  </data>
+  <data name="Value" xml:space="preserve">
+    <value>Giá trị</value>
+  </data>
+  <data name="Setting" xml:space="preserve">
+    <value>Thiết lập</value>
+  </data>
+  <data name="Action" xml:space="preserve">
+    <value>Hoạt động</value>
+  </data>
+  <data name="Announcement" xml:space="preserve">
+    <value>Thông báo</value>
+  </data>
+  <data name="ChangePassword" xml:space="preserve">
+    <value>Thay đổi mật khẩu</value>
+  </data>
+  <data name="ChangePasswordError" xml:space="preserve">
+    <value>Mật khẩu không chính xác, vui lòng thử lại</value>
+  </data>
+  <data name="ChangePasswordSuccess" xml:space="preserve">
+    <value>Thay đổi mật khẩu thành công</value>
+  </data>
+  <data name="UpdateSuccess" xml:space="preserve">
+    <value>Cập nhật thành công</value>
+  </data>
+  <data name="Avatar" xml:space="preserve">
+    <value>Hình đại diện</value>
+  </data>
+  <data name="ForgetPassword" xml:space="preserve">
+    <value>Quên mật khẩu</value>
+  </data>
+  <data name="PleaseEnterYourInformation" xml:space="preserve">
+    <value>Vui lòng nhập thông tin</value>
+  </data>
+  <data name="BackToLogin" xml:space="preserve">
+    <value>Về trang đăng nhập</value>
+  </data>
+  <data name="EnterEmail" xml:space="preserve">
+    <value>Nhập email để nhận mật khẩu</value>
+  </data>
+  <data name="RetrievePassword" xml:space="preserve">
+    <value>Quên mật khẩu</value>
+  </data>
+  <data name="RetrievePasswordSuccess" xml:space="preserve">
+    <value>Yêu cầu của bạn đã được xử lý, vui lòng kiểm tra lại email, cám ơn !!!</value>
+  </data>
+  <data name="Send" xml:space="preserve">
+    <value>Gửi</value>
+  </data>
+  <data name="IsLocked" xml:space="preserve">
+    <value>Khóa lại?</value>
+  </data>
+  <data name="SettingDeleteError" xml:space="preserve">
+    <value>Thiết lập đã bị khóa, không thể xóa mẫu tin</value>
+  </data>
+  <data name="Add" xml:space="preserve">
+    <value>Thêm</value>
+  </data>
+  <data name="Edit" xml:space="preserve">
+    <value>Chỉnh sửa</value>
+  </data>
+  <data name="Export" xml:space="preserve">
+    <value>Export</value>
+  </data>
+  <data name="Function" xml:space="preserve">
+    <value>Chức năng</value>
+  </data>
+  <data name="Import" xml:space="preserve">
+    <value>Import</value>
+  </data>
+  <data name="Print" xml:space="preserve">
+    <value>In</value>
+  </data>
+  <data name="View" xml:space="preserve">
+    <value>Xem</value>
+  </data>
+  <data name="SaveAccessRightSuccessful" xml:space="preserve">
+    <value>Lưu phân quyền thành công</value>
+  </data>
+  <data name="SaveAccessRightUnsuccessful" xml:space="preserve">
+    <value>Lưu phân quyền thất bại.</value>
+  </data>
+  <data name="CreatePage" xml:space="preserve">
+    <value>Tạo mới trang</value>
+  </data>
+  <data name="CreateSetting" xml:space="preserve">
+    <value>Tạo mới thiết lập</value>
+  </data>
+  <data name="CreateUser" xml:space="preserve">
+    <value>Tạo người dùng</value>
+  </data>
+  <data name="CreateUserType" xml:space="preserve">
+    <value>Tạo loại người dùng</value>
+  </data>
+  <data name="EnterInformation" xml:space="preserve">
+    <value>Nhập vào thông tin sau</value>
+  </data>
+  <data name="LoginInformation" xml:space="preserve">
+    <value>Thông tin đăng nhập</value>
+  </data>
+  <data name="Pages" xml:space="preserve">
+    <value>Danh sách trang</value>
+  </data>
+  <data name="PersonalInformation" xml:space="preserve">
+    <value>Thông tin cá nhân</value>
+  </data>
+  <data name="Settings" xml:space="preserve">
+    <value>Danh sách thiết lập</value>
+  </data>
+  <data name="UpdateLanguage" xml:space="preserve">
+    <value>Cập nhật ngôn ngữ</value>
+  </data>
+  <data name="UpdatePage" xml:space="preserve">
+    <value>Cập nhật trang</value>
+  </data>
+  <data name="UpdateSetting" xml:space="preserve">
+    <value>Cập nhật thiết lập</value>
+  </data>
+  <data name="UpdateUser" xml:space="preserve">
+    <value>Cập nhật người dùng</value>
+  </data>
+  <data name="UpdateUserType" xml:space="preserve">
+    <value>Cập nhật loại người dùng</value>
+  </data>
+  <data name="Users" xml:space="preserve">
+    <value>Danh sách người dùng</value>
+  </data>
+  <data name="UserTypes" xml:space="preserve">
+    <value>Danh sách loại người dùng</value>
+  </data>
+  <data name="Categories" xml:space="preserve">
+    <value>Danh sách danh mục</value>
+  </data>
+  <data name="CreateNews" xml:space="preserve">
+    <value>Tạo mới tin tức</value>
+  </data>
+  <data name="NewsList" xml:space="preserve">
+    <value>Danh sách tin tức</value>
+  </data>
+  <data name="UpdateNews" xml:space="preserve">
+    <value>Cập nhật tin tức</value>
+  </data>
+  <data name="NotAllowedToAccess" xml:space="preserve">
+    <value>Không được phép truy cập</value>
+  </data>
+  <data name="Not_Premitted" xml:space="preserve">
+    <value>KHÔNG ĐƯỢC PHÉP TRUY CẬP</value>
+  </data>
+  <data name="Video" xml:space="preserve">
+    <value>Video</value>
+  </data>
+  <data name="Type" xml:space="preserve">
+    <value>Loại</value>
+  </data>
+  <data name="Select" xml:space="preserve">
+    <value>Chọn</value>
+  </data>
+  <data name="File" xml:space="preserve">
+    <value>Tập tin</value>
+  </data>
+  <data name="OtherFile" xml:space="preserve">
+    <value>Tập tin khác</value>
+  </data>
+  <data name="List" xml:space="preserve">
+    <value>Danh sách</value>
+  </data>
+  <data name="ConfirmDeleteSelectedItem" xml:space="preserve">
+    <value>Bạn có chắc bạn muốn xóa các item đã chọn?</value>
+  </data>
+  <data name="ConfirmDeleting" xml:space="preserve">
+    <value>Bạn có chắc bạn muốn xóa item?</value>
+  </data>
+  <data name="SelectAll" xml:space="preserve">
+    <value>Chọn tất cả</value>
+  </data>
+  <data name="Close" xml:space="preserve">
+    <value>Đóng</value>
+  </data>
+  <data name="Upload" xml:space="preserve">
+    <value>Tải lên</value>
+  </data>
+  <data name="PleaseSelect" xml:space="preserve">
+    <value>Vui lòng chọn</value>
+  </data>
+  <data name="UrlType" xml:space="preserve">
+    <value>Loại Url</value>
+  </data>
+  <data name="UrlLink" xml:space="preserve">
+    <value>Đường đẫn Url</value>
+  </data>
+  <data name="CompletedDate" xml:space="preserve">
+    <value>Ngày hoàn thành</value>
+  </data>
+  <data name="Result" xml:space="preserve">
+    <value>Kết quả</value>
+  </data>
+  <data name="EndDate" xml:space="preserve">
+    <value>Ngày kết thúc</value>
+  </data>
+  <data name="StartDate" xml:space="preserve">
+    <value>Ngày bắt đầu</value>
+  </data>
+  <data name="Display" xml:space="preserve">
+    <value>Hiển thị</value>
+  </data>
+  <data name="LoginFailedCount" xml:space="preserve">
+    <value>Số lần đăng nhập thất bại</value>
+  </data>
+  <data name="ResetLoginFailedCount" xml:space="preserve">
+    <value>Mở khóa đăng nhập</value>
+  </data>
+  <data name="Group" xml:space="preserve">
+    <value>Nhóm</value>
+  </data>
+  <data name="LikeCount" xml:space="preserve">
+    <value>Lượt thích</value>
+  </data>
+  <data name="ViewCount" xml:space="preserve">
+    <value>Lượt xem</value>
+  </data>
+  <data name="Sort" xml:space="preserve">
+    <value>Sắp xếp</value>
+  </data>
+  <data name="BackIDCardImage" xml:space="preserve">
+    <value>Hình CMND(mặt sau)</value>
+  </data>
+  <data name="NewUserName" xml:space="preserve">
+    <value>Tên người dùng mới</value>
+  </data>
+  <data name="BankAccountNumber" xml:space="preserve">
+    <value>Số tài khoản</value>
+  </data>
+  <data name="BankBranch" xml:space="preserve">
+    <value>Chi nhánh ngân hàng</value>
+  </data>
+  <data name="BankName" xml:space="preserve">
+    <value>Tên ngân hàng</value>
+  </data>
+  <data name="BankOwnerName" xml:space="preserve">
+    <value>Tên chủ tài khoản</value>
+  </data>
+  <data name="UserCode" xml:space="preserve">
+    <value>Mã người dùng</value>
+  </data>
+  <data name="ModifiedDate" xml:space="preserve">
+    <value>Ngày cập nhật</value>
+  </data>
+  <data name="ModifiedUser" xml:space="preserve">
+    <value>Người cập nhật</value>
+  </data>
+  <data name="Country" xml:space="preserve">
+    <value>Quốc gia</value>
+  </data>
+  <data name="District" xml:space="preserve">
+    <value>Quận/Huyện</value>
+  </data>
+  <data name="Phone" xml:space="preserve">
+    <value>Điện thoại</value>
+  </data>
+  <data name="Provine" xml:space="preserve">
+    <value>Tỉnh/TP</value>
+  </data>
+  <data name="Wards" xml:space="preserve">
+    <value>Xã/Phường</value>
+  </data>
+  <data name="IdCardNumber" xml:space="preserve">
+    <value>CMND</value>
+  </data>
+  <data name="Mobile" xml:space="preserve">
+    <value>Di động</value>
+  </data>
+  <data name="Cancel" xml:space="preserve">
+    <value>Hủy</value>
+  </data>
+  <data name="Price" xml:space="preserve">
+    <value>Đơn giá</value>
+  </data>
+  <data name="Unit" xml:space="preserve">
+    <value>Đơn vị</value>
+  </data>
+  <data name="Total" xml:space="preserve">
+    <value>Tổng cộng</value>
+  </data>
+  <data name="IsPayment" xml:space="preserve">
+    <value>Đã thanh toán</value>
+  </data>
+  <data name="Amount" xml:space="preserve">
+    <value>Số tiền</value>
+  </data>
+  <data name="Quantity" xml:space="preserve">
+    <value>Số lượng</value>
+  </data>
+  <data name="MonthYear" xml:space="preserve">
+    <value>Tháng/Năm</value>
+  </data>
+  <data name="PaymentInfo" xml:space="preserve">
+    <value>Thông tin thanh toán</value>
+  </data>
+  <data name="PaymentDate" xml:space="preserve">
+    <value>Ngày thanh toán</value>
+  </data>
+  <data name="PaymentName" xml:space="preserve">
+    <value>Người thanh toán</value>
+  </data>
+  <data name="BankTransactionNo" xml:space="preserve">
+    <value>Mã số giao dịch</value>
+  </data>
+  <data name="PaymentMethod" xml:space="preserve">
+    <value>Thanh toán bằng</value>
+  </data>
+  <data name="Empty" xml:space="preserve">
+    <value>- Rỗng -</value>
+  </data>
+  <data name="Available" xml:space="preserve">
+    <value>Đang sử dụng</value>
+  </data>
+  <data name="Reset" xml:space="preserve">
+    <value>Nhập lại</value>
+  </data>
+  <data name="Female" xml:space="preserve">
+    <value>Giới tính nữ</value>
+  </data>
+  <data name="NoImage" xml:space="preserve">
+    <value>Chưa có hình</value>
+  </data>
+  <data name="ImportExcel" xml:space="preserve">
+    <value>Import DSSV ảo</value>
+  </data>
+  <data name="EditUser" xml:space="preserve">
+    <value>Chỉnh sửa người dùng</value>
+  </data>
+  <data name="SaveAndPrint" xml:space="preserve">
+    <value>Lưu &amp; In</value>
+  </data>
+  <data name="AutoSelect" xml:space="preserve">
+    <value>Tự động chọn</value>
+  </data>
+  <data name="Assign" xml:space="preserve">
+    <value>Phân công</value>
+  </data>
+  <data name="DashboardView" xml:space="preserve">
+    <value>Bảng điều khiển</value>
+  </data>
+  <data name="Error" xml:space="preserve">
+    <value>Lỗi</value>
+  </data>
+  <data name="SaveAndContinue" xml:space="preserve">
+    <value>Lưu &amp; tiếp tục</value>
+  </data>
+  <data name="Executed" xml:space="preserve">
+    <value>Thực hiện</value>
+  </data>
+  <data name="CormfirmDelete" xml:space="preserve">
+    <value>Xác nhận xóa</value>
+  </data>
+  <data name="RunReport" xml:space="preserve">
+    <value>Xem báo cáo</value>
+  </data>
+  <data name="OldPassword" xml:space="preserve">
+    <value>Mật khẩu cũ</value>
+  </data>
+  <data name="SaveSuccess" xml:space="preserve">
+    <value>Lưu thành công</value>
+  </data>
+  <data name="ShortName" xml:space="preserve">
+    <value>Tên ngắn</value>
+  </data>
+  <data name="Captcha" xml:space="preserve">
+    <value>Nhập đáp án đúng</value>
+  </data>
+  <data name="CaptchaError" xml:space="preserve">
+    <value>Đáp án nhập sai</value>
+  </data>
+  <data name="ChangPasswordForUsers" xml:space="preserve">
+    <value>Cấp mật khẩu mới cho người dùng</value>
+  </data>
+  <data name="ResetPassword" xml:space="preserve">
+    <value>Cấp lại mật khẩu</value>
+  </data>
+  <data name="ContactMobile" xml:space="preserve">
+    <value>Số điện thoại liên lạc</value>
+  </data>
+  <data name="ContactName" xml:space="preserve">
+    <value>Tên người liên hệ</value>
+  </data>
+  <data name="Continue" xml:space="preserve">
+    <value>Tiếp tục</value>
+  </data>
+  <data name="Infomation" xml:space="preserve">
+    <value>Thông tin</value>
+  </data>
+  <data name="Success" xml:space="preserve">
+    <value>Hoàn thành</value>
+  </data>
+  <data name="Download" xml:space="preserve">
+    <value>Tải danh sách</value>
+  </data>
+  <data name="Area" xml:space="preserve">
+    <value>Khu vực</value>
+  </data>
+  <data name="BeginDate" xml:space="preserve">
+    <value>Từ ngày</value>
+  </data>
+  <data name="Processing" xml:space="preserve">
+    <value>Đang xử lý</value>
+  </data>
+  <data name="ProfileSetting" xml:space="preserve">
+    <value>Cài đặt cá nhân</value>
+  </data>
+  <data name="AreaName" xml:space="preserve">
+    <value>AreaName</value>
+  </data>
+  <data name="ClickHereToBack" xml:space="preserve">
+    <value>ClickHereToBack</value>
+  </data>
+  <data name="Scope" xml:space="preserve">
+    <value>Scope</value>
+  </data>
+  <data name="Birthday" xml:space="preserve">
+    <value>Ngày sinh</value>
+  </data>
+  <data name="FormCreateCategory" xml:space="preserve">
+    <value>Thêm mới danh mục</value>
+  </data>
+  <data name="LastName" xml:space="preserve">
+    <value>Tên</value>
+  </data>
+  <data name="PhoneNumer" xml:space="preserve">
+    <value>Số điện thoại</value>
+  </data>
+  <data name="PageCreate_ErpSession" xml:space="preserve">
+    <value>Thêm mới Kỳ thi &amp; Bài kiểm tra</value>
+  </data>
+  <data name="PageEdit_ErpSession" xml:space="preserve">
+    <value>Chỉnh sửa Kỳ thi &amp; Bài kiểm tra</value>
+  </data>
+  <data name="PageIndex_ErpSession" xml:space="preserve">
+    <value>Kỳ thi &amp; Bài kiểm tra</value>
+  </data>
+  <data name="PageCreate_Product" xml:space="preserve">
+    <value>Tạo sản phẩm</value>
+  </data>
+  <data name="PageIndex_Product" xml:space="preserve">
+    <value>Danh sách sản phẩm</value>
+  </data>
+  <data name="Code" xml:space="preserve">
+    <value>Mã</value>
+  </data>
+  <data name="CityName" xml:space="preserve">
+    <value>Tỉnh/Thành</value>
+  </data>
+  <data name="CompanyName" xml:space="preserve">
+    <value>Tên công ty</value>
+  </data>
+  <data name="DistrictName" xml:space="preserve">
+    <value>Quận/huyện</value>
+  </data>
+  <data name="NotOwner" xml:space="preserve">
+    <value>Bạn không có quyền chỉnh sửa mục của người khác</value>
+  </data>
+  <data name="PageCreate_Customer" xml:space="preserve">
+    <value>Tạo khách hàng</value>
+  </data>
+  <data name="PageCreate_Supplier" xml:space="preserve">
+    <value>Tạo nhà cung cấp</value>
+  </data>
+  <data name="PageEdit_Customer" xml:space="preserve">
+    <value>Cập nhật khách hàng</value>
+  </data>
+  <data name="PageEdit_Product" xml:space="preserve">
+    <value>Cập nhật sản phẩm</value>
+  </data>
+  <data name="PageEdit_Supplier" xml:space="preserve">
+    <value>Cập nhật nhà cung cấp</value>
+  </data>
+  <data name="PageIndex_Customer" xml:space="preserve">
+    <value>Danh sách khách hàng</value>
+  </data>
+  <data name="PageIndex_Supplier" xml:space="preserve">
+    <value>Danh sách nhà cung cấp</value>
+  </data>
+  <data name="CategoryCode" xml:space="preserve">
+    <value>Loại sản phẩm</value>
+  </data>
+  <data name="WardName" xml:space="preserve">
+    <value>Phường/xã</value>
+  </data>
+  <data name="PageCreate_Warehouse" xml:space="preserve">
+    <value>Tạo nhà kho</value>
+  </data>
+  <data name="PageEdit_Warehouse" xml:space="preserve">
+    <value>Cập nhật nhà kho</value>
+  </data>
+  <data name="PageIndex_Warehouse" xml:space="preserve">
+    <value>Danh sách nhà kho</value>
+  </data>
+  <data name="Customer" xml:space="preserve">
+    <value>Khách hàng</value>
+  </data>
+  <data name="Discount" xml:space="preserve">
+    <value>Chiết khấu (%)</value>
+  </data>
+  <data name="DiscountCode" xml:space="preserve">
+    <value>Mã giảm giá</value>
+  </data>
+  <data name="PageCreate_PurchaseOrder" xml:space="preserve">
+    <value>Tạo đơn hàng</value>
+  </data>
+  <data name="PageEdit_PurchaseOrder" xml:space="preserve">
+    <value>Cập nhật đơn hàng</value>
+  </data>
+  <data name="PageIndex_PurchaseOrder" xml:space="preserve">
+    <value>Danh sách đơn đặt hàng</value>
+  </data>
+  <data name="ShipName" xml:space="preserve">
+    <value>Người nhận hàng</value>
+  </data>
+  <data name="TaxFee" xml:space="preserve">
+    <value>VAT (%)</value>
+  </data>
+  <data name="TotalAmount" xml:space="preserve">
+    <value>Tổng tiền</value>
+  </data>
+  <data name="PageNext_PurchaseOrder" xml:space="preserve">
+    <value>Thông tin đơn đặt hàng</value>
+  </data>
+  <data name="CreateOutbound" xml:space="preserve">
+    <value>Tạo phiếu xuất kho</value>
+  </data>
+  <data name="NoneAcceptUpdate" xml:space="preserve">
+    <value>Không được cập nhật</value>
+  </data>
+  <data name="OrderHasOutbound" xml:space="preserve">
+    <value>Đơn hàng đã có phiếu xuất kho</value>
+  </data>
+  <data name="ReUpdate" xml:space="preserve">
+    <value>Cập nhật lại</value>
+  </data>
+  <data name="PageIndex_Inventory" xml:space="preserve">
+    <value>Kiểm tra tồn kho</value>
+  </data>
+  <data name="PageIndex_ProductInBound" xml:space="preserve">
+    <value>Danh sách phiếu nhập kho</value>
+  </data>
+  <data name="PageIndex_ProductOutBound" xml:space="preserve">
+    <value>Danh sách phiếu xuất kho</value>
+  </data>
+  <data name="ProductName" xml:space="preserve">
+    <value>Tên sản phẩm</value>
+  </data>
+  <data name="Warehouse" xml:space="preserve">
+    <value>Kho hàng</value>
+  </data>
+  <data name="PageCreate_ProductInBound" xml:space="preserve">
+    <value>Tạo phiếu nhập kho</value>
+  </data>
+  <data name="PageEdit_ProductInBound" xml:space="preserve">
+    <value>Cập nhật phiếu nhập kho</value>
+  </data>
+  <data name="Supplier" xml:space="preserve">
+    <value>Nhà cung cấp</value>
+  </data>
+  <data name="WarehouseDestination" xml:space="preserve">
+    <value>Nhập vào kho</value>
+  </data>
+  <data name="WarehouseSource" xml:space="preserve">
+    <value>Xuất từ kho</value>
+  </data>
+  <data name="PurchaseOrderCode" xml:space="preserve">
+    <value>Mã đơn hàng</value>
+  </data>
+  <data name="Destination" xml:space="preserve">
+    <value>Đích đến</value>
+  </data>
+  <data name="PageCreate_ProductOutbound" xml:space="preserve">
+    <value>Tạo phiếu xuất kho</value>
+  </data>
+  <data name="PageEdit_ProductOutbound" xml:space="preserve">
+    <value>Cập nhật phiếu xuất kho</value>
+  </data>
+  <data name="PageProductDetail_Inventory" xml:space="preserve">
+    <value>Thông tin chi tiết tồn kho của sản phẩm</value>
+  </data>
+  <data name="ProductInboundCode" xml:space="preserve">
+    <value>Mã phiếu nhập</value>
+  </data>
+  <data name="ProductOutboundCode" xml:space="preserve">
+    <value>Mã phiếu xuất</value>
+  </data>
+  <data name="CreatedUserName" xml:space="preserve">
+    <value>Người tạo</value>
+  </data>
+  <data name="TotalBreak" xml:space="preserve">
+    <value>Số SP bị hư hỏng</value>
+  </data>
+  <data name="TotalLost" xml:space="preserve">
+    <value>Số SP bị mất</value>
+  </data>
+  <data name="TotalProductCheck" xml:space="preserve">
+    <value>Số sản phẩm kiểm tra</value>
+  </data>
+  <data name="PageCreate_PhysicalInventory" xml:space="preserve">
+    <value>Tạo phiếu kiểm kho</value>
+  </data>
+  <data name="PageEdit_PhysicalInventory" xml:space="preserve">
+    <value>Cập nhật phiếu kiểm kho</value>
+  </data>
+  <data name="PageIndex_PhysicalInventory" xml:space="preserve">
+    <value>Danh sách kiểm tra tồn kho</value>
+  </data>
+  <data name="SaveAndConfirm" xml:space="preserve">
+    <value>Lưu và xác nhận</value>
+  </data>
+  <data name="ChildCategory" xml:space="preserve">
+    <value>Danh mục con</value>
+  </data>
+  <data name="PageCreate_ObjectAttribute" xml:space="preserve">
+    <value>Tạo đặc tính động</value>
+  </data>
+  <data name="PageEdit_ObjectAttribute" xml:space="preserve">
+    <value>Cập nhật đặc tính động</value>
+  </data>
+  <data name="PageIndex_ObjectAttribute" xml:space="preserve">
+    <value>Danh sách đặc tính động</value>
+  </data>
+  <data name="DataType" xml:space="preserve">
+    <value>Kiểu dữ liệu</value>
+  </data>
+  <data name="IsSelected" xml:space="preserve">
+    <value>Chọn</value>
+  </data>
+  <data name="ModuleCategoryType" xml:space="preserve">
+    <value>Danh mục đối tượng</value>
+  </data>
+  <data name="ModuleType" xml:space="preserve">
+    <value>Loại đối tượng</value>
+  </data>
+  <data name="NoneSelect" xml:space="preserve">
+    <value>Không chọn</value>
+  </data>
+  <data name="Selected" xml:space="preserve">
+    <value>Đã chọn</value>
+  </data>
+  <data name="MinInventory" xml:space="preserve">
+    <value>Tồn kho tối thiểu</value>
+  </data>
+  <data name="ProductParent" xml:space="preserve">
+    <value>Gói dịch vụ</value>
+  </data>
+  <data name="PageCreate_ProductInvoice" xml:space="preserve">
+    <value>Tạo đơn hàng</value>
+  </data>
+  <data name="PageEdit_ProductInvoice" xml:space="preserve">
+    <value>Cập nhật đơn hàng</value>
+  </data>
+  <data name="PageIndex_ProductInvoice" xml:space="preserve">
+    <value>Danh sách đơn hàng</value>
+  </data>
+  <data name="PageCreate_Campaign" xml:space="preserve">
+    <value>Thêm mới chiến dịch</value>
+  </data>
+  <data name="PageEdit_Campaign" xml:space="preserve">
+    <value>Chỉnh sửa chiến dịch</value>
+  </data>
+  <data name="PageIndex_Campaign" xml:space="preserve">
+    <value>Danh sách chiến dịch</value>
+  </data>
+  <data name="BudgetedCost" xml:space="preserve">
+    <value>Ngân sách</value>
+  </data>
+  <data name="ExpectedRevenue" xml:space="preserve">
+    <value>Lợi nhuận mong đợi</value>
+  </data>
+  <data name="ActualCost" xml:space="preserve">
+    <value>Chi phí thực tế</value>
+  </data>
+  <data name="ExpectedResponse" xml:space="preserve">
+    <value>Lợi nhuận thực tế</value>
+  </data>
+  <data name="Commision" xml:space="preserve">
+    <value>Chiết khấu</value>
+  </data>
+  <data name="CommisionCode" xml:space="preserve">
+    <value>Mã chiết khấu</value>
+  </data>
+  <data name="PercentOfCommision" xml:space="preserve">
+    <value>Mức chiết khấu (%)</value>
+  </data>
+  <data name="PageCreate_Commision" xml:space="preserve">
+    <value>Thêm mới chiết khấu</value>
+  </data>
+  <data name="PageEdit_Commision" xml:space="preserve">
+    <value>Chỉnh sửa chiết khấu</value>
+  </data>
+  <data name="PageIndex_Commision" xml:space="preserve">
+    <value>Chiết khấu</value>
+  </data>
+  <data name="PageEdit_Branch" xml:space="preserve">
+    <value>Cập nhật chi nhánh</value>
+  </data>
+  <data name="PageIndex_Branch" xml:space="preserve">
+    <value>Danh sách chi nhánh</value>
+  </data>
+  <data name="AddDepartment" xml:space="preserve">
+    <value>Thêm phòng ban</value>
+  </data>
+  <data name="PageCreate_Department" xml:space="preserve">
+    <value>Thêm phòng ban</value>
+  </data>
+  <data name="StaffInfo" xml:space="preserve">
+    <value>Thông tin nhân viên</value>
+  </data>
+  <data name="AddBranch" xml:space="preserve">
+    <value>Thêm chi nhánh</value>
+  </data>
+  <data name="PageIndex_Staffs" xml:space="preserve">
+    <value>Danh sách nhân viên</value>
+  </data>
+  <data name="PageEdit_Department" xml:space="preserve">
+    <value>Cập nhật phòng ban</value>
+  </data>
+  <data name="Staff" xml:space="preserve">
+    <value>Nhân viên</value>
+  </data>
+  <data name="StaffTotalFemale" xml:space="preserve">
+    <value>Tổng nhân viên nữ</value>
+  </data>
+  <data name="StaffTotalMale" xml:space="preserve">
+    <value>Tổng nhân viên nam</value>
+  </data>
+  <data name="AddStaffs" xml:space="preserve">
+    <value>Thêm nhân viên</value>
+  </data>
+  <data name="BranchName" xml:space="preserve">
+    <value>Chi nhánh</value>
+  </data>
+  <data name="PageIndex_Staff" xml:space="preserve">
+    <value>Danh sách nhân viên</value>
+  </data>
+  <data name="PageCreate_Staffs" xml:space="preserve">
+    <value>Thêm nhân viên</value>
+  </data>
+  <data name="PageDetailStaff" xml:space="preserve">
+    <value>Thông tin chi tiết nhân viên</value>
+  </data>
+  <data name="PageEdit_Staff" xml:space="preserve">
+    <value>Cập nhật thông tin nhân viên</value>
+  </data>
+  <data name="CodeStaff" xml:space="preserve">
+    <value>Mã nhân viên</value>
+  </data>
+  <data name="Department" xml:space="preserve">
+    <value>Phòng ban</value>
+  </data>
+  <data name="Ethnic" xml:space="preserve">
+    <value>Dân tộc</value>
+  </data>
+  <data name="LanguageLevel" xml:space="preserve">
+    <value>Trình độ ngoại ngữ</value>
+  </data>
+  <data name="Literacy" xml:space="preserve">
+    <value>Trình độ học vấn</value>
+  </data>
+  <data name="MaritalStatus" xml:space="preserve">
+    <value>Tình trạng hôn nhân</value>
+  </data>
+  <data name="NameStaff" xml:space="preserve">
+    <value>Tên nhân viên</value>
+  </data>
+  <data name="Position" xml:space="preserve">
+    <value>Chức vụ</value>
+  </data>
+  <data name="Religion" xml:space="preserve">
+    <value>Tôn giáo</value>
+  </data>
+  <data name="Technique" xml:space="preserve">
+    <value>Trình độ chuyên môn</value>
+  </data>
+  <data name="PageIndex_Department" xml:space="preserve">
+    <value>Danh sách phòng ban</value>
+  </data>
+  <data name="PageCreate_BranchDepartment" xml:space="preserve">
+    <value>Thêm phòng ban vào chi nhánh</value>
+  </data>
+  <data name="PageEdit_BranchDepartment" xml:space="preserve">
+    <value>Cập nhật phòng ban cho chi nhánh</value>
+  </data>
+  <data name="CodeBranch" xml:space="preserve">
+    <value>Mã chi nhánh</value>
+  </data>
+  <data name="CodeDepartment" xml:space="preserve">
+    <value>Mã phòng ban</value>
+  </data>
+  <data name="GenderName" xml:space="preserve">
+    <value>Giới tính</value>
+  </data>
+  <data name="ProfileImage" xml:space="preserve">
+    <value>Ảnh đại diện</value>
+  </data>
+  <data name="ProfileImageName" xml:space="preserve">
+    <value>Tên ảnh đại diện</value>
+  </data>
+  <data name="ProfileImagePath" xml:space="preserve">
+    <value />
+  </data>
+  <data name="InfoStaff" xml:space="preserve">
+    <value>Thông tin nhân viên</value>
+  </data>
+  <data name="OtherInfo" xml:space="preserve">
+    <value>Thông tin khác</value>
+  </data>
+  <data name="PersonalInfo" xml:space="preserve">
+    <value>Thông tin cá nhân</value>
+  </data>
+  <data name="ResidenceInfo" xml:space="preserve">
+    <value>Thông tin liên hệ</value>
+  </data>
+  <data name="CountryId" xml:space="preserve">
+    <value>Quốc tịch</value>
+  </data>
+  <data name="IdCardDate" xml:space="preserve">
+    <value>Ngày cấp</value>
+  </data>
+  <data name="IdCardIssued" xml:space="preserve">
+    <value>Nơi cấp</value>
+  </data>
+  <data name="Province" xml:space="preserve">
+    <value>Thành phố/Tỉnh</value>
+  </data>
+  <data name="Ward" xml:space="preserve">
+    <value>Phường/Xã</value>
+  </data>
+  <data name="Product" xml:space="preserve">
+    <value>Sản phẩm</value>
+  </data>
+  <data name="Service" xml:space="preserve">
+    <value>Dịch vụ</value>
+  </data>
+  <data name="PageCreate_KPICatalog" xml:space="preserve">
+    <value>Thêm mới KPI</value>
+  </data>
+  <data name="Company" xml:space="preserve">
+    <value>Công ty</value>
+  </data>
+  <data name="SupplierCode" xml:space="preserve">
+    <value>Mã NCC</value>
+  </data>
+  <data name="PageDetail_KPICatalog" xml:space="preserve">
+    <value>Chi tiết KPI</value>
+  </data>
+  <data name="PageEdit_KPICatalog" xml:space="preserve">
+    <value>Chỉnh sửa KPI</value>
+  </data>
+  <data name="PageIndex_KPICatalog" xml:space="preserve">
+    <value>KPI</value>
+  </data>
+  <data name="DepartmentId" xml:space="preserve">
+    <value>Phòng ban</value>
+  </data>
+  <data name="ExpectScore" xml:space="preserve">
+    <value>Điểm mong đợi (%)</value>
+  </data>
+  <data name="TotalScore" xml:space="preserve">
+    <value>Tổng điểm</value>
+  </data>
+  <data name="KPIWeight" xml:space="preserve">
+    <value>Trọng số (%)</value>
+  </data>
+  <data name="Measure" xml:space="preserve">
+    <value>Thước đo</value>
+  </data>
+  <data name="TargetScore" xml:space="preserve">
+    <value>Chỉ tiêu</value>
+  </data>
+  <data name="PageCreate_KPIItem" xml:space="preserve">
+    <value>Thêm mới KPI</value>
+  </data>
+  <data name="PageEdit_KPIItem" xml:space="preserve">
+    <value>Chỉnh sửa tiêu chí KPI</value>
+  </data>
+  <data name="KPICatalogId" xml:space="preserve">
+    <value>Bảng thiết lập KPI</value>
+  </data>
+  <data name="DateOfBirth" xml:space="preserve">
+    <value>Ngày sinh</value>
+  </data>
+  <data name="AchievePercent" xml:space="preserve">
+    <value>Đạt chỉ tiêu (%)</value>
+  </data>
+  <data name="AchieveTarget" xml:space="preserve">
+    <value>Kết quả</value>
+  </data>
+  <data name="Rate" xml:space="preserve">
+    <value>Xếp loại</value>
+  </data>
+  <data name="StaffName" xml:space="preserve">
+    <value>Tên nhân viên</value>
+  </data>
+  <data name="PageIndex_StaffFamily" xml:space="preserve">
+    <value>Danh sách thân nhân</value>
+  </data>
+  <data name="PageEdit_StaffFamily" xml:space="preserve">
+    <value>Cập nhật thân nhân</value>
+  </data>
+  <data name="PageCreate_StaffFamily" xml:space="preserve">
+    <value>Thêm thân nhân</value>
+  </data>
+  <data name="Correlative" xml:space="preserve">
+    <value>Quan hệ</value>
+  </data>
+  <data name="male" xml:space="preserve">
+    <value>Nam</value>
+  </data>
+  <data name="females" xml:space="preserve">
+    <value>Nữ</value>
+  </data>
+  <data name="OrderStatusDisplay_cancel" xml:space="preserve">
+    <value>Hủy</value>
+  </data>
+  <data name="OrderStatusDisplay_complete" xml:space="preserve">
+    <value>Hoàn thành</value>
+  </data>
+  <data name="OrderStatusDisplay_outbound_done" xml:space="preserve">
+    <value>Đã xuất kho</value>
+  </data>
+  <data name="OrderStatusDisplay_outbound_pending" xml:space="preserve">
+    <value>Chờ xuất kho</value>
+  </data>
+  <data name="OrderStatusDisplay_pending" xml:space="preserve">
+    <value>Khởi tạo</value>
+  </data>
+  <data name="OrderStatusDisplay_shipping" xml:space="preserve">
+    <value>Đang giao hàng</value>
+  </data>
+  <data name="OrderStatus_cancel" xml:space="preserve">
+    <value>cancel</value>
+  </data>
+  <data name="OrderStatus_complete" xml:space="preserve">
+    <value>complete</value>
+  </data>
+  <data name="OrderStatus_outbound_done" xml:space="preserve">
+    <value>outbound done</value>
+  </data>
+  <data name="OrderStatus_outbound_pending" xml:space="preserve">
+    <value>outbound pending</value>
+  </data>
+  <data name="OrderStatus_pending" xml:space="preserve">
+    <value>pending</value>
+  </data>
+  <data name="OrderStatus_shipping" xml:space="preserve">
+    <value>shipping</value>
+  </data>
+  <data name="AddFamily" xml:space="preserve">
+    <value>Thêm người thân</value>
+  </data>
+  <data name="PageCreate_Branch" xml:space="preserve">
+    <value>Thêm chi nhánh</value>
+  </data>
+  <data name="PageDetailBranch" xml:space="preserve">
+    <value>Thông tin chi nhánh</value>
+  </data>
+  <data name="AddBank" xml:space="preserve">
+    <value>Thêm tài khoản</value>
+  </data>
+  <data name="PageCreate_Bank" xml:space="preserve">
+    <value>Thêm tài khoản ngân hàng</value>
+  </data>
+  <data name="PageEdit_Bank" xml:space="preserve">
+    <value>Cập nhật tài khoản ngân hàng</value>
+  </data>
+  <data name="AccountName" xml:space="preserve">
+    <value>Tên chủ tài khoản</value>
+  </data>
+  <data name="AccountNumber" xml:space="preserve">
+    <value>Số tài khoản</value>
+  </data>
+  <data name="NameBank" xml:space="preserve">
+    <value>Tên ngân hàng</value>
+  </data>
+  <data name="OrderStatus_lack_of_quantity" xml:space="preserve">
+    <value>lack of quantity</value>
+  </data>
+  <data name="PageDetailDepartment" xml:space="preserve">
+    <value>Thông tin phòng ban</value>
+  </data>
+  <data name="PageCreate_Process" xml:space="preserve">
+    <value>Tạo mới</value>
+  </data>
+  <data name="PageEdit_Process" xml:space="preserve">
+    <value>Chỉnh sửa</value>
+  </data>
+  <data name="PageIndex_Process" xml:space="preserve">
+    <value>Danh sách process</value>
+  </data>
+  <data name="ActivateAs" xml:space="preserve">
+    <value>ActivateAs</value>
+  </data>
+  <data name="Entity" xml:space="preserve">
+    <value>Entity</value>
+  </data>
+  <data name="IsActive" xml:space="preserve">
+    <value>Kích hoạt</value>
+  </data>
+  <data name="PageDetail_Process" xml:space="preserve">
+    <value>Thông tin Process</value>
+  </data>
+  <data name="RecordFieldsChanges" xml:space="preserve">
+    <value>RecordFieldsChanges</value>
+  </data>
+  <data name="RecordIsAssigned" xml:space="preserve">
+    <value>RecordIsAssigned</value>
+  </data>
+  <data name="RecordIsCreated" xml:space="preserve">
+    <value>RecordIsCreated</value>
+  </data>
+  <data name="RecordIsDeleted" xml:space="preserve">
+    <value>RecordIsDeleted</value>
+  </data>
+  <data name="ActionType" xml:space="preserve">
+    <value>Loại hành động</value>
+  </data>
+  <data name="PageCreate_ProcessAction" xml:space="preserve">
+    <value>Thêm mới hành động</value>
+  </data>
+  <data name="TemplateObject" xml:space="preserve">
+    <value>TemplateObject</value>
+  </data>
+  <data name="PageEdit_ProcessAction" xml:space="preserve">
+    <value>Chỉnh sửa hành động</value>
+  </data>
+  <data name="EmailBcc" xml:space="preserve">
+    <value>Bcc</value>
+  </data>
+  <data name="EmailBody" xml:space="preserve">
+    <value>Body</value>
+  </data>
+  <data name="EmailCc" xml:space="preserve">
+    <value>Cc</value>
+  </data>
+  <data name="EmailFrom" xml:space="preserve">
+    <value>From</value>
+  </data>
+  <data name="EmailRegarding" xml:space="preserve">
+    <value>Regarding</value>
+  </data>
+  <data name="EmailSubject" xml:space="preserve">
+    <value>Subject</value>
+  </data>
+  <data name="EmailTo" xml:space="preserve">
+    <value>To</value>
+  </data>
+  <data name="PageCreate_Technique" xml:space="preserve">
+    <value>Thêm bằng cấp</value>
+  </data>
+  <data name="PageEdit_Technique" xml:space="preserve">
+    <value>Cập nhật bằng cấp</value>
+  </data>
+  <data name="PageIndex_Technique" xml:space="preserve">
+    <value>Danh sách bằng cấp</value>
+  </data>
+  <data name="Rank" xml:space="preserve">
+    <value>Xếp loại</value>
+  </data>
+  <data name="PageChoose_ProductOutbound" xml:space="preserve">
+    <value>Danh sách chờ xuất kho</value>
+  </data>
+  <data name="NotfoundObject" xml:space="preserve">
+    <value>Không tìm thấy thông tin yêu cầu</value>
+  </data>
+  <data name="PageCreate_DayOff" xml:space="preserve">
+    <value>Thêm ngày nghỉ</value>
+  </data>
+  <data name="PageEdit_DayOff" xml:space="preserve">
+    <value>Cập nhật ngày nghỉ</value>
+  </data>
+  <data name="PageIndex_DayOff" xml:space="preserve">
+    <value>Danh sách ngày nghỉ</value>
+  </data>
+  <data name="DayEnd" xml:space="preserve">
+    <value>Ngày kết thúc</value>
+  </data>
+  <data name="DayStart" xml:space="preserve">
+    <value>Ngày bắt đầu</value>
+  </data>
+  <data name="QuantityDayNotUsed" xml:space="preserve">
+    <value>Số ngày còn lại</value>
+  </data>
+  <data name="QuantityDayOff" xml:space="preserve">
+    <value>Số ngày nghỉ</value>
+  </data>
+  <data name="PageCreate_WorkingProcess" xml:space="preserve">
+    <value>Thêm quá trình công tác</value>
+  </data>
+  <data name="PageEdit_WorkingProcess" xml:space="preserve">
+    <value>Cập nhật quá trình công tác</value>
+  </data>
+  <data name="PageIndex_WorkingProcess" xml:space="preserve">
+    <value>Danh sách quá trình công tác</value>
+  </data>
+  <data name="WorkPlace" xml:space="preserve">
+    <value>Nơi công tác</value>
+  </data>
+  <data name="BonusDiscipline" xml:space="preserve">
+    <value>Khen thưởng - Kỷ luật</value>
+  </data>
+  <data name="ProductInvoiceCode" xml:space="preserve">
+    <value>Mã đơn hàng</value>
+  </data>
+  <data name="PageCreate_ProcessPay" xml:space="preserve">
+    <value>Thêm bậc lương</value>
+  </data>
+  <data name="PageEdit_ProcessPay" xml:space="preserve">
+    <value>Cập nhật bậc lương</value>
+  </data>
+  <data name="PageIndex_ProcessPay" xml:space="preserve">
+    <value>Quá trình lương</value>
+  </data>
+  <data name="DayDecision" xml:space="preserve">
+    <value>Ngày quyết định</value>
+  </data>
+  <data name="DayEffective" xml:space="preserve">
+    <value>Ngày hiệu lực</value>
+  </data>
+  <data name="LevelPay" xml:space="preserve">
+    <value>Bậc lương</value>
+  </data>
+  <data name="BasicPay" xml:space="preserve">
+    <value>Lương cơ bản</value>
+  </data>
+  <data name="InvoiceHasOutbound" xml:space="preserve">
+    <value>Đơn hàng đã được xuất kho</value>
+  </data>
+  <data name="PlaceDecisions" xml:space="preserve">
+    <value>Nơi ra quyết định</value>
+  </data>
+  <data name="PageCreate_BonusDiscipline" xml:space="preserve">
+    <value>Thêm khen thưởng - kỷ luật</value>
+  </data>
+  <data name="PageEdit_BonusDiscipline" xml:space="preserve">
+    <value>Cập nhật khen thưởng - kỷ luật</value>
+  </data>
+  <data name="PageIndex_BonusDiscipline" xml:space="preserve">
+    <value>Danh sách khen thưởng - kỷ luật</value>
+  </data>
+  <data name="Reason" xml:space="preserve">
+    <value>Lý do</value>
+  </data>
+  <data name="Formality" xml:space="preserve">
+    <value>Hình thức</value>
+  </data>
+  <data name="KhongTrungTenHinh" xml:space="preserve">
+    <value>Không trùng tên hình</value>
+  </data>
+  <data name="ProfileImageExists" xml:space="preserve">
+    <value>Ảnh đã tồn tại</value>
+  </data>
+  <data name="PageNext_SaleOrder" xml:space="preserve">
+    <value>Thông tin đơn hàng</value>
+  </data>
+  <data name="ExportForWarehouse" xml:space="preserve">
+    <value>Xuất cho kho khác</value>
+  </data>
+  <data name="PageView_ProductOutbound" xml:space="preserve">
+    <value>Xem chi tiết phiếu xuất</value>
+  </data>
+  <data name="PageIndex_Bank" xml:space="preserve">
+    <value>Danh sách tài khoản ngân hàng</value>
+  </data>
+  <data name="PageIndex_SymbolTimekeeping" xml:space="preserve">
+    <value>Danh sách ký hiệu chấm công</value>
+  </data>
+  <data name="PageCreate_SymbolTimekeeping" xml:space="preserve">
+    <value>Thêm ký hiệu chấm công</value>
+  </data>
+  <data name="PageEdit_SymbolTimekeeping" xml:space="preserve">
+    <value>Cập nhật ký hiệu chấm công</value>
+  </data>
+  <data name="CentPay" xml:space="preserve">
+    <value>Lương nhận (%)</value>
+  </data>
+  <data name="TypeDayOffName" xml:space="preserve">
+    <value>Tên loại ngày nghỉ</value>
+  </data>
+  <data name="PageIndexWH_PurchaseOrder" xml:space="preserve">
+    <value>Danh sách đơn đặt hàng từ đại ký hoặc chuyển kho</value>
+  </data>
+  <data name="PageDetail_Module" xml:space="preserve">
+    <value>Chi tiết module</value>
+  </data>
+  <data name="PageEdit_Module" xml:space="preserve">
+    <value>Cập nhật module</value>
+  </data>
+  <data name="PageIndex_Module" xml:space="preserve">
+    <value>Danh sách module</value>
+  </data>
+  <data name="DisplayName" xml:space="preserve">
+    <value>DisplayName</value>
+  </data>
+  <data name="TableName" xml:space="preserve">
+    <value>TableName</value>
+  </data>
+  <data name="PageCreate_Entity" xml:space="preserve">
+    <value>Thêm mới Entity</value>
+  </data>
+  <data name="PageDetail_Entity" xml:space="preserve">
+    <value>Chi tiết Entity</value>
+  </data>
+  <data name="PageEdit_Entity" xml:space="preserve">
+    <value>Cập nhật Entity</value>
+  </data>
+  <data name="PageIndex_Entity" xml:space="preserve">
+    <value>Danh sách Entity</value>
+  </data>
+  <data name="PageCreate_Shifts" xml:space="preserve">
+    <value>Thêm ca làm việc</value>
+  </data>
+  <data name="PageEdit_Shifts" xml:space="preserve">
+    <value>Cập nhật ca làm việc</value>
+  </data>
+  <data name="PageIndex_Shifts" xml:space="preserve">
+    <value>Danh sách ca làm việc</value>
+  </data>
+  <data name="EndTime" xml:space="preserve">
+    <value>Thời gian hết ca làm việc</value>
+  </data>
+  <data name="StartTime" xml:space="preserve">
+    <value>Thời gian bắt đầu ca làm việc</value>
+  </data>
+  <data name="ShiftsCode" xml:space="preserve">
+    <value>Mã ca</value>
+  </data>
+  <data name="ShiftsName" xml:space="preserve">
+    <value>Tên ca</value>
+  </data>
+  <data name="See" xml:space="preserve">
+    <value>Xem</value>
+  </data>
+  <data name="WorkSchedules" xml:space="preserve">
+    <value>Thiết lập lịch làm việc </value>
+  </data>
+  <data name="PageIndex_Timekeeping" xml:space="preserve">
+    <value>Bảng theo dõi lịch làm việc</value>
+  </data>
+  <data name="DayWork" xml:space="preserve">
+    <value>Ngày tính công</value>
+  </data>
+  <data name="HoursIn" xml:space="preserve">
+    <value>Giờ vào làm</value>
+  </data>
+  <data name="HoursOut" xml:space="preserve">
+    <value>Giờ tan làm</value>
+  </data>
+  <data name="ToDate" xml:space="preserve">
+    <value>Đến ngày</value>
+  </data>
+  <data name="CodeNameStaff" xml:space="preserve">
+    <value>Mã hoặc tên nhân viên</value>
+  </data>
+  <data name="PageIndex_Contact" xml:space="preserve">
+    <value>Danh sách liên hệ</value>
+  </data>
+  <data name="PageIndex_Holidays" xml:space="preserve">
+    <value>Danh sách các ngày nghỉ lễ trong năm</value>
+  </data>
+  <data name="PageCreate_Holidays" xml:space="preserve">
+    <value>Thêm ngày nghỉ lễ trong năm</value>
+  </data>
+  <data name="PageEdit_Holidays" xml:space="preserve">
+    <value>Cập nhật ngày nghỉ lễ trong năm</value>
+  </data>
+  <data name="DayOff" xml:space="preserve">
+    <value>Ngày nghỉ</value>
+  </data>
+  <data name="PageCreate_Contact" xml:space="preserve">
+    <value>Tạo mới liên hệ</value>
+  </data>
+  <data name="PageEdit_Contact" xml:space="preserve">
+    <value>Cập nhật liên hệ</value>
+  </data>
+  <data name="PageCreate_SaleOrder" xml:space="preserve">
+    <value>Tạo đơn đặt hàng</value>
+  </data>
+  <data name="PageEdit_SaleOrder" xml:space="preserve">
+    <value>Cập nhật đơn hàng khách hàng</value>
+  </data>
+  <data name="PageIndex_SaleOrder" xml:space="preserve">
+    <value>Danh sách đơn đặt hàng</value>
+  </data>
+  <data name="PageCreate_TimeDelay" xml:space="preserve">
+    <value>Thiết lập thời gian đi trễ, về sớm</value>
+  </data>
+  <data name="PageEdit_TimeDelay" xml:space="preserve">
+    <value>Cập nhật thời gian đi trễ, về sớm</value>
+  </data>
+  <data name="PageIndex_TimeDelay" xml:space="preserve">
+    <value>Danh sách thời gian đi trễ, về sớm</value>
+  </data>
+  <data name="EndMinute" xml:space="preserve">
+    <value>Đến phút</value>
+  </data>
+  <data name="StartMinute" xml:space="preserve">
+    <value>Từ phút</value>
+  </data>
+  <data name="TimeDelay" xml:space="preserve">
+    <value>Thời gian đi trễ, về sớm</value>
+  </data>
+  <data name="minute" xml:space="preserve">
+    <value>phút</value>
+  </data>
+  <data name="SaleOrderCode" xml:space="preserve">
+    <value>Mã đơn hàng</value>
+  </data>
+  <data name="PageCreate_TypeDay" xml:space="preserve">
+    <value>Tạo loại ngày làm việc</value>
+  </data>
+  <data name="PageEdit_TypeDay" xml:space="preserve">
+    <value>Cập nhật loại ngày làm việc</value>
+  </data>
+  <data name="PageIndex_TypeDay" xml:space="preserve">
+    <value>Danh sách loại ngày làm việc</value>
+  </data>
+  <data name="SaleOrderHasOutbound" xml:space="preserve">
+    <value>Đơn hàng đã xuất kho</value>
+  </data>
+  <data name="EditTimekeeping" xml:space="preserve">
+    <value>Cập nhật bảng chấm công</value>
+  </data>
+  <data name="PageTimekeepingTotal" xml:space="preserve">
+    <value>Bảng chấm công tổng hợp theo ngày</value>
+  </data>
+  <data name="ShipperName" xml:space="preserve">
+    <value>Người giao hàng</value>
+  </data>
+  <data name="First_MetadataFieldName" xml:space="preserve">
+    <value>First_MetadataFieldName</value>
+  </data>
+  <data name="First_ModuleName" xml:space="preserve">
+    <value>First_ModuleName</value>
+  </data>
+  <data name="Second_MetadataFieldName" xml:space="preserve">
+    <value>Second_MetadataFieldName</value>
+  </data>
+  <data name="Second_ModuleName" xml:space="preserve">
+    <value>Second_ModuleName</value>
+  </data>
+  <data name="Second_ModuleName_Alias" xml:space="preserve">
+    <value>Second_ModuleName_Alias</value>
+  </data>
+  <data name="OfSaleOrder" xml:space="preserve">
+    <value>Thuộc đơn hàng</value>
+  </data>
+  <data name="OrderStatusDisplay_export_invoice" xml:space="preserve">
+    <value>Đã lập hóa đơn</value>
+  </data>
+  <data name="OrderStatus_export_invoice" xml:space="preserve">
+    <value>export invoice</value>
+  </data>
+  <data name="CreateInvoice" xml:space="preserve">
+    <value>Tạo đơn hàng</value>
+  </data>
+  <data name="Saler" xml:space="preserve">
+    <value>NV bán hàng</value>
+  </data>
+  <data name="PageCreate_Timekeeping" xml:space="preserve">
+    <value>Thêm ngày công của nhân viên</value>
+  </data>
+  <data name="AssignedUserId" xml:space="preserve">
+    <value>Phân công cho</value>
+  </data>
+  <data name="CodeDecisions" xml:space="preserve">
+    <value>Mã quyết định</value>
+  </data>
+  <data name="PageCreate_TransferWork" xml:space="preserve">
+    <value>Tạo phiếu điều chuyển công tác</value>
+  </data>
+  <data name="PageEdit_TransferWork" xml:space="preserve">
+    <value>Cập nhật phiếu điều chuyển công tác</value>
+  </data>
+  <data name="PageIndex_TransferWork" xml:space="preserve">
+    <value>Danh sách phiếu điều chuyển công tác</value>
+  </data>
+  <data name="BranchDepartmentNewId" xml:space="preserve">
+    <value>Phòng ban mới</value>
+  </data>
+  <data name="BranchDepartmentOldId" xml:space="preserve">
+    <value>Phòng ban cũ</value>
+  </data>
+  <data name="BranchNewId" xml:space="preserve">
+    <value>Chi nhánh mới</value>
+  </data>
+  <data name="BranchOldId" xml:space="preserve">
+    <value>Chi nhánh cũ</value>
+  </data>
+  <data name="PositionNew" xml:space="preserve">
+    <value>Chức vụ mới</value>
+  </data>
+  <data name="PositionOld" xml:space="preserve">
+    <value>Chức vụ cũ</value>
+  </data>
+  <data name="CreateSaleOrder" xml:space="preserve">
+    <value>Tạo đơn bán hàng</value>
+  </data>
+  <data name="PageCreate_Task" xml:space="preserve">
+    <value>Thêm mới</value>
+  </data>
+  <data name="PageEdit_Task" xml:space="preserve">
+    <value>Chỉnh sửa</value>
+  </data>
+  <data name="PageIndex_Task" xml:space="preserve">
+    <value>Danh sách Task</value>
+  </data>
+  <data name="ContactId" xml:space="preserve">
+    <value>Liên hệ</value>
+  </data>
+  <data name="DueDate" xml:space="preserve">
+    <value>Thời hạn</value>
+  </data>
+  <data name="ParentId" xml:space="preserve">
+    <value>ParentId</value>
+  </data>
+  <data name="ParentType" xml:space="preserve">
+    <value>Liên quan đến</value>
+  </data>
+  <data name="Priority" xml:space="preserve">
+    <value>Độ ưu tiên</value>
+  </data>
+  <data name="Subject" xml:space="preserve">
+    <value>Tiêu đề</value>
+  </data>
+  <data name="InfoTransferWork" xml:space="preserve">
+    <value>Thông tin phiếu</value>
+  </data>
+  <data name="TransferWorkStatus_Approved" xml:space="preserve">
+    <value>Đã duyệt</value>
+  </data>
+  <data name="TransferWorkStatus_Cancel" xml:space="preserve">
+    <value>Hủy</value>
+  </data>
+  <data name="TransferWorkStatus_Delivered" xml:space="preserve">
+    <value>Đã chuyển</value>
+  </data>
+  <data name="TransferWorkStatus_Pending" xml:space="preserve">
+    <value>Chờ duyệt</value>
+  </data>
+  <data name="TransferWorkStatus_Request" xml:space="preserve">
+    <value>Yêu cầu</value>
+  </data>
+  <data name="Browser" xml:space="preserve">
+    <value>Duyệt</value>
+  </data>
+  <data name="SendSuccess" xml:space="preserve">
+    <value>Gửi đi thành công</value>
+  </data>
+  <data name="ApprovedSuccess" xml:space="preserve">
+    <value>Đã duyệt thành công</value>
+  </data>
+  <data name="DeliveredSuccess" xml:space="preserve">
+    <value>Đã chuyển thành công</value>
+  </data>
+  <data name="CancelSuccess" xml:space="preserve">
+    <value>Hủy thành công</value>
+  </data>
+  <data name="CancelUnsuccess" xml:space="preserve">
+    <value>Hủy không thành công</value>
+  </data>
+  <data name="PageCreate_LabourContract" xml:space="preserve">
+    <value>Tạo hợp đồng lao động</value>
+  </data>
+  <data name="PageEdit_LabourContract" xml:space="preserve">
+    <value>Cập nhật hợp đồng lao động</value>
+  </data>
+  <data name="PageIndex_LabourContract" xml:space="preserve">
+    <value>Danh sách hợp đồng lao động</value>
+  </data>
+  <data name="ApprovedName" xml:space="preserve">
+    <value>Người đại diện công ty</value>
+  </data>
+  <data name="ContactType" xml:space="preserve">
+    <value>Loại hợp đồng</value>
+  </data>
+  <data name="ContractCode" xml:space="preserve">
+    <value>Mã hợp đồng</value>
+  </data>
+  <data name="ContractName" xml:space="preserve">
+    <value>Tên hợp đồng</value>
+  </data>
+  <data name="ExpiryDate" xml:space="preserve">
+    <value>Ngày hết hiệu lực</value>
+  </data>
+  <data name="FormWork" xml:space="preserve">
+    <value>Hình thức làm việc</value>
+  </data>
+  <data name="Job" xml:space="preserve">
+    <value>Công việc</value>
+  </data>
+  <data name="SignedDay" xml:space="preserve">
+    <value>Ngày ký HD</value>
+  </data>
+  <data name="WageAgreement" xml:space="preserve">
+    <value>Mức lương</value>
+  </data>
+  <data name="PageView_ProductInBound" xml:space="preserve">
+    <value>Xem chi tiết phiếu nhập</value>
+  </data>
+  <data name="PageCreate_DocumentType" xml:space="preserve">
+    <value>Thêm loại tài liệu mới</value>
+  </data>
+  <data name="PageEdit_DocumentType" xml:space="preserve">
+    <value>Cập nhật loại tài liệu</value>
+  </data>
+  <data name="PageIndex_DocumentType" xml:space="preserve">
+    <value>Danh sách loại tài liệu</value>
+  </data>
+  <data name="PageCreate_DocumentField" xml:space="preserve">
+    <value>Thêm mới tài liệu</value>
+  </data>
+  <data name="PageEdit_DocumentField" xml:space="preserve">
+    <value>Cập nhật tài liệu</value>
+  </data>
+  <data name="PageIndex_DocumentField" xml:space="preserve">
+    <value>Danh sách tài liệu</value>
+  </data>
+  <data name="DocumentType" xml:space="preserve">
+    <value>Loại tài liệu</value>
+  </data>
+  <data name="IsSearch" xml:space="preserve">
+    <value>Chức vụ được xem</value>
+  </data>
+  <data name="DocumentName" xml:space="preserve">
+    <value>Tên tài liệu</value>
+  </data>
+  <data name="DocumentCode" xml:space="preserve">
+    <value>Mã tài liệu</value>
+  </data>
+  <data name="ConvertToSaleOdrer" xml:space="preserve">
+    <value>Chuyển thành đơn bán hàng</value>
+  </data>
+  <data name="PageCreateFromOrder_ProductInvoice" xml:space="preserve">
+    <value>Tạo hóa đơn từ đơn bán hàng</value>
+  </data>
+  <data name="InvoiceCode" xml:space="preserve">
+    <value>Mã đơn hàng</value>
+  </data>
+  <data name="MyTasks" xml:space="preserve">
+    <value>Công việc cần xử lý</value>
+  </data>
+  <data name="TasksCompletion" xml:space="preserve">
+    <value>Completion</value>
+  </data>
+  <data name="PageCreate_ProcessStage" xml:space="preserve">
+    <value>Add stage</value>
+  </data>
+  <data name="PageEdit_ProcessStage" xml:space="preserve">
+    <value>Edit stage</value>
+  </data>
+  <data name="EditControl" xml:space="preserve">
+    <value>EditControl</value>
+  </data>
+  <data name="IsRequired" xml:space="preserve">
+    <value>IsRequired</value>
+  </data>
+  <data name="IsSequential" xml:space="preserve">
+    <value>IsSequential</value>
+  </data>
+  <data name="PageEdit_ProcessStep" xml:space="preserve">
+    <value>Edit step</value>
+  </data>
+  <data name="PageIndex_ProcessStep" xml:space="preserve">
+    <value>Create step</value>
+  </data>
+  <data name="StepValue" xml:space="preserve">
+    <value>StepValue</value>
+  </data>
+  <data name="SizeFile" xml:space="preserve">
+    <value>Kích thước tập tin</value>
+  </data>
+  <data name="TypeFile" xml:space="preserve">
+    <value>Loại tập tin</value>
+  </data>
+  <data name="CountFile" xml:space="preserve">
+    <value>SL tập tin</value>
+  </data>
+  <data name="PageCreateWH_PurchaseOrder" xml:space="preserve">
+    <value>Tạo đơn đặt hàng từ đại lý</value>
+  </data>
+  <data name="ReportCustomerList" xml:space="preserve">
+    <value>Danh sách khách hàng theo năm - tháng</value>
+  </data>
+  <data name="PageIndex_LogDocumentAttribute" xml:space="preserve">
+    <value>Lịch sử tải tập tin</value>
+  </data>
+  <data name="DayDownload" xml:space="preserve">
+    <value>Ngày tải tập tin</value>
+  </data>
+  <data name="InfoLabourContract" xml:space="preserve">
+    <value>Thông tin hợp đồng lao động</value>
+  </data>
+  <data name="FileNew" xml:space="preserve">
+    <value>Tập tin mới nhất</value>
+  </data>
+  <data name="QuantityDownload" xml:space="preserve">
+    <value>Số lượt tải</value>
+  </data>
+  <data name="StaffTranswork" xml:space="preserve">
+    <value>Nhân viên được điều chuyển</value>
+  </data>
+  <data name="InfoBasic" xml:space="preserve">
+    <value>Thông tin cơ bản</value>
+  </data>
+  <data name="InfoDecisions" xml:space="preserve">
+    <value>Thông tin quyết định</value>
+  </data>
+  <data name="DisplayName_vi" xml:space="preserve">
+    <value>Tên đại diện</value>
+  </data>
+  <data name="Invoice" xml:space="preserve">
+    <value>Đơn hàng</value>
+  </data>
+  <data name="Number" xml:space="preserve">
+    <value>Số</value>
+  </data>
+  <data name="ReportProductList" xml:space="preserve">
+    <value>Danh sách sản phẩm kinh doanh</value>
+  </data>
+  <data name="SaleOrder" xml:space="preserve">
+    <value>Đơn hàng</value>
+  </data>
+  <data name="ReportInboundList" xml:space="preserve">
+    <value>Danh sách nhập kho theo ngày</value>
+  </data>
+  <data name="ReportInvoiceList" xml:space="preserve">
+    <value>Doanh số theo ngày</value>
+  </data>
+  <data name="ReportOutboundList" xml:space="preserve">
+    <value>Danh sách xuất kho theo ngày</value>
+  </data>
+  <data name="ReportPurchaseOrderList" xml:space="preserve">
+    <value>Danh sách đơn đặt hàng sản phẩm theo ngày</value>
+  </data>
+  <data name="ReportSaleOrderList" xml:space="preserve">
+    <value>Danh sách đơn hàng kinh doanh theo ngày</value>
+  </data>
+  <data name="PageCreate_Project" xml:space="preserve">
+    <value>Thêm mới dự án</value>
+  </data>
+  <data name="PageEdit_Project" xml:space="preserve">
+    <value>Cập nhật dự án</value>
+  </data>
+  <data name="PageIndex_Project" xml:space="preserve">
+    <value>Danh sách dự án</value>
+  </data>
+  <data name="FloorHeight" xml:space="preserve">
+    <value>Số tầng cao</value>
+  </data>
+  <data name="Location" xml:space="preserve">
+    <value>Vị trí</value>
+  </data>
+  <data name="NumbersOfBlocks" xml:space="preserve">
+    <value>Số lượng block</value>
+  </data>
+  <data name="NumbersOfCondos" xml:space="preserve">
+    <value>Số lượng căn hộ</value>
+  </data>
+  <data name="BiggestArea" xml:space="preserve">
+    <value>Diện tích căn hộ lớn nhất</value>
+  </data>
+  <data name="Constructor" xml:space="preserve">
+    <value>Nhà thầu</value>
+  </data>
+  <data name="DensityOfBuilding" xml:space="preserve">
+    <value>Mật độ xây dựng</value>
+  </data>
+  <data name="FinishDate" xml:space="preserve">
+    <value>Ngày hoàn thành</value>
+  </data>
+  <data name="GrossFloorArea" xml:space="preserve">
+    <value>Diện tích xây dựng</value>
+  </data>
+  <data name="Investor" xml:space="preserve">
+    <value>Chủ đầu tư</value>
+  </data>
+  <data name="LaunchDate" xml:space="preserve">
+    <value>Ngày khởi công</value>
+  </data>
+  <data name="PageDetail_Project" xml:space="preserve">
+    <value>Thông tin dự án</value>
+  </data>
+  <data name="ProjectType" xml:space="preserve">
+    <value>Loại dự án</value>
+  </data>
+  <data name="SiteArea" xml:space="preserve">
+    <value>Tổng diện tích</value>
+  </data>
+  <data name="SmallestArea" xml:space="preserve">
+    <value>Diện tích căn hộ nhỏ nhất</value>
+  </data>
+  <data name="PageCreate_Block" xml:space="preserve">
+    <value>Thêm mới block</value>
+  </data>
+  <data name="PageEdit_Block" xml:space="preserve">
+    <value>Chỉnh sửa block</value>
+  </data>
+  <data name="PageCreate_Floor" xml:space="preserve">
+    <value>Thêm mới tầng</value>
+  </data>
+  <data name="PageEdit_Floor" xml:space="preserve">
+    <value>Chỉnh sửa tầng</value>
+  </data>
+  <data name="PageCreate_Condos" xml:space="preserve">
+    <value>Thêm mới căn hộ</value>
+  </data>
+  <data name="PageEdit_Condos" xml:space="preserve">
+    <value>Chỉnh sửa căn hộ</value>
+  </data>
+  <data name="PageIndex_Condos" xml:space="preserve">
+    <value>Danh sách căn hộ</value>
+  </data>
+  <data name="Currency" xml:space="preserve">
+    <value>Loại tiền tệ</value>
+  </data>
+  <data name="NumbersOfBalcony" xml:space="preserve">
+    <value>Có bancon</value>
+  </data>
+  <data name="NumbersOfBedRoom" xml:space="preserve">
+    <value>Số phòng ngủ</value>
+  </data>
+  <data name="NumbersOfKitchenRoom" xml:space="preserve">
+    <value>Có phòng bếp</value>
+  </data>
+  <data name="NumbersOfLivingRoom" xml:space="preserve">
+    <value>Số phòng khách</value>
+  </data>
+  <data name="NumbersOfToilet" xml:space="preserve">
+    <value>Số toilet</value>
+  </data>
+  <data name="Orientation" xml:space="preserve">
+    <value>Hướng</value>
+  </data>
+  <data name="PageDetail_Condos" xml:space="preserve">
+    <value>Thông tin căn hộ</value>
+  </data>
+  <data name="TotalInboundPrice" xml:space="preserve">
+    <value>Tổng giá trị nhập</value>
+  </data>
+  <data name="TotalInboundQuantity" xml:space="preserve">
+    <value>Tổng SL nhập</value>
+  </data>
+  <data name="TotalOutboundPrice" xml:space="preserve">
+    <value>Tổng giá trị xuất</value>
+  </data>
+  <data name="TotalOutboundQuantity" xml:space="preserve">
+    <value>Tổng SL xuất</value>
+  </data>
+  <data name="Barcode" xml:space="preserve">
+    <value>Mã vạch</value>
+  </data>
+  <data name="PriceInbound" xml:space="preserve">
+    <value>Giá nhập</value>
+  </data>
+  <data name="PriceOutbound" xml:space="preserve">
+    <value>Giá xuất</value>
+  </data>
+  <data name="Length" xml:space="preserve">
+    <value>Chiều dài  (m2)</value>
+  </data>
+  <data name="RealEstateArea" xml:space="preserve">
+    <value>Diện tích (m2)</value>
+  </data>
+  <data name="Width" xml:space="preserve">
+    <value>Chiều rộng  (m2)</value>
+  </data>
+  <data name="PageEdit_CondosLayout" xml:space="preserve">
+    <value>Cập nhật bố trí không gian</value>
+  </data>
+  <data name="PageCreate_LabourContractType" xml:space="preserve">
+    <value>Tạo mới loại hợp đồng</value>
+  </data>
+  <data name="PageEdit_LabourContractType" xml:space="preserve">
+    <value>Cập nhật loại hợp đồng</value>
+  </data>
+  <data name="PageIndex_LabourContractType" xml:space="preserve">
+    <value>Danh sách loại hợp đồng</value>
+  </data>
+  <data name="Notice" xml:space="preserve">
+    <value>Số ngày thông báo trước gia hạn</value>
+  </data>
+  <data name="QuantityMonth" xml:space="preserve">
+    <value>Số tháng làm việc</value>
+  </data>
+  <data name="ContractTypeName" xml:space="preserve">
+    <value>Tên loại hợp đồng</value>
+  </data>
+  <data name="extend" xml:space="preserve">
+    <value>Gia hạn</value>
+  </data>
+  <data name="Difference" xml:space="preserve">
+    <value>Thay đổi</value>
+  </data>
+  <data name="PriceAfter" xml:space="preserve">
+    <value>Giá sau</value>
+  </data>
+  <data name="PriceBefore" xml:space="preserve">
+    <value>Giá trước</value>
+  </data>
+  <data name="PageCreate_ContractLease" xml:space="preserve">
+    <value>Thêm mới căn hộ thuộc loại hợp đồng cho thuê</value>
+  </data>
+  <data name="PageEdit_ContractLease" xml:space="preserve">
+    <value>Cập nhật căn hộ thuộc loại hợp đồng cho thuê</value>
+  </data>
+  <data name="PageIndex_ContractLease" xml:space="preserve">
+    <value>Danh sách căn hộ thuộc loại hợp đồng cho thuê</value>
+  </data>
+  <data name="DayHandOver" xml:space="preserve">
+    <value>Ngày bàn giao</value>
+  </data>
+  <data name="DayPay" xml:space="preserve">
+    <value>Thời gian thanh toán</value>
+  </data>
+  <data name="NameCondos" xml:space="preserve">
+    <value>Tên căn hộ</value>
+  </data>
+  <data name="PriceCondos" xml:space="preserve">
+    <value>Giá căn hộ</value>
+  </data>
+  <data name="UnitMoney" xml:space="preserve">
+    <value>Đơn vị tiền tệ</value>
+  </data>
+  <data name="CodeCondos" xml:space="preserve">
+    <value>Mã căn hộ</value>
+  </data>
+  <data name="Bank" xml:space="preserve">
+    <value>Ngân hàng</value>
+  </data>
+  <data name="Fax" xml:space="preserve">
+    <value>Fax</value>
+  </data>
+  <data name="NamePrefix" xml:space="preserve">
+    <value>Đại từ nhân xưng</value>
+  </data>
+  <data name="TaxCode" xml:space="preserve">
+    <value>Mã số thuế</value>
+  </data>
+  <data name="PageCreate_InfoPartyA" xml:space="preserve">
+    <value>Thêm mới thông tin bên A</value>
+  </data>
+  <data name="PageEdit_InfoPartyA" xml:space="preserve">
+    <value>Cập nhật thông tin bên A</value>
+  </data>
+  <data name="PageIndex_InfoPartyA" xml:space="preserve">
+    <value>Danh sách thông tin bên A</value>
+  </data>
+  <data name="PageCreate_ContractSell" xml:space="preserve">
+    <value>Thêm căn hộ của loại hợp đồng bán</value>
+  </data>
+  <data name="PageEdit_ContractSell" xml:space="preserve">
+    <value>Cập nhật căn hộ của loại hợp đồng bán</value>
+  </data>
+  <data name="PageIndex_ContractSell" xml:space="preserve">
+    <value>Danh sách căn hộ của loại hợp đồng bán</value>
+  </data>
+  <data name="MaintenanceCosts" xml:space="preserve">
+    <value>Kinh phí bảo trì</value>
+  </data>
+  <data name="VAT" xml:space="preserve">
+    <value>VAT</value>
+  </data>
+  <data name="PageCreate_Contract" xml:space="preserve">
+    <value>Tạo hợp đồng</value>
+  </data>
+  <data name="PageDetail_Contract" xml:space="preserve">
+    <value>Thông tin chi tiết hợp đồng</value>
+  </data>
+  <data name="PageEdit_Contract" xml:space="preserve">
+    <value>Cập nhật hợp đồng</value>
+  </data>
+  <data name="PageIndex_Contract" xml:space="preserve">
+    <value>Danh sách hợp đồng</value>
+  </data>
+  <data name="PlaceContract" xml:space="preserve">
+    <value>Nơi ký kết</value>
+  </data>
+  <data name="QuantityContract" xml:space="preserve">
+    <value>Số bản hợp đồng</value>
+  </data>
+  <data name="surrogate" xml:space="preserve">
+    <value>Người đại diện</value>
+  </data>
+  <data name="ReceiverName" xml:space="preserve">
+    <value>Người nhận</value>
+  </data>
+  <data name="ShipCompany" xml:space="preserve">
+    <value>Nhà cung cấp</value>
+  </data>
+  <data name="ShipperPhone" xml:space="preserve">
+    <value>Số ĐT người GH</value>
+  </data>
+  <data name="StockKeeper" xml:space="preserve">
+    <value>Người xuất hàng</value>
+  </data>
+  <data name="BlockName" xml:space="preserve">
+    <value>Khối</value>
+  </data>
+  <data name="FloorName" xml:space="preserve">
+    <value>Tầng</value>
+  </data>
+  <data name="ProjectName" xml:space="preserve">
+    <value>Dự án</value>
+  </data>
+  <data name="CodeTrading" xml:space="preserve">
+    <value>Mã giao dịch</value>
+  </data>
+  <data name="DayPayment" xml:space="preserve">
+    <value>Thời hạn thanh toán</value>
+  </data>
+  <data name="FormPayment" xml:space="preserve">
+    <value>Hình thức thanh toán</value>
+  </data>
+  <data name="MoneyPayment" xml:space="preserve">
+    <value>Số tiền thanh toán</value>
+  </data>
+  <data name="NamePayment" xml:space="preserve">
+    <value>Tên đợt</value>
+  </data>
+  <data name="Payer" xml:space="preserve">
+    <value>Người thanh toán</value>
+  </data>
+  <data name="PageIndex_Transaction" xml:space="preserve">
+    <value>Danh sách giao dịch</value>
+  </data>
+  <data name="TransactionCode" xml:space="preserve">
+    <value>Mã giao dịch</value>
+  </data>
+  <data name="PageIndex_ProcessPayment" xml:space="preserve">
+    <value>Tiến độ thanh toán</value>
+  </data>
+  <data name="PageCreate_ProcessPayment" xml:space="preserve">
+    <value>Thêm mới tiến trình thanh toán</value>
+  </data>
+  <data name="PageEdit_ProcessPayment" xml:space="preserve">
+    <value>Cập nhật thanh toán</value>
+  </data>
+  <data name="TransactionType" xml:space="preserve">
+    <value>Loại giao dịch</value>
+  </data>
+  <data name="PageDetailInfoPartyA" xml:space="preserve">
+    <value>Thông tin chi tiết bên A</value>
+  </data>
+  <data name="DetailCustomer" xml:space="preserve">
+    <value>Chi tiết khách hàng</value>
+  </data>
+  <data name="PageIndex_Receipt" xml:space="preserve">
+    <value>Danh sách phiếu thu</value>
+  </data>
+  <data name="PageDetail_Receipt" xml:space="preserve">
+    <value>Chi tiết phiếu thu</value>
+  </data>
+  <data name="PageCreate_Receipt" xml:space="preserve">
+    <value>Thu loại phí khác</value>
+  </data>
+  <data name="ReportInboundProductList" xml:space="preserve">
+    <value>Danh sách sản phẩm nhập kho theo ngày</value>
+  </data>
+  <data name="ReportOutboundProductList" xml:space="preserve">
+    <value>Danh sách sản phẩm xuất kho theo ngày</value>
+  </data>
+  <data name="New" xml:space="preserve">
+    <value>Mới</value>
+  </data>
+  <data name="ReasonManualOutbound" xml:space="preserve">
+    <value>Lý do xuất kho</value>
+  </data>
+  <data name="DetailModule" xml:space="preserve">
+    <value>Chi tiết module</value>
+  </data>
+  <data name="Module" xml:space="preserve">
+    <value>Module</value>
+  </data>
+  <data name="StatusNew" xml:space="preserve">
+    <value>Mới</value>
+  </data>
+  <data name="BankAccountName" xml:space="preserve">
+    <value>Tên tài khoản</value>
+  </data>
+  <data name="BankAccountNo" xml:space="preserve">
+    <value>STK ngân hàng</value>
+  </data>
+  <data name="TransactionType_ContractSell" xml:space="preserve">
+    <value>Hợp đồng mua bán</value>
+  </data>
+  <data name="TransactionType_ReceiptCustomer" xml:space="preserve">
+    <value>Thu tiền khách hàng</value>
+  </data>
+  <data name="PaymentSuccess" xml:space="preserve">
+    <value>Thanh toán thành công</value>
+  </data>
+  <data name="PageCreate_vwAccount_LiabilitiesCustomer" xml:space="preserve">
+    <value>Thêm vwAccount_LiabilitiesCustomer</value>
+  </data>
+  <data name="PageEdit_vwAccount_LiabilitiesCustomer" xml:space="preserve">
+    <value>Cập nhật vwAccount_LiabilitiesCustomer</value>
+  </data>
+  <data name="PageIndex_vwAccount_LiabilitiesCustomer" xml:space="preserve">
+    <value>Danh sách vwAccount_LiabilitiesCustomer</value>
+  </data>
+  <data name="PageUpdateLocationItem_ProductInBound" xml:space="preserve">
+    <value>Cập nhật vị trí sản phẩm trong kho</value>
+  </data>
+  <data name="CustomerCode" xml:space="preserve">
+    <value>Mã KH</value>
+  </data>
+  <data name="PageCreate_WarehouseLocationItem" xml:space="preserve">
+    <value>Thêm vị trí sản phẩm trong kho</value>
+  </data>
+  <data name="PageEdit_WarehouseLocationItem" xml:space="preserve">
+    <value>Cập nhật vị trí sản phẩm trong kho</value>
+  </data>
+  <data name="PageIndex_WarehouseLocationItem" xml:space="preserve">
+    <value>Danh sách vị trí sản phẩm trong kho</value>
+  </data>
+  <data name="Floor" xml:space="preserve">
+    <value>Tầng</value>
+  </data>
+  <data name="PositionItem" xml:space="preserve">
+    <value>Vị trí</value>
+  </data>
+  <data name="Shelf" xml:space="preserve">
+    <value>Kệ</value>
+  </data>
+  <data name="SN" xml:space="preserve">
+    <value>Số serial</value>
+  </data>
+  <data name="ExpiryDateItem" xml:space="preserve">
+    <value>Ngày hết hạn</value>
+  </data>
+  <data name="ContentContractTerms" xml:space="preserve">
+    <value>Nội dung điều khoản hợp đồng</value>
+  </data>
+  <data name="ContentJob" xml:space="preserve">
+    <value>Nội dung công việc</value>
+  </data>
+  <data name="ReportInventory" xml:space="preserve">
+    <value>Báo cáo tồn kho theo sản phẩm</value>
+  </data>
+  <data name="ReportInventoryExpiryDate" xml:space="preserve">
+    <value>Báo cáo tồn kho theo hạn sử dụng sản phẩm</value>
+  </data>
+  <data name="ExpiryRemaining" xml:space="preserve">
+    <value>Hạn sử dụng còn</value>
+  </data>
+  <data name="TransactionType_ContractLease" xml:space="preserve">
+    <value>Hợp đồng thuê</value>
+  </data>
+  <data name="ReportInvoiceByBranch" xml:space="preserve">
+    <value>Báo cáo doanh thu theo chi nhánh</value>
+  </data>
+  <data name="ReportInvoiceByCustomer" xml:space="preserve">
+    <value>Báo cáo doanh thu theo khách hàng</value>
+  </data>
+  <data name="ReportPurchaseOrderBySupplier" xml:space="preserve">
+    <value>Báo cáo đơn đặt hàng từ nhà cung cấp</value>
+  </data>
+  <data name="ReportSaleOrderByCustomer" xml:space="preserve">
+    <value>Báo cáo đơn đặt hàng từ khách hàng</value>
+  </data>
+  <data name="TargetName" xml:space="preserve">
+    <value>Đối tác</value>
+  </data>
+  <data name="NextPaymentDate" xml:space="preserve">
+    <value>Ngày trả nợ kế tiếp</value>
+  </data>
+  <data name="ProcessPaymentStatus_IsPayment" xml:space="preserve">
+    <value>Đã thanh toán</value>
+  </data>
+  <data name="ProcessPaymentStatus_NonePayment" xml:space="preserve">
+    <value>Chưa thanh toán</value>
+  </data>
+  <data name="TransactionType_ReceiptOther" xml:space="preserve">
+    <value>Thu phí khác</value>
+  </data>
+  <data name="PageCreate_Payment" xml:space="preserve">
+    <value>Chi loại phí khác</value>
+  </data>
+  <data name="PageEdit_Payment" xml:space="preserve">
+    <value>Cập nhật Phiếu chi</value>
+  </data>
+  <data name="PageIndex_Payment" xml:space="preserve">
+    <value>Danh sách Phiếu chi</value>
+  </data>
+  <data name="Receiver" xml:space="preserve">
+    <value>Người nhận</value>
+  </data>
+  <data name="TransactionType_PaymentOhter" xml:space="preserve">
+    <value>Chi các loại phí khác</value>
+  </data>
+  <data name="Status_IsPayment" xml:space="preserve">
+    <value>Đã thanh toán</value>
+  </data>
+  <data name="Status_NonePayment" xml:space="preserve">
+    <value>Chưa thanh toán</value>
+  </data>
+  <data name="TransactionType_ProductInvoice" xml:space="preserve">
+    <value>Bán hàng</value>
+  </data>
+  <data name="Status_Completed" xml:space="preserve">
+    <value>Hoàn thành</value>
+  </data>
+  <data name="Status_InProcess" xml:space="preserve">
+    <value>Chưa hoàn thành</value>
+  </data>
+  <data name="PaymentMethod_Cash" xml:space="preserve">
+    <value>Tiền mặt</value>
+  </data>
+  <data name="PaymentMethod_Transfer" xml:space="preserve">
+    <value>Chuyển khoản</value>
+  </data>
+  <data name="Page_CreateWorkSchedules" xml:space="preserve">
+    <value>Thêm ca làm việc mới</value>
+  </data>
+  <data name="PaymentNow" xml:space="preserve">
+    <value>Thanh toán ngay</value>
+  </data>
+  <data name="OverTime" xml:space="preserve">
+    <value>Thời gian tăng ca</value>
+  </data>
+  <data name="PageCreate_OverTime" xml:space="preserve">
+    <value>Thiết lập tăng ca</value>
+  </data>
+  <data name="PageEdit_OverTime" xml:space="preserve">
+    <value>Cập nhật tăng ca</value>
+  </data>
+  <data name="PageIndex_OverTime" xml:space="preserve">
+    <value>Danh sách thiết lập tăng ca</value>
+  </data>
+  <data name="KeeperWarehouse" xml:space="preserve">
+    <value>Người giữ kho</value>
+  </data>
+  <data name="PageCreate_InternalNotifications" xml:space="preserve">
+    <value>Thêm Thông báo nội bộ</value>
+  </data>
+  <data name="PageEdit_InternalNotifications" xml:space="preserve">
+    <value>Cập nhật Thông báo nội bộ</value>
+  </data>
+  <data name="PageIndex_InternalNotifications" xml:space="preserve">
+    <value>Danh sách Thông báo nội bộ</value>
+  </data>
+  <data name="Attachments" xml:space="preserve">
+    <value>File đính kèm</value>
+  </data>
+  <data name="Describe" xml:space="preserve">
+    <value>Mô tả</value>
+  </data>
+  <data name="PlaceOfNotice" xml:space="preserve">
+    <value>Nơi ra thông báo</value>
+  </data>
+  <data name="PlaceOfReceipt" xml:space="preserve">
+    <value>Nơi nhận thông báo</value>
+  </data>
+  <data name="PageId" xml:space="preserve">
+    <value>Trang</value>
+  </data>
+  <data name="PageCreate_CustomerDiscount" xml:space="preserve">
+    <value>Thêm Chiết khấu khách hàng</value>
+  </data>
+  <data name="PageEdit_CustomerDiscount" xml:space="preserve">
+    <value>Cập nhật Chiết khấu khách hàng</value>
+  </data>
+  <data name="PageIndex_CustomerDiscount" xml:space="preserve">
+    <value>Danh sách Chiết khấu khách hàng</value>
+  </data>
+  <data name="CustomerDiscount" xml:space="preserve">
+    <value>CK(%)</value>
+  </data>
+  <data name="Promotion" xml:space="preserve">
+    <value>Khuyến mãi</value>
+  </data>
+  <data name="PageCreate_Promotion" xml:space="preserve">
+    <value>Thêm Khuyến mãi</value>
+  </data>
+  <data name="PageEdit_Promotion" xml:space="preserve">
+    <value>Cập nhật Khuyến mãi</value>
+  </data>
+  <data name="PageIndex_Promotion" xml:space="preserve">
+    <value>Danh sách khuyến mãi</value>
+  </data>
+  <data name="PromotionValue" xml:space="preserve">
+    <value>Giá trị khuyến mãi</value>
+  </data>
+  <data name="IsAllProduct" xml:space="preserve">
+    <value>Tất cả sản phẩm</value>
+  </data>
+  <data name="PageCreate_SalesReturns" xml:space="preserve">
+    <value>Hóa đơn hàng bán trả lại</value>
+  </data>
+  <data name="PageEdit_SalesReturns" xml:space="preserve">
+    <value>Cập nhật Hàng bán trả lại</value>
+  </data>
+  <data name="PageIndex_SalesReturns" xml:space="preserve">
+    <value>Danh sách Hàng bán trả lại</value>
+  </data>
+  <data name="PaidAmount" xml:space="preserve">
+    <value>Tổng tiền thanh toán</value>
+  </data>
+  <data name="ProductInvoice" xml:space="preserve">
+    <value>Đơn hàng</value>
+  </data>
+  <data name="DiscountMoney" xml:space="preserve">
+    <value>Tiền chiết khấu</value>
+  </data>
+  <data name="NoTaxFee" xml:space="preserve">
+    <value>Chưa thuế</value>
+  </data>
+  <data name="ProductListTotal" xml:space="preserve">
+    <value>Tổng tiền</value>
+  </data>
+  <data name="TransactionType_SalesReturns" xml:space="preserve">
+    <value>Hàng bán trả lại</value>
+  </data>
+  <data name="TransactionType_PaymentCustomer" xml:space="preserve">
+    <value>Khách trả hàng chi tiền mặt</value>
+  </data>
+  <data name="Email2" xml:space="preserve">
+    <value>Email 2</value>
+  </data>
+  <data name="EndDateWork" xml:space="preserve">
+    <value>Ngày nghỉ việc</value>
+  </data>
+  <data name="Phone2" xml:space="preserve">
+    <value>Điện thoại 2</value>
+  </data>
+  <data name="StartDateWork" xml:space="preserve">
+    <value>Ngày vào làm</value>
+  </data>
+  <data name="EmailReference" xml:space="preserve">
+    <value>Email tham khảo</value>
+  </data>
+  <data name="NameReference" xml:space="preserve">
+    <value>Tên người tham khảo</value>
+  </data>
+  <data name="PhoneReference" xml:space="preserve">
+    <value>Số điện thoại tham khảo</value>
+  </data>
+  <data name="Fields" xml:space="preserve">
+    <value>Lĩnh vực</value>
+  </data>
+  <data name="HistoryTransaction" xml:space="preserve">
+    <value>Lịch sử giao dịch</value>
+  </data>
+  <data name="Point" xml:space="preserve">
+    <value>Điểm</value>
+  </data>
+  <data name="BonusScore" xml:space="preserve">
+    <value>Điểm tích lũy</value>
+  </data>
+  <data name="PageCreate_CustomerCommitment" xml:space="preserve">
+    <value>Thêm cam kết khách hàng</value>
+  </data>
+  <data name="PageEdit_CustomerCommitment" xml:space="preserve">
+    <value>Cập nhật cam kết khách hàng</value>
+  </data>
+  <data name="PageIndex_CustomerCommitment" xml:space="preserve">
+    <value>Danh sách cam kết khách hàng</value>
+  </data>
+  <data name="CommitmentDate" xml:space="preserve">
+    <value>Ngày cam kết</value>
+  </data>
+  <data name="Comment" xml:space="preserve">
+    <value>Bình luận</value>
+  </data>
+  <data name="NotUpdateByChangeStatus" xml:space="preserve">
+    <value>Không được cập nhật do đã thay đổi trạng thái</value>
+  </data>
+  <data name="PurchaseOrder" xml:space="preserve">
+    <value>Đơn mua hàng</value>
+  </data>
+  <data name="PageCreate_SalaryAdvance" xml:space="preserve">
+    <value>Thêm Tạm ứng lương</value>
+  </data>
+  <data name="PageEdit_SalaryAdvance" xml:space="preserve">
+    <value>Cập nhật Tạm ứng lương</value>
+  </data>
+  <data name="PageIndex_SalaryAdvance" xml:space="preserve">
+    <value>Danh sách Tạm ứng lương</value>
+  </data>
+  <data name="PageChoose_ProductInbound" xml:space="preserve">
+    <value>DS đang chờ nhập từ kho khác</value>
+  </data>
+  <data name="PageCreate_CommisionStaff" xml:space="preserve">
+    <value>Thêm chiếc khấu nhân viên</value>
+  </data>
+  <data name="PageEdit_CommisionStaff" xml:space="preserve">
+    <value>Cập nhật chiếc khấu nhân viên</value>
+  </data>
+  <data name="PageIndex_CommisionStaff" xml:space="preserve">
+    <value>Thống kê chiết khấu nhân viên</value>
+  </data>
+  <data name="PageCreate_vwCommisionStaff" xml:space="preserve">
+    <value>Thêm view chiếc khấu nhân viên</value>
+  </data>
+  <data name="PageEdit_vwCommisionStaff" xml:space="preserve">
+    <value>Cập nhật view chiếc khấu nhân viên</value>
+  </data>
+  <data name="PageIndex_vwCommisionStaff" xml:space="preserve">
+    <value>Danh sách view chiếc khấu nhân viên</value>
+  </data>
+  <data name="SalaryAdvance" xml:space="preserve">
+    <value>Số tiền tạm ứng</value>
+  </data>
+  <data name="DateRequest" xml:space="preserve">
+    <value>Ngày gửi yêu cầu</value>
+  </data>
+  <data name="CodeSalaryAdvance" xml:space="preserve">
+    <value>Mã tạm ứng lương</value>
+  </data>
+  <data name="SaveAndSend" xml:space="preserve">
+    <value>Lưu và gửi</value>
+  </data>
+  <data name="StatusSalaryAdvance_Approved" xml:space="preserve">
+    <value>Được duyệt</value>
+  </data>
+  <data name="StatusSalaryAdvance_Cancel" xml:space="preserve">
+    <value>Hủy</value>
+  </data>
+  <data name="StatusSalaryAdvance_Paid" xml:space="preserve">
+    <value>Đã trả tiền</value>
+  </data>
+  <data name="StatusSalaryAdvance_Pending" xml:space="preserve">
+    <value>Chờ duyệt</value>
+  </data>
+  <data name="StatusSalaryAdvance_Refure" xml:space="preserve">
+    <value>Từ chối</value>
+  </data>
+  <data name="QuantityService" xml:space="preserve">
+    <value>Số lần phục vụ</value>
+  </data>
+  <data name="IsAllService" xml:space="preserve">
+    <value>Tất cả dịch vụ</value>
+  </data>
+  <data name="IsAll" xml:space="preserve">
+    <value>Tất cả</value>
+  </data>
+  <data name="PageCreate_Service" xml:space="preserve">
+    <value>Thêm Dịch vụ</value>
+  </data>
+  <data name="PageEdit_Service" xml:space="preserve">
+    <value>Cập nhật Dịch vụ</value>
+  </data>
+  <data name="PageIndex_Service" xml:space="preserve">
+    <value>Danh sách Dịch vụ</value>
+  </data>
+  <data name="ServiceType" xml:space="preserve">
+    <value>Loại dịch vụ</value>
+  </data>
+  <data name="IsServicePackage" xml:space="preserve">
+    <value>Là gói dịch vụ</value>
+  </data>
+  <data name="ServicesChild" xml:space="preserve">
+    <value>Các dịch vụ con</value>
+  </data>
+  <data name="SaleOrderStatus_Cancel" xml:space="preserve">
+    <value>cancel</value>
+  </data>
+  <data name="SaleOrderStatus_Pending" xml:space="preserve">
+    <value>pending</value>
+  </data>
+  <data name="TransactionType_ProductInbound" xml:space="preserve">
+    <value>Nhập kho</value>
+  </data>
+  <data name="TransactionType_PaymentSupplier" xml:space="preserve">
+    <value>Trả nợ nhà cung cấp</value>
+  </data>
+  <data name="CommisionApplied" xml:space="preserve">
+    <value>Chiết khấu đã được áp dụng, nên sẽ không thay đổi.</value>
+  </data>
+  <data name="PageCreate_UsingService" xml:space="preserve">
+    <value>Thêm DV khách hàng sử dụng</value>
+  </data>
+  <data name="PageEdit_UsingService" xml:space="preserve">
+    <value>Cập nhật khách hàng sử dụng DV</value>
+  </data>
+  <data name="PageIndex_UsingService" xml:space="preserve">
+    <value>Danh sách khách hàng sử dụng DV</value>
+  </data>
+  <data name="PackageProduct" xml:space="preserve">
+    <value>Gói DV</value>
+  </data>
+  <data name="PackageProductCode" xml:space="preserve">
+    <value>Mã gói DV</value>
+  </data>
+  <data name="InsertFailed" xml:space="preserve">
+    <value>Thêm mới không thành công</value>
+  </data>
+  <data name="UpdateFailed" xml:space="preserve">
+    <value>Cập nhật không thành công</value>
+  </data>
+  <data name="NoRowInsert" xml:space="preserve">
+    <value>Không có dòng nào được thêm vào</value>
+  </data>
+  <data name="PrintUsageVouchers" xml:space="preserve">
+    <value>In phiếu sử dụng</value>
+  </data>
+  <data name="PageDetail_UsingService" xml:space="preserve">
+    <value>Thông tin phiếu sử dụng DV</value>
+  </data>
+  <data name="Random" xml:space="preserve">
+    <value>Random</value>
+  </data>
+  <data name="PageCreate_TimekeepingSynthesis" xml:space="preserve">
+    <value>Thêm Thống kê chấm công</value>
+  </data>
+  <data name="PageEdit_TimekeepingSynthesis" xml:space="preserve">
+    <value>Cập nhật Thống kê chấm công</value>
+  </data>
+  <data name="PageIndex_TimekeepingSynthesis" xml:space="preserve">
+    <value>Danh sách Thống kê chấm công</value>
+  </data>
+  <data name="GioDiTre" xml:space="preserve">
+    <value>Giờ đi trễ</value>
+  </data>
+  <data name="SoNgayNghiBu" xml:space="preserve">
+    <value>Số ngày nghỉ bù</value>
+  </data>
+  <data name="SoNgayNghiLe" xml:space="preserve">
+    <value>Số ngày nghỉ lễ</value>
+  </data>
+  <data name="TrongGioNgayThuong" xml:space="preserve">
+    <value>Trong giờ ngày thường</value>
+  </data>
+  <data name="TongGioTangCa" xml:space="preserve">
+    <value>Tổng giờ tăng ca</value>
+  </data>
+  <data name="GioVeSom" xml:space="preserve">
+    <value>Giờ về sớm</value>
+  </data>
+  <data name="NgayCongThucTe" xml:space="preserve">
+    <value>Ngày công thực tế</value>
+  </data>
+  <data name="NgayNghiCoPhep" xml:space="preserve">
+    <value>Ngày nghỉ có phép</value>
+  </data>
+  <data name="NgayNghiKhongPhep" xml:space="preserve">
+    <value>Ngày nghỉ không phép</value>
+  </data>
+  <data name="TongNgayNghi" xml:space="preserve">
+    <value>Tổng ngày nghỉ</value>
+  </data>
+  <data name="ReportPaymentList" xml:space="preserve">
+    <value>Báo cáo chi tiết phiếu chi</value>
+  </data>
+  <data name="ReportReceiptList" xml:space="preserve">
+    <value>Báo cáo chi tiết phiếu thu</value>
+  </data>
+  <data name="PageCreate_SalarySetting" xml:space="preserve">
+    <value>Thêm mới</value>
+  </data>
+  <data name="PageEdit_SalarySetting" xml:space="preserve">
+    <value>Cập nhật cài đặt bảng lương</value>
+  </data>
+  <data name="PageIndex_SalarySetting" xml:space="preserve">
+    <value>Cài đặt bảng lương</value>
+  </data>
+  <data name="ApplyForMonth" xml:space="preserve">
+    <value>Áp dụng cho tháng</value>
+  </data>
+  <data name="ApplyForYear" xml:space="preserve">
+    <value>Áp dụng cho năm</value>
+  </data>
+  <data name="PageDetail_SalarySetting" xml:space="preserve">
+    <value>Chi tiết bảng lương</value>
+  </data>
+  <data name="Formula" xml:space="preserve">
+    <value>Công thức</value>
+  </data>
+  <data name="PageCreate_SalarySettingDetail" xml:space="preserve">
+    <value>Thêm cột</value>
+  </data>
+  <data name="PageEdit_SalarySettingDetail" xml:space="preserve">
+    <value>Cập nhật SalarySettingDetail</value>
+  </data>
+  <data name="PageIndex_SalarySettingDetail" xml:space="preserve">
+    <value>Danh sách SalarySettingDetail</value>
+  </data>
+  <data name="GroupCode" xml:space="preserve">
+    <value>Mã nhóm</value>
+  </data>
+  <data name="GroupName" xml:space="preserve">
+    <value>Tiêu đề nhóm</value>
+  </data>
+  <data name="GroupOrderNo" xml:space="preserve">
+    <value>STT nhóm</value>
+  </data>
+  <data name="ValueFromSystem" xml:space="preserve">
+    <value>Giá trị từ hệ thống</value>
+  </data>
+  <data name="FormulaType_Default" xml:space="preserve">
+    <value>default</value>
+  </data>
+  <data name="FormulaType_Formula" xml:space="preserve">
+    <value>formula</value>
+  </data>
+  <data name="PageCreate_SalarySettingDetail_Staff" xml:space="preserve">
+    <value>Thêm Cài đặt chi tiết bảng lương</value>
+  </data>
+  <data name="PageEdit_SalarySettingDetail_Staff" xml:space="preserve">
+    <value>Cập nhật Cài đặt chi tiết bảng lương</value>
+  </data>
+  <data name="PageIndex_SalarySettingDetail_Staff" xml:space="preserve">
+    <value>Danh sách Cài đặt chi tiết bảng lương</value>
+  </data>
+  <data name="DefaultValue" xml:space="preserve">
+    <value>Giá trị thiết lập</value>
+  </data>
+  <data name="ChartInvoiceByDay" xml:space="preserve">
+    <value>Doanh thu theo ngày</value>
+  </data>
+  <data name="ChartProductSaleInMonth" xml:space="preserve">
+    <value>Sản phẩm bán theo ngày</value>
+  </data>
+  <data name="TangCaNgayLe" xml:space="preserve">
+    <value>Tăng ca ngày lễ</value>
+  </data>
+  <data name="TangCaNgayNghi" xml:space="preserve">
+    <value>Tăng ca ngày nghỉ</value>
+  </data>
+  <data name="TangCaNgayThuong" xml:space="preserve">
+    <value>Tăng ca ngày thường</value>
+  </data>
+  <data name="TongGioLamTheoCa" xml:space="preserve">
+    <value>Tổng giờ làm theo ca</value>
+  </data>
+  <data name="GioLamCaDem" xml:space="preserve">
+    <value>Giờ làm ca đêm</value>
+  </data>
+  <data name="PageCreate_SalaryTable" xml:space="preserve">
+    <value>Thêm Bảng lương</value>
+  </data>
+  <data name="PageEdit_SalaryTable" xml:space="preserve">
+    <value>Cập nhật Bảng lương</value>
+  </data>
+  <data name="PageIndex_SalaryTable" xml:space="preserve">
+    <value>Danh sách Bảng lương</value>
+  </data>
+  <data name="TargetMonth" xml:space="preserve">
+    <value>Tháng</value>
+  </data>
+  <data name="TargetYear" xml:space="preserve">
+    <value>Năm</value>
+  </data>
+  <data name="PageDetail_SalaryTable" xml:space="preserve">
+    <value>Thông tin bảng lương</value>
+  </data>
+  <data name="PageCreate_RegisterForOvertime" xml:space="preserve">
+    <value>Thêm Đăng ký làm thêm giờ </value>
+  </data>
+  <data name="PageEdit_RegisterForOvertime" xml:space="preserve">
+    <value>Cập nhật Đăng ký làm thêm giờ </value>
+  </data>
+  <data name="PageIndex_RegisterForOvertime" xml:space="preserve">
+    <value>Danh sách Đăng ký làm thêm giờ </value>
+  </data>
+  <data name="DayOvertime" xml:space="preserve">
+    <value>Ngày làm thêm giờ</value>
+  </data>
+  <data name="EndHour" xml:space="preserve">
+    <value>Giờ kết thúc</value>
+  </data>
+  <data name="StartHour" xml:space="preserve">
+    <value>Giờ bắt đầu</value>
+  </data>
+  <data name="PageCreate_SalaryTableDetail" xml:space="preserve">
+    <value>Thêm SalaryTableDetail</value>
+  </data>
+  <data name="PageEdit_SalaryTableDetail" xml:space="preserve">
+    <value>Cập nhật SalaryTableDetail</value>
+  </data>
+  <data name="PageIndex_SalaryTableDetail" xml:space="preserve">
+    <value>Danh sách SalaryTableDetail</value>
+  </data>
+  <data name="SalaryTableStatus_Done" xml:space="preserve">
+    <value>Đã duyệt</value>
+  </data>
+  <data name="SalaryTableStatus_InProcess" xml:space="preserve">
+    <value>Đang xử lý</value>
+  </data>
+  <data name="TrongGioNgayLe" xml:space="preserve">
+    <value>Trong giờ ngày lễ</value>
+  </data>
+  <data name="TrongGioNgayNghi" xml:space="preserve">
+    <value>Trong giờ ngày nghỉ</value>
+  </data>
+  <data name="Timekeeping" xml:space="preserve">
+    <value>Tính công</value>
+  </data>
+  <data name="ApplicationForLeave" xml:space="preserve">
+    <value>Đơn xin nghỉ phép</value>
+  </data>
+  <data name="CodeTypeDayOff" xml:space="preserve">
+    <value>Mã ký hiệu loại vắng</value>
+  </data>
+  <data name="NameTypeDayOff" xml:space="preserve">
+    <value>Tên ký hiệu loại vắng</value>
+  </data>
+  <data name="DayOffset" xml:space="preserve">
+    <value>Ngày nghỉ bù</value>
+  </data>
+  <data name="NightShifts" xml:space="preserve">
+    <value>Ca đêm</value>
+  </data>
+  <data name="PageCreate_FPMachine" xml:space="preserve">
+    <value>Thêm Máy chấm công</value>
+  </data>
+  <data name="PageEdit_FPMachine" xml:space="preserve">
+    <value>Cập nhật Máy chấm công</value>
+  </data>
+  <data name="PageIndex_FPMachine" xml:space="preserve">
+    <value>Danh sách Máy chấm công</value>
+  </data>
+  <data name="Dia_chi_IP" xml:space="preserve">
+    <value>Địa chỉ IP</value>
+  </data>
+  <data name="Loai_ket_noi" xml:space="preserve">
+    <value>Loại kết nối</value>
+  </data>
+  <data name="Port" xml:space="preserve">
+    <value>Port</value>
+  </data>
+  <data name="Toc_do_truyen" xml:space="preserve">
+    <value>Tốc độ truyền</value>
+  </data>
+  <data name="useurl" xml:space="preserve">
+    <value>Sử dụng domain</value>
+  </data>
+  <data name="EndTimeIn" xml:space="preserve">
+    <value>Thời gian bắt đầu quẹt thẻ cuối ca</value>
+  </data>
+  <data name="StartTimeOut" xml:space="preserve">
+    <value>Thời gian kết thúc quẹt thẻ đầu ca</value>
+  </data>
+  <data name="PageCreate_CheckInOut" xml:space="preserve">
+    <value>Thêm Lịch sử ra vào</value>
+  </data>
+  <data name="PageEdit_CheckInOut" xml:space="preserve">
+    <value>Cập nhật Lịch sử ra vào</value>
+  </data>
+  <data name="PageIndex_CheckInOut" xml:space="preserve">
+    <value>Lịch sử ra vào</value>
+  </data>
+  <data name="Color" xml:space="preserve">
+    <value>Màu hiển thị</value>
+  </data>
+  <data name="Symbol" xml:space="preserve">
+    <value>Ký hiệu</value>
+  </data>
+  <data name="SymbolName" xml:space="preserve">
+    <value>Tên ký hiệu</value>
+  </data>
+  <data name="UserEnrollNumber" xml:space="preserve">
+    <value>Số đăng ký người dùng</value>
+  </data>
+  <data name="SymbolDefault" xml:space="preserve">
+    <value>Ký hiệu mặc định</value>
+  </data>
+  <data name="SyncDatabase" xml:space="preserve">
+    <value>Lấy dữ liệu từ máy chấm công</value>
+  </data>
+  <data name="Total_minute_work" xml:space="preserve">
+    <value>Số phút làm trong 1 ca</value>
+  </data>
+  <data name="Total_minute_work_early" xml:space="preserve">
+    <value>Số phút về sớm</value>
+  </data>
+  <data name="Total_minute_work_late" xml:space="preserve">
+    <value>Số phút đi trễ</value>
+  </data>
+  <data name="Total_minute_work_overtime" xml:space="preserve">
+    <value>Số phút tăng ca</value>
+  </data>
+  <data name="Clear" xml:space="preserve">
+    <value>Xóa rỗng</value>
+  </data>
+  <data name="PageCreate_TemplatePrint" xml:space="preserve">
+    <value>Thêm Template</value>
+  </data>
+  <data name="PageEdit_TemplatePrint" xml:space="preserve">
+    <value>Cập nhật Template</value>
+  </data>
+  <data name="PageIndex_TemplatePrint" xml:space="preserve">
+    <value>Danh sách Template</value>
+  </data>
+  <data name="ProductCode" xml:space="preserve">
+    <value>Mã sản phẩm</value>
+  </data>
+  <data name="ProductCapacity" xml:space="preserve">
+    <value>Dung tích</value>
+  </data>
+  <data name="ProductItemCount" xml:space="preserve">
+    <value>Sản phẩm đã chọn</value>
+  </data>
+  <data name="CodeInvoiceRed" xml:space="preserve">
+    <value>Số hóa đơn đỏ</value>
+  </data>
+  <data name="DisCountAmount" xml:space="preserve">
+    <value>Trị giá chiết khấu</value>
+  </data>
+  <data name="LoCode" xml:space="preserve">
+    <value>Lô sản xuất</value>
+  </data>
+  <data name="KhachPhaiTra" xml:space="preserve">
+    <value>Khách phải trả</value>
+  </data>
+  <data name="ProductGroup" xml:space="preserve">
+    <value>Nhóm sản phẩm</value>
+  </data>
+  <data name="QtyInbound" xml:space="preserve">
+    <value>Tổng nhập</value>
+  </data>
+  <data name="QtyOutbound" xml:space="preserve">
+    <value>Tổng xuất</value>
+  </data>
+  <data name="CheckPromotion" xml:space="preserve">
+    <value>Sản phẩm KM</value>
+  </data>
+  <data name="PageEdit_Receipt" xml:space="preserve">
+    <value>Chỉnh sửa phiếu thu</value>
+  </data>
+  <data name="OrderStatusDisplay_inprogress" xml:space="preserve">
+    <value>Đang xử lý</value>
+  </data>
+  <data name="OrderStatus_inprogress" xml:space="preserve">
+    <value>inprogress</value>
+  </data>
+  <data name="Payers" xml:space="preserve">
+    <value>Người nộp</value>
+  </data>
+  <data name="VoucherDate" xml:space="preserve">
+    <value>Ngày chứng từ</value>
+  </data>
+  <data name="SubjectName" xml:space="preserve">
+    <value>Đối tượng</value>
+  </data>
+  <data name="Interpretations" xml:space="preserve">
+    <value>Diễn giải</value>
+  </data>
+  <data name="Absent" xml:space="preserve">
+    <value>Vắng</value>
+  </data>
+  <data name="PageCreate_TimekeepingList" xml:space="preserve">
+    <value>Thêm Danh sách chấm công</value>
+  </data>
+  <data name="PageEdit_TimekeepingList" xml:space="preserve">
+    <value>Cập nhật Danh sách chấm công</value>
+  </data>
+  <data name="PageIndex_TimekeepingList" xml:space="preserve">
+    <value>Danh sách chấm công</value>
+  </data>
+  <data name="CategoryShifts" xml:space="preserve">
+    <value>Loại ca làm việc</value>
+  </data>
+  <data name="PageDetail_TimekeepingList" xml:space="preserve">
+    <value>Thông tin chi tiết</value>
+  </data>
+  <data name="CustomerName" xml:space="preserve">
+    <value>Tên khách hàng</value>
+  </data>
+  <data name="PageCreate_ServiceInvoice" xml:space="preserve">
+    <value>Thêm Hóa đơn dịch vụ</value>
+  </data>
+  <data name="PageEdit_ServiceInvoice" xml:space="preserve">
+    <value>Cập nhật Hóa đơn dịch vụ</value>
+  </data>
+  <data name="PageIndex_ServiceInvoice" xml:space="preserve">
+    <value>Danh sách Hóa đơn dịch vụ</value>
+  </data>
+  <data name="PageCreate_ServiceInvoiceDetail" xml:space="preserve">
+    <value>Thêm Chi tiết hóa đơn sử dụng dịch vụ</value>
+  </data>
+  <data name="PageEdit_ServiceInvoiceDetail" xml:space="preserve">
+    <value>Cập nhật Chi tiết hóa đơn sử dụng dịch vụ</value>
+  </data>
+  <data name="PageIndex_ServiceInvoiceDetail" xml:space="preserve">
+    <value>Danh sách Chi tiết hóa đơn sử dụng dịch vụ</value>
+  </data>
+  <data name="PageCreate_UsingServiceLog" xml:space="preserve">
+    <value>Thêm Số lần sử dụng dịch vụ</value>
+  </data>
+  <data name="PageEdit_UsingServiceLog" xml:space="preserve">
+    <value>Cập nhật Số lần sử dụng dịch vụ</value>
+  </data>
+  <data name="PageIndex_UsingServiceLog" xml:space="preserve">
+    <value>Danh sách Số lần sử dụng dịch vụ</value>
+  </data>
+  <data name="PageCreate_ServiceCombo" xml:space="preserve">
+    <value>Thêm Gói dịch vụ</value>
+  </data>
+  <data name="PageEdit_ServiceCombo" xml:space="preserve">
+    <value>Cập nhật Gói dịch vụ</value>
+  </data>
+  <data name="PageIndex_ServiceCombo" xml:space="preserve">
+    <value>Danh sách Gói dịch vụ</value>
+  </data>
+  <data name="Manufacturer" xml:space="preserve">
+    <value>Nhà sản xuất</value>
+  </data>
+  <data name="IsCombo" xml:space="preserve">
+    <value>Gói dịch vụ</value>
+  </data>
+  <data name="QuantityUsed" xml:space="preserve">
+    <value>Số lần sử dụng</value>
+  </data>
+  <data name="ServiceCode" xml:space="preserve">
+    <value>Mã dịch vụ</value>
+  </data>
+  <data name="ServiceInvoiceCode" xml:space="preserve">
+    <value>Mã hóa đơn dịch vụ</value>
+  </data>
+  <data name="ServiceInvoiceDate" xml:space="preserve">
+    <value>Ngày xuất hóa đơn</value>
+  </data>
+  <data name="ServiceName" xml:space="preserve">
+    <value>Tên dịch vụ/Gói dịch vụ</value>
+  </data>
+  <data name="TransactionType_ServiceInvoice" xml:space="preserve">
+    <value>Dịch vụ</value>
+  </data>
+  <data name="CardCodeCustomer" xml:space="preserve">
+    <value>Mã thẻ KH</value>
+  </data>
+  <data name="PageCreate_CommisionDetail" xml:space="preserve">
+    <value>Thêm CommisionDetail</value>
+  </data>
+  <data name="PageEdit_CommisionDetail" xml:space="preserve">
+    <value>Cập nhật CommisionDetail</value>
+  </data>
+  <data name="PageIndex_CommisionDetail" xml:space="preserve">
+    <value>Danh sách chiết khấu theo từng mặt hàng</value>
+  </data>
+  <data name="ProductOrServiceCode" xml:space="preserve">
+    <value>Mã hàng hóa/dịch vụ</value>
+  </data>
+  <data name="ProductOrServiceName" xml:space="preserve">
+    <value>Tên hàng hóa/dịch vụ</value>
+  </data>
+  <data name="PageCreate_RequestInbound" xml:space="preserve">
+    <value>Thêm Yêu cầu nhập kho</value>
+  </data>
+  <data name="PageEdit_RequestInbound" xml:space="preserve">
+    <value>Cập nhật Yêu cầu nhập kho</value>
+  </data>
+  <data name="PageIndex_RequestInbound" xml:space="preserve">
+    <value>Danh sách Yêu cầu nhập kho</value>
+  </data>
+  <data name="PageCreate_RequestInboundDetail" xml:space="preserve">
+    <value>Thêm Chi tiết yêu cầu nhập kho</value>
+  </data>
+  <data name="PageEdit_RequestInboundDetail" xml:space="preserve">
+    <value>Cập nhật Chi tiết yêu cầu nhập kho</value>
+  </data>
+  <data name="PageIndex_RequestInboundDetail" xml:space="preserve">
+    <value>Danh sách Chi tiết yêu cầu nhập kho</value>
+  </data>
+  <data name="PageCreate_UsingServiceLogDetail" xml:space="preserve">
+    <value>Thêm Chi tiết sử dụng dịch vụ</value>
+  </data>
+  <data name="PageEdit_UsingServiceLogDetail" xml:space="preserve">
+    <value>Cập nhật Chi tiết sử dụng dịch vụ</value>
+  </data>
+  <data name="PageIndex_UsingServiceLogDetail" xml:space="preserve">
+    <value>Danh sách Chi tiết sử dụng dịch vụ</value>
+  </data>
+  <data name="CustomerNameF2" xml:space="preserve">
+    <value>Khách hàng [F8]</value>
+  </data>
+  <data name="ShipPhone" xml:space="preserve">
+    <value>SĐT liên hệ</value>
+  </data>
+  <data name="RequestInbound" xml:space="preserve">
+    <value>Yêu cầu nhập kho</value>
+  </data>
+  <data name="RequestInboundStatus_cancel" xml:space="preserve">
+    <value>Hủy</value>
+  </data>
+  <data name="RequestInboundStatus_inbound_complete" xml:space="preserve">
+    <value>Đã nhập kho</value>
+  </data>
+  <data name="RequestInboundStatus_inprogress" xml:space="preserve">
+    <value>Đang xử lý</value>
+  </data>
+  <data name="RequestInboundStatus_new" xml:space="preserve">
+    <value>Yêu cầu mới</value>
+  </data>
+  <data name="RequestInboundStatus_shipping" xml:space="preserve">
+    <value>Đang giao hàng</value>
+  </data>
+  <data name="RequestInboundStatus_wait_shipping" xml:space="preserve">
+    <value>Chờ giao hàng</value>
+  </data>
+  <data name="WarehouseRequired" xml:space="preserve">
+    <value>Kho yêu cầu</value>
+  </data>
+  <data name="RequestInboundStatus_refure" xml:space="preserve">
+    <value>Yêu cầu bị từ chối</value>
+  </data>
+  <data name="ShippingName" xml:space="preserve">
+    <value>Tên đơn vị vận chuyển</value>
+  </data>
+  <data name="PageCreate_ProductDamaged" xml:space="preserve">
+    <value>Thêm Sản phẩm bị thiếu, hư hỏng</value>
+  </data>
+  <data name="PageEdit_ProductDamaged" xml:space="preserve">
+    <value>Cập nhật Sản phẩm bị thiếu, hư hỏng</value>
+  </data>
+  <data name="PageIndex_ProductDamaged" xml:space="preserve">
+    <value>Danh sách Sản phẩm bị thiếu, hư hỏng</value>
+  </data>
+  <data name="CancelReason" xml:space="preserve">
+    <value>Lý do yêu cầu bị từ chối</value>
+  </data>
+  <data name="PageCreate_ServiceReminder" xml:space="preserve">
+    <value>Thêm nhắc nhở</value>
+  </data>
+  <data name="PageEdit_ServiceReminder" xml:space="preserve">
+    <value>Cập nhật nhắc nhở</value>
+  </data>
+  <data name="PageIndex_ServiceReminder" xml:space="preserve">
+    <value>Danh sách nhắc nhở</value>
+  </data>
+  <data name="ReminderContent" xml:space="preserve">
+    <value>Nội dung lời nhắc nhở</value>
+  </data>
+  <data name="PageDetail_ServiceReminder" xml:space="preserve">
+    <value>Thông tin chi tiết lời nhắc nhở của dịch vụ</value>
+  </data>
+  <data name="QuantityDate" xml:space="preserve">
+    <value>Thời gian nhắc nhở </value>
+  </data>
+  <data name="Reminder" xml:space="preserve">
+    <value>Nhắc nhở</value>
+  </data>
+  <data name="PageCreate_ServiceReminderGroup" xml:space="preserve">
+    <value>Thêm Cài đặt nhắc nhở cho dịch vụ</value>
+  </data>
+  <data name="PageEdit_ServiceReminderGroup" xml:space="preserve">
+    <value>Cập nhật Cài đặt nhắc nhở cho dịch vụ</value>
+  </data>
+  <data name="PageIndex_ServiceReminderGroup" xml:space="preserve">
+    <value>Danh sách Cài đặt nhắc nhở cho dịch vụ</value>
+  </data>
+  <data name="PageCreate_LogServiceRemminder" xml:space="preserve">
+    <value>Thêm Lịch sử nội dung nhắc nhở</value>
+  </data>
+  <data name="PageEdit_LogServiceRemminder" xml:space="preserve">
+    <value>Cập nhật Lịch sử nội dung nhắc nhở</value>
+  </data>
+  <data name="PageIndex_LogServiceRemminder" xml:space="preserve">
+    <value>Danh sách Lịch sử nội dung nhắc nhở</value>
+  </data>
+  <data name="PageCreate_Question" xml:space="preserve">
+    <value>Thêm Câu hỏi</value>
+  </data>
+  <data name="PageEdit_Question" xml:space="preserve">
+    <value>Cập nhật Câu hỏi</value>
+  </data>
+  <data name="PageIndex_Question" xml:space="preserve">
+    <value>Danh sách Câu hỏi</value>
+  </data>
+  <data name="IsActivated" xml:space="preserve">
+    <value>Kích hoạt</value>
+  </data>
+  <data name="PageCreate_Answer" xml:space="preserve">
+    <value>Thêm Câu trả lời</value>
+  </data>
+  <data name="PageEdit_Answer" xml:space="preserve">
+    <value>Cập nhật Câu trả lời</value>
+  </data>
+  <data name="PageIndex_Answer" xml:space="preserve">
+    <value>Danh sách Câu trả lời</value>
+  </data>
+  <data name="PageCreate_SettingNotifications" xml:space="preserve">
+    <value>Thêm Cài đặt thông báo</value>
+  </data>
+  <data name="PageEdit_SettingNotifications" xml:space="preserve">
+    <value>Cập nhật Cài đặt thông báo</value>
+  </data>
+  <data name="PageIndex_SettingNotifications" xml:space="preserve">
+    <value>Danh sách Cài đặt thông báo</value>
+  </data>
+  <data name="PageCreate_Vote" xml:space="preserve">
+    <value>Thêm KH đánh giá</value>
+  </data>
+  <data name="PageEdit_Vote" xml:space="preserve">
+    <value>Cập nhật KH đánh giá</value>
+  </data>
+  <data name="PageIndex_Vote" xml:space="preserve">
+    <value>Danh sách KH đánh giá</value>
+  </data>
+  <data name="PageCreate_ProcessApplied" xml:space="preserve">
+    <value>Thêm ProcessApplied</value>
+  </data>
+  <data name="PageEdit_ProcessApplied" xml:space="preserve">
+    <value>Cập nhật ProcessApplied</value>
+  </data>
+  <data name="PageIndex_ProcessApplied" xml:space="preserve">
+    <value>Danh sách ProcessApplied</value>
+  </data>
+  <data name="ArchiveFail" xml:space="preserve">
+    <value>Không thể thực hiện thao tác này</value>
+  </data>
+  <data name="ArchiveSuccess" xml:space="preserve">
+    <value>Ghi sổ thành công</value>
+  </data>
+  <data name="OrderStatus_deleted" xml:space="preserve">
+    <value>delete</value>
+  </data>
+  <data name="OrderStatusDisplay_delete" xml:space="preserve">
+    <value>Hủy</value>
+  </data>
+  <data name="LyDoHuyChungTu" xml:space="preserve">
+    <value>Lý do hủy</value>
+  </data>
+  <data name="QueryRecivedUser" xml:space="preserve">
+    <value>Câu lệnh truy vấn người dùng</value>
+  </data>
+  <data name="MaChungTu" xml:space="preserve">
+    <value>Mã chứng từ</value>
+  </data>
+  <data name="NgayChungTu" xml:space="preserve">
+    <value>Ngày chứng từ</value>
+  </data>
+  <data name="SoNha_TenDuong" xml:space="preserve">
+    <value>Số nhà tên đường</value>
+  </data>
+  <data name="TongTienSauVAT" xml:space="preserve">
+    <value>Khách phải thanh toán</value>
+  </data>
+  <data name="PageCreate_EmailLog" xml:space="preserve">
+    <value>Thêm Email</value>
+  </data>
+  <data name="Body" xml:space="preserve">
+    <value>Nội dung</value>
+  </data>
+  <data name="Campaign" xml:space="preserve">
+    <value>Chiến dịch</value>
+  </data>
+  <data name="SentDate" xml:space="preserve">
+    <value>Ngày gửi</value>
+  </data>
+  <data name="PageEdit_EmailLog" xml:space="preserve">
+    <value>Cập nhật Email</value>
+  </data>
+  <data name="PageIndex_EmailLog" xml:space="preserve">
+    <value>Danh sách Email</value>
+  </data>
+  <data name="SendSMS" xml:space="preserve">
+    <value>Gửi SMS</value>
+  </data>
+  <data name="PageIndex_SMSLog" xml:space="preserve">
+    <value>Danh sách tin nhắn</value>
+  </data>
+  <data name="PageEdit_SMSLog" xml:space="preserve">
+    <value>Cập nhât tin nhắn</value>
+  </data>
+  <data name="PageCreate_SMSLog" xml:space="preserve">
+    <value>Thêm tin nhắn</value>
+  </data>
+  <data name="Campaign_Detail" xml:space="preserve">
+    <value>Chi tiết chiến dịch</value>
+  </data>
+  <data name="SendEmail" xml:space="preserve">
+    <value>Gửi Email</value>
+  </data>
+  <data name="CreateNewSMS" xml:space="preserve">
+    <value>Tạo mới SMS</value>
+  </data>
+  <data name="DeleteSMS" xml:space="preserve">
+    <value>Xóa SMS</value>
+  </data>
+  <data name="CreateNewEmail" xml:space="preserve">
+    <value>Tạo mới Email</value>
+  </data>
+  <data name="DeleteEmail" xml:space="preserve">
+    <value>Xóa Email</value>
+  </data>
+  <data name="PageDetail_EmailLog" xml:space="preserve">
+    <value>Chi tiết Email</value>
+  </data>
+  <data name="PageDetail_SMSLog" xml:space="preserve">
+    <value>Chi tiết tin nhắn</value>
+  </data>
+  <data name="SMSLogStatus_Not_Send" xml:space="preserve">
+    <value>Không được gửi</value>
+  </data>
+  <data name="SMSLogStatus_Not_Submitted" xml:space="preserve">
+    <value>Chưa gửi</value>
+  </data>
+  <data name="SMSLogStatus_Send" xml:space="preserve">
+    <value>Đã gửi</value>
+  </data>
+  <data name="Status_MemberCard_pending" xml:space="preserve">
+    <value>Khởi tạo</value>
+  </data>
+  <data name="CreateMemberCardSuccess" xml:space="preserve">
+    <value>Cấp thẻ cho khách hàng thành công</value>
+  </data>
+  <data name="StaffCreateName" xml:space="preserve">
+    <value>Người lập phiếu</value>
+  </data>
+  <data name="StatusQuo" xml:space="preserve">
+    <value>Hiện trạng</value>
+  </data>
+  <data name="UsingServiceDate" xml:space="preserve">
+    <value>Ngày tái khám/sử dụng DV</value>
+  </data>
+  <data name="PageIndex_MemberCard" xml:space="preserve">
+    <value>Danh sách thẻ thành viên</value>
+  </data>
+  <data name="PageCreate_MemberCard" xml:space="preserve">
+    <value>Thêm thẻ thành viên</value>
+  </data>
+  <data name="PageEdit_MemberCard" xml:space="preserve">
+    <value>Cập nhật thẻ thành viên</value>
+  </data>
+  <data name="CardCode" xml:space="preserve">
+    <value>Mã thẻ</value>
+  </data>
+  <data name="CardType" xml:space="preserve">
+    <value>Loại thẻ</value>
+  </data>
+  <data name="DateOfIssue" xml:space="preserve">
+    <value>Ngày phát hành</value>
+  </data>
+  <data name="NoUserCheckTask" xml:space="preserve">
+    <value>Chưa có người nhận. Không thể gửi đi</value>
+  </data>
+  <data name="completed" xml:space="preserve">
+    <value>Đã xử lý</value>
+  </data>
+  <data name="High" xml:space="preserve">
+    <value>Cao</value>
+  </data>
+  <data name="inprogress" xml:space="preserve">
+    <value>Đang xử lý</value>
+  </data>
+  <data name="Low" xml:space="preserve">
+    <value>Thấp</value>
+  </data>
+  <data name="Medium" xml:space="preserve">
+    <value>Trung bình</value>
+  </data>
+  <data name="PageDetail_Task" xml:space="preserve">
+    <value>Chi tiết công việc</value>
+  </data>
+  <data name="pending" xml:space="preserve">
+    <value>Khởi tạo</value>
+  </data>
+  <data name="PageCreate_ServiceSchedule" xml:space="preserve">
+    <value>Thêm Đặt lịch phục vụ</value>
+  </data>
+  <data name="PageEdit_ServiceSchedule" xml:space="preserve">
+    <value>Cập nhật Đặt lịch phục vụ</value>
+  </data>
+  <data name="PageIndex_ServiceSchedule" xml:space="preserve">
+    <value>Danh sách Đặt lịch phục vụ</value>
+  </data>
+  <data name="PageCreate_LogLoyaltyPoint" xml:space="preserve">
+    <value>Thêm Lịch sử tích lũy điểm</value>
+  </data>
+  <data name="PageEdit_LogLoyaltyPoint" xml:space="preserve">
+    <value>Cập nhật Lịch sử tích lũy điểm</value>
+  </data>
+  <data name="PageIndex_LogLoyaltyPoint" xml:space="preserve">
+    <value>Danh sách Lịch sử tích lũy điểm</value>
+  </data>
+  <data name="PlusPoint" xml:space="preserve">
+    <value>Điểm tích lũy</value>
+  </data>
+  <data name="TotalPoint" xml:space="preserve">
+    <value>Tổng điểm tích lũy</value>
+  </data>
+  <data name="PageCreate_LoyaltyPoint" xml:space="preserve">
+    <value>Thêm Điểm tích lũy</value>
+  </data>
+  <data name="PageEdit_LoyaltyPoint" xml:space="preserve">
+    <value>Cập nhật Điểm tích lũy</value>
+  </data>
+  <data name="PageIndex_LoyaltyPoint" xml:space="preserve">
+    <value>Danh sách Điểm tích lũy</value>
+  </data>
+  <data name="LogPoint" xml:space="preserve">
+    <value>Điểm tích lũy</value>
+  </data>
+  <data name="MaxMoney" xml:space="preserve">
+    <value>Giá trị tối đa của hóa đơn (VNĐ)</value>
+  </data>
+  <data name="MinMoney" xml:space="preserve">
+    <value>Giá trị tối thiểu của hóa đơn (VNĐ)</value>
+  </data>
+  <data name="ProductInvoiceDate" xml:space="preserve">
+    <value>Ngày bán</value>
+  </data>
+  <data name="SalerInvoiceName" xml:space="preserve">
+    <value>Nhân viên bán</value>
+  </data>
+  <data name="SalesReturnDate" xml:space="preserve">
+    <value>Ngày trả hàng</value>
+  </data>
+  <data name="PageCreate_MemberCardDetail" xml:space="preserve">
+    <value>Thêm Chi tiết thẻ thành viên</value>
+  </data>
+  <data name="PageEdit_MemberCardDetail" xml:space="preserve">
+    <value>Cập nhật Chi tiết thẻ thành viên</value>
+  </data>
+  <data name="PageIndex_MemberCardDetail" xml:space="preserve">
+    <value>Danh sách Chi tiết thẻ thành viên</value>
+  </data>
+  <data name="SalarySettingId" xml:space="preserve">
+    <value>Mẫu bảng lương</value>
+  </data>
+  <data name="CreateDublicate" xml:space="preserve">
+    <value>Tạo mới bản sau</value>
+  </data>
+  <data name="PageCreate_SocialInsurance" xml:space="preserve">
+    <value>Thêm Bảo hiểm xã hội</value>
+  </data>
+  <data name="PageEdit_SocialInsurance" xml:space="preserve">
+    <value>Cập nhật Bảo hiểm xã hội</value>
+  </data>
+  <data name="PageIndex_SocialInsurance" xml:space="preserve">
+    <value>Danh sách Bảo hiểm xã hội</value>
+  </data>
+  <data name="Ten_may_tinh" xml:space="preserve">
+    <value>Tên máy tính</value>
+  </data>
+  <data name="TimeForService" xml:space="preserve">
+    <value>Thời gian phục vụ</value>
+  </data>
+  <data name="PageIndex_StaffSocialInsurance" xml:space="preserve">
+    <value>Danh sách Bảo hiểm xã hội</value>
+  </data>
+  <data name="HealthInsurance" xml:space="preserve">
+    <value>Bảo hiểm y tế</value>
+  </data>
+  <data name="SocialInsurance" xml:space="preserve">
+    <value>Bảo hiểm xã hội</value>
+  </data>
+  <data name="MedicalCode" xml:space="preserve">
+    <value>Số BHYT</value>
+  </data>
+  <data name="MedicalDefaultValue" xml:space="preserve">
+    <value>Chỉ số BHYT</value>
+  </data>
+  <data name="MedicalEndDate" xml:space="preserve">
+    <value>Ngày hết hạn</value>
+  </data>
+  <data name="MedicalIssue" xml:space="preserve">
+    <value>Nơi cấp</value>
+  </data>
+  <data name="MedicalStartDate" xml:space="preserve">
+    <value>Ngày bắt đầu</value>
+  </data>
+  <data name="SocietyCode" xml:space="preserve">
+    <value>Số BHXH</value>
+  </data>
+  <data name="SocietyDefaultValue" xml:space="preserve">
+    <value>Chỉ số BHXH</value>
+  </data>
+  <data name="SocietyEndDate" xml:space="preserve">
+    <value>Ngày kết thúc</value>
+  </data>
+  <data name="SocietyIssue" xml:space="preserve">
+    <value>Nơi cấp</value>
+  </data>
+  <data name="SocietyStartDate" xml:space="preserve">
+    <value>Ngày bắt đầu</value>
+  </data>
+  <data name="StaffId" xml:space="preserve">
+    <value>Nhân viên</value>
+  </data>
+  <data name="PageDetail_StaffSocialInsurance" xml:space="preserve">
+    <value>Chi tiết bảo hiểm</value>
+  </data>
+  <data name="IsSale" xml:space="preserve">
+    <value>Xuất bán</value>
+  </data>
+  <data name="PageCreate_DotBCBHXH" xml:space="preserve">
+    <value>Thêm đợt báo cáo BHXH</value>
+  </data>
+  <data name="PageEdit_DotBCBHXH" xml:space="preserve">
+    <value>Cập nhật đợt báo cáo BHXH</value>
+  </data>
+  <data name="PageIndex_DotBCBHXH" xml:space="preserve">
+    <value>Danh sách đợt báo cáo BHXH</value>
+  </data>
+  <data name="PageCreate_DotBCBHXHDetail" xml:space="preserve">
+    <value>Thêm chi tiết đợt BHXH</value>
+  </data>
+  <data name="PageEdit_DotBCBHXHDetail" xml:space="preserve">
+    <value>Cập nhật chi tiết đợt BHXH</value>
+  </data>
+  <data name="PageIndex_DotBCBHXHDetail" xml:space="preserve">
+    <value>Danh sách chi tiết đợt BHXH</value>
+  </data>
+  <data name="BatchNumber" xml:space="preserve">
+    <value>Đợt</value>
+  </data>
+  <data name="PageDetail_DotBCBHXH" xml:space="preserve">
+    <value>Chi tiết đợt báo cáo BHXH</value>
+  </data>
+  <data name="PC_CV" xml:space="preserve">
+    <value>Phụ cấp chức vụ</value>
+  </data>
+  <data name="PC_Khac" xml:space="preserve">
+    <value>Phụ cấp khác</value>
+  </data>
+  <data name="PC_TNN" xml:space="preserve">
+    <value>Phụ cấp thâm niên nghề</value>
+  </data>
+  <data name="PC_TNVK" xml:space="preserve">
+    <value>Phụ cấp thâm niên vượt khung</value>
+  </data>
+  <data name="TienLuong" xml:space="preserve">
+    <value>Tiền lương</value>
+  </data>
+  <data name="Increase" xml:space="preserve">
+    <value>Tăng lao động</value>
+  </data>
+  <data name="Reduced" xml:space="preserve">
+    <value>Giảm lao động</value>
+  </data>
+  <data name="PageEdit_StaffSocialInsurance" xml:space="preserve">
+    <value>Cập nhật bảo hiểm xã hội</value>
+  </data>
+  <data name="PageCreate_KPILog" xml:space="preserve">
+    <value>Thêm đợt đánh giá</value>
+  </data>
+  <data name="PageEdit_KPILog" xml:space="preserve">
+    <value>Cập nhật đợt đánh giá</value>
+  </data>
+  <data name="PageIndex_KPILog" xml:space="preserve">
+    <value>Danh sách đợt đánh giá</value>
+  </data>
+  <data name="PageCreate_KPILogDetail" xml:space="preserve">
+    <value>Thêm KPILogDetail</value>
+  </data>
+  <data name="PageEdit_KPILogDetail" xml:space="preserve">
+    <value>Cập nhật KPILogDetail</value>
+  </data>
+  <data name="PageIndex_KPILogDetail" xml:space="preserve">
+    <value>Danh sách KPILogDetail</value>
+  </data>
+  <data name="PageCreate_KPILogDetail_Item" xml:space="preserve">
+    <value>Thêm KPILogDetail_Item</value>
+  </data>
+  <data name="PageEdit_KPILogDetail_Item" xml:space="preserve">
+    <value>Cập nhật KPILogDetail_Item</value>
+  </data>
+  <data name="PageIndex_KPILogDetail_Item" xml:space="preserve">
+    <value>Danh sách KPILogDetail_Item</value>
+  </data>
+  <data name="PageDetail_KPILog" xml:space="preserve">
+    <value>Chi tiết đợt đánh giá nhân sự</value>
+  </data>
+  <data name="PageCreate_StaffSocialInsurance" xml:space="preserve">
+    <value>Tạo mới bảo hiểm</value>
+  </data>
+  <data name="OtherInformation" xml:space="preserve">
+    <value>Thông tin khác</value>
+  </data>
+  <data name="TimeInvolved" xml:space="preserve">
+    <value>Thời gian tham gia</value>
+  </data>
+  <data name="PageEdit_WelfarePrograms" xml:space="preserve">
+    <value>Cập nhật chương trình phúc lợi</value>
+  </data>
+  <data name="PageIndex_WelfarePrograms" xml:space="preserve">
+    <value>Danh sách chương trình phúc lợi</value>
+  </data>
+  <data name="PageCreate_WelfareProgramsDetail" xml:space="preserve">
+    <value>Thêm chi tiết chương trình phúc lợi</value>
+  </data>
+  <data name="PageEdit_WelfareProgramsDetail" xml:space="preserve">
+    <value>Cập nhật chi tiết chương trình phúc lợi</value>
+  </data>
+  <data name="PageIndex_WelfareProgramsDetail" xml:space="preserve">
+    <value>Danh sách chi tiết chương trình phúc lợi</value>
+  </data>
+  <data name="ApplicationObject" xml:space="preserve">
+    <value>Đối tượng áp dụng của chương trình</value>
+  </data>
+  <data name="ImplementationEndDate" xml:space="preserve">
+    <value>Thời gian kêt thúc</value>
+  </data>
+  <data name="TargetScore_From" xml:space="preserve">
+    <value>Chỉ tiêu từ</value>
+  </data>
+  <data name="TargetScore_To" xml:space="preserve">
+    <value>Chỉ tiêu đến</value>
+  </data>
+  <data name="Adjusted" xml:space="preserve">
+    <value>Điều chỉnh lao động</value>
+  </data>
+  <data name="PageDetail_DotBCBHXHDetail" xml:space="preserve">
+    <value>Chi tiết bảo hiểm</value>
+  </data>
+  <data name="PageCreate_DotQGCDBHXH" xml:space="preserve">
+    <value>Thêm đợt giải quyết hưởng chế độ BHXH</value>
+  </data>
+  <data name="PageEdit_DotQGCDBHXH" xml:space="preserve">
+    <value>Cập nhật đợt giải quyết hưởng chế độ BHXH</value>
+  </data>
+  <data name="PageIndex_DotQGCDBHXH" xml:space="preserve">
+    <value>Danh sách đợt giải quyết hưởng chế độ BHXH</value>
+  </data>
+  <data name="PageCreate_DotGQCDBHXHDetail" xml:space="preserve">
+    <value>Thêm chi tiết đợt giải quyết chế độ BHXH</value>
+  </data>
+  <data name="PageEdit_DotGQCDBHXHDetail" xml:space="preserve">
+    <value>Cập nhật chi tiết đợt giải quyết chế độ BHXH</value>
+  </data>
+  <data name="PageIndex_DotGQCDBHXHDetail" xml:space="preserve">
+    <value>Danh sách chi tiết đợt giải quyết chế độ BHXH</value>
+  </data>
+  <data name="PageDetail_DotQGCDBHXH" xml:space="preserve">
+    <value>Chi tiết đợt giải quyết chế độ BHXH</value>
+  </data>
+  <data name="DKTH_ThoiDiem" xml:space="preserve">
+    <value>Thời điểm</value>
+  </data>
+  <data name="DKTH_TinhTrang" xml:space="preserve">
+    <value>Tình trạng</value>
+  </data>
+  <data name="DotGQCDBHXHId" xml:space="preserve">
+    <value>Đơt giải quyết chế độ BHXH</value>
+  </data>
+  <data name="DayOffId" xml:space="preserve">
+    <value>Đăng ký nghỉ phép</value>
+  </data>
+  <data name="PageCreate_TaxRate" xml:space="preserve">
+    <value>Thêm Thuế suất</value>
+  </data>
+  <data name="PageEdit_TaxRate" xml:space="preserve">
+    <value>Cập nhật Thuế suất</value>
+  </data>
+  <data name="PageIndex_TaxRate" xml:space="preserve">
+    <value>Danh sách Thuế suất</value>
+  </data>
+  <data name="MoneyCompany" xml:space="preserve">
+    <value>Tiền công ty hỗ trợ</value>
+  </data>
+  <data name="MoneyStaff" xml:space="preserve">
+    <value>Tiền nhân viên đóng</value>
+  </data>
+  <data name="PageCreate_WelfarePrograms" xml:space="preserve">
+    <value>Khởi tạo chương trình phúc lợi</value>
+  </data>
+  <data name="PageDetail_WelfarePrograms" xml:space="preserve">
+    <value>Chi tiết chương trình phúc lợi</value>
+  </data>
+  <data name="Purpose" xml:space="preserve">
+    <value>Mục đích của chương trình phúc lợi</value>
+  </data>
+  <data name="QuantityStaff" xml:space="preserve">
+    <value>Số lượng nhân viên</value>
+  </data>
+  <data name="TotalActualCosts" xml:space="preserve">
+    <value>Tổng tiền thực tế</value>
+  </data>
+  <data name="TotalMoneyCompany" xml:space="preserve">
+    <value>Tổng tiền công ty hỗ trợ</value>
+  </data>
+  <data name="TotalMoneyStaff" xml:space="preserve">
+    <value>Tổng tiền nhân viên đóng</value>
+  </data>
+  <data name="TotalStaffCompany" xml:space="preserve">
+    <value>Tổng tiền của 1 người</value>
+  </data>
+  <data name="TotalStaffCompanyAll" xml:space="preserve">
+    <value>Tổng tất cả</value>
+  </data>
+  <data name="WelfareName" xml:space="preserve">
+    <value>Tên CT phúc lợi</value>
+  </data>
+  <data name="RegistrationDate" xml:space="preserve">
+    <value>Ngày đăng ký</value>
+  </data>
+  <data name="WelfarePrograms" xml:space="preserve">
+    <value>Chương trình phúc lợi</value>
+  </data>
+  <data name="ImplementationStartDate" xml:space="preserve">
+    <value>Thời gian bắt đầu thực hiện</value>
+  </data>
+  <data name="ProvideEndDate" xml:space="preserve">
+    <value>Ngày dự kiến kết thúc</value>
+  </data>
+  <data name="ProvideStartDate" xml:space="preserve">
+    <value>Ngày dự kiến bắt đầu</value>
+  </data>
+  <data name="RegistrationEndDate" xml:space="preserve">
+    <value>Thời gian kết thúc đăng ký</value>
+  </data>
+  <data name="RegistrationStartDate" xml:space="preserve">
+    <value>Thời gian bắt đầu đăng ký</value>
+  </data>
+  <data name="TotalEstimatedCost" xml:space="preserve">
+    <value>Tổng chi phí dự kiến</value>
+  </data>
+  <data name="PageDetail_Payment" xml:space="preserve">
+    <value>Chi tiết phiếu chi</value>
+  </data>
+  <data name="WelfareCode" xml:space="preserve">
+    <value>Mã chương trình phúc lợi</value>
+  </data>
+  <data name="PageCreate_TaxIncomePerson" xml:space="preserve">
+    <value>Thêm thuế thu nhập cá nhân</value>
+  </data>
+  <data name="PageEdit_TaxIncomePerson" xml:space="preserve">
+    <value>Cập nhật thuế thu nhập cá nhân</value>
+  </data>
+  <data name="PageIndex_TaxIncomePerson" xml:space="preserve">
+    <value>Danh sách thuế thu nhập cá nhân</value>
+  </data>
+  <data name="PageCreate_TaxIncomePersonDetail" xml:space="preserve">
+    <value>Thêm chi tiết thuế thu nhập cá nhân</value>
+  </data>
+  <data name="PageEdit_TaxIncomePersonDetail" xml:space="preserve">
+    <value>Cập nhật chi tiết thuế thu nhập cá nhân</value>
+  </data>
+  <data name="PageIndex_TaxIncomePersonDetail" xml:space="preserve">
+    <value>Danh sách chi tiết thuế thu nhập cá nhân</value>
+  </data>
+  <data name="PageCreate_ThuNhapChiuThue" xml:space="preserve">
+    <value>Thêm thu nhập chịu thuế</value>
+  </data>
+  <data name="PageEdit_ThuNhapChiuThue" xml:space="preserve">
+    <value>Cập nhật thu nhập chịu thuế</value>
+  </data>
+  <data name="PageIndex_ThuNhapChiuThue" xml:space="preserve">
+    <value>Danh sách thu nhập chịu thuế</value>
+  </data>
+  <data name="PageCreate_GiamTruThueTNCN" xml:space="preserve">
+    <value>Thêm giảm trừ thuế thu nhập cá nhân</value>
+  </data>
+  <data name="PageEdit_GiamTruThueTNCN" xml:space="preserve">
+    <value>Cập nhật giảm trừ thuế thu nhập cá nhân</value>
+  </data>
+  <data name="PageIndex_GiamTruThueTNCN" xml:space="preserve">
+    <value>Danh sách giảm trừ thuế thu nhập cá nhân</value>
+  </data>
+  <data name="FromValue" xml:space="preserve">
+    <value>Từ giá trị</value>
+  </data>
+  <data name="Level" xml:space="preserve">
+    <value>Cấp, bậc</value>
+  </data>
+  <data name="TaxRateValue" xml:space="preserve">
+    <value>Thuế suất</value>
+  </data>
+  <data name="ToValue" xml:space="preserve">
+    <value>Đến giá trị</value>
+  </data>
+  <data name="NameTaxRate" xml:space="preserve">
+    <value>Thu nhập tính thuế/ tháng (VNĐ)</value>
+  </data>
+  <data name="IsDependencies" xml:space="preserve">
+    <value>Là người phụ thuộc</value>
+  </data>
+  <data name="SalaryApprovalType" xml:space="preserve">
+    <value>Phê duyệt lương</value>
+  </data>
+  <data name="CodeTax" xml:space="preserve">
+    <value>Mã số thuế</value>
+  </data>
+  <data name="GeneralManage" xml:space="preserve">
+    <value>Cơ quan thuế quản lý</value>
+  </data>
+  <data name="GeneralTaxation" xml:space="preserve">
+    <value>Cơ quan thuế cấp cục</value>
+  </data>
+  <data name="NameOfThePayingAgency" xml:space="preserve">
+    <value>Tên cơ quan chi trả</value>
+  </data>
+  <data name="Tax" xml:space="preserve">
+    <value>Thuế</value>
+  </data>
+  <data name="GeneralManageId" xml:space="preserve">
+    <value>Cơ quan thuế quản lý</value>
+  </data>
+  <data name="GeneralTaxationId" xml:space="preserve">
+    <value>Cơ quan thuế cấp cục</value>
+  </data>
+  <data name="PageDetail_TaxIncomePerson" xml:space="preserve">
+    <value>Chi tiết đăng ký mã số thuế</value>
+  </data>
+  <data name="CreateFamilyAllowance" xml:space="preserve">
+    <value>Tạo mới giảm trừ gia cảnh</value>
+  </data>
+  <data name="ListFamilyAllowance" xml:space="preserve">
+    <value>Danh sách giảm trừ gia cảnh</value>
+  </data>
+  <data name="DayAdvance" xml:space="preserve">
+    <value>Ngày tạm ứng</value>
+  </data>
+  <data name="EndTimeOut" xml:space="preserve">
+    <value>Thời gian kết thúc quẹt thẻ cuối ca</value>
+  </data>
+  <data name="StartTimeIn" xml:space="preserve">
+    <value>Thời gian bắt đầu quẹt thẻ đầu ca</value>
+  </data>
+  <data name="PageCreate_Tax" xml:space="preserve">
+    <value>Thêm thuế</value>
+  </data>
+  <data name="PageEdit_Tax" xml:space="preserve">
+    <value>Cập nhật thuế</value>
+  </data>
+  <data name="PageIndex_Tax" xml:space="preserve">
+    <value>Danh sách thuế</value>
+  </data>
+  <data name="Money" xml:space="preserve">
+    <value>Tiền</value>
+  </data>
+  <data name="DayOffCode" xml:space="preserve">
+    <value>Mã phép</value>
+  </data>
+  <data name="PageDetail_TransferWork" xml:space="preserve">
+    <value>Chi tiết điều chuyển công tác</value>
+  </data>
+  <data name="PrintLabourContract" xml:space="preserve">
+    <value>In hợp đồng</value>
+  </data>
+  <data name="AchieveScore" xml:space="preserve">
+    <value>Điểm đạt được</value>
+  </data>
+  <data name="PageDetail_BonusDiscipline" xml:space="preserve">
+    <value>Chi tiết khen thưởng/kỷ luật</value>
+  </data>
+  <data name="Calendar" xml:space="preserve">
+    <value>Lịch làm việc</value>
+  </data>
+  <data name="HistoryBonusDiscipline" xml:space="preserve">
+    <value>Lịch sử khen thưởng - kỷ luật</value>
+  </data>
+  <data name="HistoryCommisionStaff" xml:space="preserve">
+    <value>Lịch sử hoa hồng</value>
+  </data>
+  <data name="HistoryDayOff" xml:space="preserve">
+    <value>Lịch sử nghỉ phép</value>
+  </data>
+  <data name="HistoryOvertime" xml:space="preserve">
+    <value>Lịch sử tăng ca</value>
+  </data>
+  <data name="HistorySalary" xml:space="preserve">
+    <value>Lịch sử lương</value>
+  </data>
+  <data name="HistorySalaryAdvance" xml:space="preserve">
+    <value>Lịch sử tạm ứng</value>
+  </data>
+  <data name="Salary" xml:space="preserve">
+    <value>Lương</value>
+  </data>
+  <data name="HistoryTransferwork" xml:space="preserve">
+    <value>Lịch sử điều chuyển</value>
+  </data>
+  <data name="HistoryCheckInOut" xml:space="preserve">
+    <value>Lịch sử ra vào</value>
+  </data>
+  <data name="PageCreate_StaffAllowance" xml:space="preserve">
+    <value>Thêm Phụ cấp</value>
+  </data>
+  <data name="PageEdit_StaffAllowance" xml:space="preserve">
+    <value>Cập nhật Phụ cấp</value>
+  </data>
+  <data name="PageIndex_StaffAllowance" xml:space="preserve">
+    <value>Danh sách Phụ cấp</value>
+  </data>
+  <data name="PageCreate_StaffLuongGiuHopDong" xml:space="preserve">
+    <value>Thêm Lương giữ theo hợp đồng</value>
+  </data>
+  <data name="PageEdit_StaffLuongGiuHopDong" xml:space="preserve">
+    <value>Cập nhật Lương giữ theo hợp đồng</value>
+  </data>
+  <data name="PageIndex_StaffLuongGiuHopDong" xml:space="preserve">
+    <value>Danh sách Lương giữ theo hợp đồng</value>
+  </data>
+  <data name="TimeOverTime" xml:space="preserve">
+    <value>Thời gian tăng ca</value>
+  </data>
+  <data name="PageDetail_ProcessPay" xml:space="preserve">
+    <value>Chi tiết bậc lương</value>
+  </data>
+  <data name="BranchId" xml:space="preserve">
+    <value>Chi nhánh</value>
+  </data>
+  <data name="DebtCollection" xml:space="preserve">
+    <value>Nợ cần thu</value>
+  </data>
+  <data name="DebtToSpend" xml:space="preserve">
+    <value>Nợ cần chi</value>
+  </data>
+  <data name="explain" xml:space="preserve">
+    <value>Diễn giải</value>
+  </data>
+  <data name="TheAmount" xml:space="preserve">
+    <value>Số tiền</value>
+  </data>
+  <data name="BillList" xml:space="preserve">
+    <value>Danh sách hóa đơn</value>
+  </data>
+  <data name="ListOfCusUsingTheService" xml:space="preserve">
+    <value>Danh sách KH sử dụng dịch vụ (tái khám)</value>
+  </data>
+  <data name="PageDetail_Vote" xml:space="preserve">
+    <value>Chi tiết đánh giá</value>
+  </data>
+  <data name="CheckInOut_UserId" xml:space="preserve">
+    <value>Tên trong chấm công</value>
+  </data>
+  <data name="MinuteEarly" xml:space="preserve">
+    <value>Cho phép về sớm (phút)</value>
+  </data>
+  <data name="MinuteLate" xml:space="preserve">
+    <value>Cho phép đi trễ (phút)</value>
+  </data>
+  <data name="NgayDiTre" xml:space="preserve">
+    <value>Số ngày đi trễ</value>
+  </data>
+  <data name="NgayVeSom" xml:space="preserve">
+    <value>Số ngày về sớm</value>
+  </data>
+  <data name="FPMachine" xml:space="preserve">
+    <value>Máy chấm công</value>
+  </data>
+  <data name="IsWorking" xml:space="preserve">
+    <value>Đang làm việc</value>
+  </data>
+  <data name="CreatedStaffName" xml:space="preserve">
+    <value>Nhân viên lập phiếu</value>
+  </data>
+  <data name="PageCreate_demo" xml:space="preserve">
+    <value>Thêm demo</value>
+  </data>
+  <data name="PageEdit_demo" xml:space="preserve">
+    <value>Cập nhật demo</value>
+  </data>
+  <data name="PageIndex_demo" xml:space="preserve">
+    <value>Danh sách demo</value>
+  </data>
+  <data name="MaxDebitAmount" xml:space="preserve">
+    <value>Tổng ghi nợ tối đa</value>
+  </data>
+  <data name="CodeDrugStore" xml:space="preserve">
+    <value>Mã nhà thuốc</value>
+  </data>
+  <data name="DrugStore" xml:space="preserve">
+    <value>Nhà thuốc</value>
+  </data>
+  <data name="PageCreate_DrugStore" xml:space="preserve">
+    <value>Thêm mới nhà thuốc</value>
+  </data>
+  <data name="PageEdit_DrugStore" xml:space="preserve">
+    <value>Cập nhật nhà thuốc</value>
+  </data>
+  <data name="PageIndex_DrugStore" xml:space="preserve">
+    <value>Danh sách nhà thuốc</value>
+  </data>
+  <data name="UserManager" xml:space="preserve">
+    <value>Người quản lý</value>
+  </data>
+  <data name="ApprovedKT" xml:space="preserve">
+    <value>Kế toán Duyệt</value>
+  </data>
+  <data name="TotalFixedDiscount" xml:space="preserve">
+    <value>Tổng CK cố định</value>
+  </data>
+  <data name="TotalIrregularDiscount" xml:space="preserve">
+    <value>Tổng CK đột xuất</value>
+  </data>
+  <data name="PageCreate_CommissionCus" xml:space="preserve">
+    <value>Thêm Chiết khấu khách hàng</value>
+  </data>
+  <data name="PageEdit_CommissionCus" xml:space="preserve">
+    <value>Cập nhật Chiết khấu khách hàng</value>
+  </data>
+  <data name="PageIndex_CommissionCus" xml:space="preserve">
+    <value>Danh sách Chiết khấu khách hàng</value>
+  </data>
+  <data name="ApplyFor" xml:space="preserve">
+    <value>Đối tượng áp dụng</value>
+  </data>
+  <data name="PageCreate_TotalDiscountMoneyNT" xml:space="preserve">
+    <value>Thêm Danh sách tiền chiết khấu của nhà thuốc</value>
+  </data>
+  <data name="PageEdit_TotalDiscountMoneyNT" xml:space="preserve">
+    <value>Cập nhật Danh sách tiền chiết khấu của nhà thuốc</value>
+  </data>
+  <data name="PageIndex_TotalDiscountMoneyNT" xml:space="preserve">
+    <value>Danh sách Danh sách tiền chiết khấu của nhà thuốc</value>
+  </data>
+  <data name="DrugStoreCode" xml:space="preserve">
+    <value>Mã nhà thuốc</value>
+  </data>
+  <data name="DrugStoreName" xml:space="preserve">
+    <value>Tên nhà thuốc</value>
+  </data>
+  <data name="PageCreate_CalendarVisitDrugStore" xml:space="preserve">
+    <value>Thêm Kế hoạch thăm nhà thuốc</value>
+  </data>
+  <data name="PageEdit_CalendarVisitDrugStore" xml:space="preserve">
+    <value>Cập nhật Kế hoạch thăm nhà thuốc</value>
+  </data>
+  <data name="PageIndex_CalendarVisitDrugStore" xml:space="preserve">
+    <value>Danh sách Kế hoạch thăm nhà thuốc</value>
+  </data>
+  <data name="PageCreate_Position" xml:space="preserve">
+    <value>Thêm Chức vụ</value>
+  </data>
+  <data name="PageEdit_Position" xml:space="preserve">
+    <value>Cập nhật Chức vụ</value>
+  </data>
+  <data name="PageIndex_Position" xml:space="preserve">
+    <value>Danh sách Chức vụ</value>
+  </data>
+  <data name="CommissionPercent" xml:space="preserve">
+    <value>Tỷ lệ hoa hồng (%)</value>
+  </data>
+  <data name="MinimumRevenue" xml:space="preserve">
+    <value>Doanh thu tối thiểu</value>
+  </data>
+  <data name="PositionCode" xml:space="preserve">
+    <value>Mã chức vụ</value>
+  </data>
+  <data name="PositionName" xml:space="preserve">
+    <value>Tên chức vụ</value>
+  </data>
+  <data name="DecreaseAmount" xml:space="preserve">
+    <value>Chiết khấu giảm</value>
+  </data>
+  <data name="PercentDecrease" xml:space="preserve">
+    <value>Phần trăm giảm</value>
+  </data>
+  <data name="QuantityDay" xml:space="preserve">
+    <value>Số ngày truy cập HT</value>
+  </data>
+  <data name="RemainingAmount" xml:space="preserve">
+    <value>Tổng tiền còn lại</value>
+  </data>
+  <data name="PageCreate_Ward" xml:space="preserve">
+    <value>Thêm danh sách quận/huyện</value>
+  </data>
+  <data name="PageEdit_Ward" xml:space="preserve">
+    <value>Cập nhật danh sách quận/huyện</value>
+  </data>
+  <data name="PageIndex_Ward" xml:space="preserve">
+    <value>Danh sách danh sách quận/huyện</value>
+  </data>
+  <data name="PageIndex_StaffDrugStore" xml:space="preserve">
+    <value>Danh sách nhân viên nhà thuốc</value>
+  </data>
+  <data name="Approved_Refure" xml:space="preserve">
+    <value>Từ chối duyệt</value>
+  </data>
+  <data name="PageCreate_HistoryCommissionStaff" xml:space="preserve">
+    <value>Thêm Hoa hồng nhân viên</value>
+  </data>
+  <data name="PageEdit_HistoryCommissionStaff" xml:space="preserve">
+    <value>Cập nhật Hoa hồng nhân viên</value>
+  </data>
+  <data name="PageIndex_HistoryCommissionStaff" xml:space="preserve">
+    <value>Danh sách Hoa hồng nhân viên</value>
+  </data>
+  <data name="AmountCommission" xml:space="preserve">
+    <value>Hoa hồng được hưởng</value>
+  </data>
+  <data name="RevenueDS" xml:space="preserve">
+    <value>Doanh số của nhà thuốc</value>
+  </data>
+  <data name="CooperationDay" xml:space="preserve">
+    <value>Ngày hợp tác</value>
+  </data>
+  <data name="PageCreate_LogVip" xml:space="preserve">
+    <value>Thêm Lịch sử xếp hạng</value>
+  </data>
+  <data name="PageEdit_LogVip" xml:space="preserve">
+    <value>Cập nhật Lịch sử xếp hạng</value>
+  </data>
+  <data name="PageIndex_LogVip" xml:space="preserve">
+    <value>Danh sách Lịch sử xếp hạng</value>
+  </data>
+  <data name="ManagerStaffId" xml:space="preserve">
+    <value>Nhân viên quản lý</value>
+  </data>
+</root>

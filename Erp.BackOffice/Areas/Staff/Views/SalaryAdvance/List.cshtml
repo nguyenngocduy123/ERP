@@ -1,0 +1,72 @@
+﻿@model IEnumerable<SalaryAdvanceViewModel>
+
+@using Erp.BackOffice.App_GlobalResources
+@using Erp.BackOffice.Staff.Models
+@using Erp.BackOffice.Helpers
+@using GridMvc.Html
+@{
+    bool isPopup = Request["IsPopup"] != null && Request["IsPopup"].ToString().ToLower() == "true" ? true : false;
+    if (isPopup)
+    {
+        Layout = "~/Views/Shared/_PopupLayout.cshtml";
+    }
+    else
+    {
+        Layout = "~/Views/Shared/ACE_AdminLayout.cshtml";
+    }
+}
+@section HeadOfPage {
+    <style>
+        .label-black.arrowed-in-right:after {
+            border-color: #666 transparent #666 #666;
+        }
+
+        .label-black.arrowed-in:before {
+            border-color: #666 #666 #666 transparent;
+        }
+
+    </style>
+}
+@helper GridColumnStatus(string Status)
+{
+    switch (Status)
+    {
+        case "Chờ duyệt":
+            <label class="label label-info arrowed-in-right">@Status</label>
+            break;
+        case "Được duyệt":
+        <label class="label label-warning arrowed-in-right">@Status</label>
+            break;
+        case "Hủy":
+        <label class="label label-black arrowed-in-right">@Status</label>
+            break;
+        case "Từ chối":
+        <label class="label label-danger arrowed-in-right">@Status</label>
+            break;
+        case "Đã trả tiền":
+        <label class="label label-success arrowed-in-right">@Status</label>
+            break;
+    }
+}
+
+<link href="@Url.Content("~/assets/css/Gridmvc.css")" rel="stylesheet" type="text/css" />
+<script src="@Url.Content("~/Scripts/gridmvc.min.js")" type="text/javascript"> </script>
+
+@helper GridColumnCategoryValue(object value)
+{
+    var attr = Erp.BackOffice.Helpers.Common.GetCategoryByValueOrId("value", value);
+    <span>@(attr != null ? attr.Name : "")</span>
+}
+<div class="table-responsive">
+        @Html.Grid(Model).Columns(columns =>
+   {
+       int index = 0;
+       columns.Add().Titled(Wording.OrderNo).SetWidth(30).RenderValueAs(n => (++index).ToString());
+       columns.Add(u => u.CreatedDate).Titled(Wording.CreatedDate).SetWidth(150).Sortable(false).Sanitized(false).Encoded(false).RenderValueAs(u => u.CreatedDate.Value.ToString("dd/MM/yyyy HH:mm"));
+       columns.Add().Titled(Wording.Status).SetWidth(150).Sortable(false).Sanitized(false).Encoded(false).RenderValueAs(u => GridColumnStatus(u.Status));
+       columns.Add(u => u.CodeAdvance).Titled(Wording.Code).SetWidth(150);
+       columns.Add().Titled(Wording.SalaryAdvance+" (VNĐ)").SetWidth(150).Css("text-right").Sortable(false).Sanitized(false).Encoded(false).RenderValueAs(u =>"<span style=\"color:red\"><b>"+ Erp.BackOffice.Helpers.Common.PhanCachHangNgan(u.Pay)+"</b></span>");
+       columns.Add(u => u.Note).Titled(Wording.Note);
+       columns.Add(u => u.ModifiedDate).Format("{0:HH:mm - dd/MM/yyyy}").Titled(Wording.ModifiedDate).SetWidth(150).Sortable(true);
+   }).WithPaging(10)
+    </div>

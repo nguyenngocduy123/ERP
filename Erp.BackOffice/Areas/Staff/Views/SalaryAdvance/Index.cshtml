@@ -1,0 +1,358 @@
+﻿@model  IEnumerable<SalaryAdvanceViewModel>
+
+@using Erp.BackOffice.App_GlobalResources
+@using Erp.BackOffice.Staff.Models
+@using Erp.BackOffice.Helpers
+@using GridMvc.Html
+
+@{
+    ViewBag.Title = Wording.PageIndex_SalaryAdvance;
+    bool isPopup = Request["popup"] != null && Request["popup"].ToString().ToLower() == "true" ? true : false;
+    if (isPopup)
+    {
+        Layout = "~/Views/Shared/_PopupLayout.cshtml";
+    }
+    else
+    {
+        Layout = "~/Views/Shared/ACE_AdminLayout.cshtml";
+    }
+    Erp.BackOffice.Models.PageSetting pageSetting = new Erp.BackOffice.Models.PageSetting
+    {
+        ModuleName = "SalaryAdvance",
+        ActionName = "Index",
+        PageTitle = ViewBag.Title,
+        DisplaySearchPanel = true,
+        IsPopup = false,
+        DisplayBackButton = false,
+        AdvancedSearch = false
+    };
+}
+
+@if (ViewBag.SuccessMessage != null && ViewBag.SuccessMessage != "")
+{
+    <div class="alert alert-block alert-success">
+        <button class="close" data-dismiss="alert" type="button">
+            <i class="ace-icon fa fa-times"></i>
+        </button>
+        <i class="ace-icon fa fa-check green"></i>
+        @ViewBag.SuccessMessage
+    </div>
+}
+
+@if (ViewBag.FailedMessage != null && ViewBag.FailedMessage != "")
+{
+    <div class="alert alert-block alert-danger">
+        <button class="close" data-dismiss="alert" type="button">
+            <i class="ace-icon fa fa-times"></i>
+        </button>
+        <i class="ace-icon fa fa-warning red"></i>
+        @ViewBag.FailedMessage
+    </div>
+}
+
+<link href="@Url.Content("~/assets/css/Gridmvc.css")" rel="stylesheet" type="text/css" />
+<script src="@Url.Content("~/Scripts/gridmvc.min.js")" type="text/javascript"> </script>
+
+@helper GridColumnCommand(int id, string Status, int? CreateUser)
+{
+    if (Status == "Hủy")
+    {
+        <p>
+            <button name="Delete" value="Delete" type="submit" class="btn btn-mini btn-danger">
+                <i class="ace-icon fa fa-trash bigger-120"></i>
+            </button>
+        </p>
+    }
+
+    if (Status == "Chờ duyệt" && CreateUser == ViewBag.User)
+    {
+        if (Erp.BackOffice.Filters.SecurityFilter.AccessRight("Cancel", "SalaryAdvance", "Staff"))
+        {
+            <p>
+                <a class="btn btn-mini btn-danger" href="@Url.Action("Cancel", "SalaryAdvance", new { Id = id })">
+                    <i class="fa fa-remove"></i>
+                    @Wording.Cancel
+                </a>
+            </p>
+
+        }
+    }
+    <p>
+        @if (Status == "Chờ duyệt" || Status == "Được duyệt")
+        {
+            if (Erp.BackOffice.Filters.SecurityFilter.AccessRight("Approval", "SalaryAdvance", "Staff"))
+            {
+                <a class="btn btn-mini btn-success" href="@Url.Action("Approval", "SalaryAdvance", new { Id = id })">
+
+                    @if (Status == "Chờ duyệt")
+                    {
+                        <i class="fa fa-check"></i>
+                        @Wording.Browser
+                    }
+                    @if (Status == "Được duyệt")
+                    {
+                        <i class="fa fa-money"></i>
+                        @Wording.StatusSalaryAdvance_Paid
+                    }
+                </a>
+            }
+        }
+        @if (Status == "Chờ duyệt")
+        {
+            if (Erp.BackOffice.Filters.SecurityFilter.AccessRight("Refure", "SalaryAdvance", "Staff"))
+            {
+                <a name="Edit" class="btn btn-mini btn-danger"
+                   onclick="OpenPopup('@Url.Action("Refure", "SalaryAdvance", new { Id = id })', '@Wording.Reason', 500, 300)">
+                    <i class="glyphicon glyphicon-remove"></i>
+                    @Wording.StatusSalaryAdvance_Refure
+                </a>
+            }
+        }
+    </p>
+
+}
+@helper GridColumnNameStaff(string name, string Status, int id, string Image)
+{
+    <div class="itemdiv commentdiv">
+        <div class="user">
+            <img alt="@name" src="@(Erp.BackOffice.Helpers.Common.KiemTraTonTaiHinhAnh(Image,"Staff", "user"))">
+        </div>
+        <div class="body">
+            <div class="name" data-toggle="tooltip" title="Tên nhân viên">
+                @if (string.IsNullOrEmpty(name))
+                {
+                    <span>NoTile</span>
+                }
+                else
+                {
+                    <a href="@Url.Action("Detail", "Staffs", new { area = "Staff", Id = id })" target="_blank"><b>@name</b></a>
+                }
+            </div>
+            <div class="text" data-toggle="tooltip" title="Trạng thái">
+                @GridColumnStatus(Status)
+            </div>
+        </div>
+    </div>
+}
+
+@helper GridColumnCategoryValue(object value)
+{
+    var attr = Common.GetCategoryByValueOrId("value", value);
+    <span>@(attr != null ? attr.Name : "")</span>
+}
+
+@helper CheckDeleteColumns(int Id, string Status)
+{
+    if (Status == "Hủy")
+    {
+        <label>
+            <input class="ace class-delete-all" type="checkbox" name="DeleteId-checkbox" value="@Id">
+            <span class="lbl"></span>
+        </label>
+    }
+
+}
+@helper GridColumnContact(string Code, int? Money, string Status, int id)
+{
+    <p data-toggle="tooltip" title="Mã tạm ứng">
+        <i class="fa fa-barcode"></i>
+        @if (Status == "Hủy")
+        {
+            <a onclick="OpenPopup('@Url.Action("Edit", "SalaryAdvance", new { area = "Staff", Id = id, IsPopup = "true" })', '@Wording.PageEdit_SalaryAdvance', 500, 500)"><b>@Code</b></a>
+        }
+        else
+        {
+            @Code
+        }
+    </p>
+    <span data-toggle="tooltip" title="Số tiền tạm ứng">
+        <i class="fa fa-money"></i> <b class="red">@Erp.BackOffice.Helpers.Common.PhanCachHangNgan(Money)</b>
+    </span>
+
+}
+@helper BuildCheckAll()
+{
+    <label>
+        <input class="ace" type="checkbox" name="checkAll" id="checkAll" />
+        <span class="lbl"></span>
+    </label>
+}
+@section HeadOfPage {
+    @Html.ScriptTop_ChosenStyle()
+    <style>
+        .label-black.arrowed-in-right:after {
+            border-color: #666 transparent #666 #666;
+        }
+
+        .label-black.arrowed-in:before {
+            border-color: #666 #666 #666 transparent;
+        }
+
+        .itemdiv > .body > .text {
+            padding-bottom: 0px !important;
+            /* padding-left: 7px; */
+            /* font-size: 13px; */
+        }
+
+        .itemdiv {
+            padding-right: 3px;
+            min-height: 10px;
+        }
+    </style>
+}
+@helper GridColumnStatus(string Status)
+{
+    switch (Status)
+    {
+        case "Chờ duyệt":
+            <label class="label label-info arrowed-in-right">@Status</label>
+            break;
+        case "Được duyệt":
+        <label class="label label-warning arrowed-in-right">@Status</label>
+            break;
+        case "Hủy":
+        <label class="label label-black arrowed-in-right">@Status</label>
+            break;
+        case "Từ chối":
+        <label class="label label-danger arrowed-in-right">@Status</label>
+            break;
+        case "Đã trả tiền":
+        <label class="label label-success arrowed-in-right">@Status</label>
+            break;
+    }
+}
+@helper GridColumnDateName(DateTime? CreateDate, DateTime? DateOfIssue)
+{
+    <p data-toggle="tooltip" title="Ngày gửi yêu cầu">
+        <i class="fa fa-calendar-plus-o"></i> @(CreateDate.HasValue ? CreateDate.Value.ToString("dd/MM/yyyy HH:mm") : "chưa có")
+    </p>
+    <span data-toggle="tooltip" title="Ngày tạm ứng"><i class="fa fa-calendar-check-o"></i> @(DateOfIssue.HasValue ? DateOfIssue.Value.ToString("dd/MM/yyyy HH:mm") : "chưa có")</span>
+}
+@using (Html.BeginPageHeaderContainer(pageSetting))
+{
+    <p>
+        @Html.TextBox("Code", Request["Code"], new { @class = "form-control", autocomplete = "off", placeholder = Wording.CodeSalaryAdvance + "..." })
+        @Html.TextBox("CodeStaff", Request["CodeStaff"], new { @class = "form-control", autocomplete = "off", placeholder = Wording.CodeStaff + "..." })
+        @Html.TextBox("Name", Request["Name"], new { @class = "form-control", autocomplete = "off", placeholder = Wording.NameStaff + "..." })
+        @Html.DropDownList("Status", SelectListHelper.GetSelectList_Category("Status_SalaryAdvance", null, "Value", null), "- Trạng thái -", new Dictionary<string, object> { { "class", "form-control" }, { "data-val-required", "Bắt buộc chọn." } })
+        @Html.DropDownList("branchId", SelectListHelper.GetSelectList_Branch(Request["branchId"], "- Chi nhánh -"), new Dictionary<string, object> { { "class", "form-control" }, { "data-val-required", "Bắt buộc chọn." } })
+        @Html.DropDownList("DepartmentId", new List<SelectListItem> { new SelectListItem { Text = "- Phòng ban -", Value = "" } }, new Dictionary<string, object> { { "class", "form-control" }, { "data-val-required", "Bắt buộc chọn." } })
+        <span class="input-daterange input-group">
+            @Html.TextBox("start", Request["start"] != null ? Request["start"] : "", new { @class = "form-control", autocomplete = "off", placeholder = "Ngày gửi yêu cầu từ..." })
+            <span class="input-group-addon">
+                <i class="fa fa-exchange"></i>
+            </span>
+            @Html.TextBox("end", Request["end"] != null ? Request["end"] : "", new { @class = "form-control", autocomplete = "off", placeholder = "đến..." })
+        </span>
+    </p>
+}
+@if (!isPopup)
+{
+    using (Html.BeginForm("Delete", "SalaryAdvance", FormMethod.Post))
+    {
+        <div class="table-responsive">
+            @Html.Grid(Model).Columns(columns =>
+           {
+               columns.Add().Titled(BuildCheckAll().ToHtmlString()).SetWidth(20).Sanitized(false).Encoded(false).RenderValueAs(n => CheckDeleteColumns(n.Id, n.Status));
+               //int index = 0;
+               //columns.Add().Titled(Wording.OrderNo).SetWidth(30).RenderValueAs(n => (++index).ToString());
+               columns.Add().Titled(Wording.InfoStaff).Sortable(false).Sanitized(false).Encoded(false).SetWidth(300).RenderValueAs(u => GridColumnNameStaff(u.Name, u.Status, u.StaffId.Value, u.ProfileImage));
+               columns.Add().Titled("Thông tin tạm ứng").Sortable(false).Sanitized(false).Encoded(false).SetWidth(150).RenderValueAs(u => GridColumnContact(u.CodeAdvance, u.Pay, u.Status, u.Id));
+               columns.Add().Titled("Thời gian").Sortable(false).Sanitized(false).Encoded(false).SetWidth(150).RenderValueAs(u => GridColumnDateName(u.CreatedDate, u.ModifiedDate));
+               columns.Add(u => u.DayAdvance).Format("{0:dd/MM/yyyy}").Titled(Wording.DayAdvance).Sortable(false).Sanitized(false).Encoded(false);
+               columns.Add().Titled(Wording.Note).Sortable(false).Sanitized(false).Encoded(false).RenderValueAs(u => u.Note);
+               columns.Add(u => u.Id).Titled(Wording.Action).Sanitized(false).Encoded(false).SetWidth(170).RenderValueAs(u => GridColumnCommand(u.Id, u.Status, u.CreatedUserId));
+           }).WithPaging(10)
+        </div>
+        using (Html.BeginButtonContainer(pageSetting))
+        {
+            if (Erp.BackOffice.Filters.SecurityFilter.AccessRight("Create", "SalaryAdvance", "Staff"))
+            {
+                @Html.Button(Wording.CreateNew, ButtonType.aTag, ButtonColor.Info, ButtonSize.Mini, true, IconType.Plus, IconSize.Default, false, new { @onclick = "OpenPopup('" + Url.Action("Create", "SalaryAdvance", new { area = "Staff", IsPopup = "true" }) + "', '" + Wording.PageCreate_SalaryAdvance + "', 500, 500)" })
+            }
+            if (Erp.BackOffice.Filters.SecurityFilter.AccessRight("Delete", "SalaryAdvance", "Staff"))
+            {
+                <button class="btn btn-mini btn-danger" type="submit" name="DeleteAll" value="DeleteAll" onclick="return CheckIsval();">
+                    <i class="ace-icon fa fa-trash"></i>
+                    @Wording.Delete
+                </button>
+            }
+        }
+    }
+}
+else
+{
+    @Html.Grid(Model).Columns(columns =>
+    {
+        //columns.Add().Titled(BuildCheckAll().ToHtmlString()).SetWidth(20).Sanitized(false).Encoded(false).RenderValueAs(n => CheckDeleteColumns(n.Id));
+        columns.Add().Titled(Html.DisplayNameFor(u => u.FirstOrDefault().CodeAdvance).ToString()).Sortable(false).Sanitized(false).Encoded(false).RenderValueAs(u => GridColumnNameStaff(u.Name, u.Status, u.StaffId.Value, u.ProfileImage));
+    }).WithPaging(10)
+}
+
+@section Scripts {
+    <script type="text/javascript">
+        function CheckIsval() {
+            if ($('[name="DeleteId-checkbox"]').is(':checked') == false) {
+                alert("Phải chọn ít nhất 1 item.");
+                return false;
+            }
+            else {
+                if (confirm('Bạn có chắc muốn xóa các item đã chọn ?')) {
+                    return true;
+                }
+                else {
+                    return false;
+                }
+            }
+        }
+
+        $('[name="Delete"]').click(function () {
+            if (confirm('Bạn có chắc muốn xóa item ?')) {
+                $(this).closest('tr').children('td').each(function (i, e) {
+                    $(this).find("input.class-delete-all").prop("checked", true);
+                    return true;
+                })
+            }
+            else {
+                return false;
+            }
+
+        })
+        function ClosePopupAndDoSomething() {
+            ClosePopup(true);
+            ShowLoading();
+        }
+
+        function ClosePopupAndRedirectToURL(url) {
+            ClosePopup(true);
+            location.href = url;
+        }
+
+        //Fetch Department of University
+        var urDepartmentl = '/api/BackOfficeServiceAPI/FetchBranchDepartment';
+        var department = $('[name="DepartmentId"]'); // cache it
+
+        $('[name="branchId"]').change(function () {
+            ShowLoading();
+            department.empty(); // remove any existing options
+            $(document.createElement('option'))
+                .attr('value', '')
+                .text('- Rỗng -')
+                .appendTo(department).trigger('chosen:updated');
+            var id = $(this).val(); // Use $(this) so you don't traverse the DOM again
+            $.getJSON(urDepartmentl, { BranchId: id }, function (response) {
+                department.empty(); // remove any existing options
+                $(response).each(function () {
+                    $(document.createElement('option'))
+                        .attr('value', this.Id)
+                        .text(this.Staff_DepartmentId)
+                        .appendTo(department).trigger('chosen:updated');
+                    HideLoading();
+                });
+            });
+        });
+    </script>
+    @Html.ScriptBottom_ValidationMvc()
+    @Html.ScriptBottom_DatePicker("dd/mm/yyyy")
+    @Html.ScriptBottom_ChosenStyle()
+}

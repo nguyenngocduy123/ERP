@@ -1,0 +1,125 @@
+﻿@using Erp.BackOffice.App_GlobalResources
+@using Erp.BackOffice.Helpers
+@using Erp.BackOffice.Staff.Models
+
+@model TimekeepingListViewModel
+
+@{
+    ViewBag.Title = Wording.PageCreate_TimekeepingList;
+
+    Layout = "~/Views/Shared/" + (Request["IsPopup"] == null ? "ACE_AdminLayout.cshtml" : "_PopupLayout.cshtml");
+
+    Erp.BackOffice.Models.PageSetting pageSetting = new Erp.BackOffice.Models.PageSetting
+    {        
+        ModuleName = "TimekeepingList",
+        ActionName = "Create",
+        PageTitle = ViewBag.Title,
+        DisplaySearchPanel = false,
+        IsPopup = false,
+        DisplayBackButton = true
+    };
+    string Month = Request["Month"] != null ? Request["Month"] : DateTime.Now.Month.ToString();
+    string Year = Request["Year"] != null ? Request["Year"] : DateTime.Now.Year.ToString();
+}
+
+@section HeadOfPage {
+    @Html.ScriptTop_ChosenStyle()
+}
+
+@using(Html.BeginPageHeaderContainer(pageSetting))
+{
+
+}
+
+@using (Html.BeginForm_AceStyle((string)ViewBag.Title, pageSetting.ActionName, pageSetting.ModuleName, null, FormMethod.Post, new { @class = "form-horizontal" }))
+{
+    @Html.ValidationSummary(true)
+
+    <input type="hidden" value="@Request["IsPopup"]" name="IsPopup" />
+    <div id="" class="control-group form-group">
+        <label class="control-label col-lg-5 col-md-4 col-sm-4" for="Month">Tháng</label>
+        <div class="control-value col-lg-7 col-md-8 col-sm-8">
+            <div class="clearfix">
+                <select name="Month">
+                    <option value="">- Chọn tháng -</option>
+                    @for (int i = 1; i <= 12; i++)
+                    {
+                        <option @(Month == i.ToString() ? "Selected" : "") value="@i">Tháng @i</option>
+                    }
+                </select>
+            </div>
+            <div class="clearfix">
+                <span class="help-inline field-validation-valid" data-valmsg-for="Month" data-valmsg-replace="true"></span>
+            </div>
+        </div>
+    </div>
+    <div id="" class="control-group form-group">
+        <label class="control-label col-lg-5 col-md-4 col-sm-4" for="Year">Năm</label>
+        <div class="control-value col-lg-7 col-md-8 col-sm-8">
+            <div class="clearfix">
+                <select name="Year">
+                    <option value="">- Chọn năm -</option>
+                    @for (int i = 2016; i <= DateTime.Now.Year; i++)
+                    {
+                        <option @(Year == i.ToString() ? "Selected" : "") value="@i">Năm @i</option>
+                    }
+                </select>
+            </div>
+            <div class="clearfix">
+                <span class="help-inline field-validation-valid" data-valmsg-for="Year" data-valmsg-replace="true"></span>
+            </div>
+        </div>
+    </div>
+
+    @Html.CustomDropDownListFor(model => model.Sale_BranchId, SelectListHelper.GetSelectList_Branch(null,Wording.Empty), WidthType.span12, true, null, DropdownListStyle.DropdownListStyleChosen)
+    @Html.CustomDropDownListFor(model => model.DepartmentId, SelectListHelper.GetSelectList_BranchDepartment(null,0,Wording.Empty), WidthType.span12, true, null, DropdownListStyle.DropdownListStyleChosen)
+    @Html.CustomDropDownListFor(model => model.CategoryShifts, SelectListHelper.GetSelectList_Category("categoryShifts", null, "Value", Wording.Empty), WidthType.span12, true, null, DropdownListStyle.DropdownListStyleChosen)
+
+
+    using (Html.BeginButtonContainer(pageSetting))
+    {
+        <button class="btn btn-mini btn-primary" type="submit" name="Submit" value="Save">
+            <i class="ace-icon fa fa-save"></i>
+            @Wording.Save
+        </button>
+    }
+}
+
+@section Scripts {    
+    <script>
+        //truyền từ action create của controller qua khi thực hiện submit và return về lại view create, để nhận biết là được gọi theo dạng popup
+        var closePopup = '@ViewBag.closePopup';
+        $(document).ready(function () {
+            //nếu là được gọi theo dạng popup từ form khác thì chạy đoạn code bên dưới
+            if (closePopup != '') {
+                var option = '<option value="@Model.Id" >@Model.Name</option>';
+                //tên funtion có thể khác theo từng công việc riêng (đây chỉ là mẫu khi thêm mới sẽ gọi lại)
+                window.parent.ClosePopupAndAppendSelect(option);
+            }
+        });
+        //Fetch Department of University
+        var urDepartmentl = '/api/BackOfficeServiceAPI/FetchBranchDepartment';
+        var department = $('#DepartmentId'); // cache it
+
+        $("#Sale_BranchId").change(function () {
+            department.empty(); // remove any existing options
+            $(document.createElement('option'))
+                        .attr('value', '')
+                        .text('- Rỗng -')
+                        .appendTo(department).trigger('chosen:updated');
+            var id = $(this).val(); // Use $(this) so you don't traverse the DOM again
+            $.getJSON(urDepartmentl, { BranchId: id }, function (response) {
+                department.empty(); // remove any existing options
+
+                $(response).each(function () {
+                    $(document.createElement('option'))
+                        .attr('value', this.Id)
+                        .text(this.Staff_DepartmentId)
+                        .appendTo(department).trigger('chosen:updated');
+                });
+            });
+        });
+    </script>
+    @Html.ScriptBottom_ValidationMvc()    
+    @Html.ScriptBottom_ChosenStyle()
+}

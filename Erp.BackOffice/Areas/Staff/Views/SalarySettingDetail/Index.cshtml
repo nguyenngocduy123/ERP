@@ -1,0 +1,369 @@
+﻿@model SalarySettingEditViewModel
+
+@using Erp.BackOffice.App_GlobalResources
+@using Erp.BackOffice.Staff.Models
+@using Erp.BackOffice.Helpers
+@using GridMvc.Html
+
+@{
+    Layout = null;
+}
+
+<style type="text/css">
+    table input {
+        padding: 2px 5px !important;
+    }
+
+    table select {
+        height: 25px;
+        font-size: 12px;
+    }
+
+    body.dragging, body.dragging * {
+        cursor: move !important;
+    }
+
+    .dragged {
+        position: absolute;
+        opacity: 0.5;
+        z-index: 2000;
+    }
+
+    ol.example li.placeholder {
+        position: relative;
+        /** More li styles **/
+    }
+
+        ol.example li.placeholder:before {
+            position: absolute;
+            /** Define arrowhead **/
+        }
+
+    table tr.group {
+        font-weight: bold;
+    }
+
+    .btn_formula_item {
+        margin-bottom: 3px;
+    }
+</style>
+
+<link href="@Url.Content("~/assets/css/Gridmvc.css")" rel="stylesheet" type="text/css" />
+
+@helper GridColumnCommand(int id)
+{
+    <button name="Delete" value="Delete" type="submit" class="btn btn-mini btn-danger" style="height:25px">
+        <i class="ace-icon fa fa-trash"></i>
+    </button>
+}
+
+@helper BuildCheckAll()
+{
+    <label>
+        <input class="ace" type="checkbox" name="checkAll" id="checkAll" />
+        <span class="lbl"></span>
+    </label>
+}
+
+@helper CheckDeleteColumns(int Id)
+{
+    <label>
+        <input class="ace class-delete-all" type="checkbox" name="DeleteId-checkbox" value="@Id">
+        <span class="lbl"></span>
+    </label>
+}
+
+@helper renderItem(SalarySettingDetailViewModel item)
+{
+    <tr data-id="@item.Id" class="@(item.ParentId == null ? "group" : "")">
+        <td>
+            @if (item.Id > 0)
+            {
+                @CheckDeleteColumns(item.Id)
+            }
+        </td>
+        <td>
+            @if (item.ParentId != null)
+            {
+                @Html.TextBox("OrderNo_" + item.Id, item.OrderNo, new { style = "margin-left:53px; width:50px; text-align:center" })
+
+            }
+            else
+            {
+                @Html.TextBox("OrderNo_" + item.Id, item.OrderNo, new { style = "width:50px; text-align:center" })
+            }
+
+            @Html.TextBox("Name_" + item.Id, item.Name, new { style = item.ParentId == null ? "width:203px;" : "width:150px;", @readonly = "true" })
+            <a class="btn btn-mini btn-white" style="height:26px!important;margin-top:-2px;font-size:13px!important" onclick="OpenPopup('/SaleCategory/TitleSalarySetting?IsPopup=true&OrderNo=@(item.Id)&jsCallback=selectLocationItem', 'Tìm kiếm dữ liệu', 800, 600)"
+               data-rel="tooltip" title="" data-placement="bottom" data-original-title="Tìm kiếm danh mục tiêu đề">
+                <i class="fa fa-search"></i>
+            </a>
+        </td>
+        <td>
+            @Html.DropDownList("DataType_" + item.Id, new SelectList(Model.SelectListDataType, "Value", "Text", item.DataType), new { data_id = item.Id })
+        </td>
+        <td align="center">
+            <label>
+                <input class="ace IsGroup" type="checkbox" id="IsGroup_@item.Id" name="IsGroup_@item.Id" data-id="@item.Id" @(item.IsGroup ? "checked=checked" : "") />
+                <span class="lbl"></span>
+            </label>
+        </td>
+        <td>
+            @if (!item.IsGroup)
+            {
+                @Html.DropDownList("ParentId_" + item.Id, new SelectList(Model.SelectList_Group, "Value", "Text", item.ParentId), "- Rỗng -")
+            }
+        </td>
+        <td>
+            @if (!item.IsGroup)
+            {
+                @Html.DropDownList("GroupName_" + item.Id, new SelectList(Model.SelectListGroupName, "Value", "Text", item.GroupName), "- Rỗng -")
+            }
+        </td>
+        <td class="col_FormulaType">
+            @if (!item.IsGroup)
+            {
+                @Html.DropDownList("FormulaType_" + item.Id, new SelectList(Model.SelectListFormulaType, "Value", "Text", item.FormulaType), new { data_id = item.Id })
+            }
+        </td>
+        <td>
+            @if (!item.IsGroup)
+            {
+                <div class="default_value_container_@item.Id" style="@(item.FormulaType != Wording.FormulaType_Default ? "display:none" : "")">
+                    <label style="padding-top:3px">
+                        <input class="ace IsDefaultValue" type="checkbox" id="IsDefaultValue_@item.Id" name="IsDefaultValue_@item.Id" data-id="@item.Id" @(item.IsDefaultValue ? "checked=checked" : "") />
+                        <span class="lbl">Tùy chỉnh</span>
+                    </label>
+                    @Html.TextBox("DefaultValue_" + item.Id, item.DefaultValue, new { style = "width:100px; text-align:right;" + (item.IsDefaultValue ? "" : "display:none") })
+                </div>
+                <div class="formula_container_@item.Id" style="@(item.FormulaType == Wording.FormulaType_Default ? "display:none" : "")">
+                    @Html.TextBox("Formula_" + item.Id, item.Formula, new { style = "width:400px", @readonly = "true" })
+                    <a class="btn btn-info btn-mini" style="height:25px; margin-top:-4px" onclick="OpenPopup('@Url.Action("FormulaEditor", "SalarySettingDetail", new { IsPopup = true, SalarySettingId = Model.Id, TargetId = item.Id })', '', 700, 700)">
+                        ...
+                    </a>
+                </div>
+            }
+        </td>
+        <td align="center">
+            <label>
+                <input class="ace IsSum" type="checkbox" id="IsSum_@item.Id" name="IsSum_@item.Id" data-id="@item.Id" @(item.IsSum ? "checked=checked" : "") />
+                <span class="lbl"></span>
+            </label>
+        </td>
+        <td align="center">
+            <label>
+                <input class="ace IsChange" type="checkbox" id="IsChange_@item.Id" name="IsChange_@item.Id" data-id="@item.Id" @((item.IsChange == null || item.IsChange.Value == false) ?"":"checked=checked" ) />
+                <span class="lbl"></span>
+            </label>
+        </td>
+        <td align="center">
+            <label>
+                <input class="ace IsMoney" type="checkbox" id="IsMoney_@item.Id" name="IsMoney_@item.Id" data-id="@item.Id" @((item.IsMoney == null || item.IsMoney == false) ? "" : "checked=checked")) />
+                <span class="lbl"></span>
+            </label>
+        </td>
+        <td align="center">
+            <label>
+                <input class="ace IsDisplay" type="checkbox" id="IsDisplay_@item.Id" name="IsDisplay_@item.Id" data-id="@item.Id" @(item.IsDisplay ? "checked=checked" : "") />
+                <span class="lbl"></span>
+            </label>
+        </td>
+        <td>
+            @if (item.Id > 0)
+            {
+                <a class="btn btn-success btn-mini" style="height:25px" onclick="updateSalarySettingDetail(@item.Id)">
+                    <i class="fa fa-save"></i>
+                    Lưu
+                </a>
+                @GridColumnCommand(item.Id)
+            }
+            else
+            {
+                <a class="btn btn-primary btn-mini" style="height:25px" onclick="updateSalarySettingDetail(@item.Id)">
+                    <i class="fa fa-plus"></i>
+                    Thêm
+                </a>
+            }
+        </td>
+    </tr>
+}
+
+@using (Html.BeginForm("Delete", "SalarySettingDetail", FormMethod.Post))
+{
+    <table class="table table-bordered" style="width:100%">
+        <thead>
+            <tr>
+                <td style="width:50px">#</td>
+                <td><b>Tiêu đề</b></td>
+                <td><b>Loại dữ liệu</b></td>
+                <td><b>Là nhóm</b></td>
+                <td><b>Tiêu đề nhóm</b></td>
+                <td><b>Phân loại dữ liệu cá nhân</b></td>
+                <td><b>Phân loại tính toán</b></td>
+                <td><b>Cách thức tính</b></td>
+                <td><b>Tổng</b></td>
+                <td><b>Thay đổi</b></td>
+                <td><b>Tiền tệ</b></td>
+                <td><b>Hiển thị</b></td>
+                <td><b>Dữ liệu</b></td>
+            </tr>
+        </thead>
+        <tbody class="sorted_table">
+            @foreach (var group in Model.ListAllColumns.Where(g => g.ParentId == null).OrderBy(g => g.OrderNo))
+            {
+                @renderItem(group)
+                foreach (var item in Model.ListAllColumns.Where(i => i.ParentId == group.Id).OrderBy(i => i.OrderNo))
+                {
+                    @renderItem(item)
+                }
+            }
+        </tbody>
+        <tfoot style="background:#eee">
+            @renderItem(new SalarySettingDetailViewModel
+            {
+                OrderNo = 100,
+                IsDisplay = true,
+                FormulaType = Wording.FormulaType_Default
+            })
+        </tfoot>
+    </table>
+}
+
+<script type="text/javascript">
+    $(function () {
+        $(".col_FormulaType select").change(function () {
+            var id = $(this).data('id');
+            var value = $(this).find("option:selected").val();
+            if (value == '@Wording.FormulaType_Default') {
+                $(".formula_container_" + id).hide();
+                $(".default_value_container_" + id).show();
+            }
+            else {
+                $(".formula_container_" + id).show();
+                $(".default_value_container_" + id).hide();
+            }
+        });
+
+        $(".IsDefaultValue").change(function () {
+            var id = $(this).data('id');
+            if ($(this).prop('checked') == true) {
+                $("#DefaultValue_" + id).show();
+            }
+            else {
+                $("#DefaultValue_" + id).hide();
+            }
+        });
+    });
+
+    function applyFormula(Id, val)
+    {
+        $("#Formula_" + Id).val(val);
+        ClosePopup();
+    }
+
+    function updateSalarySettingDetail(Id) {
+        var ParentId = $("#ParentId_" + Id).val();
+        var OrderNo = $("#OrderNo_" + Id).val();
+        var Name = $("#Name_" + Id).val();
+        var FormulaType = $("#FormulaType_" + Id).val();
+        var Formula = $("#Formula_" + Id).val();
+        var DefaultValue = $("#DefaultValue_" + Id).val() == undefined ? 0 : $("#DefaultValue_" + Id).val();
+        console.log($("#DefaultValue_" + Id).val());
+        var IsDefaultValue = false;
+        if ($("#IsDefaultValue_" + Id).is(":checked"))
+        {
+            IsDefaultValue = true;
+        }
+        var GroupName = $("#GroupName_" + Id).val();
+        var IsGroup = false;
+        if ($("#IsGroup_" + Id).is(":checked"))
+        {
+            IsGroup = true;
+        }
+        var IsSum = false;
+        if ($("#IsSum_" + Id).is(":checked"))
+        {
+            IsSum = true;
+        }
+        var IsChange = false;
+        if ($("#IsChange_" + Id).is(":checked"))
+        {
+            IsChange = true;
+        }
+        var IsDisplay = false;
+        if ($("#IsDisplay_" + Id).is(":checked"))
+        {
+            IsDisplay = true;
+        }
+        var IsMoney = false;
+        if ($("#IsMoney_" + Id).is(":checked"))
+        {
+            IsMoney = true;
+        }
+        var DataType = $("#DataType_" + Id).val();
+
+        ShowLoading();
+        var url = "/SalarySettingDetail/Edit";
+
+        $.post(url, {
+            SalarySettingId: @Model.Id,
+            Id: Id,
+            ParentId: ParentId,
+            OrderNo: OrderNo,
+            Name: Name,
+            FormulaType: FormulaType,
+            Formula: Formula,
+            DefaultValue: DefaultValue,
+            IsDefaultValue: IsDefaultValue,
+            GroupName: GroupName,
+            IsGroup: IsGroup,
+            IsDisplay: IsDisplay,
+            DataType: DataType,
+            IsSum:IsSum,
+            IsMoney:IsMoney,
+            IsChange:IsChange
+        },
+        function (res) {
+            if (res == 'success') {
+                location.reload();
+                //alertPopup('Lưu thành công!', '', 'success');
+            } else {
+                alertPopup('Lưu không thành công!', 'Xin hãy kiểm tra lại.', 'error');
+                HideLoading();
+            }
+        });
+    }
+
+    //function updateSalarySettingDetail_OrderNo(Id, OrderNo_First, OrderNo_Last) {
+    //    ShowLoading();
+    //    var url = "/SalarySettingDetail/Update_OrderNo";
+
+    //    $.post(url, { Id: Id, OrderNo_First: OrderNo_First, OrderNo_Last: OrderNo_Last }, function (res) {
+    //        if (res == 'success') {
+    //            $("#OrderNo_Text_" + Id).text(OrderNo_Last);
+    //            alertPopup('Lưu thành công!', '', 'success');
+    //        } else {
+    //            alertPopup('Lưu không thành công!', 'Xin hãy kiểm tra lại.', 'error');
+    //        }
+
+    //        HideLoading();
+    //    });
+    //}
+
+    function selectLocationItem(id,value, name, orderNo) {
+        $("#Name_" + orderNo).val(name);
+        ClosePopup();
+    }
+    $('[name="Delete"]').click(function () {
+        if (confirm('Bạn có chắc muốn xóa item ?')) {
+            $(this).closest('tr').children('td').each(function (i, e) {
+                $(this).find("input.class-delete-all").prop("checked", true);
+                return true;
+            })
+        }
+        else {
+            return false;
+        }
+
+    })
+</script>

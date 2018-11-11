@@ -1,0 +1,190 @@
+﻿@model IEnumerable<PageMenuViewModel>
+
+@using Erp.BackOffice.Areas.Administration.Models;
+
+@{
+    if (Model == null||Model.Count()<=0)
+    {
+        return;
+    }
+
+    int activeMenuId = 0;
+    if (ViewBag.IdMenuItem != null)
+    {
+        activeMenuId = (int)ViewBag.IdMenuItem;
+    }
+    
+    List<int> listActiveMenu = new List<int>();
+    int parentMenuId = activeMenuId;
+    if (Model != null)
+    {
+        
+            PageMenuViewModel menu = new PageMenuViewModel();
+            if (activeMenuId != null && activeMenuId > 0)
+            {
+                menu = Model.Where(p => p.Id == activeMenuId).FirstOrDefault();
+            }
+        else
+            { 
+                 menu = Model.FirstOrDefault();
+            }
+            listActiveMenu.Add(menu.Id);
+
+            while (menu != null && menu.ParentId > 0)
+            {
+                menu = Model.Where(p => p.Id == menu.ParentId).FirstOrDefault();
+
+                if (menu != null)
+                {
+                    listActiveMenu.Add(menu.Id);
+                    parentMenuId = menu.Id;// Giữ lại để biết là root menu
+                }
+            }
+    }
+}
+
+@*@helper SubMenuItem(IEnumerable<PageMenuViewModel> subMenu, int idMenuItem)
+    {
+        foreach (PageMenuViewModel item in subMenu)
+        {
+            string cssClassActive = "";
+            if (item.Id == idMenuItem)
+            {
+                cssClassActive = "class=active";
+            }
+            <li @cssClassActive>
+                <a href="@Url.Action(item.ActionName, item.ControllerName, new { area = item.AreaName })">
+                    <i class="@item.CssClassIcon"></i>
+                    @item.MenuItemName
+                </a>
+            </li>
+        }
+    }
+
+
+    @helper MenuItem(IEnumerable<PageMenuViewModel> parents, int idMenuItem, int idMenuParent)
+    {
+        if (parents != null)
+        {
+            foreach (PageMenuViewModel item in parents)
+            {
+                string cssClassActiveOpen = "";// "class=active open";
+                var subMenu = Model.Where(x => x.ParentId == item.Id).ToList();
+                var css_dropdown_toggle = "class=dropdown-toggle";
+                if (subMenu == null || subMenu.Count == 0)
+                {
+                    css_dropdown_toggle = "";
+                    if (item.Id == idMenuParent)
+                    {
+                        cssClassActiveOpen = "class=active";
+                    }
+                }
+                else if (item.Id == idMenuParent)
+                {
+                    cssClassActiveOpen = "class=active open";
+                }
+                <li @cssClassActiveOpen>
+                    <a href="@Url.Action(item.ActionName, item.ControllerName, new { area = item.AreaName })" @css_dropdown_toggle>
+                        <i class="@item.CssClassIcon"></i>
+                        <span class="menu-text">@item.MenuItemName </span>
+                        @if (!string.IsNullOrEmpty(css_dropdown_toggle))
+                        {
+                            <b class="arrow icon-angle-down"></b>
+                        }
+                    </a>
+                    @{
+                if (subMenu != null && subMenu.Count > 0)
+                {
+                    <ul class="submenu">
+                        @SubMenuItem(subMenu, idMenuItem)
+                    </ul>
+                }
+                    }
+                </li>
+
+
+            }
+        }
+    }*@
+
+@helper MenuMultiLevel(List<PageMenuViewModel> pageMenuViewModels, int parentId, int idMenuActive, List<int> idMenuParents, int nLevel)
+{
+    List<PageMenuViewModel> parents = pageMenuViewModels.Where(x => x.ParentId == parentId).OrderBy(x => x.OrderNo).ToList();
+    if (parents != null)
+    {
+        foreach (PageMenuViewModel item in parents)
+        {
+            string cssClassActiveOpen = "";// "class=active open";
+            var css_dropdown_toggle = "";
+
+            if (item.Id == idMenuActive)
+            {
+                cssClassActiveOpen = "active";
+            }
+
+            if (idMenuParents.Contains(item.Id))
+            {
+                cssClassActiveOpen = "active";
+            }
+
+            var subMenu = Model.Where(x => x.ParentId == item.Id).ToList();            
+
+            if (subMenu != null && subMenu.Count > 0)
+            {
+                css_dropdown_toggle = "";//"dropdown-toggle";
+            }
+
+            var url = item.PageUrl;
+            if (item.PageId == null)
+            {
+                url = item.Url;
+            }
+
+            <li class="@cssClassActiveOpen @(nLevel == 0 && subMenu != null && subMenu.Count > 0 ? "open" : "")">
+                <a href="@(nLevel == 0 && subMenu != null && subMenu.Count > 0 ? "#" : url)" class="@css_dropdown_toggle" @(url != null && url.EndsWith(".pdf") ? "target=\"_blank\"" : "")>
+                    @if (nLevel == 0)
+                    {
+                        <i class="@item.CssClassIcon"></i>
+                    }
+                    else
+                    {
+                        <i class="menu-icon fa fa-caret-right"></i>
+                    }
+                    <span class="menu-text">@item.Name </span>
+                    @*@if (!string.IsNullOrEmpty(css_dropdown_toggle))
+            {
+                <b class="arrow fa fa-angle-down"></b>
+            }*@
+                </a>
+                <b class="arrow"></b>
+                @if (subMenu != null && subMenu.Count > 0)
+                {
+                    int nSubLevel = nLevel + 1;
+                    <ul class="submenu" style="display:block">
+                        @MenuMultiLevel(pageMenuViewModels, item.Id, idMenuActive, idMenuParents, nSubLevel)
+                    </ul>
+                }
+            </li>
+        }
+    }
+}
+
+<div id="sidebar" class="sidebar responsive sidebar-fixed sidebar-scroll">
+    <script type="text/javascript">
+        try { ace.settings.check('sidebar', 'fixed') } catch (e) { }
+    </script>
+   
+    <!--Begin .nav-list menu-->
+    <ul class="nav nav-list">
+        @MenuMultiLevel(Model.ToList(), parentMenuId, 0, listActiveMenu, 0)
+    </ul>
+    <!--End .nav-list menu -->
+
+    <div class="sidebar-toggle sidebar-collapse" id="sidebar-collapse">
+        <i class="ace-icon fa fa-angle-double-left" data-icon1="ace-icon fa fa-angle-double-left" data-icon2="ace-icon fa fa-angle-double-right"></i>
+    </div>
+
+    <script type="text/javascript">
+        try { ace.settings.check('sidebar', 'collapsed') } catch (e) { }
+    </script>
+</div>

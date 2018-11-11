@@ -1,0 +1,72 @@
+@using Erp.BackOffice.App_GlobalResources
+@using Erp.BackOffice.Helpers
+@using Erp.BackOffice.Staff.Models
+
+@model FPMachineViewModel
+
+@{
+    ViewBag.Title = Wording.PageEdit_FPMachine;
+
+    Layout = "~/Views/Shared/ACE_AdminLayout.cshtml";
+    Erp.BackOffice.Models.PageSetting pageSetting = new Erp.BackOffice.Models.PageSetting
+    {
+        ModuleName = "FPMachine",
+        ActionName = "Edit",
+        PageTitle = ViewBag.Title,
+        DisplaySearchPanel = false,
+        IsPopup = false,
+        DisplayBackButton = true
+    };
+}
+
+@section HeadOfPage {
+    @Html.ScriptTop_ChosenStyle()
+}
+@using (Html.BeginPageHeaderContainer(pageSetting))
+{
+
+}
+@using (Html.BeginForm_AceStyle((string)ViewBag.Title, "Edit", "FPMachine", null, FormMethod.Post, new { @class = "form-horizontal" }))
+{
+    @Html.ValidationSummary(true)
+    @Html.HiddenFor(model => model.Id)
+    @Html.HiddenFor(model => model.CreatedUserId)
+    @Html.HiddenFor(model => model.AssignedUserId)
+    @Html.HiddenFor(model => model.CreatedDate)
+    @Html.HiddenFor(model => model.IsDeleted)
+    @Html.HiddenFor(model => model.Ma_loai_ket_noi)
+    @Html.HiddenFor(model => model.ID_Ket_noi_COM)
+    @Html.HiddenFor(model => model.Cong_COM)
+    @Html.HiddenFor(model => model.Loaimay)
+    @Html.HiddenFor(model => model.Passwd)
+    @Html.HiddenFor(model => model.AutoID)
+    @Html.HiddenFor(model => model.UpdatedDate)
+    @Html.HiddenFor(model => model.Ten_may_tinh)
+    @Html.HiddenFor(model => model.useurl)
+    <div class="control-group form-group ">
+        @Html.DetailViewItemFor2(model => model.Ten_may_tinh)
+    </div>
+
+    @Html.CustomTextboxFor(model => model.Ten_may, null, null, WidthType.span12)
+    @Html.CustomTextboxFor(model => model.Dia_chi_IP, null, null, WidthType.span12)
+    @Html.CustomTextboxFor(model => model.ID_Ket_noi_IP, null, null, WidthType.span12)
+    @Html.CustomTextboxFor(model => model.Toc_do_truyen, null, null, WidthType.span12)
+    @Html.CustomTextboxFor(model => model.Port, null, null, WidthType.span12)
+    @Html.CustomTextboxFor(model => model.GetDataSchedule, null, null, WidthType.span12)
+    @Html.CustomTextboxFor(model => model.TeamviewerID, null, null, WidthType.span12)
+    @Html.CustomTextboxFor(model => model.TeamviewerPassword, null, null, WidthType.span12)
+    @Html.CustomTextboxFor(model => model.Note, null, null, WidthType.span12)
+    using (Html.BeginButtonContainer(pageSetting))
+    {
+        <button class="btn btn-mini btn-primary" type="submit" name="Submit" value="Save">
+            <i class="ace-icon fa fa-save"></i>
+            @Wording.Save
+        </button>
+    }
+}
+
+@section Scripts {
+    @Html.ScriptBottom_ValidationMvc()
+    @Html.ScriptBottom_ChosenStyle()
+    @Html.ScriptBottom_DatePicker("dd/mm/yyyy")
+}

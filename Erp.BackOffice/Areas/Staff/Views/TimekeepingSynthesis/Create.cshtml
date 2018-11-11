@@ -1,0 +1,56 @@
+@using Erp.BackOffice.App_GlobalResources
+@using Erp.BackOffice.Helpers
+@using Erp.BackOffice.Staff.Models
+
+@model TimekeepingSynthesisViewModel
+
+@{
+    ViewBag.Title = Wording.PageCreate_TimekeepingSynthesis;
+
+    Layout = "~/Views/Shared/" + (Request["IsPopup"] == null ? "ACE_AdminLayout.cshtml" : "_PopupLayout.cshtml");
+
+}
+
+@section HeadOfPage {
+    @Html.ScriptTop_ChosenStyle()
+}
+
+@using (Html.BeginForm_AceStyle((string)ViewBag.Title, "Create", "TimekeepingSynthesis", null, FormMethod.Post, new { @class = "form-horizontal", showButton = true }))
+{
+    @Html.ValidationSummary(true)
+
+    <input type="hidden" value="@Request["IsPopup"]" name="IsPopup" />
+
+    @Html.CustomTextboxFor(model => model.Name, null, null, WidthType.span12)
+        @Html.CustomTextboxFor(model => model.NgayCongThucTe, null, null, WidthType.span12)
+    @Html.CustomTextboxFor(model => model.GioThucTe, null, null, WidthType.span12)
+    @Html.CustomTextboxFor(model => model.GioThemNgayThuong, null, null, WidthType.span12)
+    @Html.CustomTextboxFor(model => model.GioThemNgayNghi, null, null, WidthType.span12)
+    @Html.CustomTextboxFor(model => model.GioThemNgayLe, null, null, WidthType.span12)
+    @Html.CustomTextboxFor(model => model.GioDiTre, null, null, WidthType.span12)
+    @Html.CustomTextboxFor(model => model.GioVeSom, null, null, WidthType.span12)
+    @Html.CustomDropDownListFor(model => model.StaffId, StaffIdList, WidthType.span12, true, null, DropdownListStyle.DropdownListStyleDefault)
+    @Html.CustomTextboxFor(model => model.Month, null, null, WidthType.span12)
+    @Html.CustomTextboxFor(model => model.Year, null, null, WidthType.span12)
+    @Html.CustomTextboxFor(model => model.TongNgayNghi, null, null, WidthType.span12)
+    @Html.CustomTextboxFor(model => model.NgayNghiCoPhep, null, null, WidthType.span12)
+    @Html.CustomTextboxFor(model => model.NgayNghiKoPhep, null, null, WidthType.span12)
+
+}
+
+@section Scripts {    
+    <script>
+        //truyền từ action create của controller qua khi thực hiện submit và return về lại view create, để nhận biết là được gọi theo dạng popup
+        var closePopup = '@ViewBag.closePopup';
+        $(document).ready(function () {
+            //nếu là được gọi theo dạng popup từ form khác thì chạy đoạn code bên dưới
+            if (closePopup != '') {
+                var option = '<option value="@Model.Id" >@Model.Name</option>';
+                //tên funtion có thể khác theo từng công việc riêng (đây chỉ là mẫu khi thêm mới sẽ gọi lại)
+                window.parent.ClosePopupAndAppendSelect(option);
+            }
+        });
+    </script>
+    @Html.ScriptBottom_ValidationMvc()    
+    @Html.ScriptBottom_ChosenStyle()
+}

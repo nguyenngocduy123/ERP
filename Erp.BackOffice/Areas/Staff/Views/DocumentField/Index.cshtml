@@ -1,0 +1,264 @@
+﻿@model IEnumerable<DocumentFieldViewModel>
+
+@using Erp.BackOffice.App_GlobalResources
+@using Erp.BackOffice.Staff.Models
+@using Erp.BackOffice.Helpers
+@using GridMvc.Html
+
+@{
+    ViewBag.Title = Wording.PageIndex_DocumentField;
+    Layout = "~/Views/Shared/ACE_AdminLayout.cshtml";
+    SelectList DocumentTypeList = SelectListHelper.GetSelectList_DocumentType(null);
+    Erp.BackOffice.Models.PageSetting pageSetting = new Erp.BackOffice.Models.PageSetting
+    {
+        ModuleName = "DocumentField",
+        ActionName = "Index",
+        PageTitle = ViewBag.Title,
+        DisplaySearchPanel = true,
+        IsPopup = false,
+        DisplayBackButton = false,
+        AdvancedSearch = true,
+        SearchOjectAttr = ViewBag.ListOjectAttrSearch
+    };
+}
+@section HeadOfPage {
+    @Html.ScriptTop_ChosenStyle()
+    <style type="text/css">
+    </style>
+}
+@if (ViewBag.SuccessMessage != null && ViewBag.SuccessMessage != "")
+{
+    <div class="alert alert-block alert-success">
+        <button class="close" data-dismiss="alert" type="button">
+            <i class="ace-icon fa fa-times"></i>
+        </button>
+        <i class="ace-icon fa fa-check green"></i>
+        @ViewBag.SuccessMessage
+    </div>
+}
+
+@if (ViewBag.FailedMessage != null && ViewBag.FailedMessage != "")
+{
+    <div class="alert alert-block alert-danger">
+        <button class="close" data-dismiss="alert" type="button">
+            <i class="ace-icon fa fa-times"></i>
+        </button>
+        <i class="ace-icon fa fa-warning red"></i>
+        @ViewBag.FailedMessage
+    </div>
+}
+
+<link href="@Url.Content("~/assets/css/Gridmvc.css")" rel="stylesheet" type="text/css" />
+<script src="@Url.Content("~/Scripts/gridmvc.min.js")" type="text/javascript"> </script>
+@helper GridColumnCommand(int id)
+{
+    <p>
+        <button name="Delete" value="Delete" type="submit" class="btn btn-mini btn-danger">
+            <i class="ace-icon fa fa-trash bigger-120"></i>
+        </button>
+        <a class="btn btn-mini btn-success" href="@Url.Action("Edit", "DocumentField", new { Id = id })">
+            <i class="fa fa-edit bigger-120"></i>
+        </a>
+    </p>
+}
+
+@helper GridColumnName(string name, int id)
+{
+    name = string.IsNullOrEmpty(name) ? "No Title" : name;
+    <a href="@Url.Action("Detail", "DocumentField" , new { Id= id })">@name</a>
+}
+@helper GridColumnCountDownload(int? QuantityDownload, int? id)
+{
+    <a onclick="OpenPopup('@Url.Action("Index", "LogDocumentAttribute", new { area = "Staff", Id = id })', '@Wording.PageIndex_LogDocumentAttribute', 700, 700)"><b>@QuantityDownload</b></a>
+}
+@helper GridColumnDownLoad(string file, int? id)
+{
+    @*<a href="@Url.Action("Download", "DocumentField", new { file = file, Id = id})">@file</a>*@
+    <a onclick="return Download(@id,'@file');">@file</a>
+    // <a href="http://docs.google.com/viewer?url=@filepath&embedded=true" target="_blank">@file</a>
+}
+@helper GridColumnCategoryValue(string value)
+{
+    var attr = Erp.BackOffice.Helpers.Common.GetSettingbyNote(value);
+    <span>@(attr != null ? attr : "")</span>
+}
+@helper CheckDeleteColumns(int Id)
+{
+    <label>
+        <input class="ace class-delete-all" type="checkbox" name="DeleteId-checkbox" value="@Id">
+        <span class="lbl"></span>
+    </label>
+}
+
+@helper BuildCheckAll()
+{
+    <label>
+        <input class="ace" type="checkbox" name="checkAll" id="checkAll" />
+        <span class="lbl"></span>
+    </label>
+}
+
+@using (Html.BeginPageHeaderContainer(pageSetting))
+{
+    <p>
+        @Html.TextBox("Name", Request["Name"], new { @class = "form-control", autocomplete = "off", placeholder = Wording.DocumentName })
+        @Html.TextBox("Code", Request["Code"], new { @class = "form-control", autocomplete = "off", placeholder = Wording.DocumentCode })
+        <span class="input-daterange input-group">
+            @Html.TextBox("start_date", Request["start_date"] != null ? Request["start_date"] : "", new { @class = "form-control", autocomplete = "off", placeholder = "Từ ngày" })
+            <span class="input-group-addon">
+                <i class="fa fa-exchange"></i>
+            </span>
+            @Html.TextBox("end_date", Request["end_date"] != null ? Request["end_date"] : "", new { @class = "form-control", autocomplete = "off", placeholder = "Đến ngày" })
+        </span>
+
+        @Html.DropDownList("TypeFile", SelectListHelper.GetSelectList_Category("DocumentAttribute_TypeFile", Request["TypeFile"], "Kiểu tập tin"), new Dictionary<string, object> { { "class", "form-control" } })
+        @Html.DropDownList("Category", SelectListHelper.GetSelectList_Setting(Request["Category"], "module", "Danh mục tài liệu"), new Dictionary<string, object> { { "class", "form-control" } })
+        @Html.DropDownList("CategoryId", new List<SelectListItem> { new SelectListItem { Text = "Tài liệu chi tiết", Value = "" } }, new Dictionary<string, object> { { "class", "form-control" } })
+        @Html.DropDownList("UID", SelectListHelper.GetSelectList_UserbyCreateModuel(Request["UID"], "Create", "DocumentField", "Người lưu trữ"), new Dictionary<string, object> { { "class", "form-control" } })
+    </p>
+}
+
+@using (Html.BeginForm("Delete", "DocumentField", FormMethod.Post, new { @class = "form-inline clearfix" }))
+{
+    <div class="table-responsive">
+        @Html.Grid(Model).Columns(columns =>
+   {
+       columns.Add().Titled(BuildCheckAll().ToHtmlString()).SetWidth(20).Sanitized(false).Encoded(false).RenderValueAs(n => CheckDeleteColumns(n.Id));
+       columns.Add().Titled(Wording.DocumentCode).Sortable(false).Sanitized(false).Encoded(false).RenderValueAs(u => GridColumnName(u.Code, u.Id));
+       columns.Add(u => u.Name).Titled(Wording.DocumentName).RenderValueAs(u => u.Name);
+       //columns.Add(u => u.TypeName).Titled(Wording.DocumentType).RenderValueAs(u => u.TypeName);
+       columns.Add(u => u.Category).Titled("Danh mục").Sortable(false).Sanitized(false).Encoded(false).RenderValueAs(u => GridColumnCategoryValue(u.Category));
+       columns.Add(u => u.CountFile).Titled(Wording.CountFile).Css("text-right");
+       columns.Add(u => u.File).Titled(Wording.FileNew).Sortable(false).Sanitized(false).Encoded(false).RenderValueAs(u => GridColumnDownLoad(u.File, u.DocumentAttributeId));
+       columns.Add(u => u.QuantityDownload).Titled(Wording.QuantityDownload).Sortable(false).Sanitized(false).Encoded(false).RenderValueAs(u => GridColumnCountDownload(u.QuantityDownload, u.DocumentAttributeId)).Css("text-right");
+       columns.Add(u => u.CreatedDate).Titled(Wording.CreatedDate);
+       //columns.Add(u => u.ModifiedUserId).Titled(Html.DisplayNameFor(u => u.FirstOrDefault().ModifiedUserId).ToString()).SetWidth(100).RenderValueAs(u => u.ModifiedUserName);
+       columns.Add(u => u.ModifiedDate).Titled(Wording.ModifiedDate).Sortable(true);
+       columns.Add(u => u.Id).Titled(Wording.Action).Sanitized(false).Encoded(false).RenderValueAs(u => GridColumnCommand(u.Id)).SetWidth(20);
+   }).WithPaging(10)
+    </div>
+    using (Html.BeginButtonContainer(pageSetting))
+    {
+        if (Erp.BackOffice.Filters.SecurityFilter.AccessRight("Create", "DocumentField", "Staff"))
+        {
+            <a class="btn btn-info btn-mini" href="@Url.Action("Create", pageSetting.ModuleName)">
+                <i class="ace-icon fa fa-plus"></i>
+                @Resources.Wording.CreateNew
+            </a>
+        }
+        if (Erp.BackOffice.Filters.SecurityFilter.AccessRight("Delete", "DocumentField", "Staff"))
+        {
+            <button name="DeleteAll" value="DeleteAll" type="submit" class="btn btn-mini btn-danger" onclick="return CheckIsval();">
+                <i class="ace-icon fa fa-trash bigger-120"></i>
+                @Wording.Delete
+            </button>
+        }
+        <input type="hidden" id="UrlReferrer" name="UrlReferrer" value="@Request.UrlReferrer" />
+    }
+
+}
+
+@section Scripts {
+    <script src="~/Scripts/SearchStaff/LoadTableByCategoryDocumentField.js"></script>
+    <script type="text/javascript">
+        function CheckIsval() {
+            if ($('[name="DeleteId-checkbox"]').is(':checked') == false) {
+                alert("Phải chọn ít nhất 1 item.");
+                return false;
+            }
+            else {
+                if (confirm('Bạn có chắc muốn xóa các item đã chọn ?')) {
+                    return true;
+                }
+                else {
+                    return false;
+                }
+            }
+        }
+
+        $('[name="Delete"]').click(function () {
+            if (confirm('Bạn có chắc muốn xóa item ?')) {
+                $(this).closest('tr').children('td').each(function (i, e) {
+                    $(this).find("input.class-delete-all").prop("checked", true);
+                    return true;
+                })
+            }
+            else {
+                return false;
+            }
+
+        })
+        ////Fetch Department of University
+        //var urlLabourContract = '/api/BackOfficeServiceAPI/FetchLabourContract';
+        //var idCategory = $('[name="CategoryId"]'); // cache it
+        //var urlContract = '/api/BackOfficeServiceAPI/FetchContract';
+        //$('[name="Category"]').change(function () {
+        //    idCategory.empty(); // remove any existing options
+        //    $(document.createElement('option'))
+        //                .attr('value', '')
+        //                .text('- Rỗng -')
+        //                .appendTo(idCategory).trigger('chosen:updated');
+        //    var id = $(this).val(); // Use $(this) so you don't traverse the DOM again
+        //    if (id == "Contract") {
+        //        $.getJSON(urlContract, function (response) {
+        //            idCategory.empty(); // remove any existing options
+
+        //            $(response).each(function () {
+        //                $(document.createElement('option'))
+        //                    .attr('value', this.Id)
+        //                    .text(this.Code)
+        //                    .appendTo(idCategory).trigger('chosen:updated');
+        //                console.log(idCategory);
+        //            });
+        //        });
+        //    }
+        //    else if (id == "LabourContract") {
+        //        $.getJSON(urlLabourContract, function (response) {
+        //            idCategory.empty(); // remove any existing options
+
+        //            $(response).each(function () {
+        //                $(document.createElement('option'))
+        //                    .attr('value', this.Id)
+        //                    .text(this.Name)
+        //                    .appendTo(idCategory).trigger('chosen:updated');
+        //            });
+        //        });
+        //    }
+
+        //});
+
+        //    1.4 Xóa quá trình công tác
+        function Download(Id, file) {
+            $.ajax({
+                url: '/DocumentField/CheckDownload',
+                type: 'GET',
+                data: { Id: Id, file: file },
+                success: function (res) {
+                    if (res == "success") {
+                        // alert('Tải thành công!');
+                        location.href = '/DocumentField/Download?Id=' + Id + '&file=' + file;
+                    } else {
+                        alert('Tập tin không tồn tại!');
+                    }
+                }
+            });
+
+        };
+        $(".show-details-btn").click(function () {
+
+            var targetId = $(this).data("target");
+            var tableDetail = $("#table-detail-" + targetId);
+            if (tableDetail.hasClass("open")) {
+                tableDetail.removeClass("open");
+                $(this).find("i").removeClass("fa-angle-double-up").addClass("fa-angle-double-down");
+            }
+            else {
+                tableDetail.addClass("open");
+                $(this).find("i").removeClass("fa-angle-double-down").addClass("fa-angle-double-up");
+            }
+        });
+    </script>
+    @Html.ScriptBottom_ValidationMvc()
+    @Html.ScriptBottom_DatePicker("dd/mm/yyyy")
+    @Html.ScriptBottom_ChosenStyle()
+}

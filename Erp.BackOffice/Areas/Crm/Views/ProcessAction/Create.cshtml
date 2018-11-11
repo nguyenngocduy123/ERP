@@ -1,0 +1,177 @@
+﻿@using Erp.BackOffice.App_GlobalResources
+@using Erp.BackOffice.Helpers
+@using Erp.BackOffice.Crm.Models
+
+@model ProcessActionViewModel
+
+@{
+    ViewBag.Title = Wording.PageCreate_ProcessAction;
+
+    Layout = "~/Views/Shared/" + (Request["IsPopup"] == null ? "ACE_AdminLayout.cshtml" : "_PopupLayout.cshtml");
+}
+
+@section HeadOfPage {
+    @Html.ScriptTop_ChosenStyle()
+    @Html.ScriptTop_CkEditor()
+
+    <script type="text/javascript">
+        var focusObject = null;
+    </script>
+}
+<div class="row">
+    <div class="col-sm-9">
+        @*<div class="widget-box" style="margin:0px">
+                <div class="widget-header">
+                    <h5 class="widget-title">Settup</h5>
+                </div>
+                <div class="widget-body">
+                    <div class="widget-main">
+
+                    </div>
+                </div>
+            </div>*@
+        <div class="scrollable">
+            @using (Html.BeginForm("Create", "ProcessAction", null, FormMethod.Post, new { @class = "form-horizontal", id = "process-action-form" }))
+            {
+                @Html.ValidationSummary(true)
+
+                <input type="hidden" value="@Request["IsPopup"]" name="IsPopup" />
+                @Html.HiddenFor(model => model.ProcessId)
+                @Html.HiddenFor(model => model.ActionType)
+                <div class="page-header form-inline form-search clearfix">
+                    <span class="control-group">
+                        <input id="OrderNo" name="OrderNo" type="text" style="width:50px; font-weight:bold; text-align:center" placeholder="STT" />
+                    </span>
+                    <span class="control-group">
+                        <input style="width:400px; max-width:100%" class="" data-val="true" data-val-length="Tên không được vượt quá 100 ký tự." data-val-length-max="100" data-val-required="Bắt buộc nhập" id="Name" name="Name" placeholder="Nhập tiêu đề mô tả hành động" type="text" value="" />
+                        <span class="field-validation-valid help-inline" data-valmsg-for="Name" data-valmsg-replace="true"></span>
+                    </span>
+
+                    <button type="submit" class="btn btn-success btn-sm" name="Submit" value="Save">
+                        <i class="ace-icon fa fa-save bigger-110"></i>
+                        @Wording.Save
+                    </button>
+                </div>
+
+                switch (Model.ActionType)
+                {
+                    case "SendEmail":
+                        @Html.CustomTextboxFor(model => model.EmailTemplateViewModel.From, null, null, WidthType.span6, true)
+                        @*@Html.CustomTextboxFor(model => model.EmailTemplateViewModel.From, null, null, WidthType.span6, true, new Dictionary<string, object>() { { "readonly", "true" } })*@
+                        @Html.CustomTextboxFor(model => model.EmailTemplateViewModel.To, null, null, WidthType.span6, true)
+                        @Html.CustomTextboxFor(model => model.EmailTemplateViewModel.Cc, null, null, WidthType.span6, true)
+                        @Html.CustomTextboxFor(model => model.EmailTemplateViewModel.Bcc, null, null, WidthType.span6, true)
+                        @Html.CustomTextboxFor(model => model.EmailTemplateViewModel.Subject, null, null, WidthType.span12, true)
+                        @Html.CkEditorFor(model => model.EmailTemplateViewModel.Body, null, true)
+                        @Html.CustomTextboxFor(model => model.EmailTemplateViewModel.Regarding, null, null, WidthType.span6, true)
+                        <script type="text/javascript">
+                            $(function () {
+                                $editor_EmailTemplateViewModel_Body.on('focus', function () {
+                                    focusObject = { Id: "EmailTemplateViewModel_Body", Type: "editor" };
+                                });
+                            });
+                        </script>
+                        break;
+                    case "CreateTask":
+                        @Html.CustomTextboxFor(model => model.TaskTemplateViewModel.Subject, null, null, WidthType.span6)
+                        @Html.CustomDropDownListFor(model => model.TaskTemplateViewModel.Status, SelectListHelper.GetSelectList_Category("task_status", null, "Value", Wording.Empty), WidthType.span4, true, null, DropdownListStyle.DropdownListStyleDefault)
+                        @Html.CustomDropDownListFor(model => model.TaskTemplateViewModel.Priority, SelectListHelper.GetSelectList_Category("task_priority", null, "Value", Wording.Empty), WidthType.span4, true, null, DropdownListStyle.DropdownListStyleDefault)
+                        @Html.CustomDropDownListFor(model => model.TaskTemplateViewModel.ParentType, SelectListHelper.GetSelectList_Module(null), WidthType.span4, true, null, DropdownListStyle.DropdownListStyleChosen)
+                        @Html.CustomTextAreaFor(model => model.TaskTemplateViewModel.Description, null, WidthType.span12)
+                        @Html.CustomDropDownListFor(model => model.TaskTemplateViewModel.AssignedUserId, SelectListHelper.GetSelectList_User(null), WidthType.span4, true, null, DropdownListStyle.DropdownListStyleDefault)
+                        @Html.CustomTextboxFor(model => model.TaskTemplateViewModel.StartDate, null, null, WidthType.span6, true)
+                        @Html.CustomTextboxFor(model => model.TaskTemplateViewModel.DueDate, null, null, WidthType.span6, true)
+                        break;
+                    case "CreateNotifications":
+                    @Html.CustomTextboxFor(model => model.TaskViewModel.Subject, null, null, WidthType.span6)
+                    @Html.CustomDropDownListFor(model => model.TaskViewModel.Status, SelectListHelper.GetSelectList_Category("task_status", null, "Value", Wording.Empty), WidthType.span4, true, null, DropdownListStyle.DropdownListStyleDefault)
+                    @Html.CustomDropDownListFor(model => model.TaskViewModel.Priority, SelectListHelper.GetSelectList_Category("task_priority", null, "Value", Wording.Empty), WidthType.span4, true, null, DropdownListStyle.DropdownListStyleDefault)
+                    @Html.CustomDropDownListFor(model => model.TaskViewModel.ParentType, SelectListHelper.GetSelectList_Module(null), WidthType.span4, true, null, DropdownListStyle.DropdownListStyleChosen)
+                    @Html.CustomTextAreaFor(model => model.TaskViewModel.Description, null, WidthType.span12)
+                    @*@Html.CustomDropDownListFor(model => model.TaskViewModel.AssignedUserId, SelectListHelper.GetSelectList_User(null), WidthType.span4, true, null, DropdownListStyle.DropdownListStyleDefault)*@
+                        break;
+                    default:
+                        break;
+                }
+            }
+        </div>
+    </div>
+    <div class="col-sm-3">
+        <div class="widget-box" style="margin:0px;">
+            <div class="widget-header">
+                <h5 class="widget-title">Entity Data</h5>
+            </div>
+            <div class="widget-body">
+                <div class="widget-main">
+                    @*<p class="alert alert-info"></p>*@
+                    @{Html.RenderAction("MetadataFieldsAssistant", "Module", new { area = "Administration", entity = @Model.ProcessEntity });}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script type="text/javascript">
+        $("#process-action-form input").focus(function () {
+            focusObject = { Id: $(this).attr("id"), Type: "input" };
+        });
+
+        $(function () {
+            var w = Math.max(document.documentElement.clientWidth, window.innerWidth || 0);
+            var h = Math.max(document.documentElement.clientHeight, window.innerHeight || 0);
+
+            console.log(w, h);
+            $(".scrollable").height(h - 20);
+        });
+
+        function insertAtCaret(text) {
+            if (focusObject == null)
+                return;
+
+            if (focusObject.Type == "input") {
+                var txtarea = document.getElementById(focusObject.Id);
+                if (!txtarea) { return; }
+
+                var scrollPos = txtarea.scrollTop;
+                var strPos = 0;
+                var br = ((txtarea.selectionStart || txtarea.selectionStart == '0') ?
+                    "ff" : (document.selection ? "ie" : false));
+                if (br == "ie") {
+                    txtarea.focus();
+                    var range = document.selection.createRange();
+                    range.moveStart('character', -txtarea.value.length);
+                    strPos = range.text.length;
+                } else if (br == "ff") {
+                    strPos = txtarea.selectionStart;
+                }
+
+                var front = (txtarea.value).substring(0, strPos);
+                var back = (txtarea.value).substring(strPos, txtarea.value.length);
+                txtarea.value = front + text + back;
+                strPos = strPos + text.length;
+                if (br == "ie") {
+                    txtarea.focus();
+                    var ieRange = document.selection.createRange();
+                    ieRange.moveStart('character', -txtarea.value.length);
+                    ieRange.moveStart('character', strPos);
+                    ieRange.moveEnd('character', 0);
+                    ieRange.select();
+                } else if (br == "ff") {
+                    txtarea.selectionStart = strPos;
+                    txtarea.selectionEnd = strPos;
+                    txtarea.focus();
+                }
+
+                txtarea.scrollTop = scrollPos;
+            }
+            else {
+                CKEDITOR.instances[focusObject.Id].insertHtml(text);
+            }
+        }
+    </script>
+
+    @Html.ScriptBottom_ValidationMvc()
+    @Html.ScriptBottom_ChosenStyle()
+    @*@Html.ScriptBottom_CkEditor()*@
+}

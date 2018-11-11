@@ -1,0 +1,82 @@
+@using Erp.BackOffice.App_GlobalResources
+@using Erp.BackOffice.Helpers
+@using Erp.BackOffice.Sale.Models
+
+@model ServiceScheduleViewModel
+
+@{
+    ViewBag.Title = Wording.PageCreate_ServiceSchedule;
+
+    Layout = "~/Views/Shared/" + (Request["IsPopup"] == null ? "ACE_AdminLayout.cshtml" : "_PopupLayout.cshtml");
+    Erp.BackOffice.Models.PageSetting pageSetting = new Erp.BackOffice.Models.PageSetting
+    {
+        ModuleName = "ServiceSchedule",
+        ActionName = "Create",
+        PageTitle = ViewBag.Title,
+        DisplaySearchPanel = false,
+        IsPopup = false,
+        DisplayBackButton = true
+    };
+}
+
+@section HeadOfPage {
+    @Html.ScriptTop_ChosenStyle()
+}
+@using (Html.BeginPageHeaderContainer(pageSetting))
+{
+}
+@using (Html.BeginForm_AceStyle((string)ViewBag.Title, pageSetting.ActionName, pageSetting.ModuleName, null, FormMethod.Post, new { @class = "form-horizontal" }))
+{
+    @Html.ValidationSummary(true)
+
+    <input type="hidden" value="@Request["IsPopup"]" name="IsPopup" />
+    <input type="hidden" name="UrlReferrer" value="@Request.UrlReferrer" />
+    @Html.CustomDropDownListFor(model => model.BranchId, SelectListHelper.GetSelectList_BranchAll(Model.BranchId, Wording.Empty), null, true, null, DropdownListStyle.DropdownListStyleDefault)
+    @Html.ModulePopupFor(m => m.CustomerId, "Customer", Model.CustomerName, false, true)
+    @Html.CustomDropDownListFor(model => model.ServiceId, SelectListHelper.GetSelectList_Service(Model.ServiceId, Wording.Empty), null, true, null, DropdownListStyle.DropdownListStyleChosen)
+    @*@Html.CustomDropDownListFor(model => model.Status, SelectListHelper.GetSelectList_Category("task_status", null, "Value", Wording.Empty), WidthType.span4, DropdownListStyle.DropdownListStyleDefault,true,null)*@
+    @Html.DateTimePicker(model => model.StartDate, "dd/MM/yyyy H:mm", "00/00/0000 00:00:00", true, false)
+    @Html.DateTimePicker(model => model.DueDate, "dd/MM/yyyy H:mm", "00/00/0000 00:00:00", true, false)
+    @Html.CustomTextAreaFor(model => model.Note, null, WidthType.span12, true)
+    using (Html.BeginButtonContainer(pageSetting))
+    {
+        <button class="btn btn-mini btn-primary" type="submit" name="Submit" value="Save">
+            <i class="ace-icon fa fa-save"></i>
+            @Wording.Save
+        </button>
+    }
+}
+
+@section Scripts {
+    <script>
+        var urlRefer = '@ViewBag.urlRefer';
+        //truyền từ action create của controller qua khi thực hiện submit và return về lại view create, để nhận biết là được gọi theo dạng popup
+        var closePopup = '@ViewBag.closePopup';
+        $(document).ready(function () {
+            //nếu là được gọi theo dạng popup từ form khác thì chạy đoạn code bên dưới
+            if (closePopup != '') {
+                var option = '<option value="@Model.Id" >@Model.Note</option>';
+                //nếu có url thì gọi hàm này để trang ngoài iframe nhảy trang
+                if (urlRefer != '') {
+                    window.parent.ClosePopupAndRedirectToURL(urlRefer);
+                }
+                //tên funtion có thể khác theo từng công việc riêng (đây chỉ là mẫu khi thêm mới sẽ gọi lại)
+                window.parent.ClosePopupAndDoSomething(option);
+            }
+        });
+        $(document).ready(function () {
+            $('[data-rel="tooltip"]').tooltip({ container: 'body' });
+
+        });
+        function ClosePopupAndReloadPage(id, name) {
+            $("#CustomerId").val(id);
+            $("#CustomerId_DisplayText").val(name);
+            ClosePopup(false);
+
+        }
+    </script>
+    @Html.ScriptBottom_ValidationMvc()
+    @Html.ScriptBottom_DatePicker("dd/mm/yyyy")
+    @Html.ScriptBottom_ChosenStyle()
+
+}

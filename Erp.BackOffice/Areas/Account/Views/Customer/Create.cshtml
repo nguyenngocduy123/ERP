@@ -1,0 +1,166 @@
+﻿@using Erp.BackOffice.App_GlobalResources
+@using Erp.BackOffice.Helpers
+@using Erp.BackOffice.Account.Models
+
+@model CustomerViewModel
+
+@{
+    ViewBag.Title = Wording.PageCreate_Customer;
+
+    Layout = "~/Views/Shared/" + (Request["IsPopup"] == null ? "ACE_AdminLayout.cshtml" : "_PopupLayout.cshtml");
+
+    SelectList genderList = SelectListHelper.GetSelectList_Gender(null);
+    SelectList provinceList = SelectListHelper.GetSelectList_Location("0", null, null);
+    SelectList districtList = SelectListHelper.GetSelectList_Location(Model.CityId, null, null);
+    SelectList wardList = SelectListHelper.GetSelectList_Location(Model.DistrictId, null, null);
+
+    Erp.BackOffice.Models.PageSetting pageSetting = new Erp.BackOffice.Models.PageSetting
+    {
+        ModuleName = "Customer",
+        ActionName = "Create",
+        PageTitle = ViewBag.Title,
+        DisplaySearchPanel = false,
+        IsPopup = true,
+        DisplayBackButton = true
+    };
+    IEnumerable<SelectListItem> DrugStoreList = Erp.BackOffice.Helpers.SelectListHelper.GetSelectList_DepartmentAllNew(Model.BranchId, Wording.Empty);
+}
+
+@section HeadOfPage {
+    @Html.ScriptTop_ChosenStyle()
+}
+
+@using (Html.BeginPageHeaderContainer(pageSetting))
+{
+
+}
+
+@using (Html.BeginForm_AceStyle((string)ViewBag.Title, "Create", "Customer", null, FormMethod.Post, new { @class = "form-horizontal clearfix" }))
+{
+    @Html.ValidationSummary(true)
+    @Html.HiddenFor(model => model.CustomerType)
+    <input type="hidden" value="@Request["IsPopup"]" name="IsPopup" />
+    <div class="tabbable">
+        <ul class="nav nav-tabs" id="myTab">
+            <li class="active">
+                <a data-toggle="tab" href="#tab1">Thông tin chính</a>
+            </li>
+
+            <li>
+                <a data-toggle="tab" href="#tab2">Thông tin thêm</a>
+            </li>
+        </ul>
+
+        <div class="tab-content">
+            <div id="tab1" class="tab-pane in active">
+                <div class="row">
+                    <div class="col-sm-6">
+                        @Html.CustomDropDownListFor(model => model.BranchId, DrugStoreList, WidthType.span12, true, null, DropdownListStyle.DropdownListStyleChosen)
+                        @Html.CustomTextboxFor(model => model.CompanyName, null, null, WidthType.span12)
+                        @Html.CustomTextboxFor(model => model.Phone, null, null, WidthType.span12)
+                        @Html.CustomTextboxFor(model => model.IdCardNumber, null, null, WidthType.span12, true)
+                        @Html.DateInput(model => model.IdCardDate, "dd/MM/yyyy", "99/99/9999", true, WidthType.span12)
+                        @Html.CustomDropDownListFor(model => model.IdCardIssued, Model.ProvinceList, WidthType.span12, true, null, DropdownListStyle.DropdownListStyleChosen)
+
+                    </div>
+                    <div class="col-sm-6">
+                        @Html.CustomTextboxFor(model => model.Address, null, null, WidthType.span12)
+                        @Html.CustomDropDownListFor(model => model.CityId, provinceList, WidthType.span12)
+                        @Html.CustomDropDownListFor(model => model.DistrictId, districtList, WidthType.span12)
+                        @Html.CustomDropDownListFor(model => model.WardId, wardList, WidthType.span12)
+                    </div>
+                </div>
+            </div>
+
+            <div id="tab2" class="tab-pane">
+                <div class="row">
+                    <div class="col-sm-6">
+                        @Html.CustomTextboxFor(model => model.LastName, null, null, WidthType.span12)
+                        @Html.CustomTextboxFor(model => model.FirstName, null, null, WidthType.span12)
+                        @Html.CustomDropDownListFor(model => model.Gender, genderList, WidthType.span12, false, null, DropdownListStyle.DropdownListStyleDefault)
+                        @Html.CustomTextboxFor(model => model.Birthday, null, null, WidthType.span12)
+                        @Html.CustomTextboxFor(model => model.Mobile, null, null, WidthType.span12)
+                        @Html.CustomTextboxFor(model => model.Email, null, null, WidthType.span12)
+                    </div>
+                    <div class="col-sm-6">
+                        @Html.CustomTextboxFor(model => model.Point, null, null, WidthType.span12, true, new Dictionary<string, object> { { "class", "col-sm-12 text-right" } })
+                        @Html.CustomTextAreaFor(model => model.Note, null, WidthType.span12)
+                        @Html.Action("GetListByModule", "ObjectAttribute", new { module = "Customer", area = "Sale" })
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    using (Html.BeginButtonContainer(pageSetting))
+    {
+        <button class="btn btn-mini btn-primary" type="submit" name="Submit" value="Save">
+            <i class="ace-icon fa fa-save"></i>
+            @Wording.Save
+        </button>
+    }
+}
+
+@section Scripts {
+
+    @Html.ScriptBottom_ValidationMvc()
+    @Html.ScriptBottom_ChosenStyle()
+    @Html.ScriptBottom_DatePicker("dd/mm/yyyy")
+
+    <script>
+        var closePopup = '@ViewBag.closePopup';
+
+        $(document).ready(function () {
+            //nếu là được gọi theo dạng popup từ form thêm mới hóa đơn thì chạy đoạn code bên dưới
+            if (closePopup != '') {
+                var option = '<option value="@Model.Id" data-city="@Model.CityId" data-district="@Model.DistrictId" data-ward="@Model.WardId" data-address="/@(string.IsNullOrEmpty(Model.Address) ? "" : Model.Address)/" data-phone="@Model.Phone">@Model.FullName</option>';
+                window.parent.ClosePopupAndDoSomethings(option);
+            }
+
+            $("[name='Birthday']").mask('99/99/9999');
+            $('#Point').numberFormat();
+        });
+
+
+        $(function () {
+            var url = '/api/BackOfficeServiceAPI/FetchLocation';
+            var districts = $('#DistrictId'); // cache it
+            var ward = $('#WardId');
+
+            $("#CityId").change(function () {
+                var id = $(this).val(); // Use $(this) so you don't traverse the DOM again
+                $.getJSON(url, { parentId: id }, function (response) {
+                    districts.empty(); // remove any existing options
+                    ward.empty();
+                    $(document.createElement('option'))
+                            .attr('value', '')
+                            .text('- Rỗng -')
+                            .appendTo(ward);
+                    $(response).each(function () {
+                        $(document.createElement('option'))
+                            .attr('value', this.Id)
+                            .text(capitalizeFirstAllWords(this.Name.toLowerCase().replace('huyện', '').replace('quận', '')))
+                            .appendTo(districts);
+                    });
+
+                    districts.trigger("chosen:updated");
+                });
+            });
+
+            districts.change(function () {
+                var id = $(this).val(); // Use $(this) so you don't traverse the DOM again
+                $.getJSON(url, { parentId: id }, function (response) {
+                    ward.empty(); // remove any existing options
+                    $(response).each(function () {
+                        $(document.createElement('option'))
+                            .attr('value', this.Id)
+                            .text(capitalizeFirstAllWords(this.Name.toLowerCase()))
+                            .appendTo(ward);
+                    });
+                    ward.trigger("chosen:updated");
+                });
+            });
+        });
+      
+    </script>
+}
