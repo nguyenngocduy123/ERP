@@ -1,26 +1,21 @@
-﻿using System.Globalization;
+﻿using Erp.BackOffice.Filters;
 using Erp.BackOffice.Staff.Models;
-using Erp.BackOffice.Filters;
-using Erp.BackOffice.Helpers;
-using Erp.Domain.Staff.Entities;
-using Erp.Domain.Staff.Interfaces;
-using Erp.Domain.Sale.Entities;
-using Erp.Domain.Sale.Interfaces;
+using Erp.Domain.Account.Interfaces;
 using Erp.Domain.Entities;
 using Erp.Domain.Interfaces;
+using Erp.Domain.Sale.Interfaces;
+using Erp.Domain.Staff.Entities;
+using Erp.Domain.Staff.Interfaces;
+using Erp.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Data.Entity.Infrastructure;
-using System.Linq;
-using System.Text;
-using System.Web.Mvc;
-using Erp.Utilities;
-using WebMatrix.WebData;
-using System.Linq.Expressions;
-using System.Web;
 using System.IO;
+using System.Linq;
+using System.Web.Mvc;
 using System.Web.Script.Serialization;
-using System.Text.RegularExpressions;
+using WebMatrix.WebData;
+
 namespace Erp.BackOffice.Staff.Controllers
 {
     [Authorize]
@@ -28,6 +23,7 @@ namespace Erp.BackOffice.Staff.Controllers
     [Erp.BackOffice.Helpers.NoCacheHelper]
     public class StaffsController : Controller
     {
+        private readonly ICustomerRepository CustomerRepository;
         private readonly IStaffsRepository StaffsRepository;
         private readonly IUserRepository userRepository;
         private readonly ILocationRepository locationRepository;
@@ -76,9 +72,9 @@ namespace Erp.BackOffice.Staff.Controllers
             , ICheckInOutRepository checkInOut
             , IBonusDisciplineRepository bonusDiscipline
             , IFPMachineRepository FPMachine
-            ,IBranchRepository branch
-            ,IUserTypeRepository user_type
-            ,IPositionRepository position
+            , IBranchRepository branch
+            , IUserTypeRepository user_type
+            , IPositionRepository position
             )
         {
             StaffsRepository = _Staffs;
@@ -141,11 +137,11 @@ namespace Erp.BackOffice.Staff.Controllers
                 WardId = item.WardId,
                 Technique = item.Technique,
                 ProvinceId = item.ProvinceId,
-             //   BranchName = item.BranchName,
+                //   BranchName = item.BranchName,
                 CardIssuedName = item.CardIssuedName,
                 GenderName = item.GenderName,
-                PositionName=item.PositionName,
-                PositionCode=item.PositionCode
+                PositionName = item.PositionName,
+                PositionCode = item.PositionCode
             }).OrderBy(x => x.Code);
 
             var model = new StaffListViewModel();
@@ -215,13 +211,13 @@ namespace Erp.BackOffice.Staff.Controllers
                      Email2 = item.Email2,
                      Phone2 = item.Phone2,
                      PositionName = item.PositionName,
-                     IsWorking=item.IsWorking,
-                     CommissionPercent=item.CommissionPercent,
-                     DrugStore=item.DrugStore,
-                     MinimumRevenue=item.MinimumRevenue,
-                     UserName=item.UserName,
-                     PositionCode=item.PositionCode,
-                     PositionId=item.PositionId
+                     IsWorking = item.IsWorking,
+                     CommissionPercent = item.CommissionPercent,
+                     DrugStore = item.DrugStore,
+                     MinimumRevenue = item.MinimumRevenue,
+                     UserName = item.UserName,
+                     PositionCode = item.PositionCode,
+                     PositionId = item.PositionId
                  }).ToList();
 
             if (!string.IsNullOrEmpty(Code))
@@ -254,7 +250,7 @@ namespace Erp.BackOffice.Staff.Controllers
             {
                 q = q.Where(item => item.CountryId == CountryId);
             }
-            if (PositionId!=null&&PositionId.Value>0)
+            if (PositionId != null && PositionId.Value > 0)
             {
                 q = q.Where(item => item.PositionId == PositionId);
             }
@@ -415,6 +411,18 @@ namespace Erp.BackOffice.Staff.Controllers
             if (ModelState.IsValid)
             {
                 var DrugStore = Request["DrugStore"];
+                var CustomerArray = Request["Customers"];
+
+                string[] csSplited = CustomerArray.Split(',');
+
+                foreach (var id in csSplited)
+                {
+                    var Customer = CustomerRepository.GetCustomerById(model.Id);
+                    Customer.ManagerStaffId = Int32.Parse(id);
+
+                    CustomerRepository.UpdateCustomer(Customer);
+                }
+
                 var Staffs = new Staffs();
                 AutoMapper.Mapper.Map(model, Staffs);
                 Staffs.IsDeleted = false;
@@ -447,14 +455,14 @@ namespace Erp.BackOffice.Staff.Controllers
                     }
 
                 }
-               
+
                 if (model.UserName != null)
                 {
-                   
+
                     if (!CheckUsernameExists(model.UserName))
                     {
                         WebSecurity.CreateUserAndAccount(model.UserName, model.Password);
-                       
+
                         //==== Update User ===//
                         int userId = WebSecurity.GetUserId(model.UserName);
                         User user = userRepository.GetUserById(userId);
@@ -465,7 +473,7 @@ namespace Erp.BackOffice.Staff.Controllers
                         user.Mobile = model.Phone;
                         user.Sex = model.Gender;
                         user.UserName = model.UserName;
-                        var position=positionRepository.GetPositionById(model.PositionId.Value);
+                        var position = positionRepository.GetPositionById(model.PositionId.Value);
                         var user_type = user_typeRepository.GetUserTypeByCode(position.Code);
                         user.UserTypeId = user_type.Id;
                         user.FullName = Staffs.Name;
@@ -509,9 +517,9 @@ namespace Erp.BackOffice.Staff.Controllers
                             }
                         }
                     }
-                  
+
                 }
-               
+
                 ViewBag.SuccessMessage = App_GlobalResources.Wording.InsertSuccess;
                 return RedirectToAction("DetailBasicFull", "Staffs", new { area = "Staff", Id = Staffs.Id, IsLayout = true });
 
@@ -539,7 +547,7 @@ namespace Erp.BackOffice.Staff.Controllers
                 ViewBag.departmentList = departmentList;
                 return View(model);
             }
-           
+
             if (Request.UrlReferrer != null)
                 return Redirect(Request.UrlReferrer.AbsoluteUri);
             return RedirectToAction("Index");
@@ -672,7 +680,7 @@ namespace Erp.BackOffice.Staff.Controllers
                             }
                         }
                     }
-                    
+
                     return RedirectToAction("_ClosePopup", "Home", new { area = "", FunctionCallback = "ClosePopupAndReloadPage" });
 
                 }
@@ -824,12 +832,12 @@ namespace Erp.BackOffice.Staff.Controllers
         public ActionResult DetailBasicFull(int? Id)
         {
             var student = StaffsRepository.GetvwStaffsById(Id.Value);
-          
+
             if (student != null)
             {
                 var model = new StaffsViewModel();
                 AutoMapper.Mapper.Map(student, model);
-                
+
                 return View(model);
             }
 

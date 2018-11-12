@@ -87,9 +87,8 @@
                         @for (int i = 0; i < listCustomerNoneChosen.Count; i++)
                         {
                             <label class="product-item">
-                                   
                                 <i class="fa fa-plus"></i>
-                                <input type="checkbox" name="DrugStore" class="" value="@listCustomerNoneChosen[i].Id" />
+                                <input type="checkbox" name="Customers" class="" value="@listCustomerNoneChosen[i].Id" />
                                 <span class="">@listCustomerNoneChosen[i].CompanyName</span>
                             </label>
                         }
@@ -105,11 +104,9 @@
                     }
                     @for (int i = 0; i < listDepartmentChoose.Count; i++)
                     {
-                        <label class="product-item" data-category="@listDepartmentChoose[i].ParentId"
-                               data-city-id="@listDepartmentChoose[i].CityId" data-district-id="@listDepartmentChoose[i].DistrictId"
-                               data-ward-id="@listDepartmentChoose[i].WardId">
+                        <label class="product-item">
                             <i class="fa fa-minus"></i>
-                            <input checked type="checkbox" name="DrugStore" class="" value="@listDepartmentChoose[i].Id" />
+                            <input checked type="checkbox" name="Customers" class="" value="@listDepartmentChoose[i].Id" />
                             <span class="">@listDepartmentChoose[i].Name</span>
                         </label>
                     }
